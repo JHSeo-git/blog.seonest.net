@@ -1,2 +1,3 @@
 # blog.seonest.net
-Development blog 😀
+
+JHSeo's Development blog 😀
