@@ -18,8 +18,8 @@ module.exports = {
   },
   plugins: ['json-format', 'simple-import-sort', 'react', '@typescript-eslint'],
   rules: {
-    'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
+    'simple-import-sort/imports': 'error',
     '@typescript-eslint/consistent-type-imports': [
       'error',
       {
@@ -27,6 +27,7 @@ module.exports = {
         disallowTypeAnnotations: false,
       },
     ],
+    '@typescript-eslint/no-empty-interface': 'warn',
   },
   ignorePatterns: ['**/lib/**/*', '**/dist/**/*'],
 };

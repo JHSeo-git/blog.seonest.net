@@ -1,14 +1,15 @@
-import { blue, gray, green, indigo, pink, red, teal, yellow } from '@radix-ui/colors';
+import { blue, gray, green, indigo, pink, red, sky, teal, yellow } from '@radix-ui/colors';
 
 const scaleColors = {
   ...gray,
   ...blue,
   ...green,
   ...indigo,
-  ...pink,
+  ...sky,
   ...red,
   ...teal,
   ...yellow,
+  ...pink,
   white: '#FFFFFF',
   black: '#000000',
 } as const;
@@ -18,12 +19,12 @@ const scaleColors = {
  * @see https://www.radix-ui.com/docs/colors/palette-composition/understanding-the-scale
  */
 const semanticColors = {
-  primary200: scaleColors.pink2,
-  primary300: scaleColors.pink3,
-  primary500: scaleColors.pink5,
-  primary900: scaleColors.pink9,
+  primary200: scaleColors.indigo2,
+  primary300: scaleColors.indigo3,
+  primary500: scaleColors.indigo5,
+  primary900: scaleColors.indigo9,
 
-  secondary900: scaleColors.indigo9,
+  secondary900: scaleColors.pink9,
   teritary900: scaleColors.teal9,
 
   info: scaleColors.blue9,
