@@ -1,37 +1,47 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import { zIndices } from '@/constants/theme';
+import { colors, zIndices } from '@/constants/theme';
 
-import { LogoIcon } from '../icons';
+import { TextLogoIcon } from '../_icons';
+import Container from '../Container';
 
 export interface LayoutBaseHeaderProps {}
 
 function LayoutBaseHeader(props: LayoutBaseHeaderProps) {
   return (
-    <Header>
-      <HeaderLeft>
-        <Link href="/" passHref>
-          <StyledLink>
-            <LogoIcon />
-          </StyledLink>
-        </Link>
-        <Nav></Nav>
-      </HeaderLeft>
-      <HeaderRight />
-    </Header>
+    <HeaderWrapper>
+      <Container>
+        <Header>
+          <HeaderLeft>
+            <Link href="/" passHref>
+              <StyledLink>
+                <TextLogoIcon />
+              </StyledLink>
+            </Link>
+            <Nav></Nav>
+          </HeaderLeft>
+          <HeaderRight />
+        </Header>
+      </Container>
+    </HeaderWrapper>
   );
 }
 
-const Header = styled.header`
+const HeaderWrapper = styled.div`
   position: sticky;
   top: 0;
   z-index: ${zIndices.$1};
+`;
+
+const Header = styled.header`
   height: 60px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  background-color: ${colors.loContrast};
 `;
 
 const HeaderLeft = styled.div`

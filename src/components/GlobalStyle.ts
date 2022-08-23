@@ -21,8 +21,7 @@ const GlobalStyle = styled.createGlobalStyle`
     3. Allow percentage-based heights in the application
   */
   html,
-  body,
-  #__next {
+  body {
     height: 100%;
   }
   /*
