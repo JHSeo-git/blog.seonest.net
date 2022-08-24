@@ -19,10 +19,14 @@
   },
   "dependencies": {
     "@radix-ui/colors": "^0.1.8",
+    "cjk-slug": "^0.3.0",
     "framer-motion": "^7.2.0",
+    "gray-matter": "^4.0.3",
     "next": "^12.2.5",
+    "next-mdx-remote": "^4.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-is": "18.2.0",
     "styled-components": "^5.3.5"
   },
   "devDependencies": {
