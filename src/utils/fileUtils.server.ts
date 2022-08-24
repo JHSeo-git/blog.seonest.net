@@ -11,3 +11,10 @@ export function globPromise(pattern: string, options?: glob.IOptions) {
 }
 
 export const getSlug = (text: string) => slugify(text);
+
+export async function hashCode(message: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return hash;
+}

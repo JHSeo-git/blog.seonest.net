@@ -17,14 +17,14 @@ export async function getAllFilePaths() {
 // 파일명이 slug 규칙에 맞지 않는 경우를 생각해서 파일명을 slug로 재정의하여 처리한다.
 export async function getAllSlugs() {
   const paths = await getAllFilePaths();
-  const slugs = paths.map((path) => getSlug(path.replace(/\.mdx?$/, '')));
+  const slugs = paths.map((path) => getSlug(replaceMDXPath(path)));
 
   return slugs;
 }
 
 export async function getFilePathBySlug(slug: string) {
   const paths = await getAllFilePaths();
-  const pathSlugMap = paths.map((path) => ({ path, slug: getSlug(path.replace(/\.mdx?$/, '')) }));
+  const pathSlugMap = paths.map((path) => ({ path, slug: getSlug(replaceMDXPath(path)) }));
   const filePath = pathSlugMap.find((map) => map.slug === slug)?.path;
 
   return filePath;
@@ -68,22 +68,27 @@ export type Post = Awaited<ReturnType<typeof getPost>>;
 type UnTypedFrontMatter = { [key: string]: any };
 type FrontMatter = {
   title: string;
-  description?: string;
-  date?: Date;
-  category?: string;
-  tags?: string[];
-  draft?: boolean;
+  description: string | null;
+  date: string | null;
+  category: string | null;
+  tags: string[] | null;
+  draft: boolean | null;
 };
 
-export function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
+function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
   const frontMatter: FrontMatter = {
     title: untypedFrontMatter.title,
-    description: untypedFrontMatter.description,
-    date: new Date(untypedFrontMatter.date),
-    category: untypedFrontMatter.category,
-    tags: untypedFrontMatter.tags,
-    draft: untypedFrontMatter.draft,
+    description: untypedFrontMatter.description ?? null,
+    // ...(untypedFrontMatter.description ? { description: untypedFrontMatter.description } : {}),
+    date: untypedFrontMatter.date ?? null,
+    category: untypedFrontMatter.category ?? null,
+    tags: untypedFrontMatter.tags ?? null,
+    draft: untypedFrontMatter.draft ?? null,
   };
 
   return frontMatter;
+}
+
+function replaceMDXPath(path: string) {
+  return path.replace(POSTS_PATH, '').replace(/\.mdx?$/, '');
 }
