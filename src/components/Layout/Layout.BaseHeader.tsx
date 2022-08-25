@@ -10,29 +10,19 @@ export interface LayoutBaseHeaderProps {}
 
 function LayoutBaseHeader(props: LayoutBaseHeaderProps) {
   return (
-    <HeaderWrapper>
-      <Container>
-        <Header>
-          <HeaderLeft>
-            <Link href="/" passHref>
-              <StyledLink>
-                <TextLogoIcon />
-              </StyledLink>
-            </Link>
-            <Nav></Nav>
-          </HeaderLeft>
-          <HeaderRight />
-        </Header>
-      </Container>
-    </HeaderWrapper>
+    <Header>
+      <HeaderLeft>
+        <Link href="/" passHref>
+          <StyledLink>
+            <TextLogoIcon />
+          </StyledLink>
+        </Link>
+        <Nav></Nav>
+      </HeaderLeft>
+      <HeaderRight />
+    </Header>
   );
 }
-
-const HeaderWrapper = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: ${zIndices.$1};
-`;
 
 const Header = styled.header`
   height: 60px;

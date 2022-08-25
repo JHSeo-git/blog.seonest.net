@@ -4,20 +4,23 @@ import breakpoints from '@/constants/theme/breakpoints';
 
 export interface ContainerProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-function Container({ children }: ContainerProps) {
-  return <MaxWidthWrapper>{children}</MaxWidthWrapper>;
+function Container({ children, className }: ContainerProps) {
+  return <MaxWidthWrapper className={className}>{children}</MaxWidthWrapper>;
 }
 
 const MaxWidthWrapper = styled.div`
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding-left: 16px;
+  padding-right: 16px;
 
   @media (min-width: ${breakpoints.sm}) {
-    padding: 0 32px;
+    padding-left: 32px;
+    padding-right: 32px;
   }
 `;
 

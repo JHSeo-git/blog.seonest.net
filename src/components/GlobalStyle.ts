@@ -93,7 +93,7 @@ const GlobalStyle = styled.createGlobalStyle`
   select,
   option {
     font-family: ${typography.fontFamily.base};
-    font-weight: ${typography.fontWeight.regular};
+    font-weight: ${typography.fontWeights.regular};
   }
 
   // reset button

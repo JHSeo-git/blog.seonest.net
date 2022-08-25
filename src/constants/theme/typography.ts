@@ -31,7 +31,7 @@ const fontFamily = {
   mono: 'League Mono, Fira Mono, monospace',
 } as const;
 
-const fontWeight = {
+const fontWeights = {
   light: 300,
   regular: 400,
   medium: 500,
@@ -41,7 +41,7 @@ const fontWeight = {
 const typography = {
   fontSizes,
   fontFamily,
-  fontWeight,
+  fontWeights,
   lineHeight,
 } as const;
 
