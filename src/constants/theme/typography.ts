@@ -20,7 +20,8 @@ const fontSizes = {
 
 const lineHeight = {
   body: 1.5,
-  heading: 1.25,
+  'body-loose': 1.75,
+  heading: 1.5,
   'heading-tight': 1.25,
   'heading-normal': 1.5,
   'heading-loose': 2,

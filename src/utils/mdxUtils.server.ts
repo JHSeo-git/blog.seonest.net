@@ -35,8 +35,10 @@ export async function getAllPosts() {
   console.log({ slugs });
 
   const posts = await Promise.all(slugs.map(getPost));
+  const filteredPosts = posts.filter(Boolean);
+  const sortedPosts = filteredPosts.sort(postSorter);
 
-  return posts.filter(Boolean);
+  return sortedPosts;
 }
 
 export async function getPost(slug: string) {
@@ -66,20 +68,21 @@ export type Post = Awaited<ReturnType<typeof getPost>>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UnTypedFrontMatter = { [key: string]: any };
-type FrontMatter = {
+export type PostFrontMatter = {
   title: string;
-  description: string | null;
-  date: string | null;
-  category: string | null;
-  tags: string[] | null;
-  draft: boolean | null;
+  subTitle?: string | null;
+  description?: string | null;
+  date?: string | null;
+  category?: string | null;
+  tags?: string[] | null;
+  draft?: boolean | null;
 };
 
 function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
-  const frontMatter: FrontMatter = {
+  const frontMatter: PostFrontMatter = {
     title: untypedFrontMatter.title,
+    subTitle: untypedFrontMatter.subTitle ?? null,
     description: untypedFrontMatter.description ?? null,
-    // ...(untypedFrontMatter.description ? { description: untypedFrontMatter.description } : {}),
     date: untypedFrontMatter.date ?? null,
     category: untypedFrontMatter.category ?? null,
     tags: untypedFrontMatter.tags ?? null,
@@ -91,4 +94,16 @@ function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
 
 function replaceMDXPath(path: string) {
   return path.replace(POSTS_PATH, '').replace(/\.mdx?$/, '');
+}
+
+function postSorter(a: Post, b: Post) {
+  if (!a?.frontMatter.date) {
+    return 1;
+  }
+  if (!b?.frontMatter.date) {
+    return 1;
+  }
+  return new Date(a.frontMatter.date).getTime() - new Date(b.frontMatter.date).getTime() > 0
+    ? -1
+    : 1;
 }

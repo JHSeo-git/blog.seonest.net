@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { spaces, zIndices } from '@/constants/theme';
 
 import Container from '../Container';
+import Spacer from '../Spacer';
 import Header from './Layout.BaseHeader';
 
 export interface LayoutBaseProps {
@@ -18,6 +19,7 @@ function LayoutBase({ children }: LayoutBaseProps) {
       <MainWrapper>
         <Main>{children}</Main>
       </MainWrapper>
+      <Spacer size="$12" />
     </Layout>
   );
 }
