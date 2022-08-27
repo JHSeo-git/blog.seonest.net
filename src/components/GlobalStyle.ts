@@ -103,6 +103,20 @@ const GlobalStyle = styled.createGlobalStyle`
     cursor: pointer;
     background-color: inherit;
   }
+
+  // reset anchor
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  // prefers-reduced-motion
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
 `;
 
 export default GlobalStyle;

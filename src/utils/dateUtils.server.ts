@@ -11,11 +11,12 @@ export const getDistanceToNow = (date: Date | string) => {
   const now = Date.now();
   const diff = now - d.getTime();
 
-  if (diff < 1000 * 60 * 5) {
+  // 1분 이내
+  if (diff < 1000 * 60) {
     return '방금 전';
   }
 
-  // 1달 전 까지 formatDistanceToNow 사용
+  // 1달 이내
   if (diff < 1000 * 60 * 60 * 24 * 30) {
     return formatDistanceToNow(d, {
       locale: ko,

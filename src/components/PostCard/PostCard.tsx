@@ -10,7 +10,7 @@ export interface PostCardProps {
 }
 
 function PostCard({ post }: PostCardProps) {
-  const { title, subTitle, description, date } = post;
+  const { title, subTitle, description, date, category } = post;
 
   return (
     <Card>
@@ -28,11 +28,7 @@ function PostCard({ post }: PostCardProps) {
   );
 }
 
-const Card = styled.article`
-  &:not(:first-of-type) {
-    margin-top: ${spaces.$12};
-  }
-`;
+const Card = styled.article``;
 
 const Title = styled.h3`
   font-size: ${typography.fontSizes.h3};
@@ -50,6 +46,7 @@ const SubTitle = styled.h4`
 const Description = styled.p`
   font-size: ${typography.fontSizes.base};
   line-height: ${typography.lineHeight['body-loose']};
+  color: ${colors.gray12};
 
   margin-top: ${spaces.xl};
 `;

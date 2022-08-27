@@ -61,7 +61,7 @@ export async function getPost(slug: string) {
 
   return {
     source: mdxSource,
-    frontMatter: getFrontMatter(data),
+    frontMatter: getFrontMatter({ ...data, slug }),
   };
 }
 export type Post = Awaited<ReturnType<typeof getPost>>;
@@ -76,6 +76,7 @@ export type PostFrontMatter = {
   category?: string | null;
   tags?: string[] | null;
   draft?: boolean | null;
+  slug: string;
 };
 
 function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
@@ -87,6 +88,7 @@ function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
     category: untypedFrontMatter.category ?? null,
     tags: untypedFrontMatter.tags ?? null,
     draft: untypedFrontMatter.draft ?? null,
+    slug: untypedFrontMatter.slug,
   };
 
   return frontMatter;
