@@ -40,7 +40,7 @@ interface HomePageProps {
 }
 const HomePage: NextPage<HomePageProps> = ({ posts }) => {
   return (
-    <Layout>
+    <Layout mode="base">
       <Hidden>
         <h1>Seonest homepage</h1>
       </Hidden>

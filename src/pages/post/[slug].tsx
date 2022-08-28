@@ -1,7 +1,13 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { MDXRemote } from 'next-mdx-remote';
+import styled from 'styled-components';
 
+import components from '@/components/_mdxComponents';
+import Container from '@/components/Container';
 import Layout from '@/components/Layout';
+import MDXContainer from '@/components/MDXContainer';
+import { colors, typography } from '@/constants/theme';
+import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import { getDistanceToNow } from '@/utils/dateUtils.server';
 import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
@@ -62,9 +68,10 @@ type PostPageProps = NonNullable<Post> & {
 
 const PostPage: NextPage<PostPageProps> = ({ source, frontMatter }) => {
   return (
-    <Layout>
-      <p>{JSON.stringify(frontMatter, null, 2)}</p>
-      <MDXRemote {...source} />
+    <Layout mode="post" postFrontMatter={frontMatter}>
+      <MDXContainer>
+        <MDXRemote {...source} components={components} />
+      </MDXContainer>
     </Layout>
   );
 };

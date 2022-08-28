@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { spaces, zIndices } from '@/constants/theme';
+import { colors, spaces, zIndices } from '@/constants/theme';
 
 import Container from '../Container';
 import Spacer from '../Spacer';
@@ -26,14 +26,16 @@ function LayoutBase({ children }: LayoutBaseProps) {
 
 const Layout = styled.div``;
 
-const MainWrapper = styled(Container)`
-  padding-top: ${spaces.$12};
-`;
-
 const HeaderWrapper = styled(Container)`
   position: sticky;
   top: 0;
   z-index: ${zIndices.$1};
+
+  background-color: ${colors.loContrast};
+`;
+
+const MainWrapper = styled(Container)`
+  padding-top: ${spaces.$12};
 `;
 
 const Main = styled.main``;

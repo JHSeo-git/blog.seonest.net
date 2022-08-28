@@ -24,7 +24,10 @@ const semanticColors = {
   primary500: scaleColors.indigo5,
   primary900: scaleColors.indigo9,
 
+  secondary500: scaleColors.pink5,
   secondary900: scaleColors.pink9,
+
+  teritary500: scaleColors.teal5,
   teritary900: scaleColors.teal9,
 
   info: scaleColors.blue9,

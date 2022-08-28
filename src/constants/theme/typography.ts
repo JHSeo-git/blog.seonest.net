@@ -28,8 +28,9 @@ const lineHeight = {
 } as const;
 
 const fontFamily = {
-  base: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif',
-  mono: 'League Mono, Fira Mono, monospace',
+  base: 'Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif',
+  mono: 'Fira Mono, monospace',
+  spicy: 'Jua, -apple-system, sans-serif',
 } as const;
 
 const fontWeights = {

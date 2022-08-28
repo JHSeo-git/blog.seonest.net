@@ -1,14 +1,9 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import { colors, zIndices } from '@/constants/theme';
-
 import { TextLogoIcon } from '../_icons';
-import Container from '../Container';
 
-export interface LayoutBaseHeaderProps {}
-
-function LayoutBaseHeader(props: LayoutBaseHeaderProps) {
+function LayoutBaseHeader() {
   return (
     <Header>
       <HeaderLeft>
@@ -30,8 +25,6 @@ const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  background-color: ${colors.loContrast};
 `;
 
 const HeaderLeft = styled.div`

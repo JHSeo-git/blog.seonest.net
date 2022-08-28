@@ -70,6 +70,8 @@ const CardBottomRight = styled.div`
 const DateText = styled.p`
   font-size: ${typography.fontSizes.sm};
   color: ${colors.gray11};
+
+  font-variant-numeric: tabular-nums;
 `;
 
 export default PostCard;

@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
+import rehypePrism from 'rehype-prism-plus';
 
 import { getSlug, globPromise } from './fileUtils.server';
 
@@ -54,7 +55,10 @@ export async function getPost(slug: string) {
     // Optionally pass remark/rehype plugins
     mdxOptions: {
       remarkPlugins: [],
-      rehypePlugins: [],
+      rehypePlugins: [
+        // https://github.com/timlrx/rehype-prism-plus#sample-markdown-to-html-output
+        rehypePrism,
+      ],
     },
     scope: data,
   });

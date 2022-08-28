@@ -26,7 +26,21 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="ko">
-        <Head />
+        <Head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="crossorigin" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap"
+            rel="stylesheet"
+          />
+          <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+          <link
+            rel="stylesheet"
+            as="style"
+            href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.5/dist/web/static/pretendard-dynamic-subset.css"
+            crossOrigin="crossorigin"
+          />
+        </Head>
         <body>
           <Main />
           <NextScript />
