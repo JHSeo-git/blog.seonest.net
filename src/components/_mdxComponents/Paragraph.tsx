@@ -11,6 +11,8 @@ function Paragraph({ ...rest }: ParagraphProps) {
 const StyledParagraph = styled.p`
   font-size: ${typography.fontSizes.md};
   line-height: ${typography.lineHeight['body-loose']};
+
+  margin-bottom: 1.5rem;
 `;
 
 export default Paragraph;

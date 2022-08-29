@@ -47,9 +47,9 @@ const StyledPre = styled.pre`
     word-wrap: normal;
     line-height: 1.5;
 
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
+    -moz-tab-size: 2;
+    -o-tab-size: 2;
+    tab-size: 2;
 
     -webkit-hyphens: none;
     -moz-hyphens: none;

@@ -4,6 +4,7 @@ import { colors, spaces, typography, zIndices } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import type { PostFrontMatter } from '@/utils/mdxUtils.server';
 
+import { CalendarIcon } from '../_icons';
 import Container from '../Container';
 import Spacer from '../Spacer';
 import Header from './Layout.BaseHeader';
@@ -25,6 +26,12 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
       {postFrontMatter && (
         <HeroWrapper>
           <PostTitle>{postFrontMatter.title}</PostTitle>
+          <HeroBottom>
+            <DateBox>
+              <CalendarIcon width={16} height={16} />
+              <DateText>{postFrontMatter.date}</DateText>
+            </DateBox>
+          </HeroBottom>
         </HeroWrapper>
       )}
       <DarkHeaderBackground />
@@ -57,14 +64,32 @@ const MainWrapper = styled(Container)`
 const Main = styled.main``;
 
 const HeroWrapper = styled(Container)`
-  padding-top: ${spaces.$8};
-  padding-bottom: ${spaces.$8};
+  padding-top: ${spaces.$10};
+  padding-bottom: ${spaces.$10};
+`;
+
+const HeroBottom = styled.div`
+  margin-top: ${spaces.$6};
+  display: flex;
+  align-items: center;
+
+  color: ${colors.gray11};
 `;
 
 const PostTitle = styled.h1`
   font-family: ${typography.fontFamily.base};
   font-size: ${typography.fontSizes.h1};
-  line-height: ${typography.lineHeight['heading']};
+  line-height: ${typography.lineHeight['heading-tight']};
+`;
+
+const DateBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${spaces.$1};
+`;
+
+const DateText = styled.p`
+  font-size: ${typography.fontSizes.xs};
 `;
 
 const HeaderStickyBackground = styled.div`

@@ -1,3 +1,4 @@
+export { default as CalendarIcon } from './Calendar';
 export { default as FireIcon } from './Fire';
 export { default as ImportantIcon } from './Important';
 export { default as InfoIcon } from './Info';
