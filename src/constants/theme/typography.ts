@@ -7,6 +7,7 @@ const fontSizes = {
   h6: '1rem',
   body: '1rem',
   base: '1rem',
+  xs: '0.75rem',
   sm: '0.875rem',
   md: '1.125rem',
   lg: '1.25rem',
