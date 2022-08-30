@@ -5,6 +5,7 @@ import SpicyText from '../SpicyText';
 import Blockquote from './Blockquote';
 import Code from './Code';
 import Heading from './Heading';
+import List from './List';
 import Paragraph from './Paragraph';
 import Pre from './Pre';
 
@@ -21,6 +22,10 @@ const components: MDXRemoteProps['components'] = {
   blockquote: (props) => <Blockquote {...props} />,
   code: (props) => <Code {...props} />,
   pre: (props) => <Pre {...props} />,
+
+  ul: (props) => <List listType="ul" {...props} />,
+  ol: (props) => <List listType="ol" {...props} />,
+  li: (props) => <List.Item {...props} />,
 
   // custom
   SpicyText,

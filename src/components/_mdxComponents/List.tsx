@@ -1,0 +1,31 @@
+import styled from 'styled-components';
+
+import { spaces } from '@/constants/theme';
+
+export interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
+  listType: 'ol' | 'ul';
+}
+
+function List({ listType, ...rest }: ListProps) {
+  return <StyledList as={listType} {...rest} />;
+}
+
+export type ItemProps = React.HTMLAttributes<HTMLLIElement>;
+
+function Item({ ...rest }: ItemProps) {
+  return <StyledItem {...rest} />;
+}
+
+List.Item = Item;
+
+const StyledList = styled.ul`
+  margin-top: ${spaces.$4};
+  padding-left: ${spaces.$6};
+`;
+
+const StyledItem = styled.li`
+  margin-top: ${spaces.$2};
+  margin-bottom: ${spaces.$2};
+`;
+
+export default List;
