@@ -1,24 +1,22 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { MDXRemote } from 'next-mdx-remote';
-import styled from 'styled-components';
 
 import components from '@/components/_mdxComponents';
-import Container from '@/components/Container';
 import Layout from '@/components/Layout';
 import MDXContainer from '@/components/MDXContainer';
-import { colors, typography } from '@/constants/theme';
-import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
+import Spacer from '@/components/Spacer';
 import { getDistanceToNow } from '@/utils/dateUtils.server';
 import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = await getAllSlugs();
+  const paths = slugs.map((slug) => ({
+    params: { slug: slug.startsWith('/') ? slug.slice(1).split('/') : slug.split('/') },
+  }));
 
   return {
-    paths: slugs.map((slug) => ({
-      params: { slug },
-    })),
+    paths,
     fallback: false,
   };
 };
@@ -26,14 +24,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 type SerializedPostFromatter = { id: string } & PostFrontMatter;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slug = params?.slug;
+  const slugs = params?.slug;
 
-  if (typeof slug !== 'string') {
+  if (!Array.isArray(slugs)) {
     return {
       notFound: true,
     };
   }
 
+  const slug = slugs.join('/');
   const mdx = await getPost(slug);
 
   if (!mdx) {
@@ -72,6 +71,7 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter }) => {
       <MDXContainer>
         <MDXRemote {...source} components={components} />
       </MDXContainer>
+      <Spacer size="$10" />
     </Layout>
   );
 };

@@ -33,7 +33,6 @@ export async function getFilePathBySlug(slug: string) {
 
 export async function getAllPosts() {
   const slugs = await getAllSlugs();
-  console.log({ slugs });
 
   const posts = await Promise.all(slugs.map(getPost));
   const filteredPosts = posts.filter(Boolean);

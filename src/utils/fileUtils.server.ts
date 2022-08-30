@@ -10,7 +10,13 @@ export function globPromise(pattern: string, options?: glob.IOptions) {
   });
 }
 
-export const getSlug = (text: string) => slugify(text);
+export const getSlug = (path: string) => {
+  const splited = path.split('/').filter(Boolean);
+  const filename = splited.pop() ?? path;
+  const slug = slugify(filename);
+
+  return [...splited, slug].join('/');
+};
 
 export async function hashCode(message: string) {
   const encoder = new TextEncoder();
