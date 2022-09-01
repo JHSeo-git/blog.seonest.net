@@ -32,6 +32,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     };
   }
 
+  // slug = (category) / (slugify(filename))
+
   const slug = slugs.join('/');
   const mdx = await getPost(slug);
 
