@@ -48,7 +48,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts }) => {
         <SectionTitle>최신 글</SectionTitle>
         <Spacer size="$9" />
         {posts.map((post) => (
-          <Link key={post.id} href={`/post/${post.slug}`} passHref>
+          <Link key={post.id} href={`/posts/${post.slug}`} passHref>
             <PostLink>
               <PostCard post={post} />
             </PostLink>

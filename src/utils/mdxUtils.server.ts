@@ -8,11 +8,6 @@ import { getSlug, globPromise } from './fileUtils.server';
 
 const POSTS_PATH = path.join(process.cwd(), '__post');
 
-// TODO: category 적용
-// export async function getCategories() {
-
-// }
-
 export async function getAllFilePaths() {
   const paths = await globPromise(`${POSTS_PATH}/**/*.?(md|mdx)`);
   const mdxFilePaths = paths.filter((path) => /\.mdx?$/.test(path));
@@ -45,10 +40,6 @@ export async function getAllPosts() {
 
   return sortedPosts;
 }
-
-// export async function getPost(category: string, slug: string) {
-
-// }
 
 export async function getPost(slug: string) {
   const filePath = await getFilePathBySlug(slug);

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { spaces } from '@/constants/theme';
+import { spaces, typography } from '@/constants/theme';
 
 export interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
   listType: 'ol' | 'ul';
@@ -21,6 +21,9 @@ List.Item = Item;
 const StyledList = styled.ul`
   margin-top: ${spaces.$4};
   padding-left: ${spaces.$6};
+
+  font-size: ${typography.fontSizes.md};
+  line-height: ${typography.lineHeight['body-loose']};
 `;
 
 const StyledItem = styled.li`

@@ -35,9 +35,9 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
         </HeroWrapper>
       )}
       <DarkHeaderBackground />
-      <MainWrapper>
-        <Main>{children}</Main>
-      </MainWrapper>
+      <Main>
+        <MainWrapper>{children}</MainWrapper>
+      </Main>
       <Spacer size="$12" />
     </Layout>
   );
@@ -55,17 +55,17 @@ const HeaderWrapper = styled(Container)`
   z-index: ${zIndices.$1};
 `;
 
-const MainWrapper = styled(Container)`
-  padding-top: ${spaces.$12};
-
+const Main = styled.main`
   background-color: ${colors.loContrast};
 `;
 
-const Main = styled.main``;
+const MainWrapper = styled(Container)`
+  padding-top: ${spaces.$12};
+`;
 
 const HeroWrapper = styled(Container)`
   padding-top: ${spaces.$10};
-  padding-bottom: ${spaces.$10};
+  padding-bottom: ${spaces.$14};
 `;
 
 const HeroBottom = styled.div`

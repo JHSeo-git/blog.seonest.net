@@ -5,6 +5,8 @@ import SpicyText from '../SpicyText';
 import Blockquote from './Blockquote';
 import Code from './Code';
 import Heading from './Heading';
+import Hr from './Hr';
+import Image from './Image';
 import List from './List';
 import Paragraph from './Paragraph';
 import Pre from './Pre';
@@ -26,6 +28,9 @@ const components: MDXRemoteProps['components'] = {
   ul: (props) => <List listType="ul" {...props} />,
   ol: (props) => <List listType="ol" {...props} />,
   li: (props) => <List.Item {...props} />,
+
+  hr: (props) => <Hr {...props} />,
+  img: (props) => <Image alt={props.alt} {...props} />,
 
   // custom
   SpicyText,

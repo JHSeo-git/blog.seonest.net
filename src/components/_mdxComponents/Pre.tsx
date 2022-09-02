@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { breakpoints, typography } from '@/constants/theme';
+import { breakpoints, radii, typography } from '@/constants/theme';
 
 export interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   language?: string;
@@ -32,6 +32,10 @@ const StyledPre = styled.pre`
   margin: 1em 0;
   overflow: auto;
   background: #2b2b2b;
+
+  @media (min-width: ${breakpoints.lg}) {
+    border-radius: ${radii.base};
+  }
 
   code {
     font-family: ${typography.fontFamily.mono};
