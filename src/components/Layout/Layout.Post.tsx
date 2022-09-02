@@ -2,9 +2,10 @@ import styled from 'styled-components';
 
 import { colors, spaces, typography, zIndices } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
+import { getDistanceToNow } from '@/utils/dateUtils';
 import type { PostFrontMatter } from '@/utils/mdxUtils.server';
 
-import { CalendarIcon } from '../_icons';
+import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';
 import Spacer from '../Spacer';
 import Header from './Layout.BaseHeader';
@@ -27,10 +28,14 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
         <HeroWrapper>
           <PostTitle>{postFrontMatter.title}</PostTitle>
           <HeroBottom>
-            <DateBox>
+            <PostItemBox>
+              <TimeIcon width={16} height={16} />
+              <TimeText>{postFrontMatter.readingTime}</TimeText>
+            </PostItemBox>
+            <PostItemBox>
               <CalendarIcon width={16} height={16} />
-              <DateText>{postFrontMatter.date}</DateText>
-            </DateBox>
+              <DateText>{getDistanceToNow(postFrontMatter.date, { humanize: false })}</DateText>
+            </PostItemBox>
           </HeroBottom>
         </HeroWrapper>
       )}
@@ -72,6 +77,7 @@ const HeroBottom = styled.div`
   margin-top: ${spaces.$6};
   display: flex;
   align-items: center;
+  gap: ${spaces.$4};
 
   color: ${colors.gray11};
 `;
@@ -82,10 +88,14 @@ const PostTitle = styled.h1`
   line-height: ${typography.lineHeight['heading-tight']};
 `;
 
-const DateBox = styled.div`
+const PostItemBox = styled.div`
   display: flex;
   align-items: center;
   gap: ${spaces.$1};
+`;
+
+const TimeText = styled.p`
+  font-size: ${typography.fontSizes.xs};
 `;
 
 const DateText = styled.p`

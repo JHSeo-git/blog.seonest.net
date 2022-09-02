@@ -7,7 +7,7 @@ import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
 import Spacer from '@/components/Spacer';
 import { colors, spaces, typography } from '@/constants/theme';
-import { getDistanceToNow } from '@/utils/dateUtils.server';
+import { getDistanceToNow } from '@/utils/dateUtils';
 import type { PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllPosts } from '@/utils/mdxUtils.server';
 

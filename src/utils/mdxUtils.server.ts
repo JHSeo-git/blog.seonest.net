@@ -3,8 +3,13 @@ import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
 import rehypePrism from 'rehype-prism-plus';
+import remarkGfm from 'remark-gfm';
 
 import { getSlug, globPromise } from './fileUtils.server';
+
+const WORDS_PER_MINUTE_ENG = 200;
+const WORDS_PER_MINUTE_KOR = 500;
+const IMG_READ_TIME_SEC = 12;
 
 const POSTS_PATH = path.join(process.cwd(), '__post');
 
@@ -53,7 +58,10 @@ export async function getPost(slug: string) {
   const mdxSource = await serialize(content, {
     // Optionally pass remark/rehype plugins
     mdxOptions: {
-      remarkPlugins: [],
+      remarkPlugins: [
+        // https://github.com/remarkjs/remark-gfm
+        remarkGfm,
+      ],
       rehypePlugins: [
         // https://github.com/timlrx/rehype-prism-plus#sample-markdown-to-html-output
         rehypePrism,
@@ -64,7 +72,12 @@ export async function getPost(slug: string) {
 
   return {
     source: mdxSource,
-    frontMatter: getFrontMatter({ ...data, slug }),
+    rawContent: content,
+    frontMatter: getFrontMatter({
+      ...data,
+      slug,
+      readingTime: getReadingTime(content),
+    }),
   };
 }
 export type Post = Awaited<ReturnType<typeof getPost>>;
@@ -80,6 +93,7 @@ export type PostFrontMatter = {
   tags?: string[] | null;
   draft?: boolean | null;
   slug: string;
+  readingTime?: number;
 };
 
 function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
@@ -92,6 +106,7 @@ function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
     tags: untypedFrontMatter.tags ?? null,
     draft: untypedFrontMatter.draft ?? null,
     slug: untypedFrontMatter.slug,
+    readingTime: untypedFrontMatter.readingTime ?? null,
   };
 
   return frontMatter;
@@ -112,3 +127,56 @@ function postSorter(a: Post, b: Post) {
     ? -1
     : 1;
 }
+
+function getReadingTime(content: string) {
+  const minutes = getReadTime(content);
+
+  const text = minutes < 1 ? '1분 이내' : `${Math.ceil(minutes)}분`;
+
+  return text;
+}
+
+const countImages = (markdown: string) => {
+  const imgRegex = /\\!\[(.*?)\][\\[\\(].*?[\]\\)]/g;
+  return (markdown.match(imgRegex) ?? []).length;
+};
+
+const calculateImageReadTime = (imgCount: number) => {
+  if (imgCount === 0) return 0;
+
+  let seconds = 0;
+
+  if (imgCount > 10) {
+    seconds = (imgCount / 2) * (IMG_READ_TIME_SEC + 3) + (imgCount - 10) * 3;
+  } else {
+    seconds = (imgCount / 2) * (IMG_READ_TIME_SEC * 2 + (imgCount - 1) * -1);
+  }
+
+  return seconds / 60;
+};
+
+const calculateMarkdownReadTime = (content: string) => {
+  const plainText = content;
+
+  // const korPattern =
+  //   '[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]+';
+  // const korRegex = new RegExp(korPattern, 'g');
+  const korRegex = /[가-힣]+/g;
+  const engRegex = /\w+/g;
+
+  const removedKor = plainText.replace(korRegex, '');
+
+  const korReadTime = (plainText.match(korRegex) ?? []).length / WORDS_PER_MINUTE_KOR;
+  const engReadTime = (removedKor.match(engRegex) ?? []).length / WORDS_PER_MINUTE_ENG;
+
+  return korReadTime + engReadTime;
+};
+
+export const getReadTime = (markdown: string) => {
+  const imgCount = countImages(markdown);
+
+  const textReadTime = calculateMarkdownReadTime(markdown);
+  const imgReadTime = calculateImageReadTime(imgCount);
+
+  return textReadTime + imgReadTime;
+};

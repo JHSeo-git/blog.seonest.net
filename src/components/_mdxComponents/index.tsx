@@ -4,6 +4,7 @@ import Admonition from '../Admonition';
 import SpicyText from '../SpicyText';
 import Blockquote from './Blockquote';
 import Code from './Code';
+import Del from './Del';
 import Heading from './Heading';
 import Hr from './Hr';
 import Image from './Image';
@@ -20,6 +21,7 @@ const components: MDXRemoteProps['components'] = {
   h5: (props) => <Heading {...props} as="h5" />,
   h6: (props) => <Heading {...props} as="h6" />,
   p: (props) => <Paragraph {...props} />,
+  del: (props) => <Del {...props} />,
 
   blockquote: (props) => <Blockquote {...props} />,
   code: (props) => <Code {...props} />,

@@ -1,13 +1,28 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import ko from 'date-fns/locale/ko';
 
-export const getDistanceToNow = (date: Date | string) => {
+type GetDistanceToNowOptions = {
+  humanize?: boolean;
+};
+export const getDistanceToNow = (
+  date?: Date | string | null,
+  options: GetDistanceToNowOptions = {
+    humanize: true,
+  }
+) => {
+  if (!date) return '';
+
   let d: Date;
   if (typeof date === 'string') {
     d = new Date(date);
   } else {
     d = date;
   }
+
+  if (!options.humanize) {
+    return d.toLocaleDateString();
+  }
+
   const now = Date.now();
   const diff = now - d.getTime();
 

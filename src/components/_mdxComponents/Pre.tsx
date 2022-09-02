@@ -33,6 +33,8 @@ const StyledPre = styled.pre`
   overflow: auto;
   background: #2b2b2b;
 
+  display: flex;
+
   @media (min-width: ${breakpoints.lg}) {
     border-radius: ${radii.base};
   }

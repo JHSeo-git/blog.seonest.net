@@ -5,7 +5,6 @@ import components from '@/components/_mdxComponents';
 import Layout from '@/components/Layout';
 import MDXContainer from '@/components/MDXContainer';
 import Spacer from '@/components/Spacer';
-import { getDistanceToNow } from '@/utils/dateUtils.server';
 import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
 
@@ -46,11 +45,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     title: mdx.frontMatter.title,
     subTitle: mdx.frontMatter.subTitle,
     description: mdx.frontMatter.description,
-    date: mdx.frontMatter.date ? getDistanceToNow(mdx.frontMatter.date) : null,
+    date: mdx.frontMatter.date,
     category: mdx.frontMatter.category,
     tags: mdx.frontMatter.tags,
     draft: mdx.frontMatter.draft,
     slug: mdx.frontMatter.slug,
+    readingTime: mdx.frontMatter.readingTime,
   };
 
   return {
