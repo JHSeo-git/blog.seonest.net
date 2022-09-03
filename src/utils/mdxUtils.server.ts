@@ -8,6 +8,7 @@ import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
+import { getDistanceToNow } from './dateUtils';
 import { getSlug, globPromise } from './fileUtils.server';
 
 const WORDS_PER_MINUTE_ENG = 200;
@@ -49,6 +50,33 @@ export async function getAllPosts() {
   return sortedPosts;
 }
 
+export type CategoryInfo = {
+  name: string;
+  count: number;
+};
+export async function getAllCategories() {
+  const posts = await getAllPosts();
+  const categories = posts.reduce<CategoryInfo[]>((acc, post) => {
+    const category = post.frontMatter.category;
+    if (!category) {
+      return acc;
+    }
+
+    const index = acc.findIndex((item) => item.name === category);
+
+    if (index === -1) {
+      acc.push({ name: category, count: 1 });
+    } else {
+      acc[index].count += 1;
+    }
+
+    return acc;
+  }, []);
+  const sortedCategories = categories.sort(catagorySorter);
+
+  return sortedCategories;
+}
+
 export async function getPost(slug: string) {
   const filePath = await getFilePathBySlug(slug);
 
@@ -57,6 +85,7 @@ export async function getPost(slug: string) {
   }
 
   const source = await fs.readFile(filePath);
+  const stat = await fs.stat(filePath);
   const { data, content } = matter(source);
   const mdxSource = await serialize(content, {
     // Optionally pass remark/rehype plugins
@@ -85,6 +114,7 @@ export async function getPost(slug: string) {
       ...data,
       slug,
       readingTime: getReadingTime(content),
+      lastModified: getDistanceToNow(stat.mtime, { humanize: false }),
     }),
   };
 }
@@ -102,6 +132,7 @@ export type PostFrontMatter = {
   draft?: boolean | null;
   slug: string;
   readingTime?: number;
+  lastModified?: string | null;
 };
 
 function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
@@ -115,6 +146,7 @@ function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
     draft: untypedFrontMatter.draft ?? null,
     slug: untypedFrontMatter.slug,
     readingTime: untypedFrontMatter.readingTime ?? null,
+    lastModified: untypedFrontMatter.lastModified ?? null,
   };
 
   return frontMatter;
@@ -134,6 +166,10 @@ function postSorter(a: Post, b: Post) {
   return new Date(a.frontMatter.date).getTime() - new Date(b.frontMatter.date).getTime() > 0
     ? -1
     : 1;
+}
+
+function catagorySorter(a: CategoryInfo, b: CategoryInfo) {
+  return a.count - b.count > 0 ? -1 : 1;
 }
 
 function getHeadings(source: string) {

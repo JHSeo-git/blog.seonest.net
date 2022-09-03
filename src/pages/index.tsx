@@ -6,17 +6,19 @@ import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
 import Spacer from '@/components/Spacer';
-import { colors, spaces, typography } from '@/constants/theme';
+import { breakpoints, colors, radii, spaces, typography } from '@/constants/theme';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { CategoryInfo, PostFrontMatter } from '@/utils/mdxUtils.server';
+import { getAllCategories } from '@/utils/mdxUtils.server';
 import { getAllPosts } from '@/utils/mdxUtils.server';
 
 type SerializedPostFromatter = { id: string } & PostFrontMatter;
 
 export const getStaticProps: GetStaticProps = async () => {
   const posts = await getAllPosts();
+  const categories = await getAllCategories();
 
-  const serialized: SerializedPostFromatter[] = posts.map((post) => ({
+  const serializedPost: SerializedPostFromatter[] = posts.map((post) => ({
     id: `${post.frontMatter.slug}_${post.frontMatter.date ?? Date.now()}`,
     title: post.frontMatter.title,
     subTitle: post.frontMatter.subTitle,
@@ -30,36 +32,76 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      posts: serialized,
+      posts: serializedPost,
+      categories,
     },
   };
 };
 
 interface HomePageProps {
   posts: SerializedPostFromatter[];
+  categories: CategoryInfo[];
 }
-const HomePage: NextPage<HomePageProps> = ({ posts }) => {
+const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
   return (
     <Layout mode="base">
       <Hidden>
         <h1>Seonest homepage</h1>
       </Hidden>
-      <PageSection>
-        <SectionTitle>최신 글</SectionTitle>
-        <Spacer size="$9" />
-        {posts.map((post) => (
-          <Link key={post.id} href={`/posts/${post.slug}`} passHref>
-            <PostLink>
-              <PostCard post={post} />
-            </PostLink>
-          </Link>
-        ))}
-      </PageSection>
+      <PageGrid>
+        <PostsSection>
+          <SectionTitle>최신 글</SectionTitle>
+          <Spacer size="$9" />
+          {posts.map((post) => (
+            <Link key={post.id} href={`/posts/${post.slug}`} passHref>
+              <PostLink>
+                <PostCard post={post} />
+              </PostLink>
+            </Link>
+          ))}
+        </PostsSection>
+        <CategoriesSection>
+          <SectionTitle>카테고리</SectionTitle>
+          <Spacer size="$9" />
+          {categories.map((category) => (
+            <Link key={category.name} href={`/categories/${category.name}`} passHref>
+              <CategoryLink>
+                <CategoryPill />
+                {category.name}
+              </CategoryLink>
+            </Link>
+          ))}
+        </CategoriesSection>
+        <TagsSection>
+          <SectionTitle>태그</SectionTitle>
+        </TagsSection>
+      </PageGrid>
     </Layout>
   );
 };
 
-const PageSection = styled.section``;
+const PageGrid = styled.div`
+  display: grid;
+  grid-template: 'posts' 'categories' 'tags';
+  gap: ${spaces.$14};
+
+  @media (min-width: ${breakpoints.md}) {
+    grid-template:
+      'posts categories' auto
+      'posts tags' 1fr / 2fr 1fr;
+  }
+`;
+
+const PostsSection = styled.section`
+  grid-area: posts;
+`;
+const CategoriesSection = styled.section`
+  grid-area: categories;
+`;
+const TagsSection = styled.section`
+  grid-area: tags;
+`;
+
 const SectionTitle = styled.h2`
   font-size: ${typography.fontSizes.base};
   line-height: ${typography.lineHeight.heading};
@@ -77,6 +119,40 @@ const PostLink = styled.a`
   @media (hover: hover) {
     &:hover {
       color: ${colors.primary900};
+    }
+  }
+`;
+
+const CategoryLink = styled.a`
+  display: inline-block;
+  font-size: ${typography.fontSizes.sm};
+  font-weight: ${typography.fontWeights.medium};
+  padding: ${spaces.$1} ${spaces.$3};
+  margin-right: ${spaces.$4};
+  margin-bottom: ${spaces.$4};
+
+  text-transform: capitalize;
+  color: ${colors.primary900};
+
+  position: relative;
+`;
+
+const CategoryPill = styled.div`
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+
+  border-radius: ${radii.base};
+  background-color: ${colors.primary300};
+  transform-origin: center center;
+
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  @media (hover: hover) {
+    ${CategoryLink}:hover & {
+      transform: scale(1.1);
+      background-color: ${colors.primary400};
     }
   }
 `;

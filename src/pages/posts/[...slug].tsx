@@ -6,7 +6,7 @@ import components from '@/components/_mdxComponents';
 import Layout from '@/components/Layout';
 import PostNav from '@/components/PostNav';
 import Spacer from '@/components/Spacer';
-import { breakpoints } from '@/constants/theme';
+import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
 
@@ -53,6 +53,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     draft: mdx.frontMatter.draft,
     slug: mdx.frontMatter.slug,
     readingTime: mdx.frontMatter.readingTime,
+    lastModified: mdx.frontMatter.lastModified,
   };
 
   return {
@@ -74,6 +75,12 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc }) => {
       <MDXWrapper>
         <MDXArticle>
           <MDXRemote {...source} components={components} />
+          <MDXFooter>
+            <DateBox>
+              <BoxLabel>마지막 업데이트</BoxLabel>
+              <BoxValue>{frontMatter.lastModified}</BoxValue>
+            </DateBox>
+          </MDXFooter>
         </MDXArticle>
         <MDXAside>
           <PostNav toc={toc} title="Table Of Contents" />
@@ -110,7 +117,24 @@ const MDXAside = styled.aside`
   }
 `;
 
-const MDXNav = styled.nav``;
-const MDXNavTitle = styled.h2``;
+const MDXFooter = styled.div`
+  margin-top: ${spaces.$14};
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const DateBox = styled.div``;
+const BoxLabel = styled.h3`
+  font-size: ${typography.fontSizes.sm};
+  font-weight: ${typography.fontWeights.bold};
+  color: ${colors.gray11}; ;
+`;
+const BoxValue = styled.p`
+  margin-top: ${spaces.$2};
+  font-size: ${typography.fontSizes.lg};
+  font-weight: ${typography.fontWeights.bold};
+  color: ${colors.hiContrast};
+`;
 
 export default PostPage;
