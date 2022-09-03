@@ -15,7 +15,8 @@ const StyledBlockquote = styled.blockquote`
   padding-right: ${spaces.$4};
   background-color: ${colors.primary300};
   border-left: 5px solid ${colors.primary700};
-  border-radius: ${radii.base};
+  border-top-right-radius: ${radii.base};
+  border-bottom-right-radius: ${radii.base};
 
   margin-bottom: 1rem;
 

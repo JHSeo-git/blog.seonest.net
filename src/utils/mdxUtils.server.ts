@@ -77,6 +77,15 @@ export async function getAllCategories() {
   return sortedCategories;
 }
 
+export async function getPrevNextBySlug(slug: string) {
+  const posts = await getAllPosts();
+  const index = posts.findIndex((post) => post.frontMatter.slug === slug);
+  const next = index === 0 ? null : posts[index - 1];
+  const prev = index === posts.length - 1 ? null : posts[index + 1];
+
+  return { prev, next };
+}
+
 export async function getPost(slug: string) {
   const filePath = await getFilePathBySlug(slug);
 
