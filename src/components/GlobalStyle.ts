@@ -87,6 +87,11 @@ const GlobalStyle = styled.createGlobalStyle`
     color: ${colors.text};
   }
 
+  // scroll-behavior
+  html {
+    scroll-behavior: smooth;
+  }
+
   body,
   input,
   button,

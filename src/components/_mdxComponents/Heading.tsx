@@ -14,6 +14,7 @@ function Heading({ as, ...rest }: HeadingProps) {
 const StyledHeading = styled.h1<{ as: HeadingAs }>`
   font-size: ${(props) => typography.fontSizes[props.as]};
   line-height: ${typography.lineHeight.heading};
+  scroll-margin-top: 80px;
 
   ${(props) =>
     props.as === 'h1' &&

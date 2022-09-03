@@ -27,6 +27,7 @@ module.exports = {
         disallowTypeAnnotations: false,
       },
     ],
+    '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-empty-interface': 'warn',
   },
   ignorePatterns: ['**/lib/**/*', '**/dist/**/*'],

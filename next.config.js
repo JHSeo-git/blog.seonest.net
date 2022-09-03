@@ -6,6 +6,12 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+
+  experimental: {
+    images: {
+      allowFutureImage: true,
+    },
+  },
 };
 
 module.exports = nextConfig;

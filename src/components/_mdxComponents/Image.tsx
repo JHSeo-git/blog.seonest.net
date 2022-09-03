@@ -14,14 +14,28 @@ function Image({ src, ...rest }: ImageProps) {
     return <StyledImage src={src} {...rest} />;
   }
 
-  return <StyledNextImage src={src} {...rest} placeholder="empty" />;
+  const width = 700;
+  const height = 400;
+
+  return <StyledNextImage src={src} width={width} height={height} {...rest} placeholder="empty" />;
 }
 
 const StyledImage = styled.img`
   margin-top: ${spaces.xl};
   margin-bottom: ${spaces.xl};
+  margin-left: auto;
+  margin-right: auto;
 `;
 
-const StyledNextImage = styled(NextImage)``;
+const StyledNextImage = styled(NextImage)`
+  margin-top: ${spaces.xl};
+  margin-bottom: ${spaces.xl};
+  margin-left: auto;
+  margin-right: auto;
+
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
 
 export default Image;

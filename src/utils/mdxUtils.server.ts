@@ -1,8 +1,11 @@
 import fs from 'fs/promises';
+import slugger from 'github-slugger';
 import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrism from 'rehype-prism-plus';
+import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
 import { getSlug, globPromise } from './fileUtils.server';
@@ -65,6 +68,10 @@ export async function getPost(slug: string) {
       rehypePlugins: [
         // https://github.com/timlrx/rehype-prism-plus#sample-markdown-to-html-output
         rehypePrism,
+        // https://github.com/rehypejs/rehype-slug
+        rehypeSlug,
+        // https://github.com/rehypejs/rehype-autolink-headings
+        rehypeAutolinkHeadings,
       ],
     },
     scope: data,
@@ -73,6 +80,7 @@ export async function getPost(slug: string) {
   return {
     source: mdxSource,
     rawContent: content,
+    toc: getHeadings(content),
     frontMatter: getFrontMatter({
       ...data,
       slug,
@@ -126,6 +134,19 @@ function postSorter(a: Post, b: Post) {
   return new Date(a.frontMatter.date).getTime() - new Date(b.frontMatter.date).getTime() > 0
     ? -1
     : 1;
+}
+
+function getHeadings(source: string) {
+  const headingLines = source.split('\n').filter((line) => line.match(/^###*\s/));
+
+  return headingLines.map((raw) => {
+    const text = raw.replace(/^###*\s/, '');
+    const id = slugger.slug(text);
+    const link = `#${id}`;
+    const level = raw.slice(0, 3) === '###' ? 3 : 2;
+
+    return { text, level, link, id };
+  });
 }
 
 function getReadingTime(content: string) {

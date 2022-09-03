@@ -29,6 +29,8 @@ const StyledList = styled.ul`
 const StyledItem = styled.li`
   margin-top: ${spaces.$2};
   margin-bottom: ${spaces.$2};
+
+  overflow-wrap: break-word;
 `;
 
 export default List;
