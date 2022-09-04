@@ -40,6 +40,8 @@ const StyledPre = styled.pre`
   }
 
   code {
+    width: 100%;
+
     font-family: ${typography.fontFamily.mono};
     font-size: ${typography.fontSizes.base};
     font-weight: ${typography.fontWeights.medium};

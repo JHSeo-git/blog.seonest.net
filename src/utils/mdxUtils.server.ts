@@ -8,7 +8,6 @@ import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
-import { getDistanceToNow } from './dateUtils';
 import { getSlug, globPromise } from './fileUtils.server';
 
 const WORDS_PER_MINUTE_ENG = 200;
