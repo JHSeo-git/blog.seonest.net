@@ -18,6 +18,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@giscus/react": "^2.2.0",
     "@radix-ui/colors": "^0.1.8",
     "cjk-slug": "^0.3.0",
     "date-fns": "^2.29.2",

@@ -4,6 +4,9 @@ import { MDXRemote } from 'next-mdx-remote';
 import styled, { css } from 'styled-components';
 
 import components from '@/components/_mdxComponents';
+import Hr from '@/components/_mdxComponents/Hr';
+import Bio from '@/components/Bio';
+import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
 import PostNav from '@/components/PostNav';
 import Spacer from '@/components/Spacer';
@@ -100,7 +103,9 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
                 <BoxValue>{frontMatter.lastModified}</BoxValue>
               </DateBox>
             </MDXFooterTop>
-            <Spacer size="$10" />
+            <Hr />
+            <Bio />
+            <Spacer size="$14" />
             <MDXFooterNav>
               {prev && (
                 <Link href={`/posts/${prev.slug}`} passHref>
@@ -119,6 +124,8 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
                 </Link>
               )}
             </MDXFooterNav>
+            <Spacer size="$14" />
+            <Comment />
           </MDXFooter>
         </MDXArticle>
         <MDXAside>
@@ -169,7 +176,7 @@ const MDXFooterNav = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: ${spaces.$4};
+  gap: ${spaces.$6};
 `;
 const DateBox = styled.div``;
 const BoxLabel = styled.h3`

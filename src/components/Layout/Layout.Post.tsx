@@ -7,7 +7,6 @@ import type { PostFrontMatter } from '@/utils/mdxUtils.server';
 
 import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';
-import Spacer from '../Spacer';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
@@ -43,7 +42,6 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
       <DarkHeaderBackground />
       <Main>
         <MainWrapper>{children}</MainWrapper>
-        <Spacer size="$12" />
       </Main>
       <FooterWrapper>
         <Footer />
