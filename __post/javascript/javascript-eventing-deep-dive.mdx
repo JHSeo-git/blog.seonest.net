@@ -272,7 +272,7 @@ target phase단계에서 이제 버블링 phase로 넘어갑니다.
 
 하지만 서로 다른 Phase에서 실행된다는 점을 기억하세요.(하나는 캡쳐링 Phase, 다른 하나는 버블링 Phase)
 
-`window` <= `document` <= `html` <= `body` <= ... <= `EventTarget(여기서는 id='C'인 요소)`
+`window` < `document` < `html` < `body` < ... < `EventTarget(여기서는 id='C'인 요소)`
 
 > 버블링: 이벤트가 DOM 트리 **"위로"** 이동하는 것처럼 보이기 때문에 **거품**(버블링)이라고 합니다.
 
