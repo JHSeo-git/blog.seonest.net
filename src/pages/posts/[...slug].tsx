@@ -4,14 +4,17 @@ import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
 import styled, { css } from 'styled-components';
 
+import appConfig from '@/app.config';
 import components from '@/components/_mdxComponents';
 import Hr from '@/components/_mdxComponents/Hr';
+import PostSEO from '@/components/_seo/PostSEO';
 import Bio from '@/components/Bio';
 import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
 import PostNav from '@/components/PostNav';
 import Spacer from '@/components/Spacer';
 import { breakpoints, colors, radii, spaces, typography } from '@/constants/theme';
+import { getDistanceToNow } from '@/utils/dateUtils';
 import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getPrevNextBySlug } from '@/utils/mdxUtils.server';
 import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
@@ -93,61 +96,75 @@ type PostPageProps = NonNullable<Post> & {
 };
 
 const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, next }) => {
+  const images = frontMatter.thumbnail ? [frontMatter.thumbnail] : [];
+
   return (
-    <Layout mode="post" postFrontMatter={frontMatter}>
-      <MDXWrapper>
-        <MDXArticle>
-          {frontMatter.thumbnail && (
-            <MDXThumbnail
-              src={frontMatter.thumbnail}
-              width={750}
-              height={500}
-              placeholder="empty"
-            />
-          )}
-          <MDXRemote {...source} components={components} />
-          <MDXFooter>
-            <MDXFooterTop>
-              <DateBox>
-                <BoxLabel>마지막 업데이트</BoxLabel>
-                <BoxValue>{frontMatter.lastModified}</BoxValue>
-              </DateBox>
-            </MDXFooterTop>
-            <Hr />
-            <Bio />
-            <Spacer size="$14" />
-            <MDXFooterNav>
-              <PrevNextWrapper>
-                {prev && (
-                  <Link href={`/posts/${prev.slug}`} passHref>
-                    <PrevNext>
-                      <PrevNextLabel>이전</PrevNextLabel>
-                      <PrevNextTitle>{prev.title}</PrevNextTitle>
-                    </PrevNext>
-                  </Link>
-                )}
-              </PrevNextWrapper>
-              <PrevNextWrapper $isNext>
-                {next && (
-                  <Link href={`/posts/${next.slug}`} passHref>
-                    <PrevNext $isNext>
-                      <PrevNextLabel>다음</PrevNextLabel>
-                      <PrevNextTitle>{next.title}</PrevNextTitle>
-                    </PrevNext>
-                  </Link>
-                )}
-              </PrevNextWrapper>
-            </MDXFooterNav>
-            <Spacer size="$14" />
-            <Comment />
-          </MDXFooter>
-        </MDXArticle>
-        <MDXAside>
-          <PostNav toc={toc} title="Table Of Contents" />
-        </MDXAside>
-      </MDXWrapper>
-      <Spacer size="$10" />
-    </Layout>
+    <>
+      <PostSEO
+        url={`posts/${frontMatter.slug}`}
+        title={frontMatter.title}
+        description={frontMatter.description ?? frontMatter.title}
+        images={images}
+        publishedTime={frontMatter.date ?? ''}
+        modifiedTime={frontMatter.lastModified ?? ''}
+      />
+      <Layout mode="post" postFrontMatter={frontMatter}>
+        <MDXWrapper>
+          <MDXArticle>
+            {frontMatter.thumbnail && (
+              <MDXThumbnail
+                src={frontMatter.thumbnail}
+                width={750}
+                height={500}
+                placeholder="empty"
+              />
+            )}
+            <MDXRemote {...source} components={components} />
+            <MDXFooter>
+              <MDXFooterTop>
+                <DateBox>
+                  <BoxLabel>마지막 업데이트</BoxLabel>
+                  <BoxValue>
+                    {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
+                  </BoxValue>
+                </DateBox>
+              </MDXFooterTop>
+              <Hr />
+              <Bio />
+              <Spacer size="$14" />
+              <MDXFooterNav>
+                <PrevNextWrapper>
+                  {prev && (
+                    <Link href={`/posts/${prev.slug}`} passHref>
+                      <PrevNext>
+                        <PrevNextLabel>이전</PrevNextLabel>
+                        <PrevNextTitle>{prev.title}</PrevNextTitle>
+                      </PrevNext>
+                    </Link>
+                  )}
+                </PrevNextWrapper>
+                <PrevNextWrapper $isNext>
+                  {next && (
+                    <Link href={`/posts/${next.slug}`} passHref>
+                      <PrevNext $isNext>
+                        <PrevNextLabel>다음</PrevNextLabel>
+                        <PrevNextTitle>{next.title}</PrevNextTitle>
+                      </PrevNext>
+                    </Link>
+                  )}
+                </PrevNextWrapper>
+              </MDXFooterNav>
+              <Spacer size="$14" />
+              <Comment />
+            </MDXFooter>
+          </MDXArticle>
+          <MDXAside>
+            <PostNav toc={toc} title="Table Of Contents" />
+          </MDXAside>
+        </MDXWrapper>
+        <Spacer size="$10" />
+      </Layout>
+    </>
   );
 };
 

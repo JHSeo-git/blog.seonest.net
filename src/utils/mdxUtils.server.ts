@@ -131,7 +131,7 @@ export async function getPost(slug: string) {
       ...data,
       slug,
       readingTime: getReadingTime(content),
-      lastModified: getDistanceToNow(stat.mtime, { humanize: false }),
+      lastModified: stat.mtime.toISOString(),
     }),
   };
 }
