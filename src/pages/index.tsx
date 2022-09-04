@@ -51,7 +51,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
       <PageGrid>
         <PostsSection>
           <SectionTitle>최신 글</SectionTitle>
-          <Spacer size="$9" />
+          <Spacer size="$12" />
           {posts.map((post) => (
             <Link key={post.id} href={`/posts/${post.slug}`} passHref>
               <PostLink>
@@ -62,7 +62,7 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
         </PostsSection>
         <CategoriesSection>
           <SectionTitle>카테고리</SectionTitle>
-          <Spacer size="$9" />
+          <Spacer size="$12" />
           {categories.map((category) => (
             <Link key={category.name} href={`/categories/${category.name}`} passHref>
               <CategoryLink>
@@ -83,7 +83,7 @@ const PageGrid = styled.div`
   gap: ${spaces.$14};
 
   @media (min-width: ${breakpoints.md}) {
-    grid-template: 'posts categories';
+    grid-template: 'posts categories' / 2fr 1fr;
   }
 `;
 
@@ -105,7 +105,7 @@ const PostLink = styled.a`
   transition: color 0.2s ease-in-out;
 
   &:not(:first-of-type) {
-    margin-top: ${spaces.$12};
+    margin-top: ${spaces.$14};
   }
 
   @media (hover: hover) {
