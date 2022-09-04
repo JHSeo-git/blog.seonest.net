@@ -1,0 +1,545 @@
+---
+title: 'Nextjs Layout RFC: New Routing System'
+description: 'Next.js에서 새로운 라우팅 시스템에 대한 RFC를 공개했습니다. 새로운 라우팅 시스템과 React 18에 맞춰서 어떻게 동작하는지에 대해 설명합니다.'
+date: '2022-05-28T09:50:13.861Z'
+category: 'react'
+draft: false
+tags: ['Next.js', 'React', 'Web']
+---
+
+> https://nextjs.org/blog/layouts-rfc
+
+며칠 전 Next.js에서 Layout RFC를 공개했습니다.
+
+2016년도에 Next.js가 공개된 이후에 가장 큰 변화라고 하는데 새로운 routing 시스템과 React 18에 맞춰서 어떻게 Next.js가 동작하는지에 대해서 설명합니다.
+
+- **Nested Layout**: 중첩 route을 가진 복잡한 어플리케이션을 더 쉽게
+- **Designed for Server Components**: 최적화된 하위 트리 탐색
+- **Improved Data Fetching**: 레이아웃에서 워터폴을 피해 Fetch
+- **Using React 18 Features**: Streaming, Transition, Suspense
+- **Client and Server Routing**: _SPA처럼_ 동작하는 서버 중심 routing
+- **100% incrementally adoptable**: 주요 변경 사항이 없으므로 100% 점진적으로 채택할 수 있습니다.
+- **Advanced Routing Conventions**: 오프스크린 stashing, 즉각적인 transition, 등등
+
+총 2개의 포스트로 공개가 될 예정입니다.
+
+- **Part 1(이번 포스트)**: 새로운 라우팅 시스템의 개요와 RSC(React Server Component), Data Fetching과 어떻게 통합하는지
+- **Part 2(다음 포스트)**: 향상된 라우팅 시스템의 예시와 컨벤션. 그리고 streaming과 Selective hydration을 위해 Next.js에서 Suspense를 어떻게 사용하는지
+
+## Motivation
+
+다양한 커뮤니티에서 현재 Next.js 라우팅 제한 사항에 대한 개발자 설문 조사에서 피드백을 받은 결과는 다음과 같습니다.
+
+- 레이아웃 생성에 대한 개발자 경험은 향상될 수 있습니다. 중첩이 가능하고 여러 라우트에서 공유될 수 있고 네비게이션 할 때 상태를 유지할 수 있도록 하는 레이아웃을 쉽게 만들 수 있어야 합니다.
+- 많은 Next.js 어플리케이션은 대시보드나 콘솔이고 향상된 라우팅 솔루션의 이점을 누릴 수 있습니다.
+
+현재 라우팅 시스템이 Next.js 시작이래로 잘 작동하고 있지만 개발자들이 더 성능이 뛰어나고 기능이 풍부한 웹 어플리케이션을 더 쉽게 만들도록 하고 싶었습니다.
+
+또한 프레임워크 maintainer로써, 이전 버전과 잘 호환되고 React의 미래와 일치하는 라우팅 시스템을 구축하길 원했습니다.
+
+> Note:
+> 일부 라우팅 컨벤션은 Meta의 Relay 기반 라우터(Server Component 일부 기능이 기존에 개발된)에 영향을 받았습니다.
+> 또한, React Router 및 Ember.js와 같은 클라이언트 기반 라우터에서도 영향을 받았습니다.
+> `layout.js` 파일 컨벤션은 SvelteKit에서 영향을 받았습니다.
+
+## Terminology(전문용어)
+
+이 RFC는 새로운 라우팅 컨벤션과 syntax을 소개합니다. terminology는 React와 표준 웹 플랫폼 용어에 기반합니다.
+
+- **Tree**: 계층적 구조를 나타내는 컨벤션. 예를 들어 부모와 자식 컴포넌트를 가진 컴포넌트 트리, 폴더 구조, 등등.
+- **SubTree**: root(first)에서 시작하고 leaf(last)에서 끝나는 트리의 한 부분.
+
+![tree.png](https://files.seonest.net/images/qnfqnfqnf/post/234/image.png)
+
+- **URL Path**: 도메인 뒤 URL의 부분
+- **URL Segment**: 슬래쉬로 나뉘어진 URL path의 부분
+
+![url.png](https://files.seonest.net/images/qnfqnfqnf/post/235/image.png)
+
+## 라우팅 동작 방식
+
+현재 Next.js는 파일 시스템을 사용하여 [Pages](https://nextjs.org/docs/basic-features/pages) 폴더 안에 있는 개별 폴더와 파일들을 URL을 통해 접근가능한 라우트로 맵핑합니다. 각 **Page** 파일은 React Component를 export하고 파일명에 기반한 **Route**를 가집니다.
+
+![curr-routing.png](https://files.seonest.net/images/qnfqnfqnf/post/236/image.png)
+
+Next.js는 또한 [동적 라우트](https://nextjs.org/docs/routing/dynamic-routes)를 지원합니다.(`[param].js`, `[...param].js`, `[[...param]].js` )
+
+- **Layouts**: Next.js는 간단한 [컴포넌트 기반 레이아웃](https://nextjs.org/docs/basic-features/layouts), [페이지별 레이아웃](https://nextjs.org/docs/basic-features/layouts#per-page-layouts), [단일 레이아웃](https://nextjs.org/docs/basic-features/layouts#single-shared-layout-with-custom-app)을 위한 지원을 제공합니다.
+  ~~(저는 이 블로그에서는 단일 레이아웃을 몇 가지로 구분해서 페이지별 레이아웃으로 사용하고 있습니다.)~~
+- **Data Fetching**: Next.js는 페이지(route) 레벨에서만 사용될 수 있는 data fetching method(`getStaticProps`, `getSeverSideProps`)를 제공합니다.
+  이 메소드는 정적으로 생성될지(`getStaticProps`) 아니면 서버사이드에서 생성될지(`getServerSideProps`)를 결정하는데 사용됩니다. 게다가 정적 사이트가 빌드된 이후에 업데이트되거나 생성될 수 있도록 [ISR(Incremental Static Regeneration, 증분 정적 재생성: request시(revalidate나 여러 조건을 포함하여) 정적 재빌드)](https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration)을 사용할 수 있습니다.
+- **Rendering**: Next.js는 3가지 렌더링 옵션을 제공합니다: [Static Generation](https://nextjs.org/learn/foundations/how-nextjs-works/rendering), [Server-Side Rendering](https://nextjs.org/learn/foundations/how-nextjs-works/rendering), [Client-Side Rendering](https://nextjs.org/learn/foundations/how-nextjs-works/rendering). 기본적으로 blocking data fetching 요구사항(`getServerSideProps`)이 없는 한 페이지는 정적으로 생성됩니다.
+
+## App Folder
+
+> 새로운 디렉토리 `app`
+
+이러한 새로운 개선 사항을 점진적으로 채택하고 주요 변경 사항을 방지하기 위해서 `app`이라는 새로운 디렉토리를 제안합니다.
+
+![app-folder](https://files.seonest.net/images/qnfqnfqnf/post/237/image.png)
+
+`app` 폴더는 `pages` 폴더와 함께 동작합니다. 하위 호환성을 위해서 `pages` 폴더는 그대로 남겨두고 계속해서 지원됩니다. 새로운 기능의 이점을 위해 `app` 폴더로 점진적으로 옮길 수 있습니다.
+
+> 이전에 공개한 page middleware도 포함되는 건지는 잘 모르겠네...
+
+## Route 정의
+
+> 기본적으로 기존에 사용하던 `pages` 구조와 동일합니다.
+> 그러나 아래 Note에도 적혀있듯이 route파일 뿐만아니라 다양한 파일을 colocate가 가능한 구조입니다.
+
+`app`폴더에서 라우트를 정의하기 위해 계층적으로 **폴더**를 사용할 수 있습니다.
+**라우트**는 **root 폴더**에서 **leaf 폴더**까지 계층 구조를 따르는 중첩된 폴더의 단일 경로입니다.
+
+![routes](https://files.seonest.net/images/qnfqnfqnf/post/238/image.png)
+
+예를 들어 `app` 폴더에 두 개의 폴더를 중첩하여 새 경로(`/dashboard/settings`)를 추가할 수 있습니다.
+
+> Note:
+>
+> - 이 시스템을 사용하면 route 정의를 위한 폴더, UI 정의를 위한 파일들(`layout.js`, `page.js`와 같은 새로운 파일 컨벤션, 그리고 2번째 RFC 파트에서 나올 `loading.js`)을 사용할 수 있습니다.
+> - 이것은 프로젝트 파일들(UI Component, test file, sotires, etc)을 `app` 폴더 안에 모을 수 있도록 해줍니다. 아시다싶이 현재 `pages` 폴더에서는 불가능합니다.
+
+## Route Segments
+
+subtree에서 각 폴더는 **route segment**를 표현합니다. 각 route segment는 **URL Path**의 해당 **segment**와 매핑됩니다.
+
+![route-segment](https://files.seonest.net/images/qnfqnfqnf/post/239/image.png)
+
+예를 들어, `/dashboard/settings` 라우트는 3 segement로 구성됩니다.
+
+- `/` root segment
+- `dashboard` segment
+- `settings` segment
+
+> Note:
+> name route segment는 URL paths에 대한 기존 용어와 일치하도록 선택되었습니다.
+
+## Layouts & Creating UI
+
+> 새로운 파일 컨벤션: `layout.js`
+
+지금까지 Next.js에서는 폴더를 사용하여 어플리케이션에서 라우트를 정의하였습니다. 그러나 빈 폴더는 자체적으로 아무것도 하지 않습니다.
+새로운 파일 컨벤션을 사용하여 이러한 라우트에 대해 렌더할 UI를 정의하는 방법에 대해 논의해 보겠습니다.
+
+**layout**은 subtree에서 route segment 사이에 공유되는 UI 입니다. layout은 URL path에 영향을 주지 않으며 사용자가 같은 layout을 쓰는 segment에서 이동할 때 re-render되지(React 상태가 보존됩니다) 않습니다.(즉, link되는 페이지가 같은 layout을 쓰는 url path라면 re-render되지 않습니다.)
+
+layout은 기본적으로 `layout.js`에서 React component를 export하여 정의할 수 있습니다. 해당 React component는 layout이 wrapping하는 segement를 위해 `children`을 허용해야 합니다.
+
+layout에는 2가지 타입이 있습니다.
+
+- **Root layout**: 모든 route에 적용
+- **Regular layout**: 특정 route semengt에 적용
+
+2개 이상의 layout을 중첩하여 **중첩 레이아웃(nested layout)** 만들 수 있습니다.
+
+### Root layout
+
+`app` 폴더 안에 `layout.js`를 추가하여 모든 route에 적용할 root layout을 만들 수 있습니다.
+
+![root-layout](https://files.seonest.net/images/qnfqnfqnf/post/240/image.png)
+
+> Note:
+>
+> - root layout은 모든 route에 적용되므로 [custom App]() (`_app.js`) 과 [custom Document]() (`_document.js`) 의 필요성을 대체합니다. ~~(오?)~~
+> - root layout을 사용하여 초기 document shell(예를 들어, `<html>`, `<body>`)을 커스터마이즈할 수 있습니다.(\_document.js 역할을 한다는 뜻인듯)
+> - root layout(또는 다른 layout)에서 data fetching 메소드를 사용할 수 있습니다.~~(pages에서만 쓸 수 있었던 걸 해제되었고 레이아웃에서 공통으로 사용되던 data fetching을 모듈화 할 수 있을 것 같다는 생각이 듭니다. 또한 중첩된 부분에서는 어떻게 될지도 궁금하기도 하네요)~~
+
+### Regular layouts
+
+특정 폴더 내에서 `layout.js`를 추가하여 특정 route에서만 적용할 layout을 만들 수 있습니다.
+
+![regular-layout](https://files.seonest.net/images/qnfqnfqnf/post/241/image.png)
+
+예를 들어, `dashboard` 폴더 내에 `layout.js`를 만들어서 `dashboard` 안에 route segment에만 적용할 수도 있습니다.
+
+### Nesting layouts
+
+layout은 기본적으로 **중첩됩니다**.
+
+![nesting-layout](https://files.seonest.net/images/qnfqnfqnf/post/242/image.png)
+
+예를 들어 root layout(`app/layout.js`)은 `dashboard` layout에 적용되며 내부의 모든 `dashboard/*` route segment에 적용됩니다.
+
+![nesting-layout-ex](https://files.seonest.net/images/qnfqnfqnf/post/243/image.png)
+
+## Pages
+
+> 새로운 파일 컨벤션: `page.js`
+> 폴더가 아닌 파일
+
+page는 route segment에 유일하게 존재하는 UI이며, route가 Valid되기 위해 필요한 UI 입니다. 폴더 내에 `page.js`를 추가하여 page를 만들 수 있습니다.~~(기존에 사용되던 `pages/index.js`와 차이는 전체 페이지가 아닌 레이아웃 내의 UI를 담당하는 것 같기도...)~~
+
+![pages](https://files.seonest.net/images/qnfqnfqnf/post/244/image.png)
+
+예를 들어, `/dashboard/*` route에 페이지를 만들기 위해서 `page.js`를 각 폴더안에 만들면 됩니다. 사용자가 `/dashboard/settings` 에 방문할 때 Next.js는 subtree의 상위에 있는 layout으로 wrapping된 `settings`폴더의 `page.js`를 렌더링합니다.
+
+즉,
+
+- `/app/layout.js`에서 nested layout이 된
+- `/dashboard/layout.js`로 wrapping되고
+- 내부는 `/dashboard/settings/page.js`로 만들어진
+
+페이지를 렌더링 한다는 뜻입니다.
+
+![pages-ex](https://files.seonest.net/images/qnfqnfqnf/post/245/image.png)
+
+`/dashboard` route에 매치된 `page.js`를 직접 생성할 수 있습니다. `/dashboard/layout.js`가 이 page에도 적용됩니다.
+
+![pages-ex2](https://files.seonest.net/images/qnfqnfqnf/post/246/image.png)
+
+> Note:
+>
+> - route를 동작하기 위해 해당 leaf segment는 page를 가져야만 합니다. 그렇지 않으면 404 에러가 납니다.
+> - `page.js`파일은 React component를 default export 해야 합니다.
+> - 파일명은 정확히 `page.(js|jsx|ts|tsx)`만 가능합니다. 만약 Page component를 export하지 않으면 Next.js는 에러를 throw 합니다.
+
+## Layout과 Page
+
+> **Recap**:
+>
+> - Page component는 `page.js`에서 default export된 것입니다.
+> - Layout component는 `layout.js`에서 default export된 것입니다.
+> - Layout component는 **반드시** `children` prop을 허용해야 합니다.
+
+layout component가 렌더될 때, `children` prop은 자식 layout component(만약 subtree에 존재한다면) 또는 page component로 채워집니다.
+
+상위 layout이 page에 도달할 때까지 가장 가까운 하위 layout을 선택하는 layout tree로 시각화하는 것이 더 쉬울 수 있습니다.
+
+![layout-page](https://files.seonest.net/images/qnfqnfqnf/post/247/image.png)
+
+```jsx
+// Root layout (app/layout.js)
+// - 모든 라우트에 적용
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <Header />
+        {children}
+        <Footer />
+      </body>
+    </html>
+  )
+}
+
+// Regular layout (app/dashboard/layout.js)
+// - app/dashboard/* 라우트에만 적용
+export default function DashboardLayout({ children }) {
+  return (
+    <>
+      <DashboardSidebar />
+      {children}
+    </>
+  )
+}
+
+// Page Component (app/dashboard/analytics/page.js)
+// - `app/dashboard/analytics` segment에 사용되는 UI
+// - `{domain}/dashboard/analytics` URL path에 매치됩니다.
+export default function AnalyticsPage() {
+  return (
+    <main>...</main>
+  )
+}
+```
+
+위의 layout과 page 조합은 다음 component 계층 구조로 렌더링합니다.
+
+```jsx
+<RootLayout>
+  <Header />
+  <DashboardLayout>
+    <DahboardSidebar />
+    <AnalyticsPage>
+      <main>...</main>
+    </AnalyticsPage>
+  </DashboardLayout>
+  <Footer />
+</RootLayout>
+```
+
+## React Server Component
+
+> Note:
+> 만약 React Server Component가 친숙하지 않다면 이 Section을 읽기 전에 [React Server Component RFC](https://github.com/josephsavona/rfcs/blob/server-components/text/0000-server-components.md) 를 읽는 것을 추천드립니다.
+
+Next.js에서는 React 새로운 features와 React Server Component를 점진적으로 채택할 수 있습니다.
+
+새로운 라우팅 시스템의 내부는 Streaming, Suspense, Transition과 같은 최근에 릴리즈된 React 기능을 활용합니다. React Server Component 기본 구성 요소에서 살펴보겠습니다.
+
+### Server Component가 새로운 기본값입니다.
+
+`pages`와 `app` 폴더 사이에 가장 큰 차이점 중 하나는 **`app` 폴더 내부의 파일들은 기본적으로 React Server Component로써 서버에서 렌더링된다는 것입니다.**
+
+이것은 `pages`에서 `app`으로 점진적으로 migration할 때 자동으로 React Server Component를 적용하도록 채택할 수 있습니다.
+
+### 렌더링 환경과 컴포넌트 타입
+
+> Note:
+> React는 새로운 컴포넌트 (모듈) 타입을 소개했습니다: Server, Client, Shared Component
+> 새로운 타입에 대해 [Server and Client Components의 기능과 제약](https://github.com/josephsavona/rfcs/blob/server-components/text/0000-server-components.md#capabilities--constraints-of-server-and-client-components)과 [Server Module Convention RFC](https://github.com/reactjs/rfcs/blob/235f27c12a/text/0000-server-module-conventions.md)를 읽는 것을 추천드립니다.
+
+새로운 React 컨벤션을 사용하여 client-side JavaScript 번들에 포함될 컴포넌트를 세부적으로 제어할 수 있습니다.
+
+Client 컴포넌트와 Server 컴포넌트를 정의하기 위해 사용될 컨벤션에 대해서 [지속적인 논의](https://github.com/reactjs/rfcs/pull/189#issuecomment-1116482278)가 있습니다. Next.js는 이 논의 결과를 따를 것입니다.
+
+일단 `app`은 라우트 내 컴포넌트(layout, page)를 Server, Client, 또는 둘 다에서 렌더링할 수 있다는 점에 주목할 가치가 있습니다.
+
+![rsc](https://files.seonest.net/images/qnfqnfqnf/post/248/image.png)
+
+Next.js에서 `pages` 폴더는 기본적으로 data fetching 요구사항이 없다면 페이지는 정적으로 생성됩니다.
+또한 `pages`에서는 data fetching 메소드(`getStaticProps`, `getServerSideProps`)를 사용하거나 client-side에서 데이터를 fetching 함으로써 **언제**(빌드 타임 또는 런타임), **어디서**(server-side, client-side, 또는 둘다) 페이지를 렌더링할지 유연하게 결정할 수 있습니다.
+
+그러나 `app` 폴더에서는 **렌더링 환경은 data fetching 메소드와 분리되며 컴포넌트 레벨에서 설정됩니다.** 개발할 때 항상 [클라이언트와 서버 컴포넌트의 제약](https://github.com/reactjs/rfcs/blob/235f27c12a/text/0000-server-module-conventions.md)에 대해 주의할 필요가 있습니다.(예를 들어, 클라이언트 컴포넌트 page나 layout에서 `getServerSideProps` 메소드를 사용할 수 없습니다.)
+
+### `children` prop을 사용하는 Client 및 Server Component children 사용하기
+
+React에서 클라이언트 컴포넌트 내부에서 서버 컴포넌트를 import하는 것에 제한이 있습니다. 왜냐하면 서버 컴포넌트는 서버에서만 동작해야하는 코드이기 때문입니다.(예를 들어, 데이타베이스나 파일시스템 유틸들)
+
+예를 들어 다음 패턴은 동작하지 않습니다.
+
+```jsx
+import ServerComponent from './ServerComponent.js';
+
+export default function ClientComponent() {
+  return (
+    <>
+      <ServerComponent />
+    </>
+  );
+}
+```
+
+그러나 서버 컴포넌트는 클라이언트 컴포넌트 child로써 다른 서버 컴포넌트로 wrapping되어 전달될 수 있습니다.
+예를 들어 `ServerComponent`는 `ClientComponent`의 child로써 다른 서버 컴포넌트를 통해 함께 전달될 수 있습니다.
+
+```jsx
+// ClientComponent.js
+export default function ClientComponent({ children }) {
+  return (
+    <>
+      <h1>Client Component</h1>
+      {children}
+    </>
+  );
+}
+
+// ServerComponent.js
+export default function ServerComponent() {
+  return (
+    <>
+      <h1>Server Component</h1>
+    </>
+  );
+}
+
+// page.js
+// 서버 컴포넌트에서 클라이언트 및 서버 컴포넌트를 import하는 것은 가능합니다.
+// 왜냐하면, 이 컴포넌트는 서버에서 렌더링 되기 때문입니다.
+import ClientComponent from "./ClientComponent.js";
+import ServerComponent from "./ServerComponent.js";
+
+export default function ServerComponentPage() {
+  return (
+    <>
+      <ClientComponent>
+        <ServerComponent />
+      </ClientComponent>
+    </>
+  );
+}
+
+```
+
+이 패턴을 사용하면, React는 결과(어떠한 서버용 코드도 포함되지 않는)를 클라이언트로 보내기 전에 서버에서 `ServerComponent`가 렌더링 되어야 한다는 것을 알 수 있습니다.
+클라이언트 컴포넌트의 관점에서 child(`ServerComponent`)는 이미 렌더링되어 있습니다.
+
+새로운 라우터는 이 패턴을 활용하여 nested layout 또는 page가 서버 컴포넌트가 되는 동안에 클라이언트 컴포넌트인 layout을 렌더링하기 위해 위 패턴을 활용합니다.
+
+즉 클라이언트 컴포넌트 child로 서버 컴포넌트를 사용하기 위해서 클라이언트 컴포넌트를 또 다른 서버 컴포넌트로 감싸는 방법입니다.
+
+예를 들어, Server Component page와 그것을 warpping하는 Client Component layout을 가질 수 있습니다.
+
+```jsx
+// Dashboard layout은 클라이언트 컴포넌트입니다.
+// app/dashboard/layout.js
+export default function ClientLayout({ children }) {
+  // 여기서는 useState / useEffect를 사용할 수 있습니다.
+  return (
+    <>
+      <h1>Layout</h1>
+      {children}
+    </>
+  );
+}
+
+// 이 페이지는 Dashboard layout으로 전달될 서버 컴포넌트 입니다.
+// app/dashboard/settings/page.js
+export default function ServerPage() {
+  return (
+    <>
+      <h1>Page</h1>
+    </>
+  );
+}
+```
+
+> Note:
+> 이런 형태의 구성은 클라이언트 컴포넌트 내부에 서버 컴포넌트를 렌더링하기 위한 중요한 패턴입니다. 학습할 패턴의 우선순위를 정하고 `children` prop을 사용하기로 결정한 이유중에 하나입니다.
+
+## Data fetching
+
+`layout.js`파일 내부에서 data fetching 메소드를 사용하는 것이 가능합니다. layout이 중첩될 수 있기 때문에 route의 여러 segment에서 data를 fetch하는 것이 가능하다는 것을 의미합니다. 이것이 data fetching method가 page 레벨에서 제한된 `pages` 폴더와 차이점입니다.
+
+### Layout에서 Data fetching
+
+`getStaticProps`, `getServerSideProps`를 layout 파일에서 사용할 수 있습니다.
+
+예를 들어, blog layout에서 sidebar 컴포넌트에서 사용되는 카테고리를 CMS로부터 가져오는데 `getStaticProps`를 사용할 수 있습니다.
+
+```jsx
+// app/blog/layout.js
+export async function getStaticProps() {
+  const categories = await getCategoriesFromCMS();
+
+  return {
+    props: { categories },
+  };
+}
+
+export default function BlogLayout({ categories, children }) {
+  return (
+    <>
+      <BlogSidebar categories={categories} />
+      {children}
+    </>
+  );
+}
+```
+
+### 하나의 라우트에서 여러 Data fetching
+
+하나의 라우트에서 여러 segment에 대한 data도 fetch할 수 있습니다.
+
+> 저는 segment 용어체 친숙해지기 위해 천천히 생각하면서 읽어나갔습니다.
+> 예를 들어 라우트가 `/blog/[slug]`이라면 segment는 `/`:root segment, `blog`: blog segement, `[slug]`: dynamic slug segment가 됩니다.
+>
+> 그래서 _여러 Data fetching_ 이라는 것은 _여러 segement에서_ 라는 말이 앞에 붙은 것과 동일합니다.
+
+예를 들어, data를 fetch하는 `layout`이 자신의 data를 fetch하는 `page` 또한 감쌀 수 있습니다.(root segement, 하위 segement의 `layout`(중첩 layout을 포함해서)에서 data fetch하는 것이 `page`에서 data fetch하는 것과 전혀 문제가 되지 않는 말입니다.)
+
+> 다만, [아래](#행동과-우선순위)에서도 언급되지만 동일 라우트에서 data fetching 메소드를 사용할 때 몇 가지 경우에서는 서로에게 영향을 미칩니다.
+
+위의 블로그 예시를 사용하면 단일 post page는 CMS에서 post 데이터를 가져오기 위해 `getStaticProps`와 `getStaticPaths`를 사용할 수 있습니다.
+
+```jsx
+// app/blog/[slug]/page.js
+export async function getStaticPaths() {
+  const posts = await getPostSlugsFromCMS();
+
+  return {
+    paths: posts.map((post) => ({
+      params: { slug: post.slug },
+    })),
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const post = await getPostFromCMS(params.slug);
+
+  return {
+    props: { post },
+  };
+}
+
+export default function BlogPostPage({ post }) {
+  return <Post post={post} />;
+}
+```
+
+`app/blog/layout.js`와 `app/blog/[slug]/page.js` 둘 다 `getStaticProps`를 사용하기 때문에 Next.js는 빌드 타임에 전체 `/blog/[slug]` 라우트를 **React Server Component**로 정적으로 생성합니다.
+React Server Component는 client-side JavaScript가 더 작고 hydration이 더 빠릅니다.
+
+정적으로 생성된 라우트는 클라이언트 네비게이션이 캐시(서버 컴포넌트 데이터)를 재사용하고 작업을 다시 계산하지 않기 때문에 더욱 성능을 개선합니다. 그리고 이것은 서버 컴포넌트의 스냅샷을 렌더링하기 때문에 더 적은 CPU 시간을 씁니다.
+
+## 행동과 우선순위
+
+Next.js data fetching 메소드(`getServerSideProps`와 `getStaticProps`)는 `app` 폴더 내에 서버 컴포넌트에서만 사용될 수 있습니다.
+단일 라우트의 다른 segment에 있는 data fetching 메소드는 서로에게 영향을 미칩니다.
+
+한 segment에서 `getServerSideProps`를 사용하는 것은 다른 segment의 `getStaticProps`에 영향을 줍니다. request가 이미 `getServerSideProps` segment를 위해서 서버로 가기 때문에 해당 서버는 또한 모든 `getStaticProps` segment를 렌더링합니다. 빌드 타임에 fetch한 props를 재사용하므로 data는 여전히 정적입니다. 이 **렌더링**은 `next build`에 생성된 props를 사용하여 모든 request에 요청에 대해서 발생합니다.~~(불필요한 작업이 발생한다는 것 같습니다.)~~
+
+어떤 segment에서 revalidate(ISR)과 함께 `getStaticProps`를 사용하는 것은 다른 segment에 `revalidate`를 사용하는 `getStaticProps`에 영향을 줍니다. 만약 한 라우트에 2개의 revalidate period가 있다면 더 짧은 revalidation이 더 높은 우선순위를 가집니다.
+
+> Note:
+> 앞으로 라우트에서 전체 data fetching 더 세밀하게 사용하도록 허용하도록 최적화될 수 있습니다.
+
+## React Server Component에서 Data fetching과 렌더링
+
+Server-Side 렌더링, React Server Component, Suspense, Streaming의 조합은 Next.js의 data fetching과 렌더링에 몇 가지 영향을 미칩니다.
+
+### Parallel fetching과 렌더링
+
+Next.js는 워터폴을 최소화하기 위해 Parallel로 data fetch를 시작합니다. Suspense와 함께 React는 요청이 완료되기 전에 즉시 서버 컴포넌트를 렌더링을 시작할 수 있으며 요청이 해결되면 결과를 주입(slot)할 수 있습니다.
+
+예를 들어, data fetching이 **Sequential**로 발생한다면 라우트 내에 중첩된 segment는 이전의 segment과 완료되기 전까지 fetching을 시작할 수 없습니다. 만약 렌더링이 data fetching에 의존한다면 각 segment는 data fetching이 완료된 이후에 렌더링할 수 있습니다.
+
+![parallel](https://files.seonest.net/images/qnfqnfqnf/post/249/image.png)
+
+그러나 **parallel** fetching은 각 segment가 동시에 data fetching을 시작할 수 있습니다. Suspesne와 함께 데이터가 완전히 로드되지 않았더라도 즉시 렌더링 _또한_ 시작할 수 있습니다. 만약 데이터가 사용할 수 있기 전에 읽으면 Suspense가 트리거 됩니다.
+
+### Partial fetching과 렌더링
+
+sibling 라우트 segment 사이를 이동할 때, Next.js는 해당 segment 아래로만 fetch하고 렌더링합니다. 그 위의 것을 다시 fetch하거나 다시 렌더링할 필요가 없습니다. 이것은 page가 layout을 공유한다는 것을 의미하고, 그 layout은 사용자가 sibling page를 이동할 때 보존된다는 것을 의미합니다. 그래서 Next.js는 segment 아래로만 fetch하고 렌더링합니다.
+
+이것은 특히 React Server Component에 유용합니다. 그렇지 않으면 각 이동으로 인해 서버에서 page의 변경된 부분만 렌더링하는 대신 전체 page가 다시 렌더링 되기 때문입니다. 이것은 전송되는 데이터의 양과 실행 시간이 줄어들어 성능이 향상됩니다.
+
+예를 들어, 만약 사용자가 `/analytics`와 `/settings` page 사이를 이동한다면, React는 page segment를 re-render하지만 layout은 유지합니다.
+
+![partial-fetching](https://files.seonest.net/images/qnfqnfqnf/post/250/image.png)
+
+> Note:
+> 상위 tree에서 데이터를 강제로 re-fetch하는 것이 가능합니다. 이것이 어떻게 보일지 디테일을 여전히 논의하고 있고, RFC도 업데이트 될 것입니다.
+
+## 결론
+
+다음 포스트에서는 RFC의 나머지 부분은 다룰 것입니다:
+
+- **Instant Loading States**:
+  server-side 라우팅을 사용하면, 이동이 완료되기 전에 서버에서 렌더링과 data fetching이 일어납니다.
+  따라서 어플리케이션이 응답이 없는 것처럼 보여지지 않도록 loading UI를 보여주는 것이 중요하도록 만들었습니다.
+  inline, global loading indicator와 스켈레톤과 같은 즉각적인 loading 상태에 대한 프레임워크 단위의 지원을 제안합니다.
+- **Offscreen Statshing with Instant Back/Forward**:
+  React는 React tree와 그 상태를 화면에 렌더링하지 않고 저장하는 새로운 `<Offscreen />` 컴포넌트를 추가할 계획입니다. 이 컴포넌트를 활용하면 route를 숨기고(stash) 방문하기 전에 route를 pre-render 할 수 있어야 합니다. 이러한 route를 앞뒤로 이동하는 것은 즉각적이어야 하며 이전에 저장된 상태를 복원해야 합니다.
+- **Parallel Routes**:
+  만약 page에 2개 이상의 tab bar가 있다면 독립적으로 이동될 수 있는 2개 이상의 parallel 중첩 layout을 가지는 것이 가능해야 합니다. 마치 `<iframe />`와 개념적으로 흡사한
+- **Intercepting Routes**:
+  다른 페이지 내에서 부터 route를 가로챌 수 있는 것이 유용한 경우가 때때로 있습니다. URL은 일반적으로 UI의 다른 부분으로 이끌지만 이 컨텍스트 내에서 방문할 때는 그렇지 않습니다.
+  예를 들어, 확장될 수 있고 인라인으로 표시될 수 있는 트윗이나 standalone 갤러리 대신 모달 포토 뷰어가 있습니다.(트위터에서 트윗을 볼 때 사진을 클릭하면 url이 변경되지만 모달로 뜨는 것을 경험한적이 있는데 그거와 비슷한 것 같습니다.)
+- **Streaming and selective hydration**:
+  서버 중심 라우팅, React Server Component, Suspense, Streaming이 결합하여 클라이언트로 전송되는 내용을 줄이고 작업을 더 작은 청크로 분할하여 새로운 라우팅 패러다임을 활성화하고 성능을 향상시키는 방법에 대해 자세한 내용을 공유합니다.
+
+[Github discussion에 대화에 참여하세요](https://github.com/vercel/next.js/discussions/37136)
+
+## 마무리하며
+
+포스트 서두에도 적혀있듯이 굉장히 큰 Next.js 변화같습니다.
+
+`pages` 폴더가 사라지고(계속해서 지원한다고 하지만...) `app` 폴더가 생기면서 `layout.js`, `page.js`, `loading.js` 등과 같은 컨벤션이 추가되며 페이지 뿐만아니라 다양한 파일들이 route에 포함되며..등등 여러가지로 큰 변화가 생길 것 같습니다.
+
+React 18 기능을 포함해서 좀 더 쉽고 간편하게 뛰어난 성능으로 쓸 수 있도록 프레임워크 레벨에서 얼만큼 잘 지원하느냐가 SSR 프레임워크 전쟁(?)에서 살아남지 않을까 하는 듯한 느낌도 들긴하네요.
+
+나머지 RFC 내용을 다룬 다음 Post도 기대가 됩니다. 그리고 RFC 기능이 언제 Next.js feature로 공개 될지도 궁금하네요.
+
+> discussion 댓글 중에 [여기](https://github.com/vercel/next.js/discussions/37136#discussioncomment-2814423)에 얼마나 걸리지 물어보는 글에 대한 답변이 있는데 얼마나 걸리지 아직 추정되지 않는다곤 하는데...
+
+React 18이 나오고 나서 개념적으로 이해하기가 쉽지 않는데 이러한 글들을 보면서 조금씩은 이해가 되는 것 같습니다.
+
+어려운 글을 이해하기 쉽게 써내려가는 것도 참 대단한 글 인것 같구요.
+
+discussion에서 좀 더 자세한 진행사항을 볼 수 있으니 확인 한 번 해보는 것도 좋을 것 같습니다.
+
+## reference
+
+- https://nextjs.org/blog/layouts-rfc
+- https://github.com/vercel/next.js/discussions/37136

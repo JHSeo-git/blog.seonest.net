@@ -1,0 +1,670 @@
+---
+title: 'Understanding useMemo and useCallback'
+description: 'useMemo와 useCallback이 대한 이해를 쉽게 풀어낸 Josh.W.Comeau 글을 옮기면서 정리해보았습니다.'
+date: '2022-09-02T15:03:22.000Z'
+category: 'react'
+draft: false
+tags: ['React', 'Web']
+---
+
+> joshwcomeau 블로그에서 [Understanding useMemo and useCallback](https://www.joshwcomeau.com/react/usememo-and-usecallback/) 를 옮긴 글입니다.
+
+`useMemo`, `useCallback`을 완벽히 이해하고 사용하고 있다고 말하기 어려운 것 같습니다.
+
+이 블로그의 목표는 이 모든 혼란, 논란, 오해를 없내는 것입니다. 2개 Hook이 하는 일, 왜 유용하고 어떻게 최대한 활용할 수 있는지에 대해 알아보려고 합니다.
+
+## The basic idea
+
+`useMemo` 먼저 살펴보겠습니다.
+
+`useMemo`의 기본적인 아이디어는 렌더링 사이에 계산된 값(computed value)을 _"기억"_ 할 수 있다는 것 입니다.
+
+사실, 리액트가 작동하는 방식에 대한 꽤 정교한 멘탈 모델이 필요합니다.
+
+**리액트가 하는 주된 일은 UI를 애플리케이션 상태와 동기화하는 것입니다.**
+**이를 수행하는 데 사용하는 도구를 "리렌더링" 이라고 합니다.**
+
+각각 리렌더링은 현재 상태를 기반으로 하여 그 순간에 어플리케이션의 UI가 어떻게 보여야 하는지에 대한 스냅샷 입니다. 각 사진은 모든 상태 변수에 대해 특정 값이 주어졌을 때 대상이 어떻게 보이는지를 캡쳐합니다.
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/318/image.png)
+
+각각 "리렌더링"은 현재 상태를 기반으로 DOM이 어떻게 생겼는지에 대한 정신적 그림을 생성합니다. 위의 데모에서는 HTML로 표시되지만 실제로는 JS 개체의 무리입니다. 이것을 **_"virtual DOM"_** 이라고 하고, 이 용어에 대해서 들어보았을 것입니다.
+
+어떤 DOM 노드를 변경해야 하는지 리액트에게 직접 알려주지 않습니다. 대신 리액트에게 현재 상태를 기반으로 _해야만하는_ UI 를 알려줍니다. 리렌더링을 통해 리액트는 새로운 스냅샷을 만들고 "틀린그림찾기" 게임을 하는 것처럼 스냅샷을 비교하여 변경해야 할 사항을 알 수 있습니다.
+
+리액트는 최적화가 잘 되어 있어서 **_일반적으로_** 리렌더링은 큰 작업이 아닙니다.
+그러나, 특정상황에서는 이러한 스냅샷을 만드는데 시간이 꽤 걸릴 수 있습니다. 이로 인해 사용자가 작업을 수행한 후 UI가 빠르게 업데이트되지 않는 것과 같은 성능 문제로 나타날 수 있습니다.
+
+기본적으로 `useMemo`, `useCallback`은 렌더링을 최적화하는데 도움이 되는 도구 입니다. 2가지 전략으로 최적화를 진행합니다:
+
+1. 주어진 렌더링에서 수행해야 하는 작업의 양을 줄입니다.
+2. 컴포넌트가 리렌더링하는 횟수를 줄입니다.
+
+이 전략에 대해서 하나하나 살펴보겠습니다.
+
+## Use case 1: Heavy computations
+
+> 무거운 계산
+
+사용자 입력 값인 `selectedNum`과 0 사이에 소수를 찾는 툴을 만든다고 가정해봅시다.
+
+```jsx
+import React from 'react';
+
+function App() {
+  // 입력받은 수를 상태에 담습니다.
+  const [selectedNum, setSelectedNum] = React.useState(100);
+
+  // 0과 입력받은 상태인 `selectedNum` 사이에 모든 소수를 계산합니다.
+  const allPrimes = [];
+  for (let counter = 2; counter < selectedNum; counter++) {
+    if (isPrime(counter)) {
+      allPrimes.push(counter);
+    }
+  }
+
+  return (
+    <>
+      <form>
+        <label htmlFor="num">Your number:</label>
+        <input
+          type="number"
+          value={selectedNum}
+          onChange={(event) => {
+            // 과하게 계산되는 것으로부터 막기 위해 100k를 max로 잡습니다.
+            let num = Math.min(100_000, Number(event.target.value));
+
+            setSelectedNum(num);
+          }}
+        />
+      </form>
+      <p>
+        There are {allPrimes.length} prime(s) between 1 and {selectedNum}:{' '}
+        <span className="prime-list">{allPrimes.join(', ')}</span>
+      </p>
+    </>
+  );
+}
+
+// Helper 함수는 주어진 숫자가 소수인지 아닌지 계산합니다.
+function isPrime(n) {
+  const max = Math.ceil(Math.sqrt(n));
+
+  if (n === 2) {
+    return true;
+  }
+
+  for (let counter = 2; counter <= max; counter++) {
+    if (n % counter === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export default App;
+```
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/319/image.png)
+
+위 코드를 요약하자면 다음과 같습니다.
+
+- `selectedNum`인 숫자, 작은 단일 상태를 가집니다.
+- `for` 반복문을 사용하여 수동으로 0과 `selectedNum` 사이의 모든 소수를 계산합니다.
+- controlled 숫자 input을 렌더링하고 있어서 사용자는 `selectedNum`를 변경할 수 있습니다.
+- 사용자에게 계산된 모든 소수를 보여줍니다.
+
+**이 코드는 상당히 많은 계산이 필요합니다.** 사용자가 큰 숫자로 `selectedNum`에 입력하면 _수 만개의_ 숫자에 대해 각각 소수인지 확인해야 합니다. 그리고 위에서 사용한 것 보다 더 효율적인 소수 판별 알고리즘이 있지만 더 많은 계산이 필요합니다.
+
+사용자가 새로운 `selectedNum`을 선택하는 것과 같이 이 계산은 수행되어야 합니다. 그러나 이 계산을 수행할 필요가 없을 때에도 동작하게 된다면 잠재적으로 성능 문제가 발생할 수 있습니다.
+
+예를 들어, 디지털 시계 기능을 추가했다고 가정해봅시다.
+
+```jsx
+import React from 'react';
+import format from 'date-fns/format';
+
+function App() {
+  ...
+  const time = useTime();
+
+  ...
+
+  return (
+    <>
+      <p className="clock">
+        {format(time, 'hh:mm:ss a')}
+      </p>
+      ...
+    </>
+  );
+}
+
+function useTime() {
+  const [time, setTime] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    }
+  }, []);
+
+  return time;
+}
+
+...
+
+export default App;
+```
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/320/image.png)
+
+이제 어플리케이션에는 2개 상태(`selectedNum`, `time`)가 있습니다. 1초마다 `time` 변수는 현재 시간을 반영하기 위해 업데이트 됩니다. 그리고 그 값은 우측 상단에 디지털 시계를 렌더링하기위해 사용됩니다.
+
+**여기에 문제가 있습니다:** _2개의 상태 중 하나_ 라도 값이 바뀔 때, 이 비싼 소수 계산 전체를 다시 실행합니다. 그리고 `time`이 1초마다 바뀌기 때문에 사용자가 숫자를 변경하지 않은 경우에도 **_지속적으로_** 소수 항목을 재생성한다는 것을 의미합니다.
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/321/image.png)
+
+자바스크립트에서 하나의 메인 스레드만 가지고 있으며 매초마다 이 코드를 계속해서 실행하여 _매우매우 바쁘게_ 유지하고 있습니다. 이는 특히 저사양 기기에서 사용자가 다른 작업을 하려고 할 때 어플리케이션이 느려질 수 있다는 것을 의미합니다.
+
+**그러나 이 계산을 "skip" 할 수 있다면 어떨까요?** 만약 우리가 상태에 대해 소수 리스트를 이미 있는 경우, 매번 처음부터 계산하는 대신 해당 값을 다시 사용하지 않을 이유가 있을까요?
+
+이것이 바로 `useMemo` 가 할 수 있는 일입니다.
+
+```jsx
+const allPrimes = React.useMemo(() => {
+  const result = [];
+  for (let counter = 2; counter < selectedNum; counter++) {
+    if (isPrime(counter)) {
+      result.push(counter);
+    }
+  }
+  return result;
+}, [selectedNum]);
+```
+
+`useMemo`는 2개의 argument를 가집니다.
+
+1. 함수로 래핑된 수행할 작업의 코드
+2. 종속성 리스트
+
+마운트하는 동안 이 컴포넌트가 가장 처음으로 렌더링 되면 리액트는 이 함수를 호출하여 로직을 처리합니다. **이 함수에서 반환하는 것이 무엇이든 `allPrimes` 변수에 할당됩니다.**
+
+그러나 모든 후속 렌더링에 대해서는 **리액트는 선택할 수 있습니다.** 다음 중에서:
+
+1. 값을 재계산하기 위해 함수를 다시 호출하거나
+2. _마지막으로_ 작업을 수행했을 때 데이터를 재사용하거나
+
+리액트는 이 질문에 답하기 위해 종속성 리스트를 확인합니다. 이전 렌더링 이후 변경된 사항이 있나요? 만약 그렇다면 리액트는 새로운 값을 계산하기 위해 함수를 재실행합니다. 그렇지 않다면 이전에 계산된 값을 재사용합니다.
+
+**`useMemo`는 본질적으로 작은 캐시와 같으며 종속성은 캐시 무효화 전략과 같습니다.**
+
+이 경우 "`selectedNum`이 변경되는 _그 경우만_ 소수 리스트를 재생성해라" 라고 말하는 것입니다. 컴포넌트가 _다른_ 이유들(예를들어, `time` 상태 값이 변경된다거나) 로 리렌더링 될 때 `useMemo`는 함수를 무시하고 캐시된 값으로 넘겨줍니다.
+
+이것은 일반적으로 **_memoization_** 으로 알려져 있고, 이 hook을 "useMemo"라고 부르는 이유입니다.
+
+### An alternative approach
+
+그래서, `useMemo` hook은 실제로 불필요한 계산을 피하게 도와줄 수 있습니다. 그러나 그것이 _정말_ 최고의 솔루션일까요?
+
+종종 어플리케이션 구조를 다시 잡아서 `useMemo` 사용을 피할 수 있습니다.
+
+```jsx
+import React from 'react';
+
+import Clock from './Clock';
+import PrimeCalculator from './PrimeCalculator';
+
+function App() {
+  return (
+    <>
+      <Clock />
+      <PrimeCalculator />
+    </>
+  );
+}
+
+export default App;
+```
+
+기존 하나의 컴포넌트에서 2개의 새로운 컴포넌트 `Clock`과 `PrimeCalculator`로 분리하였습니다. `App` 에서 분리함으로써 이 2개 컴포넌트는 각각 자체 상태를 관리합니다. 한 컴포넌트에서 리렌더링하더라도 다른 컴포넌트에 영향을 주지 않습니다.
+
+![extract-components.gif](https://files.seonest.net/images/qnfqnfqnf/post/322/extract-components.gif)
+
+상태를 끌어올리는 것에 대해서는 많이 들었지만 더 나은 접근은 **_상태를 아래로 내려버리는 것_** 입니다. 각각 컴포넌트는 단일 책임을 가져야 하며 `App`에서는 완전히 관련없는 2가지 작업을 하고 있습니다.
+
+이것이 항상 선택할 수 있는 것은 아닙니다. 크고, 실제 어플리케이션에서는 많은 상태들이 존재하고 꽤 높게 상태를 **_끌어올려야_** 하지만 아래로 내릴 수 없는 상태가 많이 있습니다.
+
+**이런 경우에는 또 다른 트릭이 있습니다.**
+
+예시를 보겠습니다. `time` 상태를 `PrimeCalculator`보다 위로 끌어올려야 할 _경우_ 를 가정해보겠습니다.
+
+```jsx
+// 순수 컴포넌트로 변경합니다.
+const PurePrimeCalculator = React.memo(PrimeCalculator);
+
+function App() {
+  const time = useTime();
+
+  // 시간에 따른 배경 색깔
+  const backgroundColor = getBackgroundColorFromTime(time);
+
+  return (
+    <div style={{ backgroundColor }}>
+      <Clock time={time} />
+      <PurePrimeCalculator />
+    </div>
+  );
+}
+
+const getBackgroundColorFromTime = (time) => {
+  const hours = getHours(time);
+
+  if (hours < 12) {
+    // A light yellow for mornings
+    return 'hsl(50deg 100% 90%)';
+  } else if (hours < 18) {
+    // Dull blue in the afternoon
+    return 'hsl(220deg 60% 92%)'
+  } else {
+    // Deeper blue at night
+    return 'hsl(220deg 100% 80%)';
+  }
+}
+
+...
+
+```
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/323/image.png)
+
+![extract-with-memo.gif](https://files.seonest.net/images/qnfqnfqnf/post/324/extract-with-memo.gif)
+
+`React.memo`는 컴포넌트를 감싸서 관련없는 업데이트로부터 보호합니다. `PurePrimeCalculator`는 새로운 데이터를 받거나 내부 상태가 변경될 때만 오직 리렌더링 합니다.
+
+이것은 **_pure component_** 로 잘 알려져있습니다. 리액트에게 "해당 컴포넌트는 같은 _input_ 이 주어지면 항상 같은 _output_ 을 만들어낼 것이고 아무것도 바뀌지 않은 경우 리렌더링을 skip할 수 있다"라고 리액트에게 알려줍니다.
+
+`React.memo`는 최근 블로그인 [Why React Re-Renders](https://www.seonest.net/posts/Why-React-Re-Renders) 에 더 자세히 작성되어 있습니다.
+
+---
+
+**더 편리한 접근**
+위 예시에서는 **_import 된_** `PrimeCalculator` 컴포넌트에 `React.memo`를 적용했습니다. 사실 이것은 일반적이지 않습니다. 이해를 위해 동일 파일에 표시되도록 이런 방식을 사용했습니다.
+실제로는 다음과 같이 **_export_** 와 함께 `React.memo`를 적용하는 경우가 많습니다.
+
+```jsx
+// PrimeCalculator.js
+function PrimeCalculator() {
+  /* Component stuff here */
+}
+export default React.memo(PrimeCalculator);
+```
+
+이렇게 하면 `PrimeCaculator` 컴포넌트는 항상 순수(pure)할 것입니다.
+비순수 버전이 필요한 경우 기본 `PrimeCaculator`를 named export할 수 있습니다. 그러나 이렇게까지 할 경우는 없었던 것 같습니다.
+
+---
+
+**여기 흥미로운 관점 전환이 있습니다**: 이전에는 특정 계산 결과를 메모했습니다. 그러나 **_이 경우 대신 전체 컴포넌트를 메모했습니다._**
+
+어느 쪽이든, 더 비싼 계산 작업은 사용자가 새로운 `selectedNum`을 선택할 때마다 재실행 됩니다. 그러나 특정 느린 코드 보다는 더 상위 컴포넌트를 최적화하였습니다.
+
+어느 것이 더 나은 접근이라고 말하는 것이 아닙니다. 각각의 도구는 그에 알맞게 사용해야 합니다. 그러나 이처럼 특정 케이스인 경우에는 저는 이 접근을 더 선호합니다.(`React.memo`)
+
+만약 실제 환경에서 순수 컴포넌트를 사용하려고 한 적이 있다면 이상한 점을 발견할 것입니다: **순수 컴포넌트는 아무것도 변경되지 않은 것처럼 보일 때에도 종종 리렌더링 된다는 것입니다.**
+
+이것은 `useMemo`가 해결하는 두 번째 문제로 나이스하게 이끌어 줍니다.
+
+> **더 많은 alternatives**
+> Dan Abramov가 작성한 [Before you memo()](https://overreacted.io/ko/before-you-memo/)에서 memoization을 수행할 필요가 없도록 `children` 를 사용하여 재구조화하는 또 다른 접근법을 공유합니다.
+
+## Use case 2: Preserved references
+
+> 보존된 참조
+
+아래 예시에서 `Boxex` 컴포넌트를 만들었습니다. 장식 용도로 나열된 색깔을 가진 box 모음을 보여줍니다.
+
+또한 관련되어 있지 않은 상태인 사용자 이름을 만들었습니다.
+
+```jsx
+// App.js
+import React from 'react';
+
+import Boxes from './Boxes';
+
+function App() {
+  const [name, setName] = React.useState('');
+  const [boxWidth, setBoxWidth] = React.useState(1);
+
+  const id = React.useId();
+
+  const boxes = [
+    { flex: boxWidth, background: 'hsl(345deg 100% 50%)' },
+    { flex: 3, background: 'hsl(260deg 100% 40%)' },
+    { flex: 1, background: 'hsl(50deg 100% 60%)' },
+  ];
+
+  return (
+    <>
+      <Boxes boxes={boxes} />
+
+      <section>
+        <label htmlFor={`${id}-name`}>Name:</label>
+        <input
+          id={`${id}-name`}
+          type="text"
+          value={name}
+          onChange={(event) => {
+            setName(event.target.value);
+          }}
+        />
+        <label htmlFor={`${id}-box-width`}>First box width:</label>
+        <input
+          id={`${id}-box-width`}
+          type="range"
+          min={1}
+          max={5}
+          step={0.01}
+          value={boxWidth}
+          onChange={(event) => {
+            setBoxWidth(Number(event.target.value));
+          }}
+        />
+      </section>
+    </>
+  );
+}
+
+export default App;
+```
+
+```jsx
+// Boxes.js
+import React from 'react';
+
+function Boxes({ boxes }) {
+  return (
+    <div className="boxes-wrapper">
+      {boxes.map((boxStyles, index) => (
+        <div key={index} className="box" style={boxStyles} />
+      ))}
+    </div>
+  );
+}
+
+export default React.memo(Boxes);
+```
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/325/image.png)
+
+`Boxex` 는 `React.memo`로 인해 순수 컴포넌트입니다. 이것은 props가 바뀌지 않는 한 리렌더링 되지 않는 다는 것을 의미합니다.
+
+**_그러나_** 사용자 이름이 바뀔 때마다 `Boxes`는 리렌더링 됩니다.
+
+![memo-rerendering.gif](https://files.seonest.net/images/qnfqnfqnf/post/327/memo-rerendering.gif)
+
+음? `React.memo`를 사용했는데 왜 리렌더링이 되는걸까요?
+
+`Boxes` 컴포넌트는 1개 prop(`boxes`)을 가지고 모든 렌더링에서 정확히 동일한 데이터를 제공하는 것처럼 보입니다. `boxes` 배열에 영향을 주는 `boxWidth` 상태를 가집니다만 그것을 바꾸지는 않습니다.
+
+**여기에 문제가 있습니다**: 리액트가 리렌더링 할 때마다 **완전히 새로운 배열**을 만듭니다. 값으로 보면 동일하지만 레퍼런스 측면에서는 그렇지 않습니다.
+
+리액트에 대해서는 잠시 잊고 자바스크립트에 대해 이야기하면 도움이 될 것이라고 생각합니다.
+
+```js
+function getNumbers() {
+  return [1, 2, 3];
+}
+const firstResult = getNumbers();
+const secondResult = getNumbers();
+console.log(firstResult === secondResult);
+```
+
+`firstResult` 와 `secondResult` 가 동일하다고 생각하시나요?
+
+어떤 의미에서는 그렇습니다. 2개 값 모두 동일한 구조 `[1,2,3]` 를 가지고 있습니다. 그러나 `===` 연산자가 실제로 확인하는 것은 아닙니다.
+
+실제로 `===` 는 2개 표현식이 _같은지를 확인합니다._
+
+2개의 다른 배열을 만들었습니다. 그것은 같은 내용을 가지고 있습니다. 그러나 같은 배열은 아닙니다. 일란성 쌍둥이가 같은 사람이 아닌 것과 같은 방식으로 동일한 내용을 가질 수는 있지만 동일한 배열은 아닙니다.
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/328/image.png)
+
+`getNumbers` 함수를 호출할 때마다 컴퓨터 메모리에 저장되는 고유하고 완전히 새로운 배열을 만듭니다. 만약 여러번 호출한다면, 메모리에 이 배열의 여러 복사본을 저장합니다.
+
+간단한 데이터 타입(string, number, boolean...)은 값으로 비교할 수 있습니다. (compared by value)
+그러나 배열과 객체들은 레퍼런스로만 비교됩니다. (compared by reference)
+이 내용에 대한 부분은 Dave Ceddia의 블로그인 [A Visual Guide to References in JavaScript](https://daveceddia.com/javascript-references/)를 확인하세요.
+
+**다시 리액트로:** `Boxes` 컴포넌트는 자바스크립트 함수입니다. 렌더링 될 때 그 함수는 호출됩니다.
+
+```jsx
+// 이 컴포넌트가 렌더링될 때마다 이 함수가 호출됩니다.
+function App() {
+  // ...그리고 완전히 새로운 배열을 만듭니다.
+  const boxes = [
+    { flex: boxWidth, background: 'hsl(345deg 100% 50%)' },
+    { flex: 3, background: 'hsl(260deg 100% 40%)' },
+    { flex: 1, background: 'hsl(50deg 100% 60%)' },
+  ];
+  // ...이 컴포넌트에 prop로 넘겨줍니다.
+  return <Boxes boxes={boxes} />;
+}
+```
+
+`name` 상태가 변경될 때 `App` 컴포넌트는 리렌더링 되어 모든 코드가 재실행됩니다. 그래서 완전히 새로운 배열 `boxes`가 만들어지고 `Boxes` 컴포넌트에 전달됩니다.
+
+**그리고 완전히 새로운 배열을 주었기 때문에 `Boxes`는 리렌더링됩니다.**
+
+`boxes` 배열 _구조_ 는 렌더링 사이에 변경도 없고 관련도 없습니다. 리액트가 아는 것은 `boxes` prop이 이전에 본 적 없는(never-before-seen) 새로 생성된 배열을 받았다는 것 뿐입니다.
+
+이 문제를 해결하기 위해 `useMemo` hook을 사용할 수 있습니다.
+
+```jsx
+const boxes = React.useMemo(() => {
+  return [
+    { flex: boxWidth, background: 'hsl(345deg 100% 50%)' },
+    { flex: 3, background: 'hsl(260deg 100% 40%)' },
+    { flex: 1, background: 'hsl(50deg 100% 60%)' },
+  ];
+}, [boxWidth]);
+```
+
+앞에서 본 예와 달리 여기서 소수 계산 비용이 많이 드는 지에 대해 걱정하지 않습니다. 우리의 목표는 단지 특정 배열에 대한 레퍼런스를 보존하는 것입니다.(**_preserve a reference_**)
+
+빨간색 상자의 너비가 사용자에 의해 변경될 때만 `Boxes` 컴포넌트를 리렌더링하기를 원하기 때문에 종속성 리스트에 `boxWidth`를 추가했습니다.
+
+## The useCallback hook
+
+> useCallback
+
+`useMemo`에 대해서는 어느정도 커버한 것 같습니다. `useCallback`는 어떨까요?
+
+**여기 짧은 버전이 있습니다:** 정확히 같은 것이지만, 배열 / 객체 대신에 **_함수_** 에 대한 것입니다.
+
+배열, 객체와 유사하게 함수는 값이 아닌 레퍼런스로 비교됩니다.
+
+```js
+const functionOne = function () {
+  return 5;
+};
+const functionTwo = function () {
+  return 5;
+};
+console.log(functionOne === functionTwo); // false
+```
+
+마찬가지로 컴포넌트 내에 함수를 정의해두었다면 매 번 렌더링될 때마다 고유한 함수가 재생성된다는 것을 의미합니다.
+
+예시를 살펴보겠습니다.
+
+```jsx
+// App.js
+import React from 'react';
+
+import MegaBoost from './MegaBoost';
+
+function App() {
+  const [count, setCount] = React.useState(0);
+
+  function handleMegaBoost() {
+    setCount((currentValue) => currentValue + 1234);
+  }
+
+  return (
+    <>
+      Count: {count}
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        Click me!
+      </button>
+      <MegaBoost handleClick={handleMegaBoost} />
+    </>
+  );
+}
+
+export default App;
+```
+
+```jsx
+// MegaBoost.js
+import React from 'react';
+
+function MegaBoost({ handleClick }) {
+  console.log('Render MegaBoost');
+
+  return (
+    <button className="mega-boost-button" onClick={handleClick}>
+      MEGA BOOST!
+    </button>
+  );
+}
+
+export default React.memo(MegaBoost);
+```
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/329/image.png)
+
+위 예시는 평범한 카운터 어플리케이션을 보여주지만 특별한 "Mega Boost" 버튼이 있습니다. 이 버튼은 카운트 수를 크게 늘리도록 해줍니다.
+
+`MegaBoost` 컴포넌트는 `React.memo`를 사용했기에 순수 컴포넌트입니다. `count`에 의존하지 않습니다만... **`count`가 바뀔 때마다 리렌더링 됩니다.**
+
+그 전 예시에서도 보았듯이 렌더링 될 때마다 완전히 새로운 함수를 만들어낸다는 것입니다. 3번 렌더링이 된다면, 각기 다른 3개의 `handleMegaBoost` 함수를 만들어냅니다.
+
+위에서 확인한 `useMemo`로 이 문제를 해결할 수 있습니다.
+
+```jsx
+const handleMegaBoost = React.useMemo(() => {
+  return function () {
+    setCount((currentValue) => currentValue + 1234);
+  };
+}, []);
+```
+
+배열을 반환하는 것 대신에 이번엔 **_function_** 을 반환합니다. 그리고 이 함수는 `handleMegaBoost` 변수에 담습니다.
+
+이렇게 하면 잘 동작합니다만... 더 나은 방법이 있습니다.
+
+```jsx
+const handleMegaBoost = React.useCallback(() => {
+  setCount((currentValue) => currentValue + 1234);
+}, []);
+```
+
+`useCallback`는 `useMemo`와 같은 목적으로 동작합니다만 함수를 위해 특별히 만들어졌습니다. 함수를 전달하면 메모하여 렌더링 간에 연결합니다.
+
+다시 말해서 2개의 표현식은 같은 효과를 냅니다:
+
+```jsx
+// This:
+React.useCallback(function helloWorld() {}, []);
+// ...Is functionally equivalent to this:
+React.useMemo(() => function helloWorld() {}, []);
+```
+
+**useCallback는 syntactic sugar** 입니다. callback 함수를 메모화하려할 때 더 나은 표현으로 만들어줍니다.
+
+## When to use these hooks
+
+> 언제 이 hook을 사용해야할까
+
+`useMemo`와 `useCallback`이 어떻게 여러 렌더링 사이에 레퍼런스를 전달하는지, 복잡한 계산을 재사용하는지, 순수 컴포넌트를 손상시키지 않는지 를 확인했습니다. 그러면 **언제, 얼마나 사용해야될까요?**
+
+개인적인 의견으로, 이 hook으로 모든 단일 객체/배열/함수를 감싸는 것은 시간낭비입니다. 대부분의 경우는 큰 이점이 없을 수 있습니다. 리액트는 고도로 최적화되어 있고 리렌더링은 우리가 생각하는 것 만큼 느리거나 비싸지 않습니다.
+
+이 hook을 사용하는 가장 좋은 방법은 문제에 대한 답으로 사용하는 경우입니다. 앱이 느려지는 것을 발견하면 리액트 Profiler를 사용하여 느린 렌더링을 추적할 수 있습니다. 어떤 경우에는 당신의 어플리케이션을 재구조화함으로써 성능을 향상할 수 있습니다. 또 다른 경우에는 `useMemo`와 `useCallback`으로 속도를 높일 수 있습니다.
+
+다시 말해, 저는 이 hook을 선제적으로 적용하는 몇 가지 시나리오가 있습니다.
+
+### Inside generic custom hooks
+
+> 일반 커스텀 hook 내부
+
+저의 가장 좋아하는 작은 커스텀 hook 중 하나는 `useToggle` 입니다. `useToggle`은 `useState` 처럼 거의 정확하게 동일합니다. 단지 상태를 `true`와 `false`를 toggle 하는 hook입니다.
+
+```js
+function App() {
+  const [isDarkMode, toggleDarkMode] = useToggle(false);
+  return <button onClick={toggleDarkMode}>Toggle color theme</button>;
+}
+```
+
+여기서 커스텀 hook을 정의하는 방법입니다:
+
+```js
+function useToggle(initialValue) {
+  const [value, setValue] = React.useState(initialValue);
+  const toggle = React.useCallback(() => {
+    setValue((v) => !v);
+  }, []);
+  return [value, toggle];
+}
+```
+
+`toggle` 함수를 `useCallback`으로 메모하였습니다.
+
+이와 같이 재사용가능한 커스텀 hook을 만들 때, **미래에 어디에 사용될지 모르기 때문에** 가능한 효율적으로 만들려고 합니다. 95%는 과잉일 수 있지만 만약 이 hook을 30~40번 사용하면 어플리케이션 성능을 향상시키는데 도움 될 가능성이 높습니다.
+
+### Inside context providers
+
+> Context Provider 내부
+
+context를 사용하는 어플리케이션에서 데이터를 공유할 때 큰 객체를 `value` 속성으로 전달하는 것이 일반적 입니다.
+
+그래서 일반적으로 이 객체를 메모하는 것이 좋습니다.
+
+```jsx
+const AuthContext = React.createContext({});
+function AuthProvider({ user, status, forgotPwLink, children }) {
+  const memoizedValue = React.useMemo(() => {
+    return {
+      user,
+      status,
+      forgotPwLink,
+    };
+  }, [user, status, forgotPwLink]);
+  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
+}
+```
+
+이것이 이점이 되는 이유는 무엇일까요? context를 사용하는 수십 개의 순수 컴포넌트가 있을 수 있습니다. `useMemo`가 없다면 `AuthProvider`의 부모가 리렌더링되었을 때 모든 컴포넌트가 강제로 리렌더링 되기 때문입니다.
+
+## 마무리하며
+
+이 글은 joshwcomeau 블로그 글을 옮긴 내용입니다.
+
+전편에 포스팅된 "왜 리렌더링이 일어나는가?" 에 대해서 설명한 글과 유사한 흐름으로 작성되었던 것 같습니다.
+
+`useMemo`와 `useCallback`의 컨셉과 사용법은 알고 있었지만 정리가 잘 안됐었는데 이번 기회를 통해 다시 한 번 정리를 하게 된 것 같아서 좋았습니다.
+
+이 분이 상당히 좋은 개발자라고 느껴지는 것은 어려운 내용을 쉽게 풀어서 알려주고자 하는 의도가 글에서 느껴지기 때문이었습니다.
+
+지식도 물론 잘 배웠지만 글을 작성하는 방법에 대해서도 많이 배울 수 있었습니다.

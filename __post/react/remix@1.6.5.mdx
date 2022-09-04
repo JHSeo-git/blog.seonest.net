@@ -1,0 +1,141 @@
+---
+title: 'Remix@1.6.5'
+description: 'Remix 버전이 꾸준하게 릴리즈되고 있으며 다양한 개발자 경험을 제공하고 성능 향상을 위해 업데이트 되고 있습니다. 1.6.5 버전은 loader, action 타입에 대한 편의기능이 업데이트되었습니다.'
+date: '2022-07-24T11:48:58.667Z'
+category: 'react'
+draft: false
+tags: ['React', 'Remix', 'Web']
+---
+
+> 오늘은 간단한 글이 될 것 같아요.
+
+최근 Remix 관련 글을 쓰고나서 Remix를 작게나마 사용해보고 있습니다.
+
+사용하면 할 수록 편한부분도 있고 무지로 인한(또는 기존 개발 관성으로 인한) 불편함도 있습니다.
+
+그렇지만 늘 그렇듯이 대상은 현재에 만족하지 않고 우리와 발맞춰 발전합니다.
+
+Remix 또한 그렇습니다.
+
+빠르게 새로운 기능, 수정 등을 릴리즈하고 있습니다.
+
+1.6.3 버전이 릴리즈 되었을 때 타입 관련 파일이 원하는 대로 export되지 않아 이슈를 달았던 적이 있습니다.
+
+하루도 채 되지도 않아 1.6.4버전이 릴리즈 되었고(그 전부터 이 이슈를 알고 작업 중이었겠죠) 그 문제는 빠르게 해결되었습니다.
+
+최근(10일 전) 1.6.5버전이 릴리즈 되었고 action, loader 와 관련된 타입문제를 더 나은 방향으로 해결하는 기능이 추가되었습니다.
+
+그 부분을 공유하려고 합니다.
+
+## Enhanced types: `ActionArgs`, `LoaderArgs`
+
+> `loader`, `action`
+
+Remix는 화면에 사용될 데이터를 위한 `loader`를 사용하고, 화면에서 서버에게 요청하기 위한 `action`을 route module에서 export하여 사용합니다.
+
+```tsx
+import type { ActionFunction, LoaderFunction } from '@remix-run/[rnutime]';
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  // ...
+};
+
+export const action: ActionFunction = async ({ request }) => {
+  // ...
+};
+```
+
+위 코드에서 보면 함수 type을 지정하여 사용합니다. 현재 모든 튜토리얼에도 이 방식으로 안내하고 있습니다.
+
+`loader`(or `action`)에서 response하는 Data 또한 type을 지정하여 클라이언트 코드에서도 사용하기 위해 다음과 같이 안내합니다.
+
+```tsx
+// app/routes/posts/$id.tsx
+
+type LoaderData = {
+  title: string;
+}
+
+export const loader: LoaderFunction = async ({ params }) => {
+  const post = db.Posts.findUnique(...);
+  return json<LoaderData>({ title: post.title });
+}
+
+export default function PostRoute() {
+  const { title } = useLoaderData<LoaderData>();
+
+  return (
+    <h1>Post Title: {title}</h1>
+  );
+}
+```
+
+`type LoaderData`를 선언하여 `json` 함수에 제네릭을 주어 사용하고, 클라이언트 코드에서 마찬가지로 `useLoaderData` hook에도 마찬가지로 사용합니다.
+
+처음엔 이렇게 하는 것이 크게 문제가 되지 않다고 생각했습니다.
+
+그런데 Remix를 사용하다보니 익숙하지 않아서 코드를 자주 변경해야될 일이 생겼고 그에 따라 type 부분도 바꿔주어야 했습니다.
+
+그러다보니 항상 제네릭에 사용될 `LoaderData` 타입을 신경써야 했고 이 부분이 살짝 번거롭다는 생각을 하고 있었습니다.
+
+이번에 추가된 `ActionArgs`와 `LoaderArgs`는 함수 타입이 아닌 loader와 action의 param 타입을 지정할 수 있게 했습니다.
+
+이를 통해서 더 이상 제네릭타입을 위한 `LoaderData`를 정의하고 관리하지 않게 해줍니다.
+
+```diff
+// app/routes/posts/$id.tsx
+
+- type LoaderData = {
+-   title: string;
+- }
+
+- export const loader: LoaderFunction = async ({ params }) => {
+-   const post = db.Posts.findUnique(...);
+-   return json<LoaderData>({ title: post.title });
+- }
++ export const loader = async ({ params }: LoaderArgs) => {
++   const post = db.Posts.findUnique(...);
++   return json({ title: post.title });
++ }
+
+export default function PostRoute() {
+-   const { title } = useLoaderData<LoaderData>();
++   const { title } = useLoaderData<typeof loader>();
+
+  return (
+    <h1>Post Title: {title}</h1>
+  );
+}
+```
+
+이는 기존에 사용했던 코드와 정확히 동일하게 동작합니다.(타입을 포함해서)
+
+`typeof loader`를 통해서 loader return type을 infer하여 사용합니다.
+그 결과 `type LoaderData`와 같은 제네릭을 위한 타입을 정의하지 않아도 됩니다.
+
+오... 좋습니다.
+
+아직 Remix를 잘(?) 사용하고 있지는 않지만 조금씩 변화를 관찰하고 체험하고 있다는 생각이 듭니다.
+
+그래서 뭔가 좀 더 정감(?)이 가게 되는 것 같습니다.
+(~~더 잘 쓰고 싶다랄까...~~)
+
+앞으로도 더 나은 프레임워크가 될 것 같다는 느낌이 드는 부분입니다.
+
+## 마무리하며
+
+뭔가 살짝 불편했던 부분이 해결되니 신기하기도 하고 대다수 개발자들이 비슷한 느낌을 가지고 있었다라는 생각을 가지기도 했습니다.
+
+이것을 보면서 아주 큰 변화는 아니지만 이러한 작은 변화가 결국 더 나은 라이브러리, 프레임워크로 만드는데 크게 영향을 미친다는 생각이 듭니다.
+
+관심있거나 재밌는 레파지토리가 있다면 github watch 기능을 이용해서 알림을 받아보는 것도 좋은 것 같습니다.
+
+|                                                                             |                                                                             |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| ![image.png](https://files.seonest.net/images/qnfqnfqnf/post/307/image.png) | ![image.png](https://files.seonest.net/images/qnfqnfqnf/post/308/image.png) |
+
+> 저는 주로 releases notification 해놓고 있습니다.
+
+## reference
+
+- https://github.com/remix-run/remix/releases/tag/remix%401.6.5

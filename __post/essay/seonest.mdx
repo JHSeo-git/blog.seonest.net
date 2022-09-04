@@ -1,0 +1,150 @@
+---
+title: 'SEONEST'
+description: 'seonest 사이트에 대한 기능과 내용을 조금 설명해보았습니다.'
+date: '2021-07-27T11:08:12.739Z'
+category: 'essay'
+draft: false
+tags: ['Blog', 'SEONEST']
+---
+
+> 이 글은 2021.10.29에 업데이트 되었습니다.
+
+제가 어떤 기능들로 포스팅 하는지 작성해보려고 합니다.
+
+## SEONEST
+
+원래 사이드 프로젝트 명으로는 catch-a-nest라는 이름을 썼었는데 '둥지를 잡자?'라는 마음상태를 있는 그대로 만들어서 뜻은 그렇게 깊지는 않습니다.
+
+의역 해보자면 `내 스스로 둥지를 잡아보자` 또는 `내 둥지` 라는 뜻으로 지었습니다.(성이 `서` 이기도 해서...)
+
+2021년 10월 경 스타일 수정, pages개선, 컴포넌트 개선 등을 포함하여 리팩토링을 진행했습니다.
+스타일의 경우 기존 `emotion`을 사용하는 부분을 모두 `stitches.js`로 변경하고, style token을 재정의, 다크모드 적용 등 많진 않지만 변화가 있었습니다.
+
+![main.png](https://files.seonest.net/images/qnfqnfqnf/post/94/image.png)
+![main-dark.png](https://files.seonest.net/images/qnfqnfqnf/post/95/image.png)
+
+## 로그인
+
+초기 컨셉을 [netlify-cms](https://www.netlifycms.org/) 에 영감을 받아 진행했습니다.
+
+### /admin
+
+netlify-cms 에서는 `/admin`을 통해서 cms에 접근할 수 있습니다.
+
+저 또한 그런 방식을 사용했습니다.
+
+![admin-page.png](https://files.seonest.net/images/qnfqnfqnf/post/84/image.png)
+
+### oauth
+
+별도로 이메일 로그인 처럼 회원가입과 로그인 기능을 백엔드에 두지 않고, oauth로만 로그인을 관리하도록 했습니다.
+
+여러가지 이유가 있지만, 시간을 절약하고 보안상으로도 괜찮은 방법을 생각하다보니 이런 방식을 사용했습니다.
+
+단지 현재는 구글**만** oauth를 통해 로그인이 가능하게끔 해놓았습니다.
+
+원래는 로그인 시에 해당 oauth 계정이 앱에 존재 하지 않는다면 자동으로 추가하고 로그인 되도록 로직은 만들어놓았지만 admin 계정을 별도로 만들어 그 계정만 접근할 수 있도록 해놓았습니다.~~(제 구글 계정만 로그인이 가능하답니다...)~~
+
+## 글쓰기
+
+![write1.png](https://files.seonest.net/images/qnfqnfqnf/post/85/image.png)
+![write3.png](https://files.seonest.net/images/qnfqnfqnf/post/87/image.png)
+
+로그인을 하게 되면 몇가지 추가적으로 보이는 버튼이 있습니다.
+
+글쓰기와 글수정, 글삭제 등을 할 수 있는 link나 버튼입니다.
+
+## 에디터
+
+예전부터 일을 하거나 공부를 할 때 개발블로그를 많이 찾아보곤 했습니다.
+
+그 중에서 nhn toast 팀 개발블로그를 관심있게 많이 봤었는데 그 글 중에 toast팀에서 개발하고 있는 [markdown editor 에 대한 글](https://ui.toast.com/weekly-pick/ko_20200320)을 보았고 괜찮은 것 같아서 사용해보았습니다.
+
+처음 사용할 땐 2.0 버전 이었는데 중간에 3.0버전이 업그레이드 되어 저도 migration을 진행했었습니다.
+(이미지 hook 커스텀에 대해 오류가 잠깐 있었지만 3.0.1이 되면서 수정되었습니다.)
+
+현재는 3.1.1이 릴리즈되었습니다.
+
+![editor.png](https://files.seonest.net/images/qnfqnfqnf/post/89/image.png)
+
+## nhn/tui.editor
+
+> GFM Markdown and WYSIWYG Editor - Productive and Extensible
+> _- https://github.com/nhn/tui.editor_
+
+기능적으로나 사용자 경험으로나 뛰어난 에디터라고 생각합니다.
+react 에서도 사용할 수 있게 라이브러리를 지원해주고 있습니다.
+
+무엇보다 가장 마음에 들었던 건 preview auto scrolling이 정확하게 잘 된다는 점이었습니다.
+
+글을 길게 작성하게 될 경우가 있는데 간단하게라도 preview 모습을 보면서 작업을 해야 하는데 이 기능이 도움이 많이 되는 것 같습니다.
+
+그리고 블로그 특성 상 이미지를 첨부를 많이 하게 되는데 그 부분에서도 `hooks`를 통해 `addImageBlobHook` 함수를 통해 미들웨어처럼 사용할 수 있게 제공되어 있어 쉽게 사용하기 좋았습니다.
+
+`code` 하이라이트도 지원이 되며 `prism.js`를 통해 지원하는 플러그인을 설치를 하여 적용할 수 있습니다.
+
+![image-hook.png](https://files.seonest.net/images/qnfqnfqnf/post/93/image.png)
+
+다만 스타일 관련 부분은 css를 직접 import하여 편하게 쓸 수 있지만 자기 취향대로 변경하기 위해서는 override하기 위해서 class명을 찾아가며 수정할 수는 있습니다.
+
+dark mode경우도 css가 별도로 지원합니다만 저는 내부 테마 token 적용을 위해 override해서 사용했습니다.
+
+## 저장
+
+![post-save.png](https://files.seonest.net/images/qnfqnfqnf/post/90/image.png)
+
+간단한 설명을 추가할 수 있고 post에 대한 thumbnail을 저장할 수 있게 해놓았습니다.
+
+## 임시저장
+
+중간중간 언제 어디서든 작성할 수 있도록 임시저장 기능을 넣었습니다.
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/91/image.png)
+
+이미 publish된 글에도 임시저장을 할 수 있고, 수정을 했을 시 임시저장된 글이 있으면 불러올지 말지 결정할 수 있습니다.
+(velog 사이트에서 임시저장에 대한 기능을 보고 좋은 것 같아서 만들어보았습니다.)
+
+## Preview
+
+@toast-ui/editor는 좋은 preview를 제공합니다.
+그대로 post detail 페이지에 써도 상관은 없지만 좀 더 다양한 remark, rehype plugin 적용과 컴포넌트 적용 등을 위해 [react-markdown](https://github.com/remarkjs/react-markdown)을 사용했습니다.
+
+그래서 editor에서 글을 쓰고 toast-ui/editor preview 뿐만아니라 `react-markdown`에 대한 preview를 보기 위해 컴포넌트를 적요하였습니다. (post detail page에 동일하게 들어갑니다.)
+
+![preview.png](https://files.seonest.net/images/qnfqnfqnf/post/92/image.png)
+
+## 다크모드
+
+`@radix-ui/colors`를 통해 다크모드를 구현하였습니다.
+해당 라이브러리에는 동일한 color명에 해당하는 light, alpha-light, dark, alpha-dark 이렇게 4개의 palette를 제공해줍니다.
+
+이를 이용하여 light theme과 dark theme에 동일한 color명이지만 모드에 따라 light color와 dark color를 가지게 하여 적용하는 방법을 사용하였습니다.
+
+![dark.png](https://files.seonest.net/images/qnfqnfqnf/post/96/image.png)
+![dark-editor.png](https://files.seonest.net/images/qnfqnfqnf/post/97/image.png)
+
+## slug
+
+> slug: A slug is a part of the URL when you are accessing a resource.
+>
+> _- [what is a slug](https://stackoverflow.com/questions/19335215/what-is-a-slug)_
+
+내부적으로는 post에 대한 생성은 id가 key인 스키마이지만 url이나 외부적으로 보이는 부분은 전부 slug를 통해 사용합니다.
+
+unique한 slug를 위해 로직을 추가하고 사용하기 때문에 중복되는 slug인 경우에는url상에서 달라질 수 있습니다.
+
+## 권한
+
+글쓰기, 글수정 등은 로그인 되어 있지 않으면 접근하지 못하도록 막아야 합니다.
+
+전역 상태인 user 상태를 보고 authentication을 체크한 뒤에 401 페이지를 렌더링 하게 합니다.
+
+![401.png](https://files.seonest.net/images/qnfqnfqnf/post/99/image.png)
+
+## 마치며
+
+> 이 전체에 대한 소스는 [제 github](https://github.com/JHSeo-git/catch-a-nest) 에서 보실 수 있습니다.
+
+많은 기능들이 있는 것은 아니지만 글을 쓸 때 어떻게 작성하는지 정리해보고자 글을 적어보았습니다.
+
+계속해서 기능들이 추가되거나 작성되지 않는 기능들을 더 넣도록 이 글을 업데이트 해나갈 예정입니다.

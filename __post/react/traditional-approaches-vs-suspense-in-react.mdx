@@ -1,0 +1,326 @@
+---
+title: 'Traditional Approaches vs Suspense in React'
+description: 'React에서 Data Fetch를 다루는 전통적 방법과 Suspense를 사용하는 방법을 비교해봅니다.'
+date: '2022-04-17T23:22:56.576Z'
+category: 'react'
+draft: false
+tags: ['React', 'Web']
+---
+
+> React에서 Data Fetch를 좀 더 이해하기 위해 다음 글을 직접 예시로 작성해보고 내용을 옮겨보았습니다.
+> https://17.reactjs.org/docs/concurrent-mode-suspense.html#traditional-approaches-vs-suspense
+
+오랫동안 이해가 되지 않던 개념이나 문제들이 그 다음 문제를 해결하면서 같이 이해가 되었던 적이 있지 않았나요?
+
+저는 종종 그런 경우가 있었습니다.
+
+이번에는 React에서 Data Fetch를 다루는 방법을 좀 더 이해하고 잘 다루기 위해 Suspense를 포함한 여러 방법에 대해 알아보고자 합니다.
+
+## 들어가면서
+
+React(뿐만아니라 Web Client 프로그램)에서 Data를 fetch하는 방식은 다양하게 있습니다.
+
+각 방식마다 사용자 경험 향상을 위한 여러 방법들이 존재했습니다. 비동기 Fetch, Data State를 관리하기 위한 방대한 보일러플레이트(redux, mobx 등)를 만들어야 할 경우도 있었습니다.
+
+또한, 더 나은 UX와 DX를 제공하기 위한 다양한 기능들을 가진 tool([react-query](https://react-query.tanstack.com/), [swr](https://swr.vercel.app/ko)등)이 나왔고 개발자들은 그 중에 더 나아보이는 tool을 사용하거나 자신들만의 무언가를 만들어 사용합니다.
+
+그러나 React 18에 Suspense가 공식 Release되었고, Data Fetch를 선언적으로 다룰 수 있고 더 쉽게 접근할 수 있고 더 나은 사용자 경험을 제공할 수 있게 되었습니다.
+
+## Data Fetching 접근 방식
+
+- **Fetch-on-render**(ex: useEffect 안에 fetch): 컴포넌트가 렌더링되고 난 뒤에 effect와 lifecycle 내에서 data를 fetching하는 것을 뜻합니다. 이 접근법은 보통 "waterfall"로 이끕니다.
+- **Fetch-then-render**(ex: Suspense를 사용하지 않는 Relay): 최대한 일찍 다음 화면을 위한 전체 data를 fetching하는 것을 뜻합니다. data가 준비되었을 때 다음 스크린이 그려집니다. 이는 data가 도착할 때가지 아무것도 못한다는 것을 의미합니다.
+- **Render-as-you-fetch**(ex: Suspense를 사용하는 Relay, React): 최대한 일찍 다음 화면에 사용될 전체 data를 fetching하는 것을 뜻합니다. 그와 동시에 다음 화면을 렌더링합니다(~~네트워크 응답이 오기 전에~~). data stream을 통해서 React는 data가 완전히 fetch될 때까지 해당 data를 필요로 하는 컴포넌트의 렌더링을 재시도합니다.
+
+3개로 간단한게 나누어서 설명했지만, 실제로는 여러 방법들을 섞어가며 문제를 해결합니다. 그렇지만 서로간의 tradeoff를 잘 비교할 수 있도록 분리하여 생각해보겠습니다.
+
+여러 예제를 이용하면 더 이해하기 쉬울 것 같아 몇 가지 예제를 공식 문서에서 가져와서 동작하면서 이해보려고 합니다.
+
+> React Docs: [concurrent-mode-suspense](https://ko.reactjs.org/docs/concurrent-mode-suspense.html#approach-1-fetch-on-render-not-using-suspense)
+> Example Repo: https://github.com/JHSeo-git/react-hello-world/tree/main/apps/ex-fetch-render
+
+### 1. Fetch-on-render (Suspense 사용안함)
+
+> React 에서 흔히 사용되는 접근법이고, 저 또한 대부분의 프로젝트에 사용하고 있었습니다.
+
+직역하자면 "렌더링 후에 Fetch" 라고도 할 수 있습니다.
+
+React에서는 가장 흔한 방식이고 useEffect를 이용해 data fetch를 다룹니다.
+
+```js
+useEffect(() => {
+  fetchSomething();
+}, []);
+```
+
+useEffect를 통해서 fetch된 data를 state에 업데이트하여 화면에 렌더링 하도록 하는 방식입니다.
+
+예제에는 2개의 fetch를 사용하고, 순차적으로 호출됩니다.
+
+```ts
+function ProfileTimeline() {
+  const [posts, setPosts] = useState<PostT[] | null>(null);
+
+  useEffect(() => {
+    fetchPosts<PostT[]>(2000).then((p) => setPosts(p));
+  }, []);
+
+  if (posts === null) {
+    return <h2>Loading posts...</h2>;
+  }
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}
+
+function Profile() {
+  const [user, setUser] = useState<UserT | null>(null);
+
+  useEffect(() => {
+    fetchUser<UserT>(1000).then((u) => setUser(u));
+  }, []);
+
+  if (user === null) {
+    return <h2>Loading profile...</h2>;
+  }
+
+  return (
+    <>
+      <h1 style={{ color: 'purple' }}>Name : {user.name}</h1>
+      <ProfileTimeline />
+    </>
+  );
+}
+
+export default Profile;
+```
+
+위의 코드를 실행하면 아래와 같은 순서로 진행되는 것을 볼 수 있습니다.
+(fetch-on-render를 확실히 구분하기 위해 delay를 넣어 구분했습니다.)
+
+1. fetchUser: user 정보 fetch 시작
+2. loading profile...(1초)
+3. fetchUser: user 정보 fetch 완료
+4. fetchPosts: posts 정보 fetch 시작
+5. loading posts...(2초)
+6. fetchPosts: posts 정보 fetch 완료
+
+fetchUser가 1초가 소요된다면, 1초가 지난뒤에야 `<ProfileTimeline />`이 호출되므로 그제서야 fetchPosts fetch를 시작할 수 있습니다.
+
+![fetch-on-render.png](https://files.seonest.net/images/qnfqnfqnf/post/206/fetch-on-render.png)
+
+이것을 "waterfall" 이라고 부르며, 병렬로 호출될 수 있었으나 의도하지 않게 순차적으로 실행되는 현상입니다.
+
+|                                                                     |                                                                     |                                                                     |
+| :-----------------------------------------------------------------: | :-----------------------------------------------------------------: | :-----------------------------------------------------------------: |
+| ![1](https://files.seonest.net/images/qnfqnfqnf/post/207/image.png) | ![2](https://files.seonest.net/images/qnfqnfqnf/post/208/image.png) | ![3](https://files.seonest.net/images/qnfqnfqnf/post/209/image.png) |
+
+waterfall은 "fetch-on-render" 코드에서 흔히 발생하는 현상입니다. 이를 고치는 것은 가능하지만, 앱이 커짐에 따라 많은 사람들은 이 문제를 근본적으로 막을 수 있는 해결책을 원했습니다.
+
+### 2. Fetch-then-render (Suspense 사용안함)
+
+> Relay의 경우, component가 필요로 하는 data를 정적으로 분석할 수 있는 _fragments_ 로 옮겨서 이 문제를 해결합니다. 이 _fragments_ 는 이후에 하나의 단일 쿼리로 통합됩니다.
+>
+> [Relay](https://relay.dev/): React application에서 GraphQL data를 다루기 위한 Meta(facebook)에서 만든 JavaScript framework 입니다.
+
+대게 라이브러리들은 data fetch를 더 중앙화된 방법을 제공함으로써 waterfall 문제를 해결합니다.
+
+여기에서는 Relay를 예시로 들지 않습니다. 대신, data fetch를 하나로 합쳐, 앞서 설명한 것과 유사한 코드를 예시로 사용합니다.
+
+```ts
+function fetchProfileData<T, U>() {
+  return Promise.all([fetchUser<T>(1000), fetchPosts<U>(2000)]).then(([user, posts]) => {
+    return { user, posts };
+  });
+}
+
+// 최대한 빨리 fetch 하기
+const fetchProfile = fetchProfileData<UserT, PostT[]>();
+
+type ProfileTimelineProps = {
+  posts: PostT[] | null;
+};
+
+function ProfileTimeline({ posts }: ProfileTimelineProps) {
+  if (posts === null) {
+    return <h2>Loading posts...</h2>;
+  }
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}
+
+function Profile() {
+  const [user, setUser] = useState<UserT | null>(null);
+  const [posts, setPosts] = useState<PostT[] | null>(null);
+
+  useEffect(() => {
+    fetchProfile.then((data) => {
+      setUser(data.user);
+      setPosts(data.posts);
+    });
+  }, []);
+
+  if (user === null) {
+    return <h2>Loading profile...</h2>;
+  }
+
+  return (
+    <>
+      <h1 style={{ color: 'purple' }}>Name : {user.name}</h1>
+      <ProfileTimeline posts={posts} />
+    </>
+  );
+}
+
+export default Profile;
+```
+
+Promise.all을 통해 두 요청을 병렬로 요청하여 동시에 fetch를 시작합니다.
+그래서 위의 코드를 실행하면 아래와 같은 순서로 진행되는 것을 볼 수 있습니다.
+
+1. fetchProfileData: user 정보 fetch 시작
+2. fetchProfileData: posts 정보 fetch 시작
+3. loading profile... , loading posts... (2초)
+4. fetchProfileData: user 정보 fetch 완료
+5. fetchProfileData: posts 정보 fetch 완료
+
+![fetch-then-render](https://files.seonest.net/images/qnfqnfqnf/post/210/image.png)
+
+|                                                                     |                                                                     |
+| :-----------------------------------------------------------------: | :-----------------------------------------------------------------: |
+| ![1](https://files.seonest.net/images/qnfqnfqnf/post/211/image.png) | ![2](https://files.seonest.net/images/qnfqnfqnf/post/212/image.png) |
+
+기존에 존재하던 "waterfall" 현상은 고쳤지만, 의도하지 않은 또다른 문제를 만들었습니다.
+
+Promise.all을 사용하는 과정에서 _모든_ data fetch가 완료되기를 기다려야 합니다.
+user fetch는 1초만에 끝났지만, posts fetch는 2초가 걸리기 때문에 2초 동안은 기다려야 render를 할 수 있는 구조입니다.
+
+물론, 이 예시에서는 좀 더 낫게 고칠 수 있습니다.
+Promise.all을 없애고, 두 promise를 별도로 기다리게 하면 됩니다.
+
+```ts
+useEffect(() => {
+  fetchUser<UserT>(1000).then((u) => setUser(u));
+  fetchPosts<PostT[]>(2000).then((p) => setPosts(p));
+}, []);
+```
+
+하지만 이런 방식은 data와 component tree 복잡도가 올라갈수록 점진적으로 더 어려워집니다. data tree내의 어떤 부분이 사라지거나 stale 상황에서는 신뢰할 수 있는 component를 작성하기 어렵습니다. 따라서 모든 data를 fetch한 다음에 렌더링하는 것이 더 현실적인 옵션이 될 수 있습니다.
+
+### 3. Render-as-you-fetch (Suspense 사용)
+
+앞 선 방식에서는 `setState`를 호출하기 전에 data를 fetch 하였습니다.
+
+1. fetch 시작
+2. fetch 완료
+3. 렌더링 시작
+
+Suspense를 사용하면, fetch를 먼저 시작하면서도 2,3번 단계의 순서를 바꿀 수 있습니다.
+
+1. fetch 시작
+2. **렌더링 시작**
+3. **fetch 완료**
+
+**Suspense를 사용하면, 렌더링을 시작하기 전에 응답이 오기를 기다리지 않아도 됩니다.**
+네트워크 요청을 시작하고난 후 _거의 바로_ 렌더링을 시작 시킵니다.
+
+```ts
+// 이것은 Promise가 아닙니다. Suspense를 위해 만든 특별한 객체입니다. (코드를 참고하세요)
+const resource = suspenseProfileData<UserT, PostT[]>();
+
+function ProfileTimeline() {
+  const posts = resource.posts.read();
+  return (
+    <ul>
+      {posts!.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}
+
+function ProfileDetails() {
+  const user = resource.user.read();
+
+  return <h1 style={{ color: 'purple' }}>Name : {user!.name}</h1>;
+}
+
+function Profile() {
+  return (
+    <Suspense fallback={<h2>Loading profile...</h2>}>
+      <ProfileDetails />
+      <Suspense fallback={<h2>Loading posts...</h2>}>
+        <ProfileTimeline />
+      </Suspense>
+    </Suspense>
+  );
+}
+
+export default Profile;
+```
+
+![suspense](https://files.seonest.net/images/qnfqnfqnf/post/213/image.png)
+
+|                                                                     |                                                                     |                                                                     |
+| :-----------------------------------------------------------------: | :-----------------------------------------------------------------: | :-----------------------------------------------------------------: |
+| ![1](https://files.seonest.net/images/qnfqnfqnf/post/214/image.png) | ![2](https://files.seonest.net/images/qnfqnfqnf/post/215/image.png) | ![3](https://files.seonest.net/images/qnfqnfqnf/post/216/image.png) |
+
+위 코드를 실행시키면 렌더링할 때 아래와 같은 일이 나타나는 것을 볼 수 있습니다.
+
+1. 이미 `suspenseProfileData()` 내에서 request를 시작했습니다. 이 함수는 promise를 반환하지 않고 특별한 "resource"를 줍니다.
+   (보다 현실적인 예시에서는 Relay와 같은 data 라이브러리에서 Suspense 통합버전을 제공할 것입니다.)
+2. React는 `<Profile>` 렌더링을 시도합니다. child component로 `<ProfileDetails>` 와 `<ProfileTimeline>`을 반환합니다.
+3. React는 `<ProfileDetails>` 렌더링을 시도합니다. `resource.user.read()`를 호출합니다. 아직 fetch된 data가 없으므로 이 component "일시중단(suspend)" 합니다. React는 이 component를 skip 하고 tree 상의 다른 component 렌더링을 시도합니다.
+4. React는 `<ProfileTimeline>` 렌더링을 시도합니다. `resource.posts.read()`를 호출합니다. 아직 fetch된 data가 없으므로 위와 마찬가지로 "일시중단(suspend)" 하고, 이 component를 skip하고 다른 component 렌더링을 시도합니다.
+5. 렌더링을 시도할 component가 남아있지 않습니다. `<ProfileDetails>`가 "일시중단"된 상태이므로 React는 트리 상에서 `<ProfileDetails>` 위에 존재하는 것 중 가장 가까운 `<Suspense>` Fallbak을 찾습니다. 그것은 `<h2>Loading profile...</h2>` 입니다. 일단 지금으로서는 할 일이 다 끝났습니다.
+
+`resource` 객체는 아직은 존재하지 않지만 결국엔 load될 data입니다.
+`read()`를 호출할 경우, data 가져오거나 또는 component를 "일시중단" 합니다.
+
+data stream을 더 보게 되면, React는 렌더링을 다시 시도하고, 그 때마다 React가 "더 깊은 곳까지" 처리할 수 있게 됩니다. `resource.user`를 불러오고나면, `<ProfileDetails>` 컴포넌트는 성공적으로 렌더링이 이루어지고 `<h2>Loading profile...</h2>` Fallback은 더 이상 필요가 없어집니다. 결국엔 모든 data가 준비될 것이고, 화면 상에는 Fallback이 사라질 것입니다.
+
+이것은 아주 흥미로운 의미를 가집니다.
+단일 요청으로 모든 필요한 data를 충족시킬 수 있는 GraphQL 클라이언트를 사용할지라도, _response를 stream하는 것은 컨텐츠를 더 일찍 보여줄 수 있게 해줍니다_
+
+render-as-you-fetch(fetch _이후_ 가 아닌) 덕분에 `user`가 `posts`보다 더 일찍 나타나게 되더라도 응답이 완료되기도 전에 `<Suspense>` boundary 외부를 "unlock" 할 수 있게 됩니다.
+이전 "fetch-then-render" 방식에서도 "waterfall"은 나타납니다 **: fetch와 렌더링사이에.**
+Suspense는 애초부터 이러한 waterfall을 경험하지 않고 Relay와 같은 라이브러리 들은 이러한 이점을 가지고 있습니다.
+
+코드 상에서 "로딩 여부를 확인하는" `if(...)` 가 제거된 것도 확인하세요.
+단지 보일러플레이트 코드를 제거하는 것 뿐만 아니라 신속한 디자인 변경을 간단하게 해줍니다.
+
+예를 들어, user정보와 posts가 항상 함께 "나타나도록" 해야한다면, 그 둘 사이의 `<Suspense>` 를 제거해주면 됩니다. 또는 각 컴포넌트에게 _고유한_ `<Suspense>`를 부여하여 각각을 독립시켜줄 수도 있습니다.
+
+Suspense는 로딩 상태의 기본 단위를 바꿀 수 있게 해주고 방대한 코드 변경 없이 로딩 상태 위치를 조정할 수 있도록 해줍니다.
+
+## 마무리하며
+
+> 위 예제코드는 [공식문서](https://17.reactjs.org/docs/concurrent-mode-suspense.html#traditional-approaches-vs-suspense)에서 codesandbox로도 제공해주고 있고 제가 작성한 [github repo](https://github.com/JHSeo-git/react-hello-world/tree/main/apps/ex-fetch-render)에서도 확인할 수 있습니다.
+
+fetch-on-render, fetch-then-render, render-as-you-fetch 등등의 말은 지나가다 많이 듣고 보았던거 같은데 막상 설명하기가 어려운 점이 있던걸 보아 제대로 알지 못하고 있었던 것 같습니다.
+
+공식문서를 보는 것이 많이 도움이 된다는 것을 이번에도 배워갑니다.
+
+그리고 직접 만들고 분석하는 것도 도움이 되는 것 같습니다. 완벽하게 이해하기에는 무리지만 나중에 다시 보게될 때 금방 이해하고 넘어갈 수 있지 않을까 싶습니다.
+
+위 마지막 예시에서 보면 fetch(사실은 suspense를 위한 특별한 "객체")를 렌더링을 수행하기전에 실행되는 것을 볼 수 있습니다. (네트워크 탭을 보면 더 확실히 알 수 있습니다.)
+그리고 렌더링을 실제로 시작할 때는 **이미 fetch가 완료된 데이터**를 읽기만 할 뿐입니다.
+
+앱이 커지고 방대해지면 이 개념을 이해하지 못한다면 적용하기 꽤나 까다롭겠다라고 생각한 부분입니다.
+
+다음엔 조금 더 복잡한 앱에서의 early fetch와 같은 것들을 포함해서 더 궁금한 점에 대해서 좀 더 알아보려 합니다.
+
+## reference
+
+- https://github.com/JHSeo-git/react-hello-world/tree/main/apps/ex-fetch-render
+- https://ko.reactjs.org/docs/concurrent-mode-suspense.html#approach-1-fetch-on-render-not-using-suspense
+- https://17.reactjs.org/docs/concurrent-mode-suspense.html#traditional-approaches-vs-suspense

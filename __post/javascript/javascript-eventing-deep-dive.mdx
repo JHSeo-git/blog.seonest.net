@@ -1,0 +1,414 @@
+---
+title: 'JavaScript eventing deep dive'
+description: 'JavaScript에서 이벤트 진행방식을 확인해보면서 조금 더 이해해보았습니다.'
+date: '2021-12-03T13:49:02.946Z'
+category: 'javascript'
+draft: false
+tags: ['JavaScript', 'Event', 'Web']
+---
+
+> https://web.dev/eventing-deepdive/  
+> 해당 포스트를 읽고 정리해본 글입니다.
+
+## 들어가면서
+
+> 이벤트란 시스템에서 일어나는 사건(action) 혹은 발생(occurrence)입니다.
+> 원하는 대로 어떠한 방식으로 응답할 수 있도록 시스템에 말해주는 것입니다.
+> _- [Events_mdn](https://developer.mozilla.org/ko/docs/Learn/JavaScript/Building_blocks/Events)_
+
+자바스크립트에서 많은 이벤트가 있습니다.
+각각의 이용가능한 이벤트들은 **이벤트 핸들러**를 만들어 적용할 수 있으며, 이를 통해 우리가 원하는 동작을 이벤트가 발생했을 때 프로그래밍 할 수 있습니다.
+(_이벤트 핸들러는 이벤트 리스너라고도 불립니다._)
+
+우리는 이 행위를 **이벤트 핸들러를 등록** 했다고 말합니다.
+
+```js
+window.addEventlistner('click', function (e) {
+  console.log(e);
+});
+```
+
+![window-event](https://files.seonest.net/images/qnfqnfqnf/post/120/image.png)
+
+> 웹 이벤트(DOM 이벤트)는 코어 자바스크립트 언어의 일부가 아닙니다.
+> 브라우저에 내장된 API의 일부로서 정의됩니다.
+> ![browser](https://images.velog.io/images/namezin/post/a41a30f7-b788-44f3-9414-c786a39d666b/eventloop.png)
+
+## preventDefault, stopPropagation
+
+> 헷갈리기 쉬운 딱 그거
+
+단순한 HTML 구조에 이벤트 처리는 간단하게 처리할 수 있습니다.
+그러나 Element들이 층층이 쌓여 있을 때 이벤트 처리는 조금 더 복잡해집니다.
+
+이 경우 일반적으로 개발자는 `stopPropagation()` 이나 `preventDefault()`를 사용하여 해결합니다.
+
+그러나 (_저도 마찬가지지만_) 정확히 이해하고 쓴다기보단 둘 중 하나를 써보고 되지 않으면 나머지 다른 하나를 쓰면서 원하는 대로 동작되면 `Gotcha!` 하고 넘어가버리는... 이런 경우에 있다면 이 글이 도움이 되지 않을까 싶습니다.
+
+우선 깊게 들어가기 전에 자바스크립트에서 두 가지 종류의 이벤트 처리에 대해 간략히 보겠습니다.
+
+- 이벤트 캡쳐링(Capturing)
+- 이벤트 버블링(Bubbling)
+
+## 이벤트 스타일
+
+> 이벤트 버블링, 이벤트 캡쳐링
+
+모든 최신 브라우저는 이벤트 캡쳐링을 지원하지만 개발자는 거의 사용하지 않습니다.
+이벤트 캡쳐링은 넷스케이프가 원래 지원한 유일한 이벤트였습니다.
+
+> 넷스케이프: 월드 와이드 웹의 태동기를 대표하는 웹 브라우저. 많은 우여곡절을 거쳐 현재는 모질라를 거쳐 파이어폭스가 넷스케이프의 웹 브라우저 기능을 모두 흡수한 상태
+
+그에 비해 MS Internet Explore는 이벤트 캡쳐링을 전혀 지원하지 않고 이벤트 버블링만 지원했습니다. W3C가 만들어졌을 때 두 가지 이벤트 스타일에서 모두 장점을 발견했고 브라우저가 `addEventListener` 메서드에 대해 **세 번째 매개변수**를 통해 두 가지 모두를 지원해야 한다고 선언했습니다.
+
+```js
+element.addEventListner('click', handleClick, { capture: true | false });
+```
+
+options에 capture 속성이 만들어졌고, 기본값은 `false` 로 이벤트 버블링이 사용됨을 의미합니다.
+
+캡쳐링과 버블링을 이해하기에 앞서서 브라우저에서 이벤트를 진행하는 순서(phase)에 대해서 이해 할 필요가 있습니다.
+
+## 이벤트 Propagation Phase
+
+> _- [Event.eventPhase_mdn](https://developer.mozilla.org/ko/docs/Web/API/Event/eventPhase)_
+
+![event-phase](https://files.seonest.net/images/qnfqnfqnf/post/122/image.png)
+
+```js
+var phase = event.eventPhase;
+```
+
+이벤트 Phase는 발생한 순서에 대한 지정된 정수값을 반환합니다.
+
+총 4가지의 단계가 있으며 다음과 같습니다.
+
+1. **Event.NONE(value: 0)**: 아무런 이벤트도 발생하지 않았을 때입니다.
+2. **Event.CAPTURING_PHASE(value: 1)**: 이벤트가 상위 개체에서 아래 개체로 전파됩니다. `window`, `document` 에서 시작하여 대상 Element의 부모에 도달할 때까지 요소들을 통과할 때 입니다. 이 단계에서 `EventTarget.addEventListener()`가 호출될 때 캡쳐 모드(`capture: true`)에 있는 `Event listeners`가 트리거 됩니다.
+3. **Event.AT_TARGET(value: 2)**: 이벤트가 `EventTarget`에 도작했을 때입니다. 이 단계에서 등록된 이벤트 리스너가 호출됩니다. `Event.bubbles`가 `false` 라면 이 단계가 완료된 다음 이벤트 Phase는 종료됩니다.
+4. **Event.BUBBLING_PHASE(value: 3)**: 이벤트가 역순으로 대상의 조상을 통해 전파될 때입니다. `EventTarget`의 부모부터 시작해서, `window`를 포함하는 단계까지 도달합니다. 이 부분이 `이벤트 버블링`으로 알려져 있으며, `Event.bubbles`가 `true`일 때만 발생합니다. 이 프로세스 중에 이 단계에 등록된 `Event listeners`가 트리거 됩니다.
+
+예시를 통해 좀 더 확실히 이해보겠습니다.
+
+### Example
+
+```html
+<h4>Event Propagation Chain</h4>
+<input type="checkbox" id="chCapture" />
+<label for="chCapture">Use Capturing</label>
+<div id="d1">
+  d1
+  <div id="d2">
+    d2
+    <div id="d3">
+      d3
+      <div id="d4">d4</div>
+    </div>
+  </div>
+</div>
+<div id="divInfo"></div>
+```
+
+```js
+var clear = false,
+  divInfo = null,
+  divs = null,
+  useCapture = false;
+window.onload = function () {
+  divInfo = document.getElementById('divInfo');
+  divs = document.getElementsByTagName('div');
+  chCapture = document.getElementById('chCapture');
+  chCapture.onclick = function () {
+    RemoveListeners();
+    AddListeners();
+  };
+  Clear();
+  AddListeners();
+};
+
+function RemoveListeners() {
+  for (var i = 0; i < divs.length; i++) {
+    var d = divs[i];
+    if (d.id != 'divInfo') {
+      d.removeEventListener('click', OnDivClick, true);
+      d.removeEventListener('click', OnDivClick, false);
+    }
+  }
+}
+
+function AddListeners() {
+  for (var i = 0; i < divs.length; i++) {
+    var d = divs[i];
+    if (d.id != 'divInfo') {
+      if (chCapture.checked) d.addEventListener('click', OnDivClick, true);
+      else d.addEventListener('click', OnDivClick, false);
+      d.onmousemove = function () {
+        clear = true;
+      };
+    }
+  }
+}
+
+function OnDivClick(e) {
+  if (clear) {
+    Clear();
+    clear = false;
+  }
+  if (e.eventPhase == 2) e.currentTarget.style.backgroundColor = 'red';
+  var level =
+    e.eventPhase == 0
+      ? 'none'
+      : e.eventPhase == 1
+      ? 'capturing'
+      : e.eventPhase == 2
+      ? 'target'
+      : e.eventPhase == 3
+      ? 'bubbling'
+      : 'error';
+  divInfo.innerHTML += e.currentTarget.id + '; eventPhase: ' + level + '<br/>';
+}
+
+function Clear() {
+  for (var i = 0; i < divs.length; i++) {
+    if (divs[i].id != 'divInfo') divs[i].style.backgroundColor = i & 1 ? '#f6eedb' : '#cceeff';
+  }
+  divInfo.innerHTML = '';
+}
+```
+
+![ex1](https://files.seonest.net/images/qnfqnfqnf/post/123/image.png)
+`d1`부터 `d4`까지 id를 가진 계층적 구조를 가진 div 요소를 만들었습니다.
+
+eventPhase를 확인하여 Phase Chain을 확인해보면 좀 더 이해가 될 수 있을 것 같습니다.
+
+### capture: false
+
+```js
+d.addEventListener('click', OnDivClick, false);
+```
+
+capturing을 사용하지 않고 `d4`를 눌러보면 어떻게 될까요?
+capturing을 사용하지 않기 때문에 위에서 아래로 내려오는 capturing 단계에서는 event가 트리거 되지 않고, target phase에서 트리거 되고 bubbling 시에 이벤트가 트리거 됩니다.
+
+![ex2](https://files.seonest.net/images/qnfqnfqnf/post/124/image.png)
+
+### capture: true
+
+```js
+d.addEventListener('click', OnDivClick, true);
+```
+
+capturing을 사용하면 위에서 아래로 내려오는 capturing 단계에서 등록된 event가 트리거되고, target까지 내려간 다음 bubbling 시에는 이벤트가 트리거 되지 않습니다.
+![ex3](https://files.seonest.net/images/qnfqnfqnf/post/125/image.png)
+
+### 전체적으로
+
+```js
+d.addEventListener('click', OnDivClick, true);
+d.addEventListener('click', OnDivClick, false);
+```
+
+![ex4](https://files.seonest.net/images/qnfqnfqnf/post/128/image.png)
+
+capture: true, capture: false를 각각 가진 이벤트를 2번 등록해두었을 땐 위와 같이 예상한 대로 chain에 따라 이벤트가 propagation되는 걸 볼 수 있습니다.
+
+위 예시를 통해서 DOM Event가 어떻게 이벤트가 propagation 되는지 조금은 더 이해할 수 있었던 것 같습니다.
+
+## 이벤트 캡쳐링
+
+위 예시도 보았지만 모든 이벤트는 `window`에서 시작하여 먼저 캡쳐링 단계를 거칩니다.
+
+```js
+document.getElementById('C').addEventListener(
+  'click',
+  function (e) {
+    console.log('#C was clicked');
+  },
+  true
+);
+```
+
+위 이벤트(캡쳐를 true로 등록한)가 있다고 생각하고 차근차근 다시 살펴보겠습니다.
+
+`window` => `document` => `html` => `body` => ... => `EventTarget(여기서는 id='C'인 요소)`
+
+클릭 이벤트를 등록하지 않더라도 이벤트는 여전히 `window`에서 시작되고 방금 말한대로 전파(propagation)됩니다.
+
+클릭 이벤트가 `window`부터 시작되고, 브라우저는 `window` 요소에게 다음과 같은 질문을 합니다.
+
+> 캡쳐링 단계에서 이벤트 수신하는게 있습니까?
+>
+> - **아니요**
+
+있다고 한다면 해당하는 이벤트 핸들러(리스너)가 실행됩니다.
+(없으면 처리하지 않고 진행됩니다.)
+
+그 다음 요소가 `document`이고 방금과 마찬가지로 `document` 요소에게 동일한 질문을 합니다.
+
+이 과정이 이벤트 대상 요소까지 도달 할 때까지 동일하게 질문합니다.
+
+> 캡쳐링 단계에서 이벤트 수신하는게 있습니까?
+>
+> - **네**
+
+그리고 이벤트 대상에서는 등록한 이벤트 핸들러가 실행이 됩니다.
+
+## 이벤트 버블링
+
+target phase단계에서 이제 버블링 phase로 넘어갑니다.
+
+위 캡쳐링 순서와는 반대로 target 요소부터 버블링이 시작됩니다.
+
+`C요소` 부터 마찬가지로 비슷한 질문을 합니다.
+
+> 버블링 단계에서 이벤트 수신하는게 있습니까?
+>
+> - **아니요**
+
+여기에 세심하게 주의를 하세요.
+
+위에 예시로 등록한 이벤트는 캡쳐링 단계에서만 트리거하는 이벤트이기 때문에 버블링 단계에서는 호출되지 않습니다.
+(만약 캡쳐링, 버블링 단계에서 동작하도록 2번의 이벤트 핸들러를 연결했다면 2번 호출됩니다.)
+
+하지만 서로 다른 Phase에서 실행된다는 점을 기억하세요.(하나는 캡쳐링 Phase, 다른 하나는 버블링 Phase)
+
+`window` <= `document` <= `html` <= `body` <= ... <= `EventTarget(여기서는 id='C'인 요소)`
+
+> 버블링: 이벤트가 DOM 트리 **"위로"** 이동하는 것처럼 보이기 때문에 **거품**(버블링)이라고 합니다.
+
+`C요소` 부모로 전파되고 마찬가지로 동일하게 질문하면서 `window`까지 전파됩니다.
+
+> 버블링 단계에서 이벤트 수신하는게 있습니까?
+>
+> - **아니요**
+
+이벤트가 이런 Chain을 거치면서 동작한다고는 알아차리기 힘들었는데 꽤나 긴(?) 여정을 가지는 것 같습니다.
+
+대부분의 경우 개발자는 일반적으로 하나의 이벤트 단계(버블링이나 캡쳐링)에만 관심이 있기 때문에(보통 버블링을 주로) 이를 알아차리기는 힘듭니다.
+
+## event.stopPropagation()
+
+> 예상을 해보자면 전파를 막는거니 캡쳐링(또는 버블링) 단계에서 해당 이벤트 핸들러가 트리거되면 전파를 막는거겠지?
+
+`stopPropagation()`은 (대부분의) 기본 DOM이벤트에서 호출 할 수 있습니다.
+(대부분이라고 하면 전부는 아니라는 말입니다.)
+
+> `focus`, `blur`, `load`, `scroll`를 포함해 몇 가지는 propagation을 하지 않습니다. `stopPropagation()`을 호출을 할 순 있지만 원래 전파되지 않기 때문에 별 다른 일은 일어나지 않습니다.
+
+`stopPropagation()`은 문자 그대로 역할을 합니다. 우리가 호출 할 때, Phase에 따라 Chain으로 전파되는 것을 막습니다.
+
+캡쳐링 단계에서 호출하게 된다면 타겟 요소나 버블링 단계에 도달하지 않습니다.
+버블링 단계에서 호출하게 된다면 캡쳐링, 타겟 요소를 거치지만 호출한 시점에서 부터 **버블링UP**은 일어나지 않습니다.
+
+## event.stopImmediatePropagation()
+
+> 이 이상하고 자주 사용되지 않는 방법은 무엇입니까?
+
+`stopPropagation()`과 비슷하지만 하위 항목(캡쳐링) 또는 상위 항목(버블링)으로 이동을 중지하는 것 대신에 단일 요소에 연결된 이벤트 핸들러가 2개 이상인 경우에만 적용됩니다.
+
+`addEventListener`는 동일 요소에 2번 이상 적용이 가능하기 때문에 보통 이런 경우 브라우저에서는 이벤트 핸들러가 연결된 순서대로 실행됩니다.
+
+이럴 경우 `stopImmediatePropagation()`을 실행하면 해당 요소에 첫 번째 이벤트 핸들러를 실행 후 그 이후 핸들러는 실행되지 않습니다.
+
+```html
+<html>
+  <body>
+    <div id="A">I am the #A element</div>
+  </body>
+</html>
+```
+
+```js
+document.getElementById('A').addEventListener(
+  'click',
+  function (e) {
+    console.log('When #A is clicked, I shall run first!');
+  },
+  false
+);
+
+document.getElementById('A').addEventListener(
+  'click',
+  function (e) {
+    console.log('When #A is clicked, I shall run second!');
+    e.stopImmediatePropagation();
+  },
+  false
+);
+
+document.getElementById('A').addEventListener(
+  'click',
+  function (e) {
+    console.log('When #A is clicked, I would have run third, if not for stopImmediatePropagation');
+  },
+  false
+);
+```
+
+![ex5](https://files.seonest.net/images/qnfqnfqnf/post/129/image.png)
+
+위와 같은 예가 있다고 생각해봅시다.
+
+3번째로 등록한 이벤트 핸들러는 2번째로 등록한 이벤트 핸들러에서 `e.stopImmediatePropagation()`을 호출했기 때문에 절대 실행되지 않습니다.
+
+만약 `e.stopImmediatePropagation()` 대신 `e.stopPropagation()` 을 호출 했다면 3번째로 등록한 이벤트 핸들러는 계속 실행될 것입니다.
+
+![ex6](https://files.seonest.net/images/qnfqnfqnf/post/130/image.png)
+
+## event.preventDefault()
+
+> `preventDefault`와 `stopPropagation` 이 둘은 종종 헷갈리지만 실제로는 서로 별로 관련이 없습니다.
+
+`preventDefault()`를 볼 때마다 생각하세요.
+
+> 단어 앞에 `action`을 붙히자!
+> 그래서 그 뜻은 "Default Action을 막는다!" 와 같다.
+
+```html
+<a id="link" href="https://seonest.net">Seonest</a>
+```
+
+위와 같은 anchor 요소가 있다고 생각해봅시다.
+아무런 이벤트 핸들러가 없다면 해당 요소를 눌렀을 때 `Default`인 기본작업이 있습니다.
+해당 요소 클릭을 하면 해당 주소로 이동하게 될 것입니다.
+
+그런데 만약 이 **기본 작업**을 막아야 한다면... 그 때 `preventDefault`를 사용하면 됩니다.
+
+```js
+document.getElementById('link').addEventListener(
+  'click',
+  function (e) {
+    e.preventDefault();
+    console.log('막...막는다!');
+  },
+  false
+);
+```
+
+이 경우 클릭 이벤트 핸들러를 `<a>`요소에 연결하고 기본 작업을 하지 않도록 했습니다.
+따라서 아무데도 이동하지 않고 콘솔에 해당 글자만 찍히게 됩니다.
+
+이 기본 동작을 방지할 수 있는 다른 요소/이벤트 조합은 어떻게 있을까요?
+매우 많기도 하고 때로는 테스트를 해가며 확인해야 합니다.
+
+자주 쓰이는 다음 몇 가지가 있습니다.
+
+- `<form>` + `submit` 이벤트: submit이라는 기본 동작을 막고 원하는 이벤트를 하게 할 때
+- `<a>` + `click` 이벤트
+- `document` + `mousewheel` 이벤트: 이 경우 마우스 휠로 페이지 스크롤을 방지할 때 쓰입니다.(키보드를 이용한 스크롤은 여전히 작동함, `{passive: false}`가 필요함)
+- `document` + `keydown` 이벤트: 이 조합은 치명적입니다. 페이지를 거의 쓸모 없게 만들어 버립니다.
+- `document` + `mousedown` 이벤트: 이 조합은 마우스로 텍스트 강조 표시를 방지하고 마우스를 누른 상태에서 호출하는 "다른 기본 작업"을 방지합니다.
+- `input` + `keypress` 이벤트: 이 경우 사용자가 입력한 문자가 입력되지 않도록 방지합니다.(그러나 이렇게 하지마세요. 사용할 이유는 거의 없습니다.)
+- `document` + `contextmenu` 이벤트: 마우스 우측 클릭이나 길게 누를 때 기본 브라우저 컨텍스트 메뉴가 나타나지 않도록 방지합니다.
+
+## 마무리하며
+
+대~충 이렇게 동작하더라... 라고만 이해하고 있던 자바스크립트 이벤트 진행방식에 대해 이번에 제대로 알고 가는 것 같아 다행이라고 생각합니다.
+
+매 번 헷갈려서 이리저리 해본 경우가 많았었는데, 그 시간을 조금은 줄일 수 있을 것 같습니다.
+
+## reference
+
+> - https://web.dev/eventing-deepdive/
+> - https://www.quirksmode.org/js/events_order.html
+> - https://developer.mozilla.org/ko/docs/Web/API/Event/eventPhase

@@ -1,0 +1,926 @@
+---
+title: 'Remix 맛보기 (1)'
+description: 'Remix에 대해 한 번 살펴보기 위해서 공식 예제를 따라가며 Remix에 대해서 살펴보았습니다. 2개 포스트로 나눠서 작성해보았고 이 글은 첫 번째 글입니다.'
+date: '2022-06-26T12:57:16.955Z'
+category: 'react'
+draft: false
+tags: ['React', 'Remix', 'Web']
+---
+
+React 18이 업데이트 되면서 다양한 SSR 프레임워크에서 발 빠르게 움직이고 있습니다.
+
+많은 회사와 팀이 어떻게 하면 더 쉽게 React SSR을 제공할 것인지 고민하고 그걸 기반으로 프로모션 하고 있습니다.
+
+이 분야의 강자들은 Gatsby, Vercel의 Next.js 정도가 생각나네요. 이 2개는 한 번정도 맛보기도 했고 이 블로그 또한 Next.js로 만들어져있습니다.(~~저의 최애 프레임워크입니다~~)
+
+최근에 또 다른 강자가 나타났는데 Remix 입니다. Remix는 원래 유료로 출시했습니다. 2020년 4월에 Remix를 발표하고 2021년 11월 프로젝트를 오픈 소스화 하면서 정식 릴리즈 되었습니다. (~~정식 릴리즈가 벌써 7개월 정도 되었네요... 얼마전에 들은 것 같은데...~~)
+
+Remix팀은 react-router를 만들기도 했습니다. 현재 이 라이브러리를 안쓰는 react 프로젝트가 없다고 해도 과언이 아닐정도로 많이 사용되는 라이브러리입니다. 최근에 v6가 나오기도 했고, react-router v6가 Remix 파일 기반 라우팅에 사용된다고 하네요.
+(Next.js는 이 부분에서 remix와 차이가 나는데 중첩 레이아웃 + 중첩 라우팅이 next.js에서는 불가능합니다. 그러나 최근에 공개된 [Layouts RFC](https://nextjs.org/blog/layouts-rfc)에 따르면 이 부분을 해결하기 위한 모습을 볼 수 있습니다.)
+
+| **gatsby** vs **next** vs **remix** npm trends                              |
+| --------------------------------------------------------------------------- |
+| ![npm-trend](https://files.seonest.net/images/qnfqnfqnf/post/272/image.png) |
+
+아직은 위 2개에 비해 적은 점유율을 가지지만 사용 후기가 좋아서 한 번 맛보려고 합니다.
+
+> 이 블로그도 업그레이드 할 겸 다양한 라이브러리를 스터디 중에 있습니다.
+> 다음 프레임워크가 Remix가 될지도 모르는 기대감에 이번에 맛보려고 합니다.
+
+## 프레임워크 vs 라이브러리
+
+제가 느끼는 가장 큰 차이는 `내가 대상을 호출하는가? 대상이 나를 호출하는가?` 입니다.
+
+React를 라이브러리라고 하는 이유는 React가 나의 코드를 호출하여 무언가 완성시키지 않습니다. 단지 나의 코드가 React 코드를 호출하고 프로그램을 완성합니다.
+
+그러나 Next.js 같은 경우 `pages` 폴더 아래에 라우트 파일을 만들어야 하며, 서버사이드렌더링을 위해 `getServerSideProps`를 export 해야한다던지, 정적 html을 custom하기 위해서는 `_document.js` 파일을 생성하여 수정된 코드를 만들어 놓아야하는 것 등이 있습니다. Next.js 프레임워크가 나의 코드를 호출하여 프로그램을 완성하는 것입니다.
+
+저는 프레임워크와 라이브러리 차이를 이렇게 생각하고 있으며 아직까지는 이 이해가 크게 문제를 일으킨 적은 없었던 것 같습니다.
+
+이번에 맛볼 Remix 또한 프레임워크입니다.
+
+튜토리얼을 진행하면서 Remix를 알아보려고 합니다.
+
+## Getting Started
+
+> https://remix.run/
+> 사이트를 참 재밌게 잘 만든 것 같아요.
+
+![remix-hero](https://files.seonest.net/images/qnfqnfqnf/post/271/image.png)
+
+Remix에서 좋은 인상을 받은 것 중 하나가 공식 문서입니다.
+
+문서가 잘 되어있고(개인적이지만), 튜토리얼 프로젝트가 매우 잘 되어있습니다.
+
+이 포스트도 튜토리얼 프로젝트를 거의 따라가면서 작성해보려고 합니다.
+
+## create-remix
+
+Remix는 `create-react-app`처럼 템플릿을 제공합니다.
+
+```bash
+npx create-remix@latest
+```
+
+Remix에서는 조금 더 특별(?)한 템플릿이 있는데 [stack](https://remix.run/docs/en/v1/pages/stacks) 템플릿입니다. 많이 사용되는 기술 stack 모음을 나누어서 제공하는데... 꽤 신선했습니다.
+
+### Stack (by music-genre)
+
+> 블루스, 인디, 그런지(얼터네이티브 록의 한 장르, ie. 너바나) 음악 장르로 구분해놓은게 참 재밌습니다.
+
+- [The Blues Stack](https://github.com/remix-run/blues-stack): edge(distributed)에 배포되는 걸 기본으로 작성된 템플릿 입니다. postgreSQL DB를 사용하고 Node.js 서버 기반인 수백만명 유저가 사용하는 거대하고 빠른 운영 애플리케이션을 제공하기 위해 만들어진 템플릿입니다.
+- [The Indie Stack](https://github.com/remix-run/indie-stack): persistent SQLite DB를 사용하고 Node.js 서버에 배포되는 걸 기본으로 작성된 템플릿입니다. 블로그, 마게팅, 콘텐츠 사이트처럼 동적 데이터를 가진 웹사이트에 최적입니다. MVP, prototype, POC 하는데 완벽하고 간단한 bootstrap 템플릿입니다. 그리고 나중에 Blues Stack으로도 쉽게 업데이트 될 수 있습니다.
+- [The Grunge Stack](https://github.com/remix-run/grunge-stack): Node.js를 동작하는 서버리스 function에 배포되는 걸 기본으로 작성된 템플릿입니다. persistent DynamoDB를 사용하고 AWS infra에 수백만 유저가 사용하는 운영 애플리케이션을 배포하기 위해 만들어진 템플릿입니다.
+
+앞으로도 더 만들어질 예정이고 가능하다면 커스텀으로 Stack을 만들고 사용하길 원한다고 하네요. 그러면서 음악장르로 Stack을 만든것 처럼 서브 장르로 Stack 이름을 지어달라 한것도 매우 재밌습니다.
+
+Remix는 공식문서에서 2개의 튜토리얼을 제공합니다.
+
+- Developer Blog
+- Jokes App
+
+2개 중에 Jokes App 튜토리얼이 좀 더 이해하기 좋다고 느껴져서 이 튜토리얼로 맛보기를 해보겠습니다.
+
+## Tutorial
+
+> 모든 소스 코드는 아래와 공식 문서를 참고하시면 됩니다.
+>
+> - https://remix.run/docs/en/v1/tutorials/jokes
+> - https://github.com/JHSeo-git/remix-fire-tutorial/blob/main/apps/remix-jokes-app/README.md
+
+```bash
+npx create-remix@latest
+# or yarn create remix@latest
+```
+
+친절한 @remix/cli 덕분에 손쉽게 프로젝트를 구성할 수 있습니다.
+
+- typescript를 사용할지?
+- 어디에 배포할 예정인지?
+- 등등
+
+여러 편의 옵션을 제공해주고 그에 맞게 프로젝트 구성을 해주는데 상당히 매력있게 되어있는 것 같습니다.
+
+다양한 서버 환경 옵션도 선택할 수 있으며 포함하여 구성해줍니다.
+
+- Remix App Server: [Express](https://expressjs.com/)에 기반을 둔 full featured Node.js Server
+- Express
+- Architect (AWS Lambda)
+- Fly.io
+- Deno
+- Netlify
+- Vercel
+- Cloudflare Workers
+- Cloudflare Pages
+
+사용할 주요 라이브러리는 다음과 같습니다.
+
+- [tailwindcss](https://tailwindcss.com/docs/installation) + [daisyui](https://daisyui.com/): css styles
+- [prisma](https://www.prisma.io/docs/) + [SQLite](https://www.sqlite.org/index.html): orm + Database
+
+### tailwindcss + daisyui
+
+> 스타일을 그대로 옮겨서 써도 되는데 daisyui를 한 번 써보고 싶어서 이참에 한 번 이것도 같이 맛보려고 합니다.
+
+tailwindcss는 워낙 유명하고 간편하게 설정할 수 있어서 자주 사용됩니다.
+
+추가해서 daisyui라는 라이브러리를 사용해보려고 합니다. tailwindcss 기반으로 만들어진 CSS 컴포넌트 라이브러리 입니다.
+
+```html
+<!-- only tailwindcss -->
+<button
+  class="inline-block cursor-pointer rounded-md bg-gray-800 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900"
+>
+  Button
+</button>
+
+<!-- with daisyui -->
+<button class="btn">Button</button>
+```
+
+### Development
+
+`yarn dev`를 실행하면 정상적으로 페이지를 확인하시면 됩니다.
+
+> **Note 1**
+> React 18을 사용하고자 한다면 react, react-dom을 업데이트하고, [여기 문서](https://remix.run/docs/en/v1/guides/migrating-react-router-app#creating-server-and-browser-entrypoints)를 확인하여 따라하시면 됩니다.
+
+> **Note 2**
+> 개발자 도구에서 에러가 발생하나요?
+>
+> `Warning: Expected server HTML to contain a matching <meta> in <head>`와 같은 에러가 나타난다면 이 [이슈](https://github.com/remix-run/remix/issues/2947)를 확인하세요.
+>
+> 저 같은 경우는 크롬 익스텐션 중에 `apollo dev tool`이 충돌을 일으켜서 나타나는 문제였고, 해당 익스텐션을 disable 처리하고 나서는 에러가 나타나진 않았습니다.
+
+동작이 된다면 튜토리얼을 진행하면서 Remix 맛보기 해보겠습니다.
+
+## Project Structure
+
+create-remix를 통해 프로젝트를 구성하면 다음과 같은 모습으로 구조가 잡힙니다.
+
+```
+remix-jokes
+├── README.md
+├── app
+│   ├── entry.client.tsx
+│   ├── entry.server.tsx
+│   ├── root.tsx
+│   └── routes
+│       └── index.tsx
+├── package-lock.json
+├── package.json
+├── public
+│   └── favicon.ico
+├── remix.config.js
+├── remix.env.d.ts
+└── tsconfig.json
+```
+
+- `app/`: 모든 Remix app 코드가 존재하는 폴더입니다.
+- `app/entry.client.tsx`: 브라우저에서 애플리케이션을 로드할 때 가장 처음 동작하는 JavaScript 입니다. [hydrate](https://reactjs.org/docs/react-dom.html#hydrate)를 위해 이 파일을 사용합니다.
+- `app/entry.server.tsx`: 서버에 요청이 왔을 때 가장 처음 동작하는 JavaScript 입니다. Remix는 필요한 모든 데이터 로딩을 다루고 응답을 할 책임을 가집니다. 이 파일을 사용하여 React 애플리케이션을 string/stream으로 렌더링하고 이를 클라이언트에 응답합니다.
+- `app/root.tsx`: 애플리케이션의 루트 엘리먼트를 배치합니다. `<html>` 요소를 여기에 렌더링합니다.
+- `app/routes/`: 모든 "route 모듈"이 여기에 들어갑니다. Remix는 이 폴더안에 있는 파일들을 사용하여 파일 이름을 기반으로 URL Route를 생성합니다.
+- `public/`: 정적 Asset이 여기에 들어갑니다.(이미지/Font/기타)
+- `remix.config.js` Remix를 설정할 수 있는 옵션들이 있습니다.
+
+root.tsx 파일을 살펴보면 `<html>` 요소로 감싸진 컴포넌트를 export하는 것을 볼 수 있습니다.
+
+이 파일이 실제로 root에 해당하며 서버에서 생성되는 html파일이라고 생각하시면 됩니다.
+
+> Next.js는 `_app.js`와 `_document.js` 파일을 이용합니다.
+
+```tsx
+export default function App() {
+  return (
+    <html lang="en">
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
+```
+
+Remix에서 html 렌더를 위해 제공되는 여러가지 컴포넌트들이 있습니다.
+
+Remix가 SSR 프레임워크라는 것을 잊지 마세요. `<LiveReload>` 컴포넌트는 개발 할 때 유용합니다. 소스 변경이 발생했을 때 자동으로 refresh해주는 컴포넌트입니다. 빌드가 매우 빠르기도 하고 종종 알아차리기도 전에 reload됩니다.
+
+Remix는 컴파일러로 [esbuild를 사용](https://remix.run/docs/en/v1/pages/technical-explanation#compiler)합니다.
+
+> Next.js는 현재는 SWC를 사용합니다. 설정에 따라 babel + webpack도 사용가능합니다.
+
+### vs Next.js
+
+개인적인 생각을 조금 더 붙이자면,
+
+Next.js는 SSG처럼 정적 생성에 집중한 느낌이라면, Remix는 철저하게 SSR에 집중한 프레임워크라는 느낌을 받았습니다.~~(잘 몰라서 느낀대로 작성한거니 무시하셔도 됩니다...)~~
+
+이렇게 느낀 이유는 Next.js는 빌드 최적화(SWC 도입 등)와 ISR처럼 정적 페이지에 집중하는 느낌을 받았습니다.
+
+최근에 [Layout RFC](https://nextjs.org/blog/layouts-rfc)와 같은 React 18(특히 Streaming HTML, RSC) 도입을 위해 SSR 쪽에도 힘을 싣는 것처럼 보이긴 합니다.~~(Remix를 맛보다보니 "어? 이거 Next.js의 최근 Layout RFC 느낌과 상당히 비슷한데?" 라는 느낌을 받긴 했습니다.)~~
+
+Remix는 뭔가 옛날 웹 개발의 느낌(?)이 살짝 납니다. 부정적인 느낌이 아닌 말 그대로 그 느낌 그대로 입니다.
+왜 그런가 생각해보니 HTML [Form](https://remix.run/docs/en/v1/api/remix#form)을 적극적으로 사용한다던지, React와 같이 CSR 라이브러리에 너무 익숙해져버린 제가 오랫동안 잊고 있었던 것(Web Standards, HTTP, HTML)들을 사용해서 그런 것 같습니다.
+
+Remix는 또한 굉장히 빠르게 React의 새로운 기술들을 도입한 느낌도 듭니다.
+서버/클라이언트 모델(`.server.js` / `.client.js`) 도입도 그렇습니다. edge 서버를 위한 API(cloudflare, vercel 등)... 이러한 행보가 앞으로의 프론트엔드 트렌드의 방향을 알 수 있는 지점이 되는 것 같기도 합니다.
+
+최근에 글을 옮긴 [Great Developer Experience](https://www.seonest.net/posts/Great-Developer-Experience) 에서 상당히 중요한 개발자 경험 요소가 많이 들어간 프레임워크란 생각이 들었습니다.
+
+글 중간중간에 자주 사용했던 Next.js와 비교해보면서 가는 것도 재밌을 것 같습니다.
+
+## React 18
+
+React 18 버전도 [쉽게 적용 가능합니다.](https://github.com/remix-run/remix/discussions/2549)
+
+- [react-dom/client](https://remix.run/docs/en/v1/guides/migrating-react-router-app#creating-server-and-browser-entrypoints): `hydrateRoot`를 통한 Selective Hydration
+- [react-dom/server](https://remix-react-18-streaming-production.up.railway.app/upgrading): `renderToPipeableStream`을 통한 Streaming HTML(edge runtime은 `renderToReadableStream`)
+
+몇 가지 코드만 변경한다면 쉽게 적용할 수 있습니다.
+
+## Routes
+
+Remix는 routes를 다루기 위해 2가지 방법이 있습니다.
+
+- `remix.config.js`: programmatically
+- `routes/` 폴더를 통한 "file-based routing"
+
+`remix.config.js`에서 프로그램적으로 route를 생성할 수도 있습니다.
+
+```js
+/** @type {import('@remix-run/dev').AppConfig} */
+module.exports = {
+  ...
+  routes(defineRoutes) {
+    return defineRoutes((route) => {
+      route("/somewhere/cool/*", "route-a.tsx");
+    });
+  },
+  ...
+};
+```
+
+그러나 더 일반적인 방법으로 파일 시스템을 통한 Route를 만들어서 사용합니다. 이를 "파일 기반 라우팅" 이라고 부릅니다. `routes/` 폴더 아래에 파일을 만들면 프레임워크가 자동으로 url route를 생성합니다.
+
+> Next.js에도 파일 기반 라우팅을 쓰고 있습니다.
+> `pages/` 폴더 아래에 파일을 생성하면 프레임워크가 자동으로 url route를 생성합니다.
+
+```
+/
+/jokes
+/jokes/:jokeId
+/jokes/new
+/login
+```
+
+위와 같은 route를 만들기 위해서는 다음과 같은 경로와 파일을 생성합니다.
+
+```
+/index.tsx
+/jokes.tsx
+/jokes/index.tsx
+/jokes/$jokeId.tsx
+/jokes/new.tsx
+/login.tsx
+```
+
+혹시 특이한점을 찾으셨나요? route에 피해 파일이 하나 더 늘어났습니다!!
+
+그 이유는 아래에서 천천히 살펴보겠습니다.
+
+### nested route
+
+> 이것이 Remix를 매력적으로 만드는 것 중에 하나라고 생각합니다.
+
+일단 `/jokes` 라우트에 해당하는 파일들을 살펴보겠습니다.
+
+- `/jokes.tsx`
+- `/jokes/index.tsx`
+- `/jokes/$jokeId.tsx`
+- `/jokes/new.tsx`
+
+```tsx
+// app/routes/jokes.tsx
+
+import { Outlet } from '@remix-run/react';
+
+export default function JokesRoute() {
+  return (
+    <div>
+      <h1>J🤪KES</h1>
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+```
+
+react-router-dom V6를 사용해보신 분이라면 `<Outlet />` 을 써보셨을 겁니다.
+
+nested route에 대해서 부모 route에서 자식 route를 구성하기 위한 컴포넌트입니다.
+
+Remix는 이를 파일 구조를 통해 현명하게 구현했습니다.
+
+컴포넌트로 설명하자면 다음과 같습니다.
+
+```tsx
+// /jokes/$jokeId
+
+<Root>
+  <Jokes>
+    <JokesJokeId />
+  </Jokes>
+</Root>
+
+// /jokes/new
+
+<Root>
+  <Jokes>
+    <JokesNew />
+  </Jokes>
+</Root>
+```
+
+[nested route](https://remix.run/docs/en/v1/guides/routing#what-is-nested-routing)는 중요한 아이디어 입니다.
+
+자식 route에서 content가 변경되었다고 하더라도 부모 route에 있는 content는 persist 합니다. 이러한 layout hierarchy는 정확히 route에 매칭되며 **route module**에 의해 정의됩니다.
+
+이런 구조를 통해 직관적으로 구현할 수 있고, `routes/`를 통한 code-splitting을 Remix가 [자동으로 해줍니다.](https://remix.run/docs/en/v1/guides/migrating-react-router-app#reactlazy-and-reactsuspense)
+
+### dynamic segment
+
+> `/jokes/$jokeId.tsx`
+
+Remix에는 **dynamic segment**에 대한 컨벤션이 있습니다.
+
+파일명의 prefix로 `$`를 사용합니다. 이것은 Remix가 해당 url segment에 대해 어떤 값도 매칭한다는 것을 의미합니다.
+
+여기서는 `$jokesId.tsx`를 만들었고, url이 `/jokes/1111...`과 같은 경우 매칭되어 렌더링됩니다.
+
+아래에서 더 자세하게 다루겠지만 loader, action의 `params` prop과 `useParams`를 통해서 param에 접근해서 `1111...` 값을 가져올 수 있습니다.
+
+- `params.jokesId`: 파일명과 동일한 param명을 가집니다.
+
+```tsx
+import { useParams } from '@remix-run/react';
+
+export function loader({ params }) {
+  const id = params.jokesId;
+}
+
+export function action({ params }) {
+  const id = params.jokesId;
+}
+
+export default function JokesIdRoute() {
+  const params = useParams();
+  const id = params.jokesId;
+}
+```
+
+> Next.js는 array 컨벤션을 통한 dynamic route를 표현합니다.
+> `app/jokes/[jokeId].tsx`
+
+### Splats
+
+조금 더 Remix 컨벤션을 살펴보면, [Splats](https://remix.run/docs/en/v1/guides/routing#splats) 라는 것을 제공합니다.
+
+Splat은 별표라는 뜻으로 쓰이는데(asterisk로도 많이 씁니다) Remix에서 splat route는 `$.jsx`로 파일명 컨벤션을 사용합니다.
+
+이것이 의미하는 것은 url의 나머지 부분에 대한 route에 대해 모두 일치시킨다는 것을 의미합니다.
+dynamic segment와 달리 splat은 다음 `/`이 나타나도 무시하고 route 끝까지에 대해 캡쳐합니다.
+
+예를 들어 다음과 같은 route가 있다고 가정해보겠습니다.
+
+```
+app
+├── root.jsx
+└── routes
+    ├── files
+    │   ├── $.jsx
+    │   ├── mine.jsx
+    │   └── recent.jsx
+    └── files.jsx
+```
+
+만약 URL이 `example.com/files/images/work/flyer.jpg` 라면 splat param은 `files/` 이후의 모든 url에 대해 캡쳐합니다.
+
+```
+// app/routes/files/$.jsx
+
+export function loader({ params }) {
+  params["*"]; // "images/work/flyer.jpg"
+}
+```
+
+코드에서는 `params["*"]`을 통해 해당 param에 접근할 수 있습니다.
+
+또한 sibling route(`/files/mine`과 같은)에 대해서도 매칭되어 사용가능합니다.
+
+이 패턴은 주로 `routes/$.jsx`를 통해 loader 데이터를 이용한 커스텀 404 페이지를 만드는데 사용합니다.
+(이 파일이 없다면 Remix는 root `CatchBoundary`를 렌더링합니다. `CatchBoundary`는 아래에서 다시 다뤄보겠습니다.)
+
+### index route
+
+> `/jokes/index.tsx`
+
+그런데 `/jokes.tsx`와 `/jokes/index.tsx`는 뭘까요.
+
+처음에 이런 구조를 접했을 때 2개가 동시에 존재할 수 없다고 생각했습니다.
+
+그래서 index route를 처음에 이해하기 쉽지 않았습니다. 처음엔 꽤 시간이 걸렸던 것 같아요.
+
+좀 더 이해하기 쉽게 설명하자면 부모 route에 대한 _default 자식 route_ 로 이해하는 것입니다. render할 자식 route가 없을 때 render하는 index route로 말이죠.
+
+```tsx
+export default function JokesIndexRoute() {
+  return (
+    <div>
+      <p>Here's a random joke:</p>
+      <p>I was wondering why the frisbee was getting bigger, then it hit me.</p>
+    </div>
+  );
+}
+```
+
+![nested-route](https://files.seonest.net/images/qnfqnfqnf/post/276/image.png)
+
+또한 index route는 "leaf route"입니다.
+
+막 Remix를 시작하는 개발자들이 주로 실수 하는 것이 global nav를 렌더링하기 위해서 `app/routes/index.jsx`에 넣는 것입니다. 해당 global nav은 `app/root.jsx`에 만들어야 하며 `/app/routes/*` 내부의 모든 것은 이미 `app/root.jsx`의 자식 route이기 때문입니다. `app/routes/index.jsx`는 "leaf route"이므로 global nav를 보여줄 수 없는 구조입니다.
+
+다시 말해 `app/routes/index.jsx`는 이미 `app/root.jsx`의 자식 route로 존재하는 것입니다.
+
+> **Note**
+> index route는 자식 route를 가질 수 없습니다.
+
+#### `?index` Query Parameter
+
+특히 `<Form>`을 submit할 때 url에 `?index` query param이 표시되는 것을 볼 수 있습니다.
+
+이것은 index route를 부모 layout route와 구별하는데 사용됩니다.
+
+예를 들어 다음과 같은 route가 있다고 가정해보겠습니다.
+
+```
+└── app
+    ├── root.jsx
+    └── routes
+        ├── jokes
+        │   ├── new.jsx
+        │   ├── index.jsx    <-- /jokes?index
+        ├── jokes.jsx        <-- /jokes
+```
+
+아까 처음에 이해가 잘 안된다고 표현했던 것이 여기서 해결된 것 같습니다.
+
+동일 route를 가질 것이라고 생각했는데 이를 Remix는 다음과 같은 컨벤션으로 해결합니다.
+
+- url: `/jokes?index` -> `app/routes/jokes/index.jsx`
+- url: `/jokes` -> `app/routes/jokes.jsx`
+
+Remix는 `?index` query param을 부모 layout route 대신에 index route를 가리킬 때 사용한다는 것을 이해하면 좋을 것 같습니다.
+
+또한 layout route나 index route에서 `<Form>`을 submit했을 때는 Remix가 자동으로 핸들링합니다.(자동으로 `?index` query param을 붙여줍니다.)
+
+그러나 만약 다른 route에서 form을 submit한다면(`fetcher.submit` / `fetcher.load`와 같은) 올바른 route로(layout route or index route) 맞추기 위해 이 url 패턴을 인식할 필요가 있습니다.
+
+### without nesting layout
+
+만약 nested layout을 사용하지 않는 url route를 만들 경우는 어떻게 해야될까요?
+(nested route는 사용합니다.)
+
+Remix는 마찬가지로 파일 구조로 구분합니다.
+
+```
+└── app
+    ├── root.jsx
+    └── routes
+        ├── sales
+        │   ├── invoices
+        │   │   └── $invoiceId.jsx
+        │   └── invoices.jsx
+        ├── sales.invoices.$invoiceId.edit.jsx 👈 not nested
+        └── sales.jsx
+```
+
+- Nested files: nesting + nested urls
+- Flat files: no nesting + nested urls
+
+hierarchy하지 않게 파일을 만들면 nesting layout 되지 않는 파일이 생성됩니다. 그러나 nested route는 사용할 수 있습니다.
+
+```jsx
+// example.com/sales/invoices/2000/edit
+<Root>
+  <EditInvoice />
+</Root>
+
+
+// example.com/sales/invoices/2000
+<Root>
+  <Sales>
+    <Invoices>
+      <InvoiceId />
+    </Invoices>
+  </Sales>
+</Root>
+```
+
+### Pathless Layout Routes
+
+추가로 하나 더 컨벤션을 살펴보자면 [Pathless Layout Routes](https://remix.run/docs/en/v1/guides/routing#pathless-layout-routes)가 있습니다.
+
+백엔드 서버를 만들 때 auth와 같은 미들웨어를 만들어 사용해보신적 있으신가요?
+
+Remix에서는 이와 같은 것을 pathless layout routes를 통해 구현할 수 있습니다.
+
+다음과 같은 authentication route가 있다고 가정해보겠습니다.
+
+```jsx
+<Root>
+  <Auth>
+    <Login />
+  </Auth>
+</Root>
+```
+
+Login route를 authentication 하기 위해서 Auth를 부모 route를 가진 nested route를 만들었습니다.
+
+```
+app
+├── root.jsx
+└── routes
+    ├── auth
+    │   ├── login.jsx    <-- /auth/login
+    │   ├── logout.jsx   <-- /auth/logout
+    │   └── signup.jsx   <-- /auth/signup
+    └── auth.jsx
+```
+
+그런데 우리는 `/auth/login`과 같은 `/auth` prefix를 가진 url을 원하지 않습니다.
+단지 `/login` url을 만들고 싶습니다.
+
+이럴 경우 pathless route를 통해 url nesting에서 제거할 수 있습니다.
+
+`__auth`와 같은 `__` prefix를 가진 파일을 만든다면 해당 파일은 url nesting에서 제거되어 `/login`과 같은 url을 만들 수 있습니다.
+
+```
+app
+├── root.jsx
+└── routes
+    ├── __auth
+    │   ├── login.jsx    <-- /login
+    │   ├── logout.jsx   <-- /logout
+    │   └── signup.jsx   <-- /signup
+    └── __auth.jsx
+```
+
+## Database
+
+이 예제에서는 Database를 사용합니다.
+SQLite database를 사용하며, ORM으로 Prisma를 사용합니다.
+
+Prisma는 설정방법도 간단하고 스키마를 구성하는 법도 직관적이니 프로젝트에 도입하는 것도 한 번 고려하는 것도 좋을 것 같습니다.
+
+> 사실 Prisma V1 때 살짝 써본적이 있는데 그 때 경험이 조금 좋지 않아서 꺼려하고 있다가 최근에 V2를 사용해봤는데 너무 잘 되어있어서 깜짝 놀랐습니다.
+
+prisma를 설치하고 이를 통해 SQLite를 만들어보겠습니다.
+
+### prisma init
+
+```bash
+yarn add -D prisma
+yarn add @prisma/client
+```
+
+prisma init 커맨드를 통해 간단하게 구성할 수 있습니다.
+
+```bash
+npx prisma init --datasource-provider sqlite
+```
+
+그러면 아래와 같은 경로에 파일이 생성됩니다.
+
+- `prisma/schema.prisma`: 스키마 정의 파일
+- `.env`: DATABASE_URL 환경변수
+
+```
+// prisma/schema.prisma
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+```
+
+```
+# .env
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+DATABASE_URL="file:./dev.db"
+```
+
+Database 스키마는 다음과 같이 schema.prisma 파일에 정의되어져야 합니다.
+
+```
+// prisma/schema.prisma
+
+...
+model Joke {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       String
+  content    String
+}
+```
+
+> prisma의 아쉬운점이라면 이 스키마 파일을 모듈형태로 구성하는게 쉽지 않다는 것입니다.
+> [여기](https://github.com/prisma/prisma/issues/2377#issuecomment-1149748518)를 보면 커다란 prisma파일이 고통스럽다라는 것을 이해하고 있지만 현재 계획된 일정에는 없다고 하네요. 그래도 언젠간 지원하게 되지 않을까 생각됩니다.~~(이 이슈와 비슷한 이슈가 엄청나게 많은 걸 보니...)~~
+
+### prisma db push
+
+```bash
+npx prisma db push
+```
+
+이 커맨드를 실행하면 Database에 스키마를 생성합니다. 그리고 node_module아래에 .prisma 폴더가 생성되며 해당 스키마를 코드에서 쉽게 쓸 수 있게 타입, 유틸 등을 가진 클라이언트 파일이 생성됩니다.
+
+![prisma-client1](https://files.seonest.net/images/qnfqnfqnf/post/277/image.png)
+
+이 파일은 추상화된 `@prisma/client` 모듈을 통해 사용됩니다.
+
+![prisma-client2](https://files.seonest.net/images/qnfqnfqnf/post/278/image.png)
+
+```ts
+import { PrismaClient } from '@prisma/client';
+const db = new PrismaClient();
+```
+
+> 만약 DB가 엉망(?)이 되었다면, `prisma/dev.db`를 삭제하고 다시 `npx prisma db push`를 실행하면 초기 DB를 다시 생성할 수 있습니다.
+> 당연히 server 또한 재 실행해야 정상적으로 사용할 수 있습니다.
+
+### prisma db seed
+
+prisma에는 seed 커맨드를 제공합니다. test data를 쉽게 생성하기 위한 커맨드입니다.
+
+prisma 폴더 아래에 seed.ts 파일을 생성해봅시다.
+
+```ts
+// prisma/seed.ts
+
+import { PrismaClient } from "@prisma/client";
+const db = new PrismaClient();
+
+async function seed() {
+  await Promise.all(
+    getJokes().map((joke) => {
+      return db.joke.create({ data: joke });
+    })
+  );
+}
+
+seed();
+
+function getJokes() {
+  // shout-out to https://icanhazdadjoke.com/
+
+  return [
+    ...
+  ];
+}
+```
+
+기본적으로 node 명령어로는 TypeScript를 읽을 수 없습니다. 그래서 이를 위해 `esbuild-register`를 사용합니다.
+(ts-node를 설치하고 사용해도 상관없습니다.)
+
+```bash
+yarn add -D esbuild-register
+```
+
+seed.ts를 실행해봅시다.
+
+```bash
+node --require esbuild-register prisma/seed.ts
+```
+
+문제없이 실행되었다면 test data가 테이블에 생성됩니다.
+
+그런데 매번 Database가 reset될 때마다 이 커맨드를 따로 실행하는 것은 별로 합리적이지 못합니다. 운이좋게도 prisma는 이를 위한 기능을 제공합니다.
+
+package.json에 prisma.seed 항목에 해당 커맨드를 등록해두면 Database를 reset할 때마다 자동으로 prisma가 이 커맨드를 실행해줍니다.
+
+```json
+// package.json
+
+// ...
+  "prisma": {
+    "seed": "node --require esbuild-register prisma/seed.ts"
+  },
+  "scripts": {
+// ...
+```
+
+### Connect to the Database
+
+```ts
+import { PrismaClient } from '@prisma/client';
+const db = new PrismaClient();
+```
+
+PrismaClient 객체를 생성하면 Database에 연결하는 것은 끝입니다.(참 간편합니다!)
+
+그런데 개발할 때 한 가지 문제가 있습니다.
+
+우리는 개발할 때 서버를 restart할 경우가 상당히 많은데 위 코드가 매번 생성된다는 것입니다. 그러면 계속해서 Database와 새로운 연결을 시도하게되고 아래와 같은 경고를 만나게 됩니다.
+
+> Warning: 10 Prisma Clients are already running
+
+그래서 우리는 이 문제를 피하기 위해 한 가지 작업을 더 합니다.
+
+db 객체 생성을 재 생성하지 않도록 하기 위해 `app/utils/db.server.ts`파일을 만들고 아래와 같이 작업을 합니다.
+
+```ts
+// app/utils/db.server.ts
+
+import { PrismaClient } from '@prisma/client';
+
+let db: PrismaClient;
+
+declare global {
+  var __db: PrismaClient | undefined;
+}
+
+// this is needed because in development we don't want to restart
+// the server with every change, but we want to make sure we don't
+// create a new connection to the DB with every change either.
+if (process.env.NODE_ENV === 'production') {
+  db = new PrismaClient();
+} else {
+  if (!global.__db) {
+    global.__db = new PrismaClient();
+  }
+  db = global.__db;
+}
+
+export { db };
+```
+
+파일명 컨벤션을 `.server`를 붙여서 생성했습니다.
+
+Remix는 서버/클라이언트 모델을 파일명을 보고 힌트를 얻습니다. `.server`가 붙은 파일은 클라이언트(브라우저)에서 실행되지 않는다라는 것을 알립니다.
+
+다만 이것은 선택사항입니다. Remix가 알아서 서버 코드는 클라이언트에서 동작하지 않도록 합니다. 그러나 일부 서버 전용 디펜던시가 tree-shaking하기 어렵기 때문에 파일명에 `.server`를 붙여주어 컴파일러가 브라우저를 위한 모듈을 번들링할 때 이 모듈을 쓰지 않도록 하는 힌트가 됩니다.
+
+이로써 Database 설정도 끝이 났습니다. 이제 이 데이터를 코드에서 읽어서 써야 하는데 Remix에서는 어떤 방식으로 할까요?
+
+## Loading Data
+
+> 서버에서 동작한다는 것을 인식해야 합니다.
+
+- [loader](https://remix.run/docs/en/v1/api/conventions#loader)
+- [useLoaderData](https://remix.run/docs/en/v1/api/remix#useloaderdata)
+
+Remix에서는 데이터를 _load_ 하기 위해 [loader](https://remix.run/docs/en/v1/api/conventions#loader)를 사용합니다.
+
+그리고 [useLoaderData](https://remix.run/docs/en/v1/api/remix#useloaderdata) hook을 통해 React function에서 사용됩니다.
+
+```tsx
+import type { LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import type { User } from '@prisma/client';
+
+import { db } from '~/utils/db.server';
+
+type LoaderData = { users: Array<User> };
+
+export const loader: LoaderFunction = async () => {
+  const data: LoaderData = {
+    users: await db.user.findMany(),
+  };
+  return json(data);
+};
+
+export default function Users() {
+  const data = useLoaderData<LoaderData>();
+  return (
+    <ul>
+      {data.users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+`@remix-run/node`(or [other adapter](https://remix.run/docs/en/v1/other-api/adapter))에서 제공하는 `json` 함수는 serializable object를 JSON Response로 변경하는 함수입니다.
+
+![json-type](https://files.seonest.net/images/qnfqnfqnf/post/279/image.png)
+
+위에 `db`가 import된 경로를 보면 module alias(`~/utils/db.server`)가 된 것을 볼 수 있습니다.
+
+Remix는 tsconfig.json을 통해 간단하게 module alias를 적용할 수 있습니다.
+(Next.js도 동일한 방식으로 module resolver를 제공합니다.)
+
+```json
+{
+  "compilerOptions": {
+    // ...
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    }
+    // ...
+  }
+}
+```
+
+### Data overfetching
+
+REST API를 설계할 때 고려하는 것중에 하나가 Data overfetching입니다. 필요한 데이터보다 더 많은 데이터를 호출하게되는 경우를 말하는데 Remix에서는 그런 걱정을 하지 않아도 됩니다.
+
+route module에서 원하는 데이터를 정확히 매칭할 수 있기 때문입니다.
+
+가령 joke table에서 "최근에 생성된" / "상위 5개 항목을" / "id와 이름만" 가져오고 싶다면 아래와 같이 직접 loader를 변경해서 사용하면 됩니다.
+
+```ts
+type LoaderData = {
+  jokeListItems: Array<{ id: string; name: string }>;
+};
+
+export const loader: LoaderFunction = async () => {
+  const data: LoaderData = {
+    jokeListItems: await db.joke.findMany({
+      take: 5,
+      select: { id: true, name: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+  };
+  return json(data);
+};
+```
+
+> GraphQL을 백엔드에서 사용하고 있나요?
+> Remix의 loader를 통해 정확히 매칭된 데이터로 화면을 렌더링하세요.
+> [거대한 graphql 클라이언트](https://bundlephobia.com/package/graphql@16.0.1)를 내려주는 것에 대해 걱정할 필요가 없기 때문에 클라이언트에서 수행하는 것보다 훨씬 낫습니다.
+
+> REST endpoint를 사용하고 있나요?
+> 마찬가지로 Remix를 사용해서 더 나은 경험을 할 수 있습니다.
+> 전부 서버에서 일어나기 때문에, 백엔드 엔지니어에게 전체 API를 변경해야된다고 설득할 필요 없이 쉽게 클라이언트로 보내는 size를 줄일 수 있습니다.
+
+### Network Type Safety
+
+우리는 `useLoaderData`에서 제네릭 유형을 사용합니다.
+
+```ts
+type LoaderData = { users: Array<User> };
+
+const data = useLoaderData<LoaderData>();
+```
+
+이를 통해 타입 완전한 data를 사용할 수 있습니다. 그러나 `loader`와 `useLoaderData`가 완전히 다른 환경(서버/클라이언트)에서 실행되기 때문에 실제로 Type Safety를 보장하지 못합니다.
+
+그래서 데이터가 정확하다는 사실을 100% 확신할 수 있는 방법은 `useLoaderData`에서 얻은 데이터에 대해 [assertion 함수](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#assertion-functions)를 사용하는 방법입니다.
+
+더 자세한 방법은 여기서 다루진 않지만 Type Safety에 대해서 인식하고 있어야 합니다.
+
+만약 라이브러리를 사용한다면 Remix 공식 문서에서는 [zod](https://npm.im/zod) 라이브러리를 추천합니다.
+
+## 마무리하며
+
+> 모든 소스 코드는 아래와 공식 문서를 참고하시면 됩니다.
+>
+> - https://remix.run/docs/en/v1/tutorials/jokes
+> - https://github.com/JHSeo-git/remix-fire-tutorial/blob/main/apps/remix-jokes-app/README.md
+
+글을 쓰다보니 너무 길어진 것 같아서 나누어서 작성해보려고 합니다.
+
+다음은 여기서 다루지 못했던 나머지 부분(action, Link, Meta, Optimistic UI 등등)을 써보고자 합니다.
+
+## reference
+
+- https://prismic.io/blog/compare-remix-vs-nextjs
+- https://remix.run/
+- https://velog.io/@velopert/learn-remix
+- https://remix.run/docs/en/v1/tutorials/jokes
