@@ -2,6 +2,8 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Link from 'next/link';
 import styled from 'styled-components';
 
+import appConfig from '@/app.config';
+import PageSEO from '@/components/_seo/PageSEO';
 import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
@@ -65,27 +67,34 @@ const CategoryPage: NextPage<CategoryPageProps> = ({ category, posts }) => {
   useBodyBackgroundColorEffect('gray3');
 
   return (
-    <Layout mode="category">
-      <Hidden>
-        <h1>Posts by {category}</h1>
-      </Hidden>
-      <PostsSection>
-        <SectionHeader>
-          <CategoryTitle>{category}</CategoryTitle>
-          <CategoryCount>
-            {posts.length} Post{posts.length > 0 ? 's' : ''}
-          </CategoryCount>
-        </SectionHeader>
-        <Spacer size="$4" />
-        {posts.map((post) => (
-          <Link key={post.id} href={`/posts/${post.slug}`} passHref>
-            <PostLink>
-              <PostCard post={post} mode="card" />
-            </PostLink>
-          </Link>
-        ))}
-      </PostsSection>
-    </Layout>
+    <>
+      <PageSEO
+        url={`categories/${category}`}
+        title={`${category} Posts`}
+        description={appConfig.description}
+      />
+      <Layout mode="category">
+        <Hidden>
+          <h1>Posts by {category}</h1>
+        </Hidden>
+        <PostsSection>
+          <SectionHeader>
+            <CategoryTitle>{category}</CategoryTitle>
+            <CategoryCount>
+              {posts.length} Post{posts.length > 0 ? 's' : ''}
+            </CategoryCount>
+          </SectionHeader>
+          <Spacer size="$4" />
+          {posts.map((post) => (
+            <Link key={post.id} href={`/posts/${post.slug}`} passHref>
+              <PostLink>
+                <PostCard post={post} mode="card" />
+              </PostLink>
+            </Link>
+          ))}
+        </PostsSection>
+      </Layout>
+    </>
   );
 };
 
