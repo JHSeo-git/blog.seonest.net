@@ -4,6 +4,7 @@ import { colors, spaces, zIndices } from '@/constants/theme';
 
 import Container from '../Container';
 import Spacer from '../Spacer';
+import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
 export interface LayoutBaseProps {
@@ -18,8 +19,11 @@ function LayoutBase({ children }: LayoutBaseProps) {
       </HeaderWrapper>
       <MainWrapper>
         <Main>{children}</Main>
+        <Spacer size="$12" />
       </MainWrapper>
-      <Spacer size="$12" />
+      <FooterWrapper>
+        <Footer />
+      </FooterWrapper>
     </Layout>
   );
 }
@@ -37,6 +41,8 @@ const HeaderWrapper = styled(Container)`
 const MainWrapper = styled(Container)`
   padding-top: ${spaces.$12};
 `;
+
+const FooterWrapper = styled(Container)``;
 
 const Main = styled.main``;
 

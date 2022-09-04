@@ -8,6 +8,7 @@ import type { PostFrontMatter } from '@/utils/mdxUtils.server';
 import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';
 import Spacer from '../Spacer';
+import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
 export interface LayoutPostProps {
@@ -42,8 +43,11 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
       <DarkHeaderBackground />
       <Main>
         <MainWrapper>{children}</MainWrapper>
+        <Spacer size="$12" />
       </Main>
-      <Spacer size="$12" />
+      <FooterWrapper>
+        <Footer />
+      </FooterWrapper>
     </Layout>
   );
 }
@@ -72,6 +76,8 @@ const HeroWrapper = styled(Container)`
   padding-top: ${spaces.$10};
   padding-bottom: ${spaces.$14};
 `;
+
+const FooterWrapper = styled(Container)``;
 
 const HeroBottom = styled.div`
   margin-top: ${spaces.$6};
