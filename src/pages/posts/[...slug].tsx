@@ -1,4 +1,5 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import NextImage from 'next/future/image';
 import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
 import styled, { css } from 'styled-components';
@@ -61,6 +62,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     slug: mdx.frontMatter.slug,
     readingTime: mdx.frontMatter.readingTime,
     lastModified: mdx.frontMatter.lastModified,
+    thumbnail: mdx.frontMatter.thumbnail,
   };
 
   return {
@@ -95,6 +97,14 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
     <Layout mode="post" postFrontMatter={frontMatter}>
       <MDXWrapper>
         <MDXArticle>
+          {frontMatter.thumbnail && (
+            <MDXThumbnail
+              src={frontMatter.thumbnail}
+              width={750}
+              height={500}
+              placeholder="empty"
+            />
+          )}
           <MDXRemote {...source} components={components} />
           <MDXFooter>
             <MDXFooterTop>
@@ -141,6 +151,14 @@ const MDXWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-start;
+`;
+
+const MDXThumbnail = styled(NextImage)`
+  border-radius: ${radii.$5};
+  margin: 0 auto;
+  object-fit: cover;
+
+  margin-bottom: ${spaces.$10};
 `;
 
 const MDXArticle = styled.article`

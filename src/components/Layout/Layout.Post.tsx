@@ -16,7 +16,7 @@ export interface LayoutPostProps {
 }
 
 function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
-  useBodyBackgroundColorEffect('sky3');
+  useBodyBackgroundColorEffect('sky2');
 
   return (
     <Layout>
@@ -51,7 +51,7 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
 }
 
 const Layout = styled.div`
-  --layout-background-color: ${colors.sky3};
+  --layout-background-color: ${colors.sky2};
 
   background-color: var(--layout-background-color);
 `;

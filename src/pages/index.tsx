@@ -72,9 +72,6 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
             </Link>
           ))}
         </CategoriesSection>
-        <TagsSection>
-          <SectionTitle>태그</SectionTitle>
-        </TagsSection>
       </PageGrid>
     </Layout>
   );
@@ -82,13 +79,11 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
 
 const PageGrid = styled.div`
   display: grid;
-  grid-template: 'posts' 'categories' 'tags';
+  grid-template: 'posts' 'categories';
   gap: ${spaces.$14};
 
   @media (min-width: ${breakpoints.md}) {
-    grid-template:
-      'posts categories' auto
-      'posts tags' 1fr / 2fr 1fr;
+    grid-template: 'posts categories';
   }
 `;
 
@@ -97,9 +92,6 @@ const PostsSection = styled.section`
 `;
 const CategoriesSection = styled.section`
   grid-area: categories;
-`;
-const TagsSection = styled.section`
-  grid-area: tags;
 `;
 
 const SectionTitle = styled.h2`

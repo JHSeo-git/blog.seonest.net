@@ -7,7 +7,7 @@ import { colors, radii, spaces, typography } from '@/constants/theme';
 function Bio() {
   return (
     <BioWrapper>
-      <Avatar src={appConfig.avatar} width={90} height={90} placeholder="empty" />
+      <Avatar src={appConfig.avatar} width={100} height={100} placeholder="empty" />
       <Profile>
         <ProfileAuthor>
           <Author>{appConfig.author}</Author>
@@ -58,10 +58,11 @@ const Author = styled.span`
   background-color: ${colors.primary900};
   color: ${colors.loContrast};
   border-radius: ${radii.base};
+  font-size: ${typography.fontSizes.sm};
 `;
 
 const ProfileDescription = styled.p`
-  margin-top: ${spaces.$1};
+  margin-top: ${spaces.$2};
 
   font-size: ${typography.fontSizes.sm};
   color: ${colors.gray11};

@@ -142,6 +142,7 @@ export type PostFrontMatter = {
   slug: string;
   readingTime?: number;
   lastModified?: string | null;
+  thumbnail?: string | null;
 };
 
 function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
@@ -156,6 +157,7 @@ function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
     slug: untypedFrontMatter.slug,
     readingTime: untypedFrontMatter.readingTime ?? null,
     lastModified: untypedFrontMatter.lastModified ?? null,
+    thumbnail: untypedFrontMatter.thumbnail ?? null,
   };
 
   return frontMatter;
