@@ -117,22 +117,26 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
             <Bio />
             <Spacer size="$14" />
             <MDXFooterNav>
-              {prev && (
-                <Link href={`/posts/${prev.slug}`} passHref>
-                  <PrevNext>
-                    <PrevNextLabel>이전</PrevNextLabel>
-                    <PrevNextTitle>{prev.title}</PrevNextTitle>
-                  </PrevNext>
-                </Link>
-              )}
-              {next && (
-                <Link href={`/posts/${next.slug}`} passHref>
-                  <PrevNext $isNext>
-                    <PrevNextLabel>다음</PrevNextLabel>
-                    <PrevNextTitle>{next.title}</PrevNextTitle>
-                  </PrevNext>
-                </Link>
-              )}
+              <PrevNextWrapper>
+                {prev && (
+                  <Link href={`/posts/${prev.slug}`} passHref>
+                    <PrevNext>
+                      <PrevNextLabel>이전</PrevNextLabel>
+                      <PrevNextTitle>{prev.title}</PrevNextTitle>
+                    </PrevNext>
+                  </Link>
+                )}
+              </PrevNextWrapper>
+              <PrevNextWrapper $isNext>
+                {next && (
+                  <Link href={`/posts/${next.slug}`} passHref>
+                    <PrevNext $isNext>
+                      <PrevNextLabel>다음</PrevNextLabel>
+                      <PrevNextTitle>{next.title}</PrevNextTitle>
+                    </PrevNext>
+                  </Link>
+                )}
+              </PrevNextWrapper>
             </MDXFooterNav>
             <Spacer size="$14" />
             <Comment />
@@ -210,12 +214,8 @@ const BoxValue = styled.p`
   color: ${colors.gray11};
   text-align: right;
 `;
-
-const PrevNext = styled.a<{ $isNext?: boolean }>`
+const PrevNextWrapper = styled.div<{ $isNext?: boolean }>`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-
   ${({ $isNext }) =>
     $isNext &&
     css`
@@ -225,6 +225,16 @@ const PrevNext = styled.a<{ $isNext?: boolean }>`
   @media (min-width: ${breakpoints.md}) {
     width: auto;
   }
+`;
+const PrevNext = styled.a<{ $isNext?: boolean }>`
+  display: flex;
+  flex-direction: column;
+
+  ${({ $isNext }) =>
+    $isNext &&
+    css`
+      align-items: flex-end;
+    `};
 `;
 const PrevNextLabel = styled.h3`
   font-size: ${typography.fontSizes.sm};

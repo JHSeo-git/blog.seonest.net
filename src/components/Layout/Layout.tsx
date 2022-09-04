@@ -5,7 +5,7 @@ import LayoutPost from './Layout.Post';
 
 type LayoutProps =
   | {
-      mode?: 'base';
+      mode?: 'base' | 'category';
       children: React.ReactNode;
       postFrontMatter?: never;
     }
@@ -19,6 +19,7 @@ function Layout({ mode = 'base', children, postFrontMatter }: LayoutProps) {
   return (
     <>
       {mode === 'base' && <LayoutBase>{children}</LayoutBase>}
+      {mode === 'category' && <LayoutBase headerMode="grayscale">{children}</LayoutBase>}
       {mode === 'post' && <LayoutPost postFrontMatter={postFrontMatter}>{children}</LayoutPost>}
     </>
   );

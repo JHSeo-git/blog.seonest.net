@@ -50,6 +50,14 @@ export async function getAllPosts() {
   return sortedPosts;
 }
 
+export async function getPostsByCategory(category: string) {
+  const posts = await getAllPosts();
+  const filteredPosts = posts.filter((post) => post.frontMatter.category === category);
+  const sortedPosts = filteredPosts.sort(postSorter);
+
+  return sortedPosts;
+}
+
 export type CategoryInfo = {
   name: string;
   count: number;

@@ -1,19 +1,21 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-import { colors, spaces, typography } from '@/constants/theme';
+import { colors, radii, spaces, typography } from '@/constants/theme';
 import type { PostFrontMatter } from '@/utils/mdxUtils.server';
 
 import Spacer from '../Spacer';
 
+type Mode = 'base' | 'card';
 export interface PostCardProps {
   post: PostFrontMatter;
+  mode?: Mode;
 }
 
-function PostCard({ post }: PostCardProps) {
+function PostCard({ post, mode = 'base' }: PostCardProps) {
   const { title, subTitle, description, date, category } = post;
 
   return (
-    <Card>
+    <Card $mode={mode}>
       <Title>{title}</Title>
       {subTitle && <SubTitle>{subTitle}</SubTitle>}
       {description && <Description>{description}</Description>}
@@ -28,7 +30,15 @@ function PostCard({ post }: PostCardProps) {
   );
 }
 
-const Card = styled.article``;
+const Card = styled.article<{ $mode: Mode }>`
+  ${({ $mode }) =>
+    $mode === 'card' &&
+    css`
+      padding: ${spaces.$8};
+      background-color: ${colors.loContrast};
+      border-radius: ${radii.base};
+    `}
+`;
 
 const Title = styled.h3`
   font-size: ${typography.fontSizes.h3};
