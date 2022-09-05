@@ -7,11 +7,11 @@ export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 function Image({ src, ...rest }: ImageProps) {
   if (!src) {
-    return <StyledImage key={src} {...rest} />;
+    return <StyledImage {...rest} />;
   }
 
   if (src.startsWith('http')) {
-    return <StyledImage key={src} src={src} {...rest} />;
+    return <StyledImage src={src} {...rest} />;
   }
 
   const width = 700;
@@ -19,7 +19,6 @@ function Image({ src, ...rest }: ImageProps) {
 
   return (
     <StyledNextImage
-      key={src}
       src={src}
       width={width}
       height={height}
