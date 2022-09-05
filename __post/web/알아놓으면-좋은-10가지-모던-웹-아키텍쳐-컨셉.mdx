@@ -12,7 +12,7 @@ thumbnail: '/post/web/알아놓으면-좋은-10가지-모던-웹-아키텍쳐-�
 >
 > 이 글에 대한 번역과 작은 제 생각들을 작성해보았습니다.
 
-# 들어가면서
+## 들어가면서
 
 Tim Berners-Lee님이 WWW를 발명한 후로 약 30년 정도가 지났습니다.
 
@@ -35,7 +35,7 @@ Modern web application architecture는 모든 개발자들이 알아야만 하�
 9. Database
 10. Services
 
-# 1. Server
+## 1. Server
 
 > **서버**는 개인 네트워크나 인터넷을 통해 한 가지 서비스(또는 여러 서비스들)을 제공하는 컴퓨터를 말합니다.
 
@@ -57,7 +57,7 @@ Modern web application architecture는 모든 개발자들이 알아야만 하�
 - ms azure - [Azure Virtual Machine](https://azure.microsoft.com/ko-kr/services/virtual-machines/)
 - google gcp - [Google Compute Engine](https://cloud.google.com/compute)
 
-# 2. Client
+## 2. Client
 
 > 클라이언트는 서비스나 리소스를 얻기위해 그것을 제공하는 서버에 연결되는 디바이스 입니다.
 
@@ -72,7 +72,7 @@ Modern web application architecture는 모든 개발자들이 알아야만 하�
 - thin client: 일반적인 SPA(Single Page Application)과 같이 서버에 전적으로 의존하는 클라이언트 입니다.
 - thick client: thin client와 다르게 서버에 의존하지 않습니다. 서버에 데이터를 유지하는 standalone 어플리케이션과 유사합니다.
 
-# 3. Microservice
+## 3. Microservice
 
 > Microservice는 어플리케이션을 느슨하게 결합된 서비스의 모임으로 구조화하는 서비스 지향 아키텍쳐(SOA) 스타일의 일종인 소프트웨어 개발 기법입니다.
 
@@ -89,7 +89,7 @@ Microservice는 특정 프로세스를 담당하는 느슨하게 결합되고 �
 
 웹 기반 소프트웨어 시스템에서는 대부분의 Microservice는 가상 머신 또는 가상 컨테이너 내에서 동작하는 RESTful APIs 입니다.
 
-# 4. Cloud Function
+## 4. Cloud Function
 
 > 서버 관리에 대한 걱정은 줄이고 코드 실행과 컴퓨팅 시간에 집중
 >
@@ -110,7 +110,7 @@ cloud function의 lifecycle은 각 클라우드 서비스 제공자에 의해 �
 
 개인이나 스타트업 기업은 적은 인프라 비용 때문에 cloud function을 선택하기도 합니다.
 
-# 5. Load Balancer
+## 5. Load Balancer
 
 > 둘 혹은 셋 이상의 자원에게 작업을 나누는 것을 의미합니다.
 > *- [load balancing*위키](https://ko.wikipedia.org/wiki/%EB%B6%80%ED%95%98%EB%B6%84%EC%82%B0)\_
@@ -126,7 +126,7 @@ Web 아키텍쳐에서 로드 밸런서는 Web 트래픽을 가용성에 따라 
 
 현재는 거의 모든 클라우드 서비스 provider에서 서비스들 중에 잘 알려진 서비스형(_as-a-service_) 모델을 사용한 로드 밸런서를 통합하여 제공합니다.
 
-# 6. API Gateway
+## 6. API Gateway
 
 > Amazon API Gateway는 어떤 규모에서든 개발자가 API를 손쉽게 생성, 게시, 유지 관리, 모니터링 및 보안 유지할 수 있도록 하는 완전관리형 서비스입니다.
 >
@@ -144,7 +144,7 @@ API Gateway는 모든 클라이언트 요청을 매핑된 서비스로 보냅니
 API Gateway는 모니터링, 속도 제한, 사용율, 버전관리 등과 같은 통합된 다양한 서비스를 제공합니다.
 대게 RESTful API와 함께 제공되지만 SOAP, GraphQL, gRPC, TCP 등도 지원합니다.
 
-# 7. Message Queue
+## 7. Message Queue
 
 > 마이크로서비스로 제공된 아키텍쳐에서 각 서비스들 사이에 **RESTful API**나 **메시지 큐**를 이용해 통신합니다.
 
@@ -163,7 +163,7 @@ API Gateway는 모니터링, 속도 제한, 사용율, 버전관리 등과 같�
 >
 > AWS에서는 [SQS](https://aws.amazon.com/ko/sqs/) 라는 이름으로 제공합니다.
 
-# 8. CDN
+## 8. CDN
 
 > Content Delivery Network: 콘텐츠 전송 네트워크
 
@@ -183,7 +183,7 @@ CDN은 전 세계에 있는 서버들에 정적 컨텐츠를 캐쉬합니다. �
 > - [CloudFlare](https://www.cloudflare.com/) data center locations
 >   ![cloudflare-datacenter](https://www.cloudflare.com/resources/images/slt3lc6tev37/69kkXHCeRSINfQR3nYlxqH/1e27afe358931b4e00409141aec25ff2/facebook-link-image.png)
 
-# 9. Database
+## 9. Database
 
 Database(DB)는 데이터 다양한 형태의 정보들을 저장하는 구성 요소 입니다.
 
@@ -202,7 +202,7 @@ Database 유형에는 크게 2가지 종류가 있고 세세하게 몇 가지 �
 웹 설계자는 실제 요구 사항에 따라 데이터베이스 타입을 결정해야 합니다.
 예를 들어, 만약 unique ID에 기반한 많은 user session을 저장해야될 필요가 있을 경우 key-value 타입의 No SQL DB가 좋은 결정이 될 수 있습니다.
 
-# 10. Services
+## 10. Services
 
 Web 어플리케이션은 인증, emaling, loggin, 모니터링, 머신 러닝, 결제 등등과 같은 다른 서비스들을 요구합니다.
 
@@ -216,7 +216,7 @@ Web 어플리케이션은 인증, emaling, loggin, 모니터링, 머신 러닝, 
 
 저 또한 그러고 있고, 이런 부분에 있어서 정보라던지 시야를 넓히고 있어야 될 것 같습니다.
 
-# 마무리
+## 마무리
 
 요즘에는 다양한 곳에서 많은 클라우드 서비스들이 많습니다.
 

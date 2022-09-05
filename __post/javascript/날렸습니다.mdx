@@ -14,7 +14,7 @@ thumbnail: '/post/javascript/날렸습니다/thumbnail.png'
 
 미천한 제가 이렇게 하나 배워갑니다.
 
-# 발생
+## 발생
 
 신나게 새로운 포스트를 작성을 다 할 때쯤 임시저장 시 500 에러가 났었습니다.
 
@@ -35,7 +35,7 @@ thumbnail: '/post/javascript/날렸습니다/thumbnail.png'
 > 아(Ah)...
 > synchronize
 
-# 원인
+## 원인
 
 orm으로 typeorm을 사용하고 있습니다.
 db는 mariadb를 사용하고 있구요.
@@ -53,7 +53,7 @@ orm은 자바스크립트로 작성된 entity를 db와 연동해줘서 제공된
 
 markdown을 저장하는 컬럼이 변경되었기 때문에 본문을 저장한 데이터는 날아갔지만 글은 남아있었고 리스트는 보이지만 실제 내용은 보이지 않는 상태로 되었던 것이었습니다.
 
-# 해결방식(sad ending)
+## 해결방식(sad ending)
 
 구글링을 통해 mysql, mariadb 복구 글을 몇개 찾다 보니 flashback이라는게 보였습니다.
 
@@ -95,7 +95,7 @@ $ mysqlbinlog /var/log/mysql/mybin-log.000001 > restore.sql
 
 그래서 뭐...깔끔하게 포기하고 일단 나중에 상황을 대비해서 binlog 설정과 다른 config 설정들을 마치고 docker 설정도 몇가지 더 하고 배포했습니다.
 
-# typeorm migration
+## typeorm migration
 
 > synchronize 기능은 개발 시엔 편하지만 운영 시엔 매우 주의깊에 쓰거나 사용하지 말아야 합니다. 왜냐하면 저 처럼 될 수 있으니깐요 ^^..
 >
@@ -106,7 +106,7 @@ $ mysqlbinlog /var/log/mysql/mybin-log.000001 > restore.sql
 typeorm에는 migration 기능을 제공합니다.(cli를 이용합니다.)
 (up, down 기능을 제공해주어서 rollback 할 수도 있습니다.)
 
-## 1. ormconfig 설정
+### 1. ormconfig 설정
 
 ```js
   cli: {
@@ -117,7 +117,7 @@ typeorm에는 migration 기능을 제공합니다.(cli를 이용합니다.)
 
 cli migrationDir 경로를 지정해주고 마이그레이션 코드를 생성해줍니다.
 
-## 2. migration:create
+### 2. migration:create
 
 ```bash
 typeorm migration:create -n [whateverYouWantName]
@@ -138,7 +138,7 @@ script로 만들어 쓰도록 합시다
 
 그 후 migration 코드를 작성하면 끝.
 
-## 3. implement migration code
+### 3. implement migration code
 
 migration:create를 하면 다음과 같이 생성됩니다.
 
@@ -175,7 +175,7 @@ export class NewMigrationTIMESTAMP implements MigrationInterface {
 }
 ```
 
-## 4. run, revert
+### 4. run, revert
 
 ```bash
 # up 메서드가 실행됩니다.
@@ -185,14 +185,14 @@ typeorm migration:run
 typeorm migration:revert
 ```
 
-# 마치며
+## 마치며
 
 개인적으로 운영하는 db라서 망정이지 실제로 서비스되는 db에 이런 문제가 생겼으면...
 
 그래도 이렇게 또 하나 배워 간다고 생각하고 긍정적으로 생각해보려고 합니다.
 ~~(그게 잘 안돼...)~~
 
-# reference
+## reference
 
 > - https://darrengwon.tistory.com/1311
 > - https://github.com/typeorm/typeorm/blob/master/docs/faq.md

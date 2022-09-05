@@ -30,7 +30,7 @@ Perl을 개발한 Larry Wall은 [프로그래머에 필요한 3대 덕목](https
 
 그럼 번들러 의 어떤점이 `게으름`을 갖게 해주는 걸까요?
 
-# 번들러
+## 번들러
 
 > 번들러는 의존성이 있는 모듈 코드를 하나(또는 여러 개)의 파일로 만들어주는 도구이다.
 
@@ -42,7 +42,7 @@ Perl을 개발한 Larry Wall은 [프로그래머에 필요한 3대 덕목](https
 
 그 외에도 다양한 기능들을 포함하여 개발 생산성을 획기적으로 높이도록 여러 번들러들이 개발되고 발전해왔습니다.
 
-# 처음엔
+## 처음엔
 
 처음 번들러는 자바스크립트 모듈을 브라우저에서 실행할 수 있는 단일 자바스크립트 파일로 번들링하기 위함 이었습니다.
 
@@ -72,7 +72,7 @@ Perl을 개발한 Larry Wall은 [프로그래머에 필요한 3대 덕목](https
 http connection overhead문제를 해결하기 위해 HTTP/2를 사용하더라도 동일 테스트결과에서 하나의 파일로 합친 것이 더 나은 결과를 보입니다.
 (HTTP/2는 하나의 연결로 지속해서 진행되도록 되어있습니다. 더 많은 정보는 [여기서](https://www.seonest.net/posts/HTTP...-%EA%B7%B8%EA%B2%83%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC) 작성되어있습니다.)
 
-# 발전
+## 발전
 
 그러면 어떻게 `dist/bundle.js`를 생성해낼까요?
 
@@ -105,7 +105,7 @@ http connection overhead문제를 해결하기 위해 HTTP/2를 사용하더라�
 
 현재는 웹 어플리케이션을 개발할 때 별도의 추가적인 툴 없이 Webpack과 같은 모듈 번들러 툴 하나로 처리하는 이유이기도 합니다.
 
-# 대장들
+## 대장들
 
 ![bundler-npm-trend.png](https://files.seonest.net/images/qnfqnfqnf/post/25/bundler-npm-trend.png)
 
@@ -122,7 +122,7 @@ http connection overhead문제를 해결하기 위해 HTTP/2를 사용하더라�
 
 먼저 가장 많이 사용되고 있는 Webpack에 대해서 먼저 살펴보고자 합니다.
 
-# Webpack
+## Webpack
 
 ![webpack logo](https://raw.githubusercontent.com/webpack/media/3e52c178e6ad2428585a2cbf5d22d6dbe0697f0f/logo/logo-on-white-bg.svg)
 
@@ -149,7 +149,7 @@ CommonJS, AMD, ES Module 모듈을 모두 지원하며, 자바스크립트 뿐�
 이 외에도 Code Spliting과 Dynamic imports(Lazy Loading), Tree Shaking, Dev Server(Node.js Express 웹서버) 등 효율적인 자바스크립트 개발을 위한 기능을 제공하고 있다.
 ~~(많은 것을 포함하고 있는 것만큼 설정할 것도 많습니다.)~~
 
-## webpack.config.js
+### webpack.config.js
 
 웹팩에는 중요한 설정 4가지가 있습니다.
 
@@ -158,7 +158,7 @@ CommonJS, AMD, ES Module 모듈을 모두 지원하며, 자바스크립트 뿐�
 3.  loader: 모듈 로더(자바스크립트를 포함한 리소스(css, image, file 등)를 변환할 때 쓸 것들)
 4.  plugin: 추가적으로 결과물 형태를 바꾸고자할 때 쓸 것들
 
-### 1. entry
+#### 1. entry
 
 ```js {3}
 // webpack.config.js
@@ -191,7 +191,7 @@ entry: {
 }
 ```
 
-### 2. output
+#### 2. output
 
 ```js {3-5}
 // webpack.config.js
@@ -255,7 +255,7 @@ module.exports = {
 };
 ```
 
-### 3. loader
+#### 3. loader
 
 엔트리, 아웃풋에 기반한 모든 자원들(css, image, file 등)에 대해서 변환할 때 쓰이는 모듈 로더 입니다.
 
@@ -366,7 +366,7 @@ module: {
 style-loader는 인라인 `<style>` 태그로 추가되는 것을 할 수 있습니다.
 (인라인 형태로 제공되면 css 파일을 추가로 받지 않아도 되는 장점이 있겠죠)
 
-### 4. plugins
+#### 4. plugins
 
 로더랑 헷갈릴 수가 있는데 이렇게 이해하면 좋을 것 같습니다.
 
@@ -390,7 +390,7 @@ module.exports = {
 
 이 외에도 다양한 [플러그인](https://webpack.js.org/plugins/)이 존재합니다.
 
-## Wrap up
+### Wrap up
 
 ![conecpt](https://joshua1988.github.io/webpack-guide/assets/img/diagram.519da03f.png)
 
@@ -403,7 +403,7 @@ module.exports = {
 
 등이 있으니 참고하시면 좋을 것 같습니다.
 
-## Webpack vs ...
+### Webpack vs ...
 
 다른 모듈 번들러와 비교했을 때
 
@@ -421,7 +421,7 @@ webpack은 위 npm trend에도 보셨겠지만 2012년에 만들어진 이후에
 
 웹 애플리케이션을 개발 시 모듈 번들러를 결정할 때 큰 고민 없이 webpack을 선택해도 큰 문제가 없는 이유입니다.
 
-# Rollup
+## Rollup
 
 ![rollup-logo](https://rollupjs.org/images/twitter-card.jpg)
 
@@ -445,7 +445,7 @@ const query = 'Rollup';
 ajax(`https://api.example.com?search=${query}`).then(handleResponse);
 ```
 
-## rollup.config.js
+### rollup.config.js
 
 default로 설정하지 않을 수도 있지만 원하는 결과를 위해 대부분은 webpack과 같이 config를 설정합니다.
 
@@ -492,7 +492,7 @@ export default [
 ];
 ```
 
-## Rollup vs ...
+### Rollup vs ...
 
 - 👍 더 작고 자기 참조되는 파일(library처럼)을 개발 할 때 관리하기 더 쉽습니다.
 - 👍 다른 번들러에 비해 tree shaking을 잘 지원합니다.
@@ -501,7 +501,7 @@ export default [
 
 최소한의 서드파티로 라이브러리를 만들고자 할 때 모듈 번들러로 rollup을 선택하는 것이 좋은 방법이 될 수 있습니다.
 
-# Parcel
+## Parcel
 
 ![parcle-logo](https://user-images.githubusercontent.com/19409/31321658-f6aed0f2-ac3d-11e7-8100-1587e676e0ec.png)
 
@@ -519,7 +519,7 @@ HTML 파일을 순서대로 읽어나가면서 javascript, css, image 등을 직
 
 이로 인해 다른 번들러에 비해 쉽게 적용 가능합니다.
 
-## parcel vs ...
+### parcel vs ...
 
 - 👍 설정 없는 번들링으로 쉬운 접근성을 제공합니다.
 - 👍 별다른 설정 없이 코드 스플리팅, tree shaking을 지원합니다.
@@ -527,7 +527,7 @@ HTML 파일을 순서대로 읽어나가면서 javascript, css, image 등을 직
 - 👎 커스텀 설정이 필요한 경우 더 복잡해질 수 있습니다.
 - 👎 생태계가 다른 번들러에 비해 크진 않습니다
 
-## parcel2
+### parcel2
 
 ~~현재 parcel 다음 버전인 2 버전이 개발 진행 중에 있습니다. (https://v2.parceljs.org/)
 (2021.5.18일 기준으로 parcel2 beta 3가 release 되었습니다.)~~
@@ -567,7 +567,7 @@ https://parceljs.org/
 javascript compiler를 rust로 재 작성하였고 그로 인해 build performance가 10배 성능 향상이 있었다고 합니다.
 ~~(esbuild는 go로 작성되었go...)~~
 
-# 마무리하며
+## 마무리하며
 
 javascript 모듈 번들러에 대한 의미와 3대장에 대해서 간단하게 살펴보았습니다.
 
@@ -578,7 +578,7 @@ javascript 모듈 번들러에 대한 의미와 3대장에 대해서 간단하�
 
 또한 성능 향상을 위해 각자 어떤 방식으로 번들링을 하는지 찾아보시면 꽤나 흥미로운 지점들을 발견하실 수 있을 것 같아요.
 
-# reference
+## reference
 
 > - https://joshua1988.github.io/webpack-guide/
 > - https://ui.toast.com/fe-guide/ko_BUNDLER
