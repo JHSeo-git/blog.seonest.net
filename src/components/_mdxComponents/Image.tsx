@@ -7,26 +7,17 @@ export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 function Image({ src, ...rest }: ImageProps) {
   if (!src) {
-    return <StyledImage {...rest} />;
+    return <StyledImage {...rest} loading="lazy" />;
   }
 
   if (src.startsWith('http')) {
-    return <StyledImage src={src} {...rest} />;
+    return <StyledImage src={src} {...rest} loading="lazy" />;
   }
 
   const width = 700;
   const height = 400;
 
-  return (
-    <StyledNextImage
-      src={src}
-      width={width}
-      height={height}
-      {...rest}
-      placeholder="empty"
-      priority
-    />
-  );
+  return <StyledNextImage src={src} width={width} height={height} {...rest} placeholder="empty" />;
 }
 
 const StyledImage = styled.img`

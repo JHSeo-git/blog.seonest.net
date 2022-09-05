@@ -2,7 +2,9 @@ import type { GetStaticProps, NextPage } from 'next';
 import { MDXRemote } from 'next-mdx-remote';
 import styled from 'styled-components';
 
+import appConfig from '@/app.config';
 import components from '@/components/_mdxComponents';
+import PageSEO from '@/components/_seo/PageSEO';
 import Container from '@/components/Container';
 import Hidden from '@/components/Hidden';
 import { colors, spaces, typography } from '@/constants/theme';
@@ -28,16 +30,21 @@ type AboutPageProps = NonNullable<About> & {
 
 const AboutPage: NextPage<AboutPageProps> = ({ source, frontMatter }) => {
   return (
-    <AboutContainer>
-      <Hidden>
-        <h1>About JHSeo</h1>
-      </Hidden>
-      <LastModifiedBox>
-        <Label>Last updated:</Label>
-        <LastUpdated>{getDistanceToNow(frontMatter.lastModified, { humanize: false })}</LastUpdated>
-      </LastModifiedBox>
-      <MDXRemote {...source} components={components} />
-    </AboutContainer>
+    <>
+      <PageSEO url="about" title="About JHSeo" description={appConfig.description} />
+      <AboutContainer>
+        <Hidden>
+          <h1>About JHSeo</h1>
+        </Hidden>
+        <LastModifiedBox>
+          <Label>Last updated:</Label>
+          <LastUpdated>
+            {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
+          </LastUpdated>
+        </LastModifiedBox>
+        <MDXRemote {...source} components={components} />
+      </AboutContainer>
+    </>
   );
 };
 

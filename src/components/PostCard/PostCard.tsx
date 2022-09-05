@@ -12,7 +12,7 @@ export interface PostCardProps {
 }
 
 function PostCard({ post, mode = 'base' }: PostCardProps) {
-  const { title, subTitle, description, date, category } = post;
+  const { title, subTitle, description, date } = post;
 
   return (
     <Card $mode={mode}>
