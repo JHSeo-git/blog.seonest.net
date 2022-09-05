@@ -17,7 +17,16 @@ function Image({ src, ...rest }: ImageProps) {
   const width = 700;
   const height = 400;
 
-  return <StyledNextImage src={src} width={width} height={height} {...rest} placeholder="empty" />;
+  return (
+    <StyledNextImage
+      src={src}
+      width={width}
+      height={height}
+      {...rest}
+      placeholder="empty"
+      priority
+    />
+  );
 }
 
 const StyledImage = styled.img`

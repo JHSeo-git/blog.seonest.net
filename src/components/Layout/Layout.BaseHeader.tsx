@@ -2,6 +2,7 @@ import Link from 'next/link';
 import styled from 'styled-components';
 
 import { TextLogoIcon } from '../_icons';
+import MenuButton from './MenuButton';
 
 function LayoutBaseHeader() {
   return (
@@ -14,7 +15,9 @@ function LayoutBaseHeader() {
         </Link>
         <Nav></Nav>
       </HeaderLeft>
-      <HeaderRight />
+      <HeaderRight>
+        <MenuButton />
+      </HeaderRight>
     </Header>
   );
 }
