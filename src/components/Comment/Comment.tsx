@@ -1,10 +1,13 @@
 import Giscus from '@giscus/react';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import appConfig from '@/app.config';
 import { spaces } from '@/constants/theme';
 
 function Comment() {
+  const { asPath } = useRouter();
+
   if (!appConfig.comment) {
     return null;
   }
@@ -12,12 +15,13 @@ function Comment() {
   return (
     <CommentWrapper>
       <Giscus
+        key={asPath}
         id="comments"
         repo="JHSeo-git/seonest-comments"
         repoId="R_kgDOGRegJA"
         category="Announcements"
         categoryId="DIC_kwDOGRegJM4CN-hf"
-        mapping="pathname"
+        mapping="title"
         lang="ko"
         loading="lazy"
       />

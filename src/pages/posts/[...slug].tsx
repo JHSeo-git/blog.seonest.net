@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
 import styled, { css } from 'styled-components';
 
-import appConfig from '@/app.config';
 import components from '@/components/_mdxComponents';
 import Hr from '@/components/_mdxComponents/Hr';
 import PostSEO from '@/components/_seo/PostSEO';
@@ -13,7 +12,7 @@ import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
 import PostNav from '@/components/PostNav';
 import Spacer from '@/components/Spacer';
-import { breakpoints, colors, radii, spaces, typography } from '@/constants/theme';
+import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import { getDistanceToNow } from '@/utils/dateUtils';
 import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
 import { getPrevNextBySlug } from '@/utils/mdxUtils.server';
