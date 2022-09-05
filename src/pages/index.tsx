@@ -8,11 +8,11 @@ import PostCard from '@/components/PostCard';
 import Spacer from '@/components/Spacer';
 import { breakpoints, colors, radii, spaces, typography } from '@/constants/theme';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { CategoryInfo, PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { CategoryInfo, MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllCategories } from '@/utils/mdxUtils.server';
 import { getAllPosts } from '@/utils/mdxUtils.server';
 
-type SerializedPostFromatter = { id: string } & PostFrontMatter;
+type SerializedPostFromatter = { id: string } & MDXFrontMatter;
 
 export const getStaticProps: GetStaticProps = async () => {
   const posts = await getAllPosts();

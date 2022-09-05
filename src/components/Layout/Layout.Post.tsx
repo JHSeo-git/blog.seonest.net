@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { colors, spaces, typography, zIndices } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 
 import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';
@@ -12,7 +12,7 @@ import Header from './Layout.BaseHeader';
 
 export interface LayoutPostProps {
   children: React.ReactNode;
-  postFrontMatter?: PostFrontMatter;
+  postFrontMatter?: MDXFrontMatter;
 }
 
 function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {

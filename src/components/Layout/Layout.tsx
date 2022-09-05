@@ -1,4 +1,4 @@
-import type { PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 
 import LayoutBase from './Layout.Base';
 import LayoutPost from './Layout.Post';
@@ -12,7 +12,7 @@ type LayoutProps =
   | {
       mode?: 'post';
       children: React.ReactNode;
-      postFrontMatter?: PostFrontMatter;
+      postFrontMatter?: MDXFrontMatter;
     };
 
 function Layout({ mode = 'base', children, postFrontMatter }: LayoutProps) {

@@ -19,7 +19,6 @@ function Item({ ...rest }: ItemProps) {
 List.Item = Item;
 
 const StyledList = styled.ul`
-  margin-top: ${spaces.$4};
   padding-left: ${spaces.$6};
 
   font-size: ${typography.fontSizes.md};

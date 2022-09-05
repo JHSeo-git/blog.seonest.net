@@ -38,7 +38,7 @@ const NavItem = styled.a<{ $level: number; $active: boolean }>`
   ${(props) =>
     props.$level >= 3 &&
     css`
-      padding-left: ${spaces.$2};
+      padding-left: calc(${props.$level - 2} * ${spaces.$3});
       margin-top: ${spaces.$1};
     `}
 

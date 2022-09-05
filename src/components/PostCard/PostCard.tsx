@@ -1,13 +1,13 @@
 import styled, { css } from 'styled-components';
 
 import { colors, radii, spaces, typography } from '@/constants/theme';
-import type { PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 
 import Spacer from '../Spacer';
 
 type Mode = 'base' | 'card';
 export interface PostCardProps {
-  post: PostFrontMatter;
+  post: MDXFrontMatter;
   mode?: Mode;
 }
 

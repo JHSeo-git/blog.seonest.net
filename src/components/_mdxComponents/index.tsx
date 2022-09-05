@@ -12,6 +12,7 @@ import Image from './Image';
 import List from './List';
 import Paragraph from './Paragraph';
 import Pre from './Pre';
+import Table from './Table';
 import Video from './Video';
 
 const components: MDXRemoteProps['components'] = {
@@ -37,6 +38,8 @@ const components: MDXRemoteProps['components'] = {
   hr: (props) => <Hr {...props} />,
   img: (props) => <Image alt={props.alt} {...props} />,
   video: (props) => <Video {...props} />,
+
+  table: (props) => <Table {...props} />,
 
   // custom
   SpicyText,

@@ -22,7 +22,7 @@ export const navItemVariants = {
     opacity: 1,
   },
   closed: {
-    x: -200,
+    x: '-100%',
     opacity: 0,
   },
 };

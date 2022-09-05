@@ -11,10 +11,10 @@ import Spacer from '@/components/Spacer';
 import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils.server';
 
-type SerializedPostFromatter = { id: string } & PostFrontMatter;
+type SerializedPostFromatter = { id: string } & MDXFrontMatter;
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const categories = await getAllCategories();

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { colors, spaces, typography } from '@/constants/theme';
 
+import Container from '../Container';
 import Portal from '../Portal';
 import { containerVariants, navItemVariants, navVariants } from './overlayMenuVariants.constants';
 
@@ -22,9 +23,6 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             animate="open"
             exit="closed"
             variants={containerVariants}
-            transition={{
-              delay: 0.2,
-            }}
           >
             <OverlayInner>
               <OverlayButton onClick={() => setOpen(false)} />
@@ -55,7 +53,7 @@ const OverlayContainer = styled(motion.div)`
   backdrop-filter: blur(10px);
 `;
 
-const OverlayInner = styled.div`
+const OverlayInner = styled(Container)`
   position: relative;
   width: 100%;
   height: 100%;

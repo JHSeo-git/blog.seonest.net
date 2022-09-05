@@ -15,6 +15,7 @@ const WORDS_PER_MINUTE_KOR = 500;
 const IMG_READ_TIME_SEC = 12;
 
 const POSTS_PATH = path.join(process.cwd(), '__post');
+const ABOUT_PATH = path.join(process.cwd(), '__about/resume.mdx');
 
 export async function getAllFilePaths() {
   const paths = await globPromise(`${POSTS_PATH}/**/*.?(md|mdx)`);
@@ -93,6 +94,45 @@ export async function getPrevNextBySlug(slug: string) {
   return { prev, next };
 }
 
+export async function getAbout() {
+  const filePath = ABOUT_PATH;
+
+  const source = await fs.readFile(filePath);
+  const stat = await fs.stat(filePath);
+  const { data, content } = matter(source);
+  const mdxSource = await serialize(content, {
+    // Optionally pass remark/rehype plugins
+    mdxOptions: {
+      remarkPlugins: [
+        // https://github.com/remarkjs/remark-gfm
+        remarkGfm,
+      ],
+      rehypePlugins: [
+        // https://github.com/timlrx/rehype-prism-plus#sample-markdown-to-html-output
+        rehypePrism,
+        // https://github.com/rehypejs/rehype-slug
+        rehypeSlug,
+        // https://github.com/rehypejs/rehype-autolink-headings
+        rehypeAutolinkHeadings,
+      ],
+    },
+    scope: data,
+  });
+
+  return {
+    source: mdxSource,
+    rawContent: content,
+    toc: getHeadings(content),
+    frontMatter: getFrontMatter({
+      ...data,
+      slug: 'resume',
+      readingTime: getReadingTime(content),
+      lastModified: stat.mtime.toISOString(),
+    }),
+  };
+}
+export type About = Awaited<ReturnType<typeof getAbout>>;
+
 export async function getPost(slug: string) {
   const filePath = await getFilePathBySlug(slug);
 
@@ -138,7 +178,7 @@ export type Post = Awaited<ReturnType<typeof getPost>>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UnTypedFrontMatter = { [key: string]: any };
-export type PostFrontMatter = {
+export type MDXFrontMatter = {
   title: string;
   subTitle?: string | null;
   description?: string | null;
@@ -153,7 +193,7 @@ export type PostFrontMatter = {
 };
 
 function getFrontMatter(untypedFrontMatter: UnTypedFrontMatter) {
-  const frontMatter: PostFrontMatter = {
+  const frontMatter: MDXFrontMatter = {
     title: untypedFrontMatter.title,
     subTitle: untypedFrontMatter.subTitle ?? null,
     description: untypedFrontMatter.description ?? null,
@@ -197,7 +237,13 @@ function getHeadings(source: string) {
     const text = raw.replace(/^###*\s/, '');
     const id = slugger.slug(text);
     const link = `#${id}`;
-    const level = raw.slice(0, 3) === '###' ? 3 : 2;
+    let level = 2;
+    if (raw.slice(0, 3) === '###') {
+      level = 3;
+    }
+    if (raw.slice(0, 4) === '####') {
+      level = 4;
+    }
 
     return { text, level, link, id };
   });

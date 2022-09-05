@@ -14,7 +14,7 @@ import PostNav from '@/components/PostNav';
 import Spacer from '@/components/Spacer';
 import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { Post, PostFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter, Post } from '@/utils/mdxUtils.server';
 import { getPrevNextBySlug } from '@/utils/mdxUtils.server';
 import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
 
@@ -30,7 +30,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-type SerializedPostFromatter = { id: string } & PostFrontMatter;
+type SerializedPostFromatter = { id: string } & MDXFrontMatter;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slugs = params?.slug;
