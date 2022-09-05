@@ -112,12 +112,14 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
         <MDXWrapper>
           <MDXArticle>
             {frontMatter.thumbnail && (
-              <MDXThumbnail
-                src={frontMatter.thumbnail}
-                width={750}
-                height={500}
-                placeholder="empty"
-              />
+              <MDXThumbnailWrapper>
+                <MDXThumbnail
+                  src={frontMatter.thumbnail}
+                  width={750}
+                  height={488}
+                  placeholder="empty"
+                />
+              </MDXThumbnailWrapper>
             )}
             <MDXRemote {...source} components={components} />
             <MDXFooter>
@@ -174,12 +176,15 @@ const MDXWrapper = styled.div`
   align-items: flex-start;
 `;
 
-const MDXThumbnail = styled(NextImage)`
-  border-radius: ${radii.$5};
-  margin: 0 auto;
-  object-fit: cover;
-
+const MDXThumbnailWrapper = styled.div`
+  position: relative;
   margin-bottom: ${spaces.$10};
+`;
+
+const MDXThumbnail = styled(NextImage)`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 const MDXArticle = styled.article`

@@ -26,14 +26,14 @@ const StyledHeading = styled.h1<{ as: HeadingAs }>`
     props.as === 'h2' &&
     css`
       margin-top: ${spaces.$12};
-      margin-bottom: ${spaces.$5};
+      margin-bottom: ${spaces.$7};
       color: ${colors.primary1100};
     `}
   ${(props) =>
     props.as === 'h3' &&
     css`
       margin-top: ${spaces.$12};
-      margin-bottom: ${spaces.$3};
+      margin-bottom: ${spaces.$7};
     `}
 `;
 

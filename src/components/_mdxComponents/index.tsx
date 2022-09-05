@@ -2,6 +2,7 @@ import type { MDXRemoteProps } from 'next-mdx-remote';
 
 import Admonition from '../Admonition';
 import SpicyText from '../SpicyText';
+import Anchor from './Anchor';
 import Blockquote from './Blockquote';
 import Code from './Code';
 import Del from './Del';
@@ -23,6 +24,7 @@ const components: MDXRemoteProps['components'] = {
   h6: (props) => <Heading {...props} as="h6" />,
   p: (props) => <Paragraph {...props} />,
   del: (props) => <Del {...props} />,
+  a: (props) => <Anchor {...props} />,
 
   blockquote: (props) => <Blockquote {...props} />,
   code: (props) => <Code {...props} />,
