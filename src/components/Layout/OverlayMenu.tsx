@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import NextLink from 'next/link';
 import styled from 'styled-components';
 
-import { colors, spaces, typography } from '@/constants/theme';
+import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 
 import Container from '../Container';
 import Portal from '../Portal';
@@ -24,8 +24,8 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             exit="closed"
             variants={containerVariants}
           >
+            <OverlayButton onClick={() => setOpen(false)} />
             <OverlayInner>
-              <OverlayButton onClick={() => setOpen(false)} />
               <OverlayNav variants={navVariants}>
                 <NavTitle>seonest</NavTitle>
                 <NextLink href="/" passHref>
@@ -65,10 +65,7 @@ const OverlayButton = styled.button`
   inset: 0;
   z-index: 1;
   touch-action: none;
-
-  &:active {
-    background-color: inherits;
-  }
+  background-color: transparent;
 `;
 
 const OverlayNav = styled(motion.nav)`
@@ -79,7 +76,7 @@ const OverlayNav = styled(motion.nav)`
 
   display: flex;
   flex-direction: column;
-  gap: ${spaces.$4};
+  gap: ${spaces.$6};
 `;
 
 const NavTitle = styled.h1`
