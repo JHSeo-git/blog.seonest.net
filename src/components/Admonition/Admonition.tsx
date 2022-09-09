@@ -110,6 +110,10 @@ const AdmonitionLabel = styled.p`
 
 const AdmonitionContent = styled.div`
   margin-top: ${spaces.$2};
+
+  & *:last-of-type {
+    margin: 0;
+  }
 `;
 
 export default Admonition;
