@@ -114,6 +114,7 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
               <MDXThumbnailWrapper>
                 <MDXThumbnail
                   src={frontMatter.thumbnail}
+                  alt="Thumbnail"
                   width={750}
                   height={488}
                   placeholder="empty"

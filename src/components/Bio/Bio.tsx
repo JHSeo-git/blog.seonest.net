@@ -7,7 +7,7 @@ import { colors, radii, spaces, typography } from '@/constants/theme';
 function Bio() {
   return (
     <BioWrapper>
-      <Avatar src={appConfig.avatar} width={100} height={100} placeholder="empty" />
+      <Avatar src={appConfig.avatar} alt="Avatar" width={100} height={100} placeholder="empty" />
       <Profile>
         <ProfileAuthor>
           <Author>{appConfig.author}</Author>
