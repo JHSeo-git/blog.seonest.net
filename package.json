@@ -16,7 +16,6 @@
     "dev": "next dev",
     "format": "yarn lint --fix --ext .ts,.tsx,.js,.jsx --ignore-path .gitignore && prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint": "next lint",
-    "post": "node __script/post-gen",
     "start": "next start"
   },
   "dependencies": {

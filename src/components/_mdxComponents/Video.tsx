@@ -5,7 +5,7 @@ import { spaces } from '@/constants/theme';
 export type VideoProps = React.VideoHTMLAttributes<HTMLVideoElement>;
 
 function Video({ ...rest }: VideoProps) {
-  return <StyledVideo {...rest} controls autoPlay muted={true} loop playsInline />;
+  return <StyledVideo controls autoPlay muted={true} loop playsInline {...rest} />;
 }
 
 const StyledVideo = styled.video`
