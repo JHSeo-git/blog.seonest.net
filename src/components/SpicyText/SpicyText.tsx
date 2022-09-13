@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import { colors, typography } from '@/constants/theme';
+import { colors, spaces, typography } from '@/constants/theme';
 
 export interface SpicyTextProps {
   children: React.ReactNode;
@@ -15,6 +15,8 @@ const StyledText = styled.span<{ $em: boolean }>`
   font-family: ${typography.fontFamily.spicy};
   font-weight: ${typography.fontWeights.medium};
   color: ${colors.teritary900};
+  padding-left: ${spaces.$2};
+  padding-right: ${spaces.$2};
 
   ${({ $em }) =>
     $em &&
