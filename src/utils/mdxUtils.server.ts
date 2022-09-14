@@ -127,7 +127,7 @@ export async function getAbout() {
       ...data,
       slug: 'resume',
       readingTime: getReadingTime(content),
-      lastModified: stat.mtime.toISOString(),
+      lastModified: data.updateAt ?? data.date ?? stat.mtime.toISOString(),
     }),
   };
 }
