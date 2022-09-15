@@ -94,52 +94,7 @@ export async function getPrevNextBySlug(slug: string) {
   return { prev, next };
 }
 
-export async function getAbout() {
-  const filePath = ABOUT_PATH;
-
-  const source = await fs.readFile(filePath);
-  const stat = await fs.stat(filePath);
-  const { data, content } = matter(source);
-  const mdxSource = await serialize(content, {
-    // Optionally pass remark/rehype plugins
-    mdxOptions: {
-      remarkPlugins: [
-        // https://github.com/remarkjs/remark-gfm
-        remarkGfm,
-      ],
-      rehypePlugins: [
-        // https://github.com/timlrx/rehype-prism-plus#sample-markdown-to-html-output
-        rehypePrism,
-        // https://github.com/rehypejs/rehype-slug
-        rehypeSlug,
-        // https://github.com/rehypejs/rehype-autolink-headings
-        rehypeAutolinkHeadings,
-      ],
-    },
-    scope: data,
-  });
-
-  return {
-    source: mdxSource,
-    rawContent: content,
-    toc: getHeadings(content),
-    frontMatter: getFrontMatter({
-      ...data,
-      slug: 'resume',
-      readingTime: getReadingTime(content),
-      lastModified: data.updateAt ?? data.date ?? stat.mtime.toISOString(),
-    }),
-  };
-}
-export type About = Awaited<ReturnType<typeof getAbout>>;
-
-export async function getPost(slug: string) {
-  const filePath = await getFilePathBySlug(slug);
-
-  if (!filePath) {
-    return;
-  }
-
+export async function getMdxSource(filePath: string, slug: string) {
   const source = await fs.readFile(filePath);
   const stat = await fs.stat(filePath);
   const { data, content } = matter(source);
@@ -170,9 +125,26 @@ export async function getPost(slug: string) {
       ...data,
       slug,
       readingTime: getReadingTime(content),
-      lastModified: stat.mtime.toISOString(),
+      lastModified: data.updateAt ?? data.date ?? stat.mtime.toISOString(),
     }),
   };
+}
+
+export async function getAbout() {
+  const filePath = ABOUT_PATH;
+
+  return getMdxSource(filePath, 'resume');
+}
+export type About = Awaited<ReturnType<typeof getAbout>>;
+
+export async function getPost(slug: string) {
+  const filePath = await getFilePathBySlug(slug);
+
+  if (!filePath) {
+    return;
+  }
+
+  return getMdxSource(filePath, slug);
 }
 export type Post = Awaited<ReturnType<typeof getPost>>;
 
@@ -230,12 +202,23 @@ function catagorySorter(a: CategoryInfo, b: CategoryInfo) {
   return a.count - b.count > 0 ? -1 : 1;
 }
 
+type Heading = {
+  text: string;
+  level: number;
+  link: string;
+  id: string;
+  rawId: string;
+};
 function getHeadings(source: string) {
   const headingLines = source.split('\n').filter((line) => line.match(/^###*\s/));
 
-  return headingLines.map((raw) => {
+  const headings: Heading[] = [];
+
+  headingLines.map((raw) => {
     const text = raw.replace(/^###*\s/, '');
-    const id = slugger.slug(text);
+    const rawId = slugger.slug(text);
+    const nodeLength = headings.filter((heading) => heading.rawId === rawId).length;
+    const id = nodeLength > 0 ? `${rawId}-${nodeLength}` : rawId;
     const link = `#${id}`;
     let level = 2;
     if (raw.slice(0, 3) === '###') {
@@ -245,8 +228,10 @@ function getHeadings(source: string) {
       level = 4;
     }
 
-    return { text, level, link, id };
+    headings.push({ text, level, link, id, rawId });
   });
+
+  return headings;
 }
 
 function getReadingTime(content: string) {

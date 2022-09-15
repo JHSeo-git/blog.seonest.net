@@ -12,6 +12,9 @@ const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
 
+  margin-top: ${spaces.$6};
+  margin-bottom: ${spaces.$6};
+
   & th,
   & td {
     padding: ${spaces.$4};

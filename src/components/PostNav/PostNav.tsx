@@ -32,7 +32,9 @@ function PostNav({ title, toc }: PostNavProps) {
   );
 }
 
-const Nav = styled.nav``;
+const Nav = styled.nav`
+  margin-bottom: ${spaces.$8};
+`;
 const NavTitle = styled.h2`
   font-size: ${typography.fontSizes.lg};
   letter-spacing: 1px;

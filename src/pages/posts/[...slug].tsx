@@ -189,12 +189,12 @@ const MDXThumbnail = styled(NextImage)`
 `;
 
 const MDXArticle = styled.article`
-  flex: 1 1 750px;
-  max-width: min(750px, 100%);
+  flex: 1 1 720px;
+  max-width: min(720px, 100%);
 `;
 const MDXAside = styled.aside`
   display: none;
-  flex: 0 100000 230px;
+  flex: 0 100000 250px;
   margin-left: auto;
 
   position: sticky;

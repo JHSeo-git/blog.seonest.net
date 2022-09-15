@@ -48,7 +48,7 @@ Route groups는 다음과 같이 사용가능합니다:
   Remix 영향을 안 받을 수 없었을 것 같다는 생각이 들게됩니다.
 </Admonition>
 
-### Route Groups Convention
+### Convention
 
 route group은 괄호로 폴더이름을 감싸서 만들 수 있습니다: `(folderName)`
 
@@ -202,7 +202,7 @@ default skeleton은 layout이 처음 로드될 때와 같은 레벨 page를 이�
 
 [Error Boundary](https://reactjs.org/docs/error-boundaries.html)는 자식 컴포넌트 트리에서 JavaScript 에러를 catch할 수 있는 React 컴포넌트입니다.
 
-### Error Handling Convention
+### Convention
 
 `loading.js` 컨벤션과 유사하게 React 컴포넌트를 default export하는 `error.js` 파일을 추가하여 error boundary를 구성할 수 있습니다.
 
@@ -259,12 +259,12 @@ Templates는 자식 Layout이나 Page를 감싼다는 점에서는 Layouts과 �
   특정 이유가 아니라면 Template을 사용하기 보단 Layout 사용하기를 권장합니다.
 </Admonition>
 
-### Templates Convention
+### Convention
 
 React 컴포넌트를 default export하는 `template.js` 파일을 추가하여 Template을 구성할 수 있습니다.
 중첩 segment에 채워질 children을 prop을 허용해야합니다.
 
-### Templates Example
+### Example
 
 ![example](/post/react/nextjs-layout-rfc-update/example.png)
 
@@ -284,7 +284,7 @@ Layout과 Template이 함께 한 라우트 segment에서 렌더링된 결과는 
 </Layout>
 ```
 
-### Templates Behavior
+### Behavior
 
 공유된 UI를 마운트, 언마운트해야 하는 경우에 Template이 더 적합한 옵션입니다.
 
@@ -354,7 +354,7 @@ edge 케이스를 다루고 더 다양한 라우팅 패턴을 구현할 수 있�
 다른 라우트안에서 라우트 segement를 intercept하는 것이 유용할 경우가 있습니다.
 라우트 이동 시에 URL은 업데이트 되지만 intercept된 segment는 현재 라우트 layout 내에 보여지게 됩니다.
 
-#### Intercepting Routes Example
+#### Example
 
 **Before**: 이미지를 클릭하면 자신만의 layout을 가진 새로운 route로 이동합니다.
 
@@ -372,7 +372,7 @@ edge 케이스를 다루고 더 다양한 라우팅 패턴을 구현할 수 있�
 
 ![intercepted-routes](/post/react/nextjs-layout-rfc-update/intercepted-routes.png)
 
-#### Intercepting Routes Convention
+#### Convention
 
 > 컨벤션이 흥미롭네요. 고민의 흔적이 보이는 것 같네요.
 
@@ -393,7 +393,7 @@ edge 케이스를 다루고 더 다양한 라우팅 패턴을 구현할 수 있�
 
 ![parallel-routes](/post/react/nextjs-layout-rfc-update/parallel-routes.png)
 
-#### Parallel Routes Convention
+#### Convention
 
 기본적으로 layout은 중첩 layout이나 page를 `children` prop로 가집니다.
 prop을 이름을 가진 "slot"(`@` prefix를 가진 폴더)을 만들고 내부에 segment를 구성하여 prop을 rename할 수 있습니다.
@@ -443,7 +443,7 @@ export default function Layout({ views, audience }) {
 
 intercepting route와 parallel route를 결합하여 특정한 라우팅 동작을 만들어낼 수 있습니다.
 
-#### Combining Intercepting and Parallel Routes Example
+#### Example
 
 예를 들어, 모달을 만들 때 다음과 같은 몇 가지 문제가 있을 수 있습니다:
 
@@ -506,7 +506,7 @@ export default function PhotoPage() {
 route를 결정하기 위해 data나 context처럼 동적인 정보가 필요할 경우가 있습니다.
 이런 경우 parallel route를 사용하여 조건부로 라우트를 로드하는 것으로 해결할 수 있습니다.
 
-#### Conditional Routes Example
+#### Example
 
 ```jsx
 // profile/layout.js

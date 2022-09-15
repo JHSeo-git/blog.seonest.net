@@ -23,7 +23,8 @@ const NavItem = styled.a<{ $level: number; $active: boolean }>`
 
   font-size: ${typography.fontSizes.sm};
   font-weight: ${typography.fontWeights.medium};
-  margin-top: ${spaces.$3};
+  margin-top: ${spaces.$2};
+  margin-bottom: ${spaces.$2};
   opacity: 0.7;
 
   transition: opacity 0.5s ease;
