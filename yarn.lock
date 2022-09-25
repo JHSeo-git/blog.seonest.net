@@ -4032,10 +4032,10 @@ semver@^7.3.5, semver@^7.3.7:
   dependencies:
     lru-cache "^6.0.0"
 
-seonest-post-gen@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/seonest-post-gen/-/seonest-post-gen-0.0.7.tgz#30b1be3e304f115bf17ceb6579e191c18afdc8cb"
-  integrity sha512-IU8lYa1p+/59S+euwEup6iAEGqHeEU0FYNHxNcK1d9/vF6necv4Iu6Lfq/ehfGR2Qk6pGe026y1s4Sc82X9OVg==
+seonest-post-gen@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/seonest-post-gen/-/seonest-post-gen-0.1.0.tgz#23548d272d7dfe932fd2f0484ce184676a83d151"
+  integrity sha512-Ye0XX9cSE6Pwo8h55QR2Nkoq4fCv7nyRYkiS8VavVT2DCp8fCJP3xaPjAFE61F3kHjdn7nPuOvu5jkiyfSxFFA==
   dependencies:
     chalk "^5.0.1"
     cjk-slug "^0.3.0"
