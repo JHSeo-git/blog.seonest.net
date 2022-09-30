@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { breakpoints, radii, typography } from '@/constants/theme';
+import { breakpoints, radii, spaces, typography } from '@/constants/theme';
 
 export interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   language?: string;
@@ -40,7 +40,7 @@ const StyledPre = styled.pre`
   }
 
   code {
-    width: 100%;
+    flex: 1;
 
     font-family: ${typography.fontFamily.mono};
     font-size: ${typography.fontSizes.base};
