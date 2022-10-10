@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { breakpoints, radii, spaces, typography } from '@/constants/theme';
+import { breakpoints, radii, typography } from '@/constants/theme';
 
 export interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   language?: string;

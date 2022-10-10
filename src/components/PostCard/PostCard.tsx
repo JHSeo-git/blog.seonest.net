@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import { colors, radii, spaces, typography } from '@/constants/theme';
+import { getDistanceToNow } from '@/utils/dateUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 
 import Spacer from '../Spacer';
@@ -13,6 +15,11 @@ export interface PostCardProps {
 
 function PostCard({ post, mode = 'base' }: PostCardProps) {
   const { title, subTitle, description, date } = post;
+  const [distanceDate, setDistanceDate] = useState<string | undefined>();
+
+  useEffect(() => {
+    setDistanceDate(getDistanceToNow(date));
+  }, [date]);
 
   return (
     <Card $mode={mode}>
@@ -23,7 +30,7 @@ function PostCard({ post, mode = 'base' }: PostCardProps) {
       <CardBottom>
         <CardBottomLeft></CardBottomLeft>
         <CardBottomRight>
-          <DateText>{date}</DateText>
+          <DateText>{distanceDate}</DateText>
         </CardBottomRight>
       </CardBottom>
     </Card>

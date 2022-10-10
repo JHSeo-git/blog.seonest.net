@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import NextLink from 'next/link';
 import styled from 'styled-components';
 
-import { breakpoints, colors, spaces, typography } from '@/constants/theme';
+import { colors, spaces, typography } from '@/constants/theme';
 
 import Container from '../Container';
 import Portal from '../Portal';
