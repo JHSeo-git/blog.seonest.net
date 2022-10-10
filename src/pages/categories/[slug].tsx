@@ -10,7 +10,6 @@ import PostCard from '@/components/PostCard';
 import Spacer from '@/components/Spacer';
 import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
-import { getDistanceToNow } from '@/utils/dateUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils.server';
 
@@ -44,7 +43,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     title: post.frontMatter.title,
     subTitle: post.frontMatter.subTitle,
     description: post.frontMatter.description,
-    date: post.frontMatter.date ? getDistanceToNow(post.frontMatter.date) : null,
+    date: post.frontMatter.date,
     category: post.frontMatter.category,
     tags: post.frontMatter.tags,
     draft: post.frontMatter.draft,
