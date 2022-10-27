@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { spaces, typography } from '@/constants/theme';
+import { breakpoints, spaces, typography } from '@/constants/theme';
 
 export interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
   listType: 'ol' | 'ul';
@@ -21,8 +21,12 @@ List.Item = Item;
 const StyledList = styled.ul`
   padding-left: ${spaces.$6};
 
-  font-size: ${typography.fontSizes.md};
+  font-size: ${typography.fontSizes.base};
   line-height: ${typography.lineHeight['body-loose']};
+
+  @media (min-width: ${breakpoints.sm}) {
+    font-size: ${typography.fontSizes.md};
+  }
 `;
 
 const StyledItem = styled.li`

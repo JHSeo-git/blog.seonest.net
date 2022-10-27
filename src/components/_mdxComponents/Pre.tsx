@@ -43,7 +43,7 @@ const StyledPre = styled.pre`
     flex: 1;
 
     font-family: ${typography.fontFamily.mono};
-    font-size: ${typography.fontSizes.base};
+    font-size: ${typography.fontSizes.sm};
     font-weight: ${typography.fontWeights.medium};
 
     color: #f8f8f2;
