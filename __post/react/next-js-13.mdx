@@ -1,0 +1,119 @@
+---
+date: '2022-10-27T04:03:29.269Z'
+category: react
+title: Next.js 13
+description: Next.js 13버전이 공개되었습니다. 새로운 Routing System을 포함하여 React 18 기능과 함께 동작하는 흥미로운 기능이 많이 추가되었습니다. 어떤 기능들이 추가되었는지 확인해보고 적용해보았습니다.
+draft: false
+---
+
+## 들어가면서
+
+Next.js 컨퍼런스가 며칠 전 열렸습니다. 그와 함께 Next.js 13이 발표되었습니다.
+
+- `app/` 폴더 (beta): 더 쉽고, 더 빠르고, 더 적은 Client JavaScript.
+  - Layouts
+  - React Server Components
+  - Streaming
+- Turbopack (alpha): Webpack을 대체하는 Rust 기반으로 만들어 700배 더 빠른 번들러.
+- 새로운 `next/image` (stable): 네이티브 브라우저 lazy loading과 함께 더 빨라졌습니다.
+- 새로운 `@next/font` (beta): layout shift가 존재하지 않는 자동 self-hosted font 입니다.
+- 향상된 `next/link`: `<a>`를 자동으로 가지면서 간단해진 API.
+
+뭔가 흥분되는 기능들이 마구마구 포함되어 있네요.
+
+특히 올해 RFC로 발표한 새로운 Routing System이 이렇게 꽤 빠른 시기에 공개될 거라고는 생각을 못했습니다.  
+그리고 전혀 생각하지 않았던 새로운 번들러인 Turbopack 내용입니다.
+Next.js 12부터 babel과 terser를 SWC로 바꾸는(stable) 등 Rust기반 도구로 옮기기 시작했습니다.
+
+그러나 부정적인 시각이 생기는 것도 사실입니다.
+React 새로운 기능들이 Next.js에 밀첩하게 결합되어 가고 있다는 느낌은 부정할 수 없을 것 같습니다.
+React 코어팀 [acdlite](https://twitter.com/acdlite)가 이번 컨퍼런스에서 "React 18의 진짜 릴리즈 버전이다"와 같은 발언 하는것을 보면서(논란이 있지만) 더욱 더 그렇게 느껴졌습니다.
+
+이 블로그 사이트는 Next.js를 사용하고 있습니다.
+
+그래서 이번 Next.js 13버전 업그레이드와 함께 내용을 살펴보도록 하겠습니다.
+
+## `app/` 폴더 (beta)
+
+> 새로운 Routing 시스템
+
+Next.js의 가장 사랑스러운(?) 기능 중 하나는 파일 기반 Router 입니다. 폴더에 파일을 만들어 별 다른 설정없이 Route를 만들 수 있습니다.
+
+이번에 Routing와 layout을 발전시킨 `app/` 폴더 (beta)를 소개합니다. 커뮤니티 피드백을 위해 공개된 [Layouts RFC](https://nextjs.org/blog/layouts-rfc)의 결과물입니다.
+다음 기능을 포함합니다:
+
+- [Layouts](): 상태를 유지하고 리렌더링을 피하면서 더 쉽게 UI를 공유합니다.
+- [Server Components](): Dynamic 어플리케이션을 위해 기본적으로 server-first를 만듭니다.
+- [Streaming](): 즉각적인 로딩 상태를 보여주고 변경 상태를 streaming 합니다.
+- [Suspense for Data Fetching](): component-level fetching을 가능하게 하는 새로운 `use` hook을 공개합니다.
+
+새로운 `app/` 폴더는 점진적 적용을 위해 기존의 `pages/` 폴더와 함께 존재할 수 있습니다.
+Next.js 13으로 업그레이드 할 때 **`app/` 폴더를 사용할 필요는 없지만**, JavaScript를 더 적게 사용하면서 더 복잡한 인터페이스를 만들 수 있도록 기반을 마련하고 있습니다.
+
+![incrementally-adopt-routing](/post/react/next-js-13/incrementally-adopt-routing.png)
+
+### Layouts
+
+`app/` 폴더는 route를 navigate 시 상태를 유지하고, 비싼 리렌더링을 피하고, 향상된 Routing 패턴을 사용하는 복잡한 인터페이스를 만들 때 편하고 쉽게 구현할 수 있도록 해줍니다.
+게다가, Route에서 사용하는 Component, 테스트, 스타일 등과 같은 **어플리케이션 코드를 함께 둘 수 있습니다**.
+
+`app/` 폴더에서 Route를 만들기 위해 `page.js` 파일이 필요합니다:
+
+```js
+// app/page.js
+// 이 파일은 index route(/)와 매핑됩니다.
+export default function Page() {
+  return <h1>Hello, Next.js!</h1>;
+}
+```
+
+또한 파일 시스템을 통해 **layout을 정의**할 수 있습니다. Layout은 여러 Page에서 UI를 공유합니다.
+route navigation 시에 layout은 상태를 유지하고 상호작용할 수 있고 리렌더링되지 않습니다.
+
+```js
+// app/blog/layout.js
+export default function BlogLayout({ children }) {
+  return <section>{children}</section>;
+}
+```
+
+더 자세한 내용은 [여기](https://beta.nextjs.org/docs/routing/fundamentals) 에서 확인 할 수 있습니다.
+
+예제 프로젝트는 [여기](https://github.com/vercel/app-playground) 에서 확인할 수 있습니다.
+
+### Server Components
+
+> React Server Component
+
+`app/` 폴더는 React의 새로운 Server Component 아키텍쳐를 지원합니다.
+Server Component는 서버와 클라이언트를 각각 잘 맞게 동작하도록 사용합니다. 좋은 개발자 경험을 제공하는 단일 프로그래밍 모델로 빠르고 뛰어난 상호작용을 하는 앱을 만들 수 있습니다.
+
+Route가 로드될 때, **캐쉬가능하고(cacheable)** **크기를 예측가능한(predictable in size)** Next.js와 React 런타임이 로드됩니다.
+어플리케이션이 커지더라도 이 런타임 사이즈는 _증가하지 않습니다._
+게다가 해당 런타임은 비동기로 로드되기 때문에 HTML을 서버에서 클라이언트로 점진적 향상될 수 있습니다.
+
+더 자세한 내용은 [여기](https://beta.nextjs.org/docs/rendering/server-and-client-components) 에서 확인할 수 있습니다.
+
+예제 프로젝트는 [여기](https://github.com/vercel/app-playground) 에서 확인할 수 있습니다.
+
+### Streaming
+
+> HTML Streaming
+
+`app/` 폴더는 UI의 렌더링된 부분을 클라이언트로 점진적으로 렌더링하고 Stream하는 기능을 가집니다.
+
+Next.js의 Server Component와 [중첩 layout](https://beta.nextjs.org/docs/routing/pages-and-layouts)을 통해 페이지에서 데이터를 fetching하지 않는 _부분_ 을 즉시 렌더링할 수 있습니다.
+그리고 페이지에서 데이터를 fetching하는 _부분_ 에 대해 [loading 상태](https://beta.nextjs.org/docs/routing/loading-ui)를 보여줄 수 있습니다.
+이 접근방식으로 사용자는 상호작용을 하기 위해 전체 페이지가 로딩되기를 기다릴 필요가 없습니다.
+
+![streaming-loading-state](/post/react/next-js-13/streaming-loading-state.png)
+
+Vercel에 `app/` 폴더를 사용하는 Next.js 13버전의 어플리케이션을 배포하면 Node.js와 Edge 런타임 둘 모두 성능 향상을 위해 기본적으로 응답을 Streaming 합니다.
+
+더 자세한 내용은 [여기](https://beta.nextjs.org/docs/data-fetching/fundamentals) 에서 확인할 수 있습니다.
+
+예제 프로젝트는 [여기](https://github.com/vercel/app-playground) 에서 확인할 수 있습니다.
+
+## reference
+
+- https://nextjs.org/blog/next-13
