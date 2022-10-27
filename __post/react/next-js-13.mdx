@@ -2,8 +2,9 @@
 date: '2022-10-27T04:03:29.269Z'
 category: react
 title: Next.js 13
-description: Next.js 13버전이 공개되었습니다. 새로운 Routing System을 포함하여 React 18 기능과 함께 동작하는 흥미로운 기능이 많이 추가되었습니다. 어떤 기능들이 추가되었는지 확인해보고 적용해보았습니다.
+description: Next.js 13버전이 공개되었습니다. 새로운 Routing System을 포함하여 React 18 기능과 함께 동작하는 흥미로운 기능이 많이 추가되었습니다. 어떤 기능들이 추가되었는지 확인해보았습니다.
 draft: false
+thumbnail: /post/react/next-js-13/thumbnail.png
 ---
 
 ## 들어가면서
@@ -29,9 +30,7 @@ Next.js 12부터 babel과 terser를 SWC로 바꾸는(stable) 등 Rust기반 도�
 React 새로운 기능들이 Next.js에 밀첩하게 결합되어 가고 있다는 느낌은 부정할 수 없을 것 같습니다.
 React 코어팀 [acdlite](https://twitter.com/acdlite)가 이번 컨퍼런스에서 "React 18의 진짜 릴리즈 버전이다"와 같은 발언 하는것을 보면서(논란이 있지만) 더욱 더 그렇게 느껴졌습니다.
 
-이 블로그 사이트는 Next.js를 사용하고 있습니다.
-
-그래서 이번 Next.js 13버전 업그레이드와 함께 내용을 살펴보도록 하겠습니다.
+다시 돌아와서 이번 Next.js 13에 대한 내용을 살펴보도록 하겠습니다.
 
 ## `app/` 폴더 (beta)
 
@@ -42,10 +41,10 @@ Next.js의 가장 사랑스러운(?) 기능 중 하나는 파일 기반 Router �
 이번에 Routing와 layout을 발전시킨 `app/` 폴더 (beta)를 소개합니다. 커뮤니티 피드백을 위해 공개된 [Layouts RFC](https://nextjs.org/blog/layouts-rfc)의 결과물입니다.
 다음 기능을 포함합니다:
 
-- [Layouts](): 상태를 유지하고 리렌더링을 피하면서 더 쉽게 UI를 공유합니다.
-- [Server Components](): Dynamic 어플리케이션을 위해 기본적으로 server-first를 만듭니다.
-- [Streaming](): 즉각적인 로딩 상태를 보여주고 변경 상태를 streaming 합니다.
-- [Suspense for Data Fetching](): component-level fetching을 가능하게 하는 새로운 `use` hook을 공개합니다.
+- [Layouts](#layouts): 상태를 유지하고 리렌더링을 피하면서 더 쉽게 UI를 공유합니다.
+- [Server Components](#server-components): Dynamic 어플리케이션을 위해 기본적으로 server-first를 만듭니다.
+- [Streaming](#streaming): 즉각적인 로딩 상태를 보여주고 변경 상태를 streaming 합니다.
+- [Suspense for Data Fetching](#data-fetching): component-level fetching을 가능하게 하는 새로운 `use` hook을 공개합니다.
 
 새로운 `app/` 폴더는 점진적 적용을 위해 기존의 `pages/` 폴더와 함께 존재할 수 있습니다.
 Next.js 13으로 업그레이드 할 때 **`app/` 폴더를 사용할 필요는 없지만**, JavaScript를 더 적게 사용하면서 더 복잡한 인터페이스를 만들 수 있도록 기반을 마련하고 있습니다.
@@ -86,7 +85,7 @@ export default function BlogLayout({ children }) {
 > React Server Component
 
 `app/` 폴더는 React의 새로운 Server Component 아키텍쳐를 지원합니다.
-Server Component는 서버와 클라이언트를 각각 잘 맞게 동작하도록 사용합니다. 좋은 개발자 경험을 제공하는 단일 프로그래밍 모델로 빠르고 뛰어난 상호작용을 하는 앱을 만들 수 있습니다.
+Server Component는 서버와 클라이언트를 각각 잘 맞게 동작하도록 사용합니다. 그리고 좋은 개발자 경험을 제공하는 단일 프로그래밍 모델로 빠르고 뛰어난 상호작용을 하는 앱을 만들 수 있습니다.
 
 Route가 로드될 때, **캐쉬가능하고(cacheable)** **크기를 예측가능한(predictable in size)** Next.js와 React 런타임이 로드됩니다.
 어플리케이션이 커지더라도 이 런타임 사이즈는 _증가하지 않습니다._
@@ -113,6 +112,298 @@ Vercel에 `app/` 폴더를 사용하는 Next.js 13버전의 어플리케이션�
 더 자세한 내용은 [여기](https://beta.nextjs.org/docs/data-fetching/fundamentals) 에서 확인할 수 있습니다.
 
 예제 프로젝트는 [여기](https://github.com/vercel/app-playground) 에서 확인할 수 있습니다.
+
+### Data Fetching
+
+> `use` hook
+
+`app/` 폴더는 Data Fetching을 위해 React Suspense 위에 만들어진 **데이터를 Fetching하는 강력하고 새로운 방법을 소개합니다.**
+새로운 `use` hook이 이전의 Next.js API인 `getServerProps`와 `getStaticProps`를 대체하며 React의 앞으로의 방향과 일치합니다.
+
+```js
+// app/page.js
+import { use } from 'react';
+
+async function getData() {
+  const res = await fetch('...');
+  const name: string = await res.json();
+  return name;
+}
+
+export default function Page() {
+  // 이 값은 타입 완전한 값입니다.
+  // return 값은 serialize 되지 않습니다.
+  // 그래서 Date, Map, Set 등을 return 할 수 있습니다.
+  const name = use(getData());
+
+  return '...';
+}
+```
+
+**component 레벨에서 데이터를 fetch, cache, 그리고 revalidate**하는 유연한 방법입니다.
+이는 Static Site Generation (SSG), Server-Side Rendering (SSR), Incremental Static Regeneration (ISR) 의 모든 장점을
+React의 `use` hook과 Web `fetch` API 확장을 통해 사용할 수 있다는 것을 의미합니다.
+
+```js
+// 이 요청은 수동으로 invalidate될 때까지 캐쉬됩니다.
+// `getStaticProps`와 유사합니다.
+// `force-cache`는 기본값이며 생략할 수 있습니다.
+fetch(URL, { cache: 'force-cache' });
+
+// 이 요청은 모든 요청마다 refetch됩니다.
+// `getServerSideProps`와 유사합니다.
+fetch(URL, { cache: 'no-store' });
+
+// 이 요청은 10초 동안 캐시됩니다.
+// `getStaticProps`의 `revalidate` 옵션과 유사합니다.
+fetch(URL, { next: { revalidate: 10 } });
+```
+
+`app` 폴더에서 서버의 [Streaming 응답 지원](#streaming)을 포함하여 layouts, pages, components 내부의 데이터를 fetch 할 수 있습니다.
+
+기본적으로 훨씬 적은 JavaScript를 제공하면서 풍부한 대화형 client-side 경험을 유지할 수 있습니다.
+어플리케이션에서 Server Component 수가 늘어나더라도 client-side에서 필요한 JavaScript의 크기가 **일정하게 유지됩니다.**
+
+`app/` 폴더를 사용하여 UI가 렌더링 될 때만 Streaming하는 인체공항적 방법을 사용할 수 있습니다.
+향후에는 데이터 Mutation 또한 향상되고 간편해질 것입니다.
+
+![automatically-loading](/post/react/next-js-13/automatically-loading.png)
+
+더 자세한 내용은 [여기](https://beta.nextjs.org/docs/data-fetching/fundamentals) 에서 확인할 수 있습니다.
+
+## Introducing Turbopack (alpha)
+
+> Rust 기반 Webpack
+
+Next.js 13은 새롭게 공개된 Rust 기반의 Webpack 후속 제품인 [Turbopack](https://vercel.com/blog/turbopack)이 포함되어 있습니다.
+
+Webpack은 **30억**개 이상 다운로드 되었습니다. 웹을 만들기 위해 필수적인 부분이었지만 JavaScript 기반 툴의 한계로 최대치 성능에 도달했습니다.
+
+Next.js 12에서는 Rust 기반 툴로 전환을 시작했습니다.
+babel을 migrate하여 17배 더 빠른 결과를 만들어냈습니다. 그리고, Terser를 교체하여 6배 더 빠른 minification 결과를 만들었습니다.
+이젠 번들링을 위해 native에 올인할 때입니다.
+
+Next.js 13버전의 Turbopack alpha를 사용한 결과는 다음과 같습니다:
+
+- Webpack보다 **700배 더 빠른 번들링**
+- Vite보다 **10배 더 빠른 업데이트** (HMR)
+- Webpack보다 **4배 더 빠른 cold start**
+
+![turbopack-benchmark](/post/react/next-js-13/turbopack-benchmark)
+
+[Turbopack](https://turbo.build/pack)은 개발에 필요한 최소 asset만 번들링합니다. 그래서 startup 시간이 매우 빠릅니다.
+3000개 모듈을 가진 어플리케이션에서, **Turbopack은 1.8초**에 번들링을 완료했습니다. **Vite는 11.4초**, **Webpack은 16.5초**가 걸렸습니다.
+
+Turbopackdms Server Component, TypeScript, JSX, CSS 등을 즉시 지원합니다. alpha 기간 동안에는 [많은 기능](https://turbo.build/pack/docs/features)이 아직 지원되지는 않습니다.
+
+<Admonition type="note">
+  현재 Turbopack은 오직 `next dev`에서만 사용됩니다.
+  [여기](https://turbo.build/pack/docs/features)에 지원되는 기능을 확인하세요. 또한 `next build`
+  지원을 위해 현재 작업 중입니다.
+</Admonition>
+
+Next.js 13버전에서 `next dev --turbo`를 통해 사용할 수 있습니다.
+
+## `next/image`
+
+> next/future/image -> next/image  
+> next/image -> next/legacy/image
+
+Next.js 13에서 **새로운 강력한 이미지 component**가 포함됩니다.
+layout shift없이 이미지를 쉽게 보여주고 성능 향상을 위해 필요시(on-demand) 파일 최적화를 지원합니다.
+
+Next.js 커뮤니티 설문조사에서 **응답자의 70%**는 운영 환경에서 Next.js 이미지 component를 사용했으며 개선된 **core web vitals**을 보았다고 말했습니다.
+Next.js 13에서 더 나은 `next/image`를 더욱 발전시켰습니다.
+
+새로운 이미지 component:
+
+- 더 적은 client-side JavaScript를 전달
+- 더 쉬운 스타일과 설정
+- 기본적으로 `alt`를 필요로 하는 접근성 향상
+- Web platform에 맞게 조정
+- native lazy loading은 hydration가 필요로 하지 않기 때문에 더 빠릅니다.
+
+```js
+import Image from 'next/image';
+import avatar from './lee.png';
+
+function Home() {
+  // 접근성 향상을 위해 "alt"가 필수로 되었습니다.
+  // optional: 이미지 파일은 app/ 폴더 안에 같이 위치할 수 있습니다.
+  return <Image alt="leeerob" src={avatar} placeholder="blur" />;
+}
+```
+
+더 자세한 내용은 [여기](https://nextjs.org/docs/basic-features/image-optimization) 에서 확인할 수 있습니다.
+
+예제 프로젝트는 [여기](https://github.com/vercel/vercel/tree/main/examples/nextjs) 에서 확인할 수 있습니다.
+
+### Next.js 13 `next/image`으로 업그레이드
+
+이전 버전의 `next/image`는 `next/legacy/image`로 이름이 변경되었습니다.
+Next.js에서 자동으로 업데이트 할 수 있도록 codemod를 제공합니다.
+
+```bash
+npx @next/codemod next-image-to-legacy-image ./pages
+```
+
+## @next/font
+
+> 구글 폰트
+
+Next.js 13에서 **새로운 font 시스템**이 추가되었습니다.
+
+- 자동으로 font를 최적화합니다. (커스텀 font도 가능합니다.)
+- privacy와 성능 향상을 위해 외부 네트워크 요청을 제거합니다.
+- 모든 font 파일에 대해 자동으로 self-hosting 합니다.
+- [size-adjust](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/size-adjust) 속성을 사용하여 layout shift이 발생하지 않도록 합니다.
+
+새로운 font 시스템은 성능과 privacy를 고려하면서 모든 구글 font를 편리하게 사용할 수 있습니다.
+CSS와 font 파일은 빌드할 때 다운로드됩니다. 그리고 정적 파일과 함께 self-host 됩니다.
+**브라우저에서 구글에 요청을 보내지 않습니다.**
+
+```js
+import { Inter } from '@next/font/google';
+
+const inter = Inter();
+
+<html className={inter.className}>
+```
+
+커스텀 font 또한 자동으로 self-hosting, caching, preloading 등을 지원합니다.
+
+```js
+import localFont from '@next/font/local';
+
+const myFont = localFont({ src: './my-font.woff2' });
+
+<html className={myFont.className}>
+```
+
+`font-display`, preloading, fallback 등을 포함하여 뛰어난 성능을 보장하고 layout shift 없이 font loading 경험과 관련한 모든 부분을 커스텀 할 수 있습니다.
+
+더 자세한 내용은 [여기](https://nextjs.org/docs/basic-features/font-optimization) 에서 확인할 수 있습니다.
+
+## next/link
+
+`next/link`가 더이상 수동으로 `<a>` 태그를 추가하지 않아도 됩니다.
+
+12.2 버전에서 experimental 옵션으로 추가되었고 이제는 기본적으로 사용할 수 있습니다.
+Next.js 13에서 `<Link>`는 항상 `<a>` 태그를 렌더링합니다.
+
+```js
+import Link from 'next/link'
+
+// Next.js 12: `<a>`를 수동으로 넣어야 합니다. 그렇지 않으면 `<a>`가 렌더링되지 않습니다.
+<Link href="/about">
+  <a>About</a>
+</Link>
+
+// Next.js 13: `<Link>` 항상 `<a>`를 렌더링합니다.
+<Link href="/about">
+  About
+</Link>
+```
+
+더 자세한 내용은 [여기](https://nextjs.org/docs/api-reference/next/link) 에서 확인할 수 있습니다.
+
+## 추가하여
+
+### OG Image Generation
+
+> https://og-playground.vercel.app/
+
+최근 Vercel에서 Edge Function을 사용하여 OG Image Generation([@vercel/og](https://github.com/vercel/og-image))를 공개하였습니다. 이를 위해 [satori](https://github.com/vercel/satori) 라는 라이브러리를 만들었습니다.
+
+더 자세한 내용은 [여기](https://vercel.com/docs/concepts/functions/edge-functions/og-image-generation) 에서 확인할 수 있습니다.
+
+### Middleware API Updates
+
+Next.js 12에서 Next.js Router의 완전한 유연성을 위해 Middleware를 도입했습니다.
+피드백을 듣고 개발자 경험을 개선하고 강력한 새 기능을 추가하기 위해 몇 가지 변경 사항이 있습니다.
+
+**request 헤더를 더 쉽게 설정할 수 있습니다.**
+
+```ts
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  // 요청 Headers 복제하고 request header에 설정합니다.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-version', '13');
+
+  // NextREsponse.rewrite 에서도 header를 설정할 수 있습니다.
+  const response = NextResponse.next({
+    request: {
+      // 신규 request headers
+      headers: requestHeaders,
+    },
+  });
+
+  // response에서도 header를 설정할 수 있습니다.
+  response.headers.set('x-version', '13');
+  return response;
+}
+```
+
+**`rewrite`, `redirect` 없이도 Middleware에서 바로 response 할 수 있습니다.**
+
+```ts
+// middleware.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticated } from '@lib/auth';
+
+// Limit the middleware to paths starting with `/api/`
+export const config = {
+  matcher: '/api/:function*',
+};
+
+export function middleware(request: NextRequest) {
+  // request를 체크하기 위해 인증 함수를 호출합니다.
+  if (!isAuthenticated(request)) {
+    // 에러 메세지를 JSON으로 응답합니다.
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Auth failed',
+      },
+      {
+        status: 401,
+      }
+    );
+  }
+}
+```
+
+위 처럼 Middleware에서 response 하기 위해서는 `next.config.js`에서 `expreimental.allowMiddlewareResponseBody` 옵션을 설정해야 합니다.
+
+### Breaking Changes
+
+- React 최소 버전이 17.0.2에서 18.2.0으로 업데이트 됩니다.
+- Node.js 12.x가 end-of-life에 도달했기 때문에, 최소 버전이 12.22.0에서 14.6.0으로 업데이트 됩니다.
+- `swcMinify` 설정 기본값이 `false`에서 `true`로 변경되었습니다.
+- `next/image` import가 `next/legacy/image`로 변경되었습니다. `next/future/image`가 `next/image`로 변경되었습니다.
+- `next/link` 자식은 더 이상 `<a>`가 될 수 없습니다. 만약 `<a>`를 사용하고 싶다면, `next/link`의 `legacyBehavior` 옵션을 사용해야 합니다.
+- Routes는 `User-Agent`가 bot일 때 더 이상 prefetch 하지 않습니다.
+- deprecate된 `next.config.js`의 `target` 옵션이 제거되었습니다.
+- 지원되는 브라우저에서 Internet Explorer를 삭제하고 최신 브라우저를 대상으로 변경되었습니다.
+  여전히 browserlist를 사용하여 브라우저를 설정할 수 있습니다.
+
+자세한 업그레이드 가이드는 [여기](https://nextjs.org/docs/upgrading)에서 확인할 수 있습니다.
+
+## 마무리하며
+
+이번 글은 Next.js 13에서 머릿글만 간추려서 작성된 Next.js 블로그 글을 옮긴 글입니다.
+
+가장 흥미로운 기능은 새로운 Routing System인 `app/`과 새로운 번들러인 Turbopack 입니다.
+
+아직 사용해보진 않았지만 얼마나 빠르고 효율적인지 궁금합니다.
+
+이 블로그 사이트부터 적용해보면서 경험을 공유해보겠습니다.
+
+이번에 공개된 기능에 대한 상세한 설명은 앞으로의 글에서 조금씩 사용해보면서 다루어 보려고 합니다.
 
 ## reference
 
