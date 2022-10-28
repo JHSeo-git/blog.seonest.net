@@ -1,4 +1,4 @@
-import NextImage from 'next/future/image';
+import Image from 'next/image';
 import styled from 'styled-components';
 
 import appConfig from '@/app.config';
@@ -39,7 +39,7 @@ const BioWrapper = styled.div`
   align-items: center;
 `;
 
-const Avatar = styled(NextImage)`
+const Avatar = styled(Image)`
   border-radius: ${radii.round};
   background-color: ${colors.sky3};
 `;

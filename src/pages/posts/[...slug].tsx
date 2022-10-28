@@ -1,5 +1,5 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
 import styled, { css } from 'styled-components';
@@ -117,7 +117,8 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
                   alt="Thumbnail"
                   width={750}
                   height={488}
-                  placeholder="empty"
+                  placeholder="blur"
+                  blurDataURL={frontMatter.thumbnail}
                   priority
                 />
               </MDXThumbnailWrapper>
@@ -178,7 +179,7 @@ const MDXThumbnailWrapper = styled.div`
   margin-bottom: ${spaces.$10};
 `;
 
-const MDXThumbnail = styled(NextImage)`
+const MDXThumbnail = styled(Image)`
   width: 100%;
   height: 100%;
   object-fit: cover;
