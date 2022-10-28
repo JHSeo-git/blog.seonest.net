@@ -85,11 +85,9 @@ const CategoryPage: NextPage<CategoryPageProps> = ({ category, posts }) => {
           </SectionHeader>
           <Spacer size="$4" />
           {posts.map((post) => (
-            <Link key={post.id} href={`/posts/${post.slug}`} passHref>
-              <PostLink>
-                <PostCard post={post} mode="card" />
-              </PostLink>
-            </Link>
+            <PostLink key={post.id} href={`/posts/${post.slug}`}>
+              <PostCard post={post} mode="card" />
+            </PostLink>
           ))}
         </PostsSection>
       </Layout>
@@ -120,7 +118,7 @@ const CategoryCount = styled.p`
   }
 `;
 
-const PostLink = styled.a`
+const PostLink = styled(Link)`
   display: block;
   transition: color 0.2s ease-in-out;
 

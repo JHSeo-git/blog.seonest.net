@@ -1,4 +1,4 @@
-import NextLink from 'next/link';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import { colors, typography } from '@/constants/theme';
@@ -7,7 +7,7 @@ export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
 function Anchor({ href, ...rest }: AnchorProps) {
   if (!href) {
-    return <StyledAnchor href={href} target="_blank" rel="noopener noreferrer" {...rest} />;
+    return <StyledAnchor href="#" target="_blank" rel="noopener noreferrer" {...rest} />;
   }
 
   const external = href && href.startsWith('http');
@@ -16,14 +16,10 @@ function Anchor({ href, ...rest }: AnchorProps) {
     return <StyledAnchor href={href} target="_blank" rel="noopener noreferrer" {...rest} />;
   }
 
-  return (
-    <NextLink href={href} target="_blank" rel="noopener noreferrer" passHref>
-      <StyledAnchor {...rest} />
-    </NextLink>
-  );
+  return <StyledAnchor href={href} {...rest} />;
 }
 
-const StyledAnchor = styled.a`
+const StyledAnchor = styled(Link)`
   color: ${colors.blue9};
   font-weight: ${typography.fontWeights.bold};
 

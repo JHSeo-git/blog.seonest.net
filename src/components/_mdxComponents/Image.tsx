@@ -1,4 +1,4 @@
-import NextImage from 'next/future/image';
+import NextImage from 'next/image';
 import styled from 'styled-components';
 
 import { spaces } from '@/constants/theme';

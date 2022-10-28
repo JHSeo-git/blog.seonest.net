@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import NextLink from 'next/link';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import { colors, spaces, typography } from '@/constants/theme';
@@ -28,12 +28,12 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             <OverlayInner>
               <OverlayNav variants={navVariants}>
                 <NavTitle>seonest</NavTitle>
-                <NextLink href="/" passHref>
+                <Link href="/" passHref legacyBehavior>
                   <StyledLink variants={navItemVariants}>&#47;home</StyledLink>
-                </NextLink>
-                <NextLink href="/about" passHref>
+                </Link>
+                <Link href="/about" passHref legacyBehavior>
                   <StyledLink variants={navItemVariants}>&#47;about</StyledLink>
-                </NextLink>
+                </Link>
               </OverlayNav>
             </OverlayInner>
           </OverlayContainer>

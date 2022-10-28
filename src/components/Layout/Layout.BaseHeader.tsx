@@ -8,11 +8,9 @@ function LayoutBaseHeader() {
   return (
     <Header>
       <HeaderLeft>
-        <Link href="/" passHref>
-          <StyledLink>
-            <TextLogoIcon />
-          </StyledLink>
-        </Link>
+        <StyledLink href="/">
+          <TextLogoIcon />
+        </StyledLink>
         <Nav></Nav>
       </HeaderLeft>
       <HeaderRight>
@@ -41,7 +39,7 @@ const HeaderRight = styled.div`
   align-items: center;
 `;
 
-const StyledLink = styled.a``;
+const StyledLink = styled(Link)``;
 
 const Nav = styled.nav`
   display: flex;

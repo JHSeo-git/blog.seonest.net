@@ -1,5 +1,5 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
-import NextImage from 'next/future/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
 import styled, { css } from 'styled-components';
@@ -117,7 +117,8 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
                   alt="Thumbnail"
                   width={750}
                   height={488}
-                  placeholder="empty"
+                  placeholder="blur"
+                  blurDataURL={frontMatter.thumbnail}
                   priority
                 />
               </MDXThumbnailWrapper>
@@ -138,22 +139,18 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
               <MDXFooterNav>
                 <PrevNextWrapper>
                   {prev && (
-                    <Link href={`/posts/${prev.slug}`} passHref>
-                      <PrevNext>
-                        <PrevNextLabel>이전</PrevNextLabel>
-                        <PrevNextTitle>{prev.title}</PrevNextTitle>
-                      </PrevNext>
-                    </Link>
+                    <PrevNext href={`/posts/${prev.slug}`}>
+                      <PrevNextLabel>이전</PrevNextLabel>
+                      <PrevNextTitle>{prev.title}</PrevNextTitle>
+                    </PrevNext>
                   )}
                 </PrevNextWrapper>
                 <PrevNextWrapper $isNext>
                   {next && (
-                    <Link href={`/posts/${next.slug}`} passHref>
-                      <PrevNext $isNext>
-                        <PrevNextLabel>다음</PrevNextLabel>
-                        <PrevNextTitle>{next.title}</PrevNextTitle>
-                      </PrevNext>
-                    </Link>
+                    <PrevNext href={`/posts/${next.slug}`} $isNext>
+                      <PrevNextLabel>다음</PrevNextLabel>
+                      <PrevNextTitle>{next.title}</PrevNextTitle>
+                    </PrevNext>
                   )}
                 </PrevNextWrapper>
               </MDXFooterNav>
@@ -182,7 +179,7 @@ const MDXThumbnailWrapper = styled.div`
   margin-bottom: ${spaces.$10};
 `;
 
-const MDXThumbnail = styled(NextImage)`
+const MDXThumbnail = styled(Image)`
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -249,7 +246,7 @@ const PrevNextWrapper = styled.div<{ $isNext?: boolean }>`
     width: auto;
   }
 `;
-const PrevNext = styled.a<{ $isNext?: boolean }>`
+const PrevNext = styled(Link)<{ $isNext?: boolean }>`
   display: flex;
   flex-direction: column;
 
