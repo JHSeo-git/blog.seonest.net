@@ -52,23 +52,19 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
           <SectionTitle>최신 글</SectionTitle>
           <Spacer size="$12" />
           {posts.map((post) => (
-            <Link key={post.id} href={`/posts/${post.slug}`} passHref>
-              <PostLink>
-                <PostCard post={post} />
-              </PostLink>
-            </Link>
+            <PostLink key={post.id} href={`/posts/${post.slug}`}>
+              <PostCard post={post} />
+            </PostLink>
           ))}
         </PostsSection>
         <CategoriesSection>
           <SectionTitle>카테고리</SectionTitle>
           <Spacer size="$12" />
           {categories.map((category) => (
-            <Link key={category.name} href={`/categories/${category.name}`} passHref>
-              <CategoryLink>
-                <CategoryPill />
-                {category.name}
-              </CategoryLink>
-            </Link>
+            <CategoryLink key={category.name} href={`/categories/${category.name}`}>
+              <CategoryPill />
+              {category.name}
+            </CategoryLink>
           ))}
         </CategoriesSection>
       </PageGrid>
@@ -99,7 +95,7 @@ const SectionTitle = styled.h2`
   color: ${colors.secondary900};
 `;
 
-const PostLink = styled.a`
+const PostLink = styled(Link)`
   display: block;
   transition: color 0.2s ease-in-out;
 
@@ -114,7 +110,7 @@ const PostLink = styled.a`
   }
 `;
 
-const CategoryLink = styled.a`
+const CategoryLink = styled(Link)`
   display: inline-block;
   font-size: ${typography.fontSizes.sm};
   font-weight: ${typography.fontWeights.medium};

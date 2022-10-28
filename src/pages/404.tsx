@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import NextLink from 'next/link';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import Spacer from '@/components/Spacer';
@@ -12,9 +12,7 @@ const Custom404: NextPage = () => {
         <Title>Not Found</Title>
         <SubTitle>Sorry, there is nothing page.</SubTitle>
         <Spacer size="$14" />
-        <NextLink href="/" passHref>
-          <StyledLink>Go to home</StyledLink>
-        </NextLink>
+        <StyledLink href="/">Go to home</StyledLink>
       </ContentBox>
     </Container>
   );
@@ -48,7 +46,7 @@ const SubTitle = styled.h2`
   line-height: ${typography.lineHeight['heading-tight']};
 `;
 
-const StyledLink = styled.a`
+const StyledLink = styled(Link)`
   color: ${colors.primary900};
   font-size: ${typography.fontSizes['lg']};
   font-weight: ${typography.fontWeights.bold};
