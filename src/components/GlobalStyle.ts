@@ -90,6 +90,10 @@ const GlobalStyle = styled.createGlobalStyle`
   // scroll-behavior
   html {
     scroll-behavior: smooth;
+
+    @media (prefers-reduced-motion: reduce) {
+      scroll-behavior: auto;
+    }
   }
 
   body,
@@ -116,11 +120,17 @@ const GlobalStyle = styled.createGlobalStyle`
   }
 
   // prefers-reduced-motion
-  @media (prefers-reduced-motion: reduce) {
-    * {
+  * {
+    @media (prefers-reduced-motion: reduce) {
       transition: none !important;
       animation: none !important;
     }
+  }
+
+  // ios text size
+  html {
+    -moz-text-size-adjust: none;
+    text-size-adjust: none;
   }
 `;
 
