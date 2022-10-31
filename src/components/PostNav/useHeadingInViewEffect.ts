@@ -19,7 +19,7 @@ export default function useHeadingInViewEffect(id: string) {
         }
       },
       {
-        rootMargin: '0px 0px 0px 0px',
+        rootMargin: '0px 0px -80% 0px',
       }
     );
 
