@@ -9,7 +9,7 @@ function DefaultSEO() {
       description={appConfig.description}
       openGraph={{
         type: 'blog',
-        locale: 'ko-KR',
+        locale: 'ko_KR',
         url: appConfig.siteUrl,
         title: appConfig.title,
         description: appConfig.description,
