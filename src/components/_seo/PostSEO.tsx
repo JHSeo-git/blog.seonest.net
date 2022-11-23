@@ -13,6 +13,11 @@ export type PostSEOProps = {
   noRobots?: boolean;
 };
 
+const generateFullUrl = (url: string) => {
+  const fullUrl = `${appConfig.siteUrl}${url.startsWith('/') ? url : `/${url}`}`;
+  return encodeURI(fullUrl);
+};
+
 const PostSEO = ({
   url,
   title,
@@ -22,10 +27,9 @@ const PostSEO = ({
   images,
   noRobots = false,
 }: PostSEOProps) => {
-  const fullUrl = `${appConfig.siteUrl}${url.startsWith('/') ? url : `/${url}`}`;
-  const encodedUrl = encodeURI(fullUrl);
+  const fullUrl = generateFullUrl(url);
   const ogImages = images.map((image) => ({
-    url: image,
+    url: generateFullUrl(image),
     alt: `${title} thumbnail`,
   }));
   return (
@@ -33,10 +37,10 @@ const PostSEO = ({
       <NextSeo
         title={`${title}`}
         description={description}
-        canonical={encodedUrl}
+        canonical={fullUrl}
         openGraph={{
           type: 'article',
-          url: encodedUrl,
+          url: fullUrl,
           title: `${title}`,
           description,
           article: {
@@ -62,7 +66,7 @@ const PostSEO = ({
         description={description}
         images={images}
         title={title}
-        url={encodedUrl}
+        url={fullUrl}
       />
     </>
   );
