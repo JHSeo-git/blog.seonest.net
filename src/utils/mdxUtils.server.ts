@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import slugger from 'github-slugger';
+import * as slugger from 'github-slugger';
 import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
