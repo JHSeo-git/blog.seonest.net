@@ -24,6 +24,8 @@ function Comment() {
         mapping="title"
         lang="ko"
         loading="lazy"
+        // TODO: dark mode
+        theme="light"
       />
     </CommentWrapper>
   );
