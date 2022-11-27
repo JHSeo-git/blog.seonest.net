@@ -19,7 +19,6 @@ const StyledBlockquote = styled.blockquote`
   border-bottom-right-radius: ${radii.base};
 
   margin-bottom: 1rem;
-  font-weight: ${typography.fontWeights.light};
 
   & > * {
     font-size: ${typography.fontSizes.base};
