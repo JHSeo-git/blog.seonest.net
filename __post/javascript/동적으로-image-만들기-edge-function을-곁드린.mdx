@@ -11,14 +11,17 @@ thumbnail: '/post/javascript/동적으로-image-만들기-edge-function을-곁�
 Vercel은 4년 전에 Serverless 환경에서 Open Graph Image를 동적으로 생성할 수 있는 [dynamic og-image generator](https://github.com/vercel/og-image)를 공개했습니다.
 그리고 얼마전 10월 HTML and CSS to SVG(or PNG 등) convert할 수 있는 tool인 [satori](https://github.com/vercel/satori)와 함께 새로운 dynamic og-image generator인 [@vercel/og](https://www.npmjs.com/package/@vercel/og)를 공개했습니다.
 
-Vercel은 왜 기존 og-image generator를 새로운 툴인 satori와 함께 공개했을까요? 그리고 어떤 좋은 점이 있을까요?
+Vercel은 왜 기존 og-image generator를 새로운 @vercel/og로 새롭게 만들었을까요?
+@vercel/og의 코어엔진인 satori은 어떤 기능은 하는 걸까요? 그리고 어떤 좋은 점이 있을까요?
 
 ## 들어가면서
 
 트위터의 트윗 중 카드가 있는 트윗의 참여율이 [40% 더 높다고 합니다.](https://www.agorapulse.com/social-media-lab/link-tweet-with-an-image-vs-tweet-with-twitter-cards-does-it-really-matter/)
-정적 소셜 이미지를 만들고 공유하는 것은 어진 않지만 즉시 계산되고 실시간으로 생성해야 하는 **동적 이미지**를 처리하는 것에는 한계가 있었습니다.
 
-그래서 4년 전 Vercel은 동적으로 이미지를 생성할 수 있는 Open Graph Image Generator를 릴리즈했습니다.
+이를 위해 정적 소셜 이미지를 만들고 공유하는 것은 어렵진 않습니다.
+그러나 즉시 계산되고 실시간으로 생성해야 하는 **동적 이미지**를 처리하는 것에는 한계가 있었습니다.
+
+그래서 Vercel은 4년 전 동적으로 이미지를 생성할 수 있는 Open Graph Image Generator를 릴리즈했습니다.
 
 ## 기존 Open Graph Image Generator
 
