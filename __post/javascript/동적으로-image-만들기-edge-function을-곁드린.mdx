@@ -2,7 +2,7 @@
 date: '2022-11-29T04:20:50.018Z'
 category: javascript
 title: '동적으로 Image 만들기, edge-function을 곁드린'
-description: 최근 Vercel에서 satori라는 dynamic og-image generator를 공개했습니다. 어떤 점이 기존과 차이가 있고 어떻게 만들었는지 확인해보고 직접 사용해보았습니다.
+description: 최근 Vercel에서 satori라는 HTML,CSS to SVGs Converter를 공개했습니다. 어떻게 동작하는지, 그리고 이를 이용해 어떻게 Dynamic OG Image Generator를 새롭게 만들었는지 확인해보고 직접 사용해보았습니다.
 draft: false
 tags: ['JavaScript', 'Vercel', 'OpenGraph']
 thumbnail: '/post/javascript/동적으로-image-만들기-edge-function을-곁드린/thumbnail.png'
@@ -11,8 +11,8 @@ thumbnail: '/post/javascript/동적으로-image-만들기-edge-function을-곁�
 Vercel은 4년 전에 Serverless 환경에서 Open Graph Image를 동적으로 생성할 수 있는 [dynamic og-image generator](https://github.com/vercel/og-image)를 공개했습니다.
 그리고 얼마전 10월 HTML and CSS to SVG(or PNG 등) convert할 수 있는 tool인 [satori](https://github.com/vercel/satori)와 함께 새로운 dynamic og-image generator인 [@vercel/og](https://www.npmjs.com/package/@vercel/og)를 공개했습니다.
 
-Vercel은 왜 기존 og-image generator를 새로운 @vercel/og로 새롭게 만들었을까요?
-@vercel/og의 코어엔진인 satori은 어떤 기능은 하는 걸까요? 그리고 어떤 좋은 점이 있을까요?
+Vercel은 기존 og-image generator를 대신할 @vercel/og을 왜 새롭게 만들었을까요?
+그리고 @vercel/og의 코어엔진인 satori은 어떤 특징을 가지고 있을까요? 그리고 이를 통해 어떤 좋은 점이 있을까요?
 
 ## 들어가면서
 
