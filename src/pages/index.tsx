@@ -113,8 +113,8 @@ const PostLink = styled(Link)`
 const CategoryLink = styled(Link)`
   display: inline-block;
   font-size: ${typography.fontSizes.sm};
-  font-weight: ${typography.fontWeights.medium};
-  padding: ${spaces.$1} ${spaces.$3};
+  font-weight: ${typography.fontWeights.bold};
+  padding: ${spaces.$2} ${spaces.$3};
   margin-right: ${spaces.$4};
   margin-bottom: ${spaces.$4};
 
