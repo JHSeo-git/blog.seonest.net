@@ -35,6 +35,10 @@ const StyledImage = styled.img`
   margin-bottom: ${spaces.xl};
   margin-left: auto;
   margin-right: auto;
+
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
 const StyledNextImage = styled(NextImage)`
@@ -45,7 +49,7 @@ const StyledNextImage = styled(NextImage)`
 
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `;
 
 export default Image;
