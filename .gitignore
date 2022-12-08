@@ -43,3 +43,6 @@ prisma/dev.db
 
 # backup
 __backup
+
+# sitemap
+public/sitemap.xml
