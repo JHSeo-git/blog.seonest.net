@@ -28,14 +28,18 @@ const PreWrapper = styled.div`
 `;
 
 const StyledPre = styled.pre`
-  padding: 2.5em 1.25em;
+  padding: 30px 16px;
   margin: 1em 0;
   overflow: auto;
   background: #2b2b2b;
 
   display: flex;
 
-  @media (min-width: ${breakpoints.lg}) {
+  @media (min-width: ${breakpoints.sm}) {
+    padding: 30px 32px;
+  }
+
+  @media (min-width: calc(${breakpoints.md} + 32px)) {
     border-radius: ${radii.base};
   }
 
@@ -68,6 +72,10 @@ const StyledPre = styled.pre`
     // 1. Make the element just wide enough to fit its content.
     // 2. Always fill the visible space in .code-highlight.
     --code-line-inset: 16px;
+
+    @media (min-width: ${breakpoints.sm}) {
+      --code-line-inset: 32px;
+    }
 
     .code-highlight {
       float: left; /* 1 */
