@@ -1,10 +1,17 @@
 import '@/styles/globals.css';
 
+import { PT_Sans } from '@next/font/google';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
 import { DefaultSEO } from '@/components/_seo';
 import GlobalStyle from '@/components/GlobalStyle';
+
+const ptSans = PT_Sans({
+  subsets: ['latin'],
+  variable: '--font-pt-sans',
+  weight: ['400', '700'],
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -14,7 +21,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <DefaultSEO />
       <GlobalStyle />
-      <Component {...pageProps} />
+      <div className={`${ptSans.variable} font-sans`}>
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }
