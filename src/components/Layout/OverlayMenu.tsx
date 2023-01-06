@@ -1,8 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import styled from 'styled-components';
 
-import { colors, spaces, typography } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 import Container from '../Container';
 import Portal from '../Portal';
@@ -18,81 +17,49 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
     <Portal>
       <AnimatePresence>
         {open && (
-          <OverlayContainer
+          <motion.div
             initial="closed"
             animate="open"
             exit="closed"
             variants={containerVariants}
+            className={cn(
+              'fixed inset-0 w-full h-full top-[60px]',
+              'bg-[rgba(255,255,255,0.85)] backdrop-filter backdrop-blur-sm'
+            )}
           >
-            <OverlayButton onClick={() => setOpen(false)} />
-            <OverlayInner>
-              <OverlayNav variants={navVariants}>
-                <NavTitle>seonest</NavTitle>
+            <button
+              className="p-0 absolute inset-0 z-[1] touch-none bg-transparent"
+              onClick={() => setOpen(false)}
+            />
+            <Container className="relative w-full h-full">
+              <motion.nav
+                className="absolute top-[20%] left-0 z-[2] flex flex-col gap-6"
+                variants={navVariants}
+              >
+                <h1 className="font-bold pl-8 mb-4 text-5xl leading-tight">seonest</h1>
                 <Link href="/" passHref legacyBehavior>
-                  <StyledLink variants={navItemVariants}>&#47;home</StyledLink>
+                  <motion.a
+                    className="px-14 text-4xl font-bold text-indigo-700"
+                    variants={navItemVariants}
+                  >
+                    &#47;home
+                  </motion.a>
                 </Link>
                 <Link href="/about" passHref legacyBehavior>
-                  <StyledLink variants={navItemVariants}>&#47;about</StyledLink>
+                  <motion.a
+                    className="px-14 text-4xl font-bold text-indigo-700"
+                    variants={navItemVariants}
+                  >
+                    &#47;about
+                  </motion.a>
                 </Link>
-              </OverlayNav>
-            </OverlayInner>
-          </OverlayContainer>
+              </motion.nav>
+            </Container>
+          </motion.div>
         )}
       </AnimatePresence>
     </Portal>
   );
 }
-
-const OverlayContainer = styled(motion.div)`
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  top: 60px;
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-`;
-
-const OverlayInner = styled(Container)`
-  position: relative;
-  width: 100%;
-  height: 100%;
-`;
-
-const OverlayButton = styled.button`
-  padding: 0;
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  touch-action: none;
-  background-color: transparent;
-`;
-
-const OverlayNav = styled(motion.nav)`
-  position: absolute;
-  top: 20%;
-  left: 0;
-  z-index: 2;
-
-  display: flex;
-  flex-direction: column;
-  gap: ${spaces.$6};
-`;
-
-const NavTitle = styled.h1`
-  padding-left: ${spaces.$8};
-  font-size: ${typography.fontSizes['4xl']};
-  line-height: ${typography.lineHeight['heading-tight']};
-  margin-bottom: ${spaces.$4};
-`;
-
-const StyledLink = styled(motion.a)`
-  padding-left: ${spaces.$12};
-  padding-right: ${spaces.$12};
-  font-size: ${typography.fontSizes['2xl']};
-  font-weight: ${typography.fontWeights.bold};
-
-  color: ${colors.primary900};
-`;
 
 export default OverlayMenu;

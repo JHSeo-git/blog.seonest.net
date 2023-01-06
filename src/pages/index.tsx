@@ -1,12 +1,9 @@
 import type { GetStaticProps, NextPage } from 'next';
 import Link from 'next/link';
-import styled from 'styled-components';
 
 import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
-import Spacer from '@/components/Spacer';
-import { breakpoints, colors, radii, spaces, typography } from '@/constants/theme';
 import type { CategoryInfo, MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllCategories } from '@/utils/mdxUtils.server';
 import { getAllPosts } from '@/utils/mdxUtils.server';
@@ -47,101 +44,37 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
       <Hidden>
         <h1>Seonest homepage</h1>
       </Hidden>
-      <PageGrid>
-        <PostsSection>
-          <SectionTitle>최신 글</SectionTitle>
-          <Spacer size="$12" />
+      <div className="grid [grid-template:'posts'_'categories'] gap-[72px] md:[grid-template:'posts_categories'_/_2fr_1fr]">
+        <section className="[grid-area:posts]">
+          <h2 className="leading-normal text-rose-600 font-bold">최신 글</h2>
+          <div className="h-14" />
           {posts.map((post) => (
-            <PostLink key={post.id} href={`/posts/${post.slug}`}>
+            <Link
+              key={post.id}
+              href={`/posts/${post.slug}`}
+              className="block transition-colors hover:text-indigo-700 [&:not(:first-of-type)]:mt-[72px]"
+            >
               <PostCard post={post} />
-            </PostLink>
+            </Link>
           ))}
-        </PostsSection>
-        <CategoriesSection>
-          <SectionTitle>카테고리</SectionTitle>
-          <Spacer size="$12" />
+        </section>
+        <section className="[grid-area:categories]">
+          <h2 className="leading-normal text-rose-600 font-bold">카테고리</h2>
+          <div className="h-14" />
           {categories.map((category) => (
-            <CategoryLink key={category.name} href={`/categories/${category.name}`}>
-              <CategoryPill />
+            <Link
+              key={category.name}
+              href={`/categories/${category.name}`}
+              className="inline-block text-sm font-bold px-3 py-2 mr-4 mb-4 capitalize text-indigo-700 relative group"
+            >
+              <div className="absolute inset-0 -z-[1] w-full h-full rounded-md origin-center transition-all bg-indigo-50 group-hover:scale-110 group-hover:bg-indigo-100" />
               {category.name}
-            </CategoryLink>
+            </Link>
           ))}
-        </CategoriesSection>
-      </PageGrid>
+        </section>
+      </div>
     </Layout>
   );
 };
-
-const PageGrid = styled.div`
-  display: grid;
-  grid-template: 'posts' 'categories';
-  gap: ${spaces.$14};
-
-  @media (min-width: ${breakpoints.md}) {
-    grid-template: 'posts categories' / 2fr 1fr;
-  }
-`;
-
-const PostsSection = styled.section`
-  grid-area: posts;
-`;
-const CategoriesSection = styled.section`
-  grid-area: categories;
-`;
-
-const SectionTitle = styled.h2`
-  font-size: ${typography.fontSizes.base};
-  line-height: ${typography.lineHeight.heading};
-  color: ${colors.secondary900};
-`;
-
-const PostLink = styled(Link)`
-  display: block;
-  transition: color 0.2s ease-in-out;
-
-  &:not(:first-of-type) {
-    margin-top: ${spaces.$14};
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      color: ${colors.primary900};
-    }
-  }
-`;
-
-const CategoryLink = styled(Link)`
-  display: inline-block;
-  font-size: ${typography.fontSizes.sm};
-  font-weight: ${typography.fontWeights.bold};
-  padding: ${spaces.$2} ${spaces.$3};
-  margin-right: ${spaces.$4};
-  margin-bottom: ${spaces.$4};
-
-  text-transform: capitalize;
-  color: ${colors.primary900};
-
-  position: relative;
-`;
-
-const CategoryPill = styled.div`
-  position: absolute;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-
-  border-radius: ${radii.base};
-  background-color: ${colors.primary300};
-  transform-origin: center center;
-
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  @media (hover: hover) {
-    ${CategoryLink}:hover & {
-      transform: scale(1.1);
-      background-color: ${colors.primary400};
-    }
-  }
-`;
 
 export default HomePage;

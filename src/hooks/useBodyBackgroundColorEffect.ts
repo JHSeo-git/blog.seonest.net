@@ -1,13 +1,9 @@
 import { useEffect } from 'react';
 
-import { colors } from '@/constants/theme';
-
-type Color = keyof typeof colors;
-
-export default function useBodyBackgroundColorEffect(color: Color) {
+export default function useBodyBackgroundColorEffect(color: string) {
   useEffect(() => {
     if (window?.document) {
-      document.body.style.backgroundColor = colors[color];
+      document.body.style.backgroundColor = color;
     }
 
     return () => {

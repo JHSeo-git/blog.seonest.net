@@ -6,7 +6,7 @@ import styled, { css } from 'styled-components';
 
 import components from '@/components/_mdxComponents';
 import Hr from '@/components/_mdxComponents/Hr';
-import PostSEO from '@/components/_seo/PostSEO';
+import { PostSEO } from '@/components/_seo';
 import Bio from '@/components/Bio';
 import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
@@ -101,7 +101,7 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
     <>
       <PostSEO
         url={`posts/${frontMatter.slug}`}
-        title={frontMatter.title}
+        title={`${frontMatter.title} - Seonest`}
         description={frontMatter.description ?? frontMatter.title}
         images={images}
         publishedTime={frontMatter.date ?? ''}
