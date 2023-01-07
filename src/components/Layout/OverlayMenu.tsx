@@ -23,7 +23,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             exit="closed"
             variants={containerVariants}
             className={cn(
-              'fixed inset-0 w-full h-full top-[60px]',
+              'fixed inset-0 z-[10] w-full h-full top-[60px]',
               'bg-[rgba(255,255,255,0.85)] backdrop-filter backdrop-blur-sm'
             )}
           >

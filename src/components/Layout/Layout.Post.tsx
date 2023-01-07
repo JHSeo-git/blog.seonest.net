@@ -23,7 +23,7 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
       <div className="h-[60px] sticky top-0 z-[1] bg-sky-50" />
       {postFrontMatter && (
         <Container className="pt-10 pb-16">
-          <h1 className="text-5xl leading-tight font-bold">{postFrontMatter.title}</h1>
+          <h1 className="text-4xl leading-tight font-bold">{postFrontMatter.title}</h1>
           <div className="mt-6 flex items-center gap-4 text-gray-700">
             <div className="flex items-center gap-1">
               <TimeIcon width={16} height={16} />

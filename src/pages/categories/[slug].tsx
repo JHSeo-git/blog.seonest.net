@@ -71,7 +71,7 @@ const CategoryPage: NextPage<CategoryPageProps> = ({ category, posts }) => {
       />
       <Layout mode="category">
         <Hidden>
-          <h1>Posts by {category}</h1>
+          <h2>Posts by {category}</h2>
         </Hidden>
         <section>
           <div className="flex items-baseline justify-between px-6">
