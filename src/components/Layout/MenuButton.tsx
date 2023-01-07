@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import styled from 'styled-components';
 
 import { lineBottomVariants, lineTopVariants, svgVariants } from './menuButtonVariants.constants';
 import OverlayMenu from './OverlayMenu';
@@ -13,13 +12,14 @@ function MenuButton() {
 
   return (
     <>
-      <StyledButton onClick={() => setOpen((prev) => !prev)}>
-        <Svg
+      <button className="flex items-center justify-center" onClick={() => setOpen((prev) => !prev)}>
+        <motion.svg
           width={32}
           height={32}
           animate={open ? 'open' : 'close'}
           variants={svgVariants}
           xmlns="http://www.w3.org/2000/svg"
+          className="overflow-visible"
         >
           <motion.line
             animate={open ? 'open' : 'close'}
@@ -35,21 +35,10 @@ function MenuButton() {
             strokeWidth="3"
             strokeLinecap="round"
           />
-        </Svg>
-      </StyledButton>
+        </motion.svg>
+      </button>
       <OverlayMenu open={open} setOpen={setOpen} />
     </>
   );
 }
-
-const StyledButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Svg = styled(motion.svg)`
-  overflow: visible;
-`;
-
 export default MenuButton;

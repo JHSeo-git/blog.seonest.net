@@ -1,9 +1,6 @@
-import styled, { css } from 'styled-components';
-
-import { colors, spaces, zIndices } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 import Container from '../Container';
-import Spacer from '../Spacer';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
@@ -15,42 +12,25 @@ export interface LayoutBaseProps {
 
 function LayoutBase({ children, headerMode = 'base' }: LayoutBaseProps) {
   return (
-    <Layout>
-      <HeaderWrapper $headerMode={headerMode}>
+    <>
+      <Container
+        className={cn(
+          //
+          'sticky top-0 z-10 bg-white',
+          headerMode === 'grayscale' && 'bg-gray-100'
+        )}
+      >
         <Header />
-      </HeaderWrapper>
-      <MainWrapper>
-        <Main>{children}</Main>
-        <Spacer size="$12" />
-      </MainWrapper>
-      <FooterWrapper>
+      </Container>
+      <Container className="pt-14">
+        <main>{children}</main>
+        <div className="h-14" />
+      </Container>
+      <Container>
         <Footer />
-      </FooterWrapper>
-    </Layout>
+      </Container>
+    </>
   );
 }
-
-const Layout = styled.div``;
-
-const HeaderWrapper = styled(Container)<{ $headerMode: HeaderMode }>`
-  position: sticky;
-  top: 0;
-  z-index: ${zIndices.$1};
-
-  background-color: ${colors.loContrast};
-  ${({ $headerMode }) =>
-    $headerMode === 'grayscale' &&
-    css`
-      background-color: ${colors.gray3};
-    `}
-`;
-
-const MainWrapper = styled(Container)`
-  padding-top: ${spaces.$12};
-`;
-
-const FooterWrapper = styled(Container)``;
-
-const Main = styled.main``;
 
 export default LayoutBase;

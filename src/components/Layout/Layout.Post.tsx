@@ -1,6 +1,3 @@
-import styled from 'styled-components';
-
-import { colors, spaces, typography, zIndices } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import { getDistanceToNow } from '@/utils/dateUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
@@ -16,109 +13,40 @@ export interface LayoutPostProps {
 }
 
 function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
-  useBodyBackgroundColorEffect('sky2');
+  useBodyBackgroundColorEffect('#f0f9ff');
 
   return (
-    <Layout>
-      <HeaderWrapper>
+    <div className="bg-sky-50">
+      <Container className="sticky top-0 z-10">
         <Header />
-      </HeaderWrapper>
-      <LightHeaderBackground />
+      </Container>
+      <div className="h-[60px] sticky top-0 z-[1] bg-sky-50" />
       {postFrontMatter && (
-        <HeroWrapper>
-          <PostTitle>{postFrontMatter.title}</PostTitle>
-          <HeroBottom>
-            <PostItemBox>
+        <Container className="pt-10 pb-16">
+          <h1 className="text-5xl leading-tight font-bold">{postFrontMatter.title}</h1>
+          <div className="mt-6 flex items-center gap-4 text-gray-700">
+            <div className="flex items-center gap-1">
               <TimeIcon width={16} height={16} />
-              <TimeText>{postFrontMatter.readingTime}</TimeText>
-            </PostItemBox>
-            <PostItemBox>
+              <p className="text-xs">{postFrontMatter.readingTime}</p>
+            </div>
+            <div className="flex items-center gap-1">
               <CalendarIcon width={16} height={16} />
-              <DateText>{getDistanceToNow(postFrontMatter.date, { humanize: false })}</DateText>
-            </PostItemBox>
-          </HeroBottom>
-        </HeroWrapper>
+              <p className="text-xs">
+                {getDistanceToNow(postFrontMatter.date, { humanize: false })}
+              </p>
+            </div>
+          </div>
+        </Container>
       )}
-      <DarkHeaderBackground />
-      <Main>
-        <MainWrapper>{children}</MainWrapper>
-      </Main>
-      <FooterWrapper>
+      <div className="h-[60px] sticky top-0 z-[1] bg-white" />
+      <main className="bg-white">
+        <Container className="pt-14">{children}</Container>
+      </main>
+      <Container>
         <Footer />
-      </FooterWrapper>
-    </Layout>
+      </Container>
+    </div>
   );
 }
-
-const Layout = styled.div`
-  --layout-background-color: ${colors.sky2};
-
-  background-color: var(--layout-background-color);
-`;
-
-const HeaderWrapper = styled(Container)`
-  position: sticky;
-  top: 0;
-  z-index: ${zIndices.$1};
-`;
-
-const Main = styled.main`
-  background-color: ${colors.loContrast};
-`;
-
-const MainWrapper = styled(Container)`
-  padding-top: ${spaces.$12};
-`;
-
-const HeroWrapper = styled(Container)`
-  padding-top: ${spaces.$10};
-  padding-bottom: ${spaces.$14};
-`;
-
-const FooterWrapper = styled(Container)``;
-
-const HeroBottom = styled.div`
-  margin-top: ${spaces.$6};
-  display: flex;
-  align-items: center;
-  gap: ${spaces.$4};
-
-  color: ${colors.gray11};
-`;
-
-const PostTitle = styled.h1`
-  font-family: ${typography.fontFamily.base};
-  font-size: ${typography.fontSizes.h1};
-  line-height: ${typography.lineHeight['heading-tight']};
-`;
-
-const PostItemBox = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${spaces.$1};
-`;
-
-const TimeText = styled.p`
-  font-size: ${typography.fontSizes.xs};
-`;
-
-const DateText = styled.p`
-  font-size: ${typography.fontSizes.xs};
-`;
-
-const HeaderStickyBackground = styled.div`
-  height: 60px;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-`;
-
-const LightHeaderBackground = styled(HeaderStickyBackground)`
-  background-color: var(--layout-background-color);
-`;
-
-const DarkHeaderBackground = styled(HeaderStickyBackground)`
-  background-color: ${colors.loContrast};
-`;
 
 export default LayoutPost;

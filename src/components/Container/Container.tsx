@@ -1,6 +1,4 @@
-import styled from 'styled-components';
-
-import breakpoints from '@/constants/theme/breakpoints';
+import { cn } from '@/utils/styleUtils';
 
 export interface ContainerProps {
   children: React.ReactNode;
@@ -8,20 +6,9 @@ export interface ContainerProps {
 }
 
 function Container({ children, className }: ContainerProps) {
-  return <MaxWidthWrapper className={className}>{children}</MaxWidthWrapper>;
+  return (
+    <div className={cn('w-full max-w-[1100px] mx-auto px-4 sm:px-8', className)}>{children}</div>
+  );
 }
-
-const MaxWidthWrapper = styled.div`
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
-
-  @media (min-width: ${breakpoints.sm}) {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-`;
 
 export default Container;

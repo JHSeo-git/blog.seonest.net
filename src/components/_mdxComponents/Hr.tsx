@@ -1,25 +1,19 @@
-import styled from 'styled-components';
-
-import { colors, radii, spaces } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 export type HrProps = React.HTMLAttributes<HTMLHRElement>;
 
-function Hr({ ...rest }: HrProps) {
-  return <StyledHR {...rest} />;
+function Hr({ className, ...rest }: HrProps) {
+  return (
+    <hr
+      className={cn(
+        'm-0 p-0 outline-none border-none',
+        'm-[72px] h-[3px] rounded-md border-white bg-indigo-700',
+        'bg-gradient-to-r from-indigo-700 to-rose-700',
+        className
+      )}
+      {...rest}
+    />
+  );
 }
-
-const StyledHR = styled.hr`
-  margin: 0;
-  padding: 0;
-  outline: none;
-  border: none;
-  margin: ${spaces.$14};
-
-  height: 3px;
-  border-radius: ${radii.base};
-  border-color: white;
-  background-color: ${colors.primary900};
-  background: linear-gradient(90deg, ${colors.primary900} 0%, ${colors.secondary900} 100%);
-`;
 
 export default Hr;

@@ -1,33 +1,37 @@
 import Link from 'next/link';
-import styled from 'styled-components';
 
-import { colors, typography } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
-function Anchor({ href, ...rest }: AnchorProps) {
+function Anchor({ href, className, ...rest }: AnchorProps) {
   if (!href) {
-    return <StyledAnchor href="#" target="_blank" rel="noopener noreferrer" {...rest} />;
+    return (
+      <Link
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn('text-blue-700 font-bold hover:underline', className)}
+        {...rest}
+      />
+    );
   }
 
   const external = href && href.startsWith('http');
 
   if (external) {
-    return <StyledAnchor href={href} target="_blank" rel="noopener noreferrer" {...rest} />;
+    return (
+      <Link
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn('text-blue-700 font-bold hover:underline', className)}
+        {...rest}
+      />
+    );
   }
 
-  return <StyledAnchor href={href} {...rest} />;
+  return <Link href={href} className="text-blue-700 font-bold hover:underline" {...rest} />;
 }
-
-const StyledAnchor = styled(Link)`
-  color: ${colors.blue9};
-  font-weight: ${typography.fontWeights.bold};
-
-  @media (hover: hover) {
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
 
 export default Anchor;

@@ -1,6 +1,4 @@
-import styled, { css } from 'styled-components';
-
-import { colors, radii, spaces, typography } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 import AdmonitionIcon from './AdmonitionIcon';
 
@@ -11,109 +9,29 @@ export interface AdmonitionProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function Admonition({ type = 'note', children, ...rest }: AdmonitionProps) {
   return (
-    <AdmonitionWrapper admonitionType={type} {...rest}>
-      <AdmonitionHeader>
+    <div
+      className={cn(
+        'p-4 mb-2 rounded-lg shadow-sm border-l-[5px] border-gray-500 bg-gray-100 text-gray-900',
+        type === 'note' &&
+          'border-gray-500 bg-gray-50 text-gray-900 [&>div:first-child]:text-gray-700',
+        type === 'caution' &&
+          'border-yellow-500 bg-yellow-50 text-yellow-900 [&>div:first-child]:text-yellow-700',
+        type === 'danger' &&
+          'border-red-500 bg-red-50 text-red-900 [&>div:first-child]:text-red-700',
+        type === 'info' &&
+          'border-blue-500 bg-blue-50 text-blue-900 [&>div:first-child]:text-blue-700',
+        type === 'tip' &&
+          'border-green-500 bg-green-50 text-green-900 [&>div:first-child]:text-green-700'
+      )}
+      {...rest}
+    >
+      <div className="flex items-center gap-2">
         <AdmonitionIcon admonitionType={type} />
-        <AdmonitionLabel>{type}</AdmonitionLabel>
-      </AdmonitionHeader>
-      <AdmonitionContent>{children}</AdmonitionContent>
-    </AdmonitionWrapper>
+        <p className="uppercase font-bold text-sm">{type}</p>
+      </div>
+      <div className="mt-2 [&_*:last-of-type]:m-0">{children}</div>
+    </div>
   );
 }
-
-const AdmonitionWrapper = styled.div<{ admonitionType: AdmonitionType }>`
-  padding: ${spaces.$4};
-  margin-bottom: ${spaces.$2};
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
-  border-radius: ${radii.base};
-
-  border-left: 5px solid ${colors.gray7};
-  background-color: ${colors.gray2};
-  color: ${colors.gray12};
-
-  ${({ admonitionType }) => {
-    switch (admonitionType) {
-      case 'note':
-        return css`
-          border-left: 5px solid ${colors.gray7};
-          background-color: ${colors.gray2};
-          color: ${colors.gray12};
-
-          & ${AdmonitionHeader} {
-            color: ${colors.gray11};
-          }
-        `;
-      case 'caution':
-        return css`
-          border-left: 5px solid ${colors.yellow7};
-          background-color: ${colors.yellow2};
-          color: ${colors.yellow12};
-
-          & ${AdmonitionHeader} {
-            color: ${colors.yellow11};
-          }
-        `;
-      case 'danger':
-        return css`
-          border-left: 5px solid ${colors.red7};
-          background-color: ${colors.red2};
-          color: ${colors.red12};
-
-          & ${AdmonitionHeader} {
-            color: ${colors.red11};
-          }
-        `;
-      case 'info':
-        return css`
-          border-left: 5px solid ${colors.blue7};
-          background-color: ${colors.blue2};
-          color: ${colors.blue12};
-
-          & ${AdmonitionHeader} {
-            color: ${colors.blue11};
-          }
-        `;
-      case 'tip':
-        return css`
-          border-left: 5px solid ${colors.green7};
-          background-color: ${colors.green2};
-          color: ${colors.green12};
-
-          & ${AdmonitionHeader} {
-            color: ${colors.green11};
-          }
-        `;
-      default:
-        return css`
-          border-left: 5px solid ${colors.gray7};
-          background-color: ${colors.gray2};
-          color: ${colors.gray12};
-
-          & ${AdmonitionHeader} {
-            color: ${colors.gray11};
-          }
-        `;
-    }
-  }};
-`;
-
-const AdmonitionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${spaces.$1};
-`;
-const AdmonitionLabel = styled.p`
-  text-transform: uppercase;
-  font-weight: ${typography.fontWeights.bold};
-  font-size: ${typography.fontSizes.sm};
-`;
-
-const AdmonitionContent = styled.div`
-  margin-top: ${spaces.$2};
-
-  & *:last-of-type {
-    margin: 0;
-  }
-`;
 
 export default Admonition;

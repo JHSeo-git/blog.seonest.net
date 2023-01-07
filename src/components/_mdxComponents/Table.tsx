@@ -1,28 +1,17 @@
-import styled from 'styled-components';
-
-import { colors, spaces } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 export type TableProps = React.TableHTMLAttributes<HTMLTableElement>;
 
-function Table({ ...rest }: TableProps) {
-  return <StyledTable {...rest} />;
+function Table({ className, ...rest }: TableProps) {
+  return (
+    <table
+      className={cn(
+        'w-full border-collapse my-6 [&_th]:p-4 [&_td]:p-4 [&_tr]:border-b [&_tr]:border-gray-300',
+        className
+      )}
+      {...rest}
+    />
+  );
 }
-
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-
-  margin-top: ${spaces.$6};
-  margin-bottom: ${spaces.$6};
-
-  & th,
-  & td {
-    padding: ${spaces.$4};
-  }
-
-  & tr {
-    border-bottom: 1px solid ${colors.borderColor};
-  }
-`;
 
 export default Table;

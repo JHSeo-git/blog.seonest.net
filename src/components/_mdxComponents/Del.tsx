@@ -1,13 +1,9 @@
-import styled from 'styled-components';
+import { cn } from '@/utils/styleUtils';
 
 export type DelProps = React.DelHTMLAttributes<HTMLModElement>;
 
-function Del({ ...rest }: DelProps) {
-  return <StyledDel {...rest} />;
+function Del({ className, ...rest }: DelProps) {
+  return <del className={cn('opacity-50', className)} {...rest} />;
 }
-
-const StyledDel = styled.del`
-  opacity: 0.5;
-`;
 
 export default Del;

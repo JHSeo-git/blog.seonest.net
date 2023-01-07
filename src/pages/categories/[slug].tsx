@@ -1,14 +1,11 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Link from 'next/link';
-import styled from 'styled-components';
 
 import appConfig from '@/app.config';
-import PageSEO from '@/components/_seo/PageSEO';
+import { PageSEO } from '@/components/_seo';
 import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
-import Spacer from '@/components/Spacer';
-import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils.server';
@@ -63,74 +60,40 @@ interface CategoryPageProps {
   posts: SerializedPostFromatter[];
 }
 const CategoryPage: NextPage<CategoryPageProps> = ({ category, posts }) => {
-  useBodyBackgroundColorEffect('gray3');
+  useBodyBackgroundColorEffect('#f3f4f6');
 
   return (
     <>
       <PageSEO
         url={`categories/${category}`}
-        title={`${category} Posts`}
+        title={`${category.toUpperCase()} Posts - Seonest`}
         description={appConfig.description}
       />
       <Layout mode="category">
         <Hidden>
           <h1>Posts by {category}</h1>
         </Hidden>
-        <PostsSection>
-          <SectionHeader>
-            <CategoryTitle>{category}</CategoryTitle>
-            <CategoryCount>
+        <section>
+          <div className="flex items-baseline justify-between px-6">
+            <h1 className="text-5xl font-bold capitalize">{category}</h1>
+            <p className="hidden text-lg text-gray-700 sm:block">
               {posts.length} Post{posts.length > 0 ? 's' : ''}
-            </CategoryCount>
-          </SectionHeader>
-          <Spacer size="$4" />
+            </p>
+          </div>
+          <div className="h-6" />
           {posts.map((post) => (
-            <PostLink key={post.id} href={`/posts/${post.slug}`}>
+            <Link
+              key={post.id}
+              href={`/posts/${post.slug}`}
+              className="block transition-color [&:not(:first-of-type)]:mt-8 hover:text-indigo-700"
+            >
               <PostCard post={post} mode="card" />
-            </PostLink>
+            </Link>
           ))}
-        </PostsSection>
+        </section>
       </Layout>
     </>
   );
 };
-
-const PostsSection = styled.section``;
-const SectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding-left: ${spaces.$6};
-  padding-right: ${spaces.$6};
-`;
-const CategoryTitle = styled.h1`
-  font-size: ${typography.fontSizes['3xl']};
-  text-transform: capitalize;
-`;
-const CategoryCount = styled.p`
-  display: none;
-  font-size: ${typography.fontSizes.lg};
-  color: ${colors.gray11};
-
-  @media (min-width: ${breakpoints.sm}) {
-    display: block;
-  }
-`;
-
-const PostLink = styled(Link)`
-  display: block;
-  transition: color 0.2s ease-in-out;
-
-  &:not(:first-of-type) {
-    margin-top: ${spaces.$8};
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      color: ${colors.primary900};
-    }
-  }
-`;
 
 export default CategoryPage;

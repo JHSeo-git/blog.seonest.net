@@ -1,13 +1,11 @@
 import type { GetStaticProps, NextPage } from 'next';
 import { MDXRemote } from 'next-mdx-remote';
-import styled from 'styled-components';
 
 import appConfig from '@/app.config';
 import components from '@/components/_mdxComponents';
-import PageSEO from '@/components/_seo/PageSEO';
+import { PageSEO } from '@/components/_seo';
 import Container from '@/components/Container';
 import Hidden from '@/components/Hidden';
-import { colors, spaces, typography } from '@/constants/theme';
 import { getDistanceToNow } from '@/utils/dateUtils';
 import type { About, MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAbout } from '@/utils/mdxUtils.server';
@@ -31,43 +29,21 @@ type AboutPageProps = NonNullable<About> & {
 const AboutPage: NextPage<AboutPageProps> = ({ source, frontMatter }) => {
   return (
     <>
-      <PageSEO url="about" title="About JHSeo" description={appConfig.description} />
-      <AboutContainer>
+      <PageSEO url="about" title="About JHSeo - Seonest" description={appConfig.description} />
+      <Container className="py-[72px]">
         <Hidden>
           <h1>About JHSeo</h1>
         </Hidden>
-        <LastModifiedBox>
-          <Label>Last updated:</Label>
-          <LastUpdated>
+        <div className="flex items-center justify-end">
+          <p className="text-xs text-gray-700 mr-2 italic font-bold">Last updated:</p>
+          <p className="text-xs text-gray-700 mr-2 italic">
             {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
-          </LastUpdated>
-        </LastModifiedBox>
+          </p>
+        </div>
         <MDXRemote {...source} components={components} />
-      </AboutContainer>
+      </Container>
     </>
   );
 };
-
-const AboutContainer = styled(Container)`
-  padding-top: ${spaces.$14};
-  padding-bottom: ${spaces.$14};
-`;
-const LastModifiedBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
-const Label = styled.p`
-  font-size: ${typography.fontSizes.xs};
-  font-weight: ${typography.fontWeights.bold};
-  color: ${colors.gray11};
-  margin-right: ${spaces.$2};
-  font-style: italic;
-`;
-const LastUpdated = styled.p`
-  font-size: ${typography.fontSizes.xs};
-  color: ${colors.gray11};
-  font-style: italic;
-`;
 
 export default AboutPage;
