@@ -7,8 +7,8 @@ import { PageSEO } from '@/components/_seo';
 import Container from '@/components/Container';
 import Hidden from '@/components/Hidden';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { About, MDXFrontMatter } from '@/utils/mdxUtils.server';
-import { getAbout } from '@/utils/mdxUtils.server';
+import type { About, MDXFrontMatter } from '@/utils/mdxUtils';
+import { getAbout } from '@/utils/mdxUtils';
 
 export const getStaticProps: GetStaticProps = async () => {
   const aboutMdx = await getAbout();

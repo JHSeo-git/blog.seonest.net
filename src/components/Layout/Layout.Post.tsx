@@ -1,6 +1,6 @@
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils';
 
 import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';

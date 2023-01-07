@@ -7,8 +7,8 @@ import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
-import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
-import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils';
+import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils';
 
 type SerializedPostFromatter = { id: string } & MDXFrontMatter;
 

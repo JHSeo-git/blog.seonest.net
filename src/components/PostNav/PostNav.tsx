@@ -1,4 +1,4 @@
-import type { Post } from '@/utils/mdxUtils.server';
+import type { Post } from '@/utils/mdxUtils';
 
 import HeadingViewProvider from './HeadingViewProvider';
 import PostNavItem from './PostNav.Item';

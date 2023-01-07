@@ -2,6 +2,7 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
+import { getPlaiceholder } from 'plaiceholder';
 
 import components from '@/components/_mdxComponents';
 import Hr from '@/components/_mdxComponents/Hr';
@@ -11,9 +12,10 @@ import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
 import PostNav from '@/components/PostNav';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { MDXFrontMatter, Post } from '@/utils/mdxUtils.server';
-import { getPrevNextBySlug } from '@/utils/mdxUtils.server';
-import { getAllSlugs, getPost } from '@/utils/mdxUtils.server';
+import { getBlurThumbnail } from '@/utils/imageUtils';
+import type { MDXFrontMatter, Post } from '@/utils/mdxUtils';
+import { getPrevNextBySlug } from '@/utils/mdxUtils';
+import { getAllSlugs, getPost } from '@/utils/mdxUtils';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = await getAllSlugs();
@@ -27,7 +29,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-type SerializedPostFromatter = { id: string } & MDXFrontMatter;
+type SerializedPostFromatter = MDXFrontMatter & { id: string; blurThumbnail?: string | null };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slugs = params?.slug;
@@ -48,6 +50,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   const prevnext = await getPrevNextBySlug(slug);
+  const thumbnailPlaceHolder = await getBlurThumbnail(mdx.frontMatter.thumbnail);
 
   const serializedFrontMatter: SerializedPostFromatter = {
     id: `${mdx.frontMatter.slug}_${mdx.frontMatter.date ?? Date.now()}`,
@@ -62,6 +65,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     readingTime: mdx.frontMatter.readingTime,
     lastModified: mdx.frontMatter.lastModified,
     thumbnail: mdx.frontMatter.thumbnail,
+    blurThumbnail: thumbnailPlaceHolder ?? mdx.frontMatter.thumbnail,
   };
 
   return {
@@ -115,8 +119,8 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
                   alt="Thumbnail"
                   width={750}
                   height={488}
-                  placeholder="blur"
-                  blurDataURL={frontMatter.thumbnail}
+                  placeholder={frontMatter.blurThumbnail ? 'blur' : undefined}
+                  blurDataURL={frontMatter.blurThumbnail ?? undefined}
                   priority
                 />
               </div>

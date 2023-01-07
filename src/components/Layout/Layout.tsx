@@ -1,4 +1,4 @@
-import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils';
 
 import LayoutBase from './Layout.Base';
 import LayoutPost from './Layout.Post';

@@ -8,7 +8,7 @@ import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
-import { getSlug, globPromise } from './fileUtils.server';
+import { getSlug, globPromise } from './fileUtils';
 
 const WORDS_PER_MINUTE_ENG = 200;
 const WORDS_PER_MINUTE_KOR = 500;

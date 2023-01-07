@@ -4,9 +4,9 @@ import Link from 'next/link';
 import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
-import type { CategoryInfo, MDXFrontMatter } from '@/utils/mdxUtils.server';
-import { getAllCategories } from '@/utils/mdxUtils.server';
-import { getAllPosts } from '@/utils/mdxUtils.server';
+import type { CategoryInfo, MDXFrontMatter } from '@/utils/mdxUtils';
+import { getAllCategories } from '@/utils/mdxUtils';
+import { getAllPosts } from '@/utils/mdxUtils';
 
 type SerializedPostFromatter = { id: string } & MDXFrontMatter;
 

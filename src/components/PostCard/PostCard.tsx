@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getDistanceToNow } from '@/utils/dateUtils';
-import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
+import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { cn } from '@/utils/styleUtils';
 
 type Mode = 'base' | 'card';
