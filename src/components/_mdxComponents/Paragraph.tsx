@@ -1,22 +1,9 @@
-import styled from 'styled-components';
-
-import { breakpoints, typography } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 export type ParagraphProps = React.HTMLAttributes<HTMLParagraphElement>;
 
-function Paragraph({ ...rest }: ParagraphProps) {
-  return <StyledParagraph {...rest} />;
+function Paragraph({ className, ...rest }: ParagraphProps) {
+  return <p className={cn('text-base leading-7 mb-6 sm:text-lg', className)} {...rest} />;
 }
-
-const StyledParagraph = styled.p`
-  font-size: ${typography.fontSizes.base};
-  line-height: ${typography.lineHeight['body-loose']};
-
-  margin-bottom: 1.5rem;
-
-  @media (min-width: ${breakpoints.sm}) {
-    font-size: ${typography.fontSizes.md};
-  }
-`;
 
 export default Paragraph;

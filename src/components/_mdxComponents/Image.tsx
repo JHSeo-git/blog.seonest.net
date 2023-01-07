@@ -1,17 +1,33 @@
 import NextImage from 'next/image';
-import styled from 'styled-components';
 
-import { spaces } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
-function Image({ src, ...rest }: ImageProps) {
+function Image({ src, className, ...rest }: ImageProps) {
   if (!src) {
-    return <StyledImage {...rest} loading="lazy" />;
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        alt={rest.alt}
+        className={cn('my-4 mx-auto w-full h-full object-contain', className)}
+        loading="lazy"
+        {...rest}
+      />
+    );
   }
 
   if (src.startsWith('http')) {
-    return <StyledImage src={src} {...rest} loading="lazy" />;
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={rest.alt}
+        className={cn('my-4 mx-auto w-full h-full object-contain', className)}
+        loading="lazy"
+        {...rest}
+      />
+    );
   }
 
   const width = 700;
@@ -19,37 +35,16 @@ function Image({ src, ...rest }: ImageProps) {
   const alt = rest.alt ?? 'Image';
 
   return (
-    <StyledNextImage
-      {...rest}
+    <NextImage
       src={src}
       alt={alt}
+      className={cn('my-4 mx-auto w-full h-full object-contain', className)}
+      {...rest}
       width={width}
       height={height}
       placeholder="empty"
     />
   );
 }
-
-const StyledImage = styled.img`
-  margin-top: ${spaces.xl};
-  margin-bottom: ${spaces.xl};
-  margin-left: auto;
-  margin-right: auto;
-
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`;
-
-const StyledNextImage = styled(NextImage)`
-  margin-top: ${spaces.xl};
-  margin-bottom: ${spaces.xl};
-  margin-left: auto;
-  margin-right: auto;
-
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`;
 
 export default Image;

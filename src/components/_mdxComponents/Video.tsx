@@ -1,16 +1,19 @@
-import styled from 'styled-components';
-
-import { spaces } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 export type VideoProps = React.VideoHTMLAttributes<HTMLVideoElement>;
 
-function Video({ ...rest }: VideoProps) {
-  return <StyledVideo controls autoPlay muted={true} loop playsInline {...rest} />;
+function Video({ className, ...rest }: VideoProps) {
+  return (
+    <video
+      controls
+      autoPlay
+      muted={true}
+      loop
+      playsInline
+      className={cn('my-2', className)}
+      {...rest}
+    />
+  );
 }
-
-const StyledVideo = styled.video`
-  margin-top: ${spaces.$2};
-  margin-bottom: ${spaces.$2};
-`;
 
 export default Video;

@@ -43,7 +43,6 @@
     "rehype-slug": "^5.0.1",
     "remark-gfm": "^3.0.1",
     "sharp": "^0.31.1",
-    "styled-components": "^5.3.6",
     "tailwind-merge": "^1.8.1"
   },
   "devDependencies": {
@@ -52,7 +51,6 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "@types/styled-components": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "autoprefixer": "^10.4.13",

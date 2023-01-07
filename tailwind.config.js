@@ -14,6 +14,8 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['var(--font-pt-sans)', ...fontFamily.sans],
+        mono: ['var(--font-fira-mono)', ...fontFamily.mono],
+        spicy: ['var(--font-acme)', ...fontFamily.sans],
       },
     },
   },

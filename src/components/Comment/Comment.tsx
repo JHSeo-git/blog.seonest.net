@@ -1,9 +1,7 @@
 import Giscus from '@giscus/react';
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
 
 import appConfig from '@/app.config';
-import { spaces } from '@/constants/theme';
 
 function Comment() {
   const { asPath } = useRouter();
@@ -13,7 +11,7 @@ function Comment() {
   }
 
   return (
-    <CommentWrapper>
+    <div className="mt-10">
       <Giscus
         key={asPath}
         id="comments"
@@ -27,12 +25,8 @@ function Comment() {
         // TODO: dark mode
         theme="light"
       />
-    </CommentWrapper>
+    </div>
   );
 }
-
-const CommentWrapper = styled.div`
-  margin-top: ${spaces.$10};
-`;
 
 export default Comment;

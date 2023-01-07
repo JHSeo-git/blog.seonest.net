@@ -33,7 +33,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             />
             <Container className="relative w-full h-full">
               <motion.nav
-                className="absolute top-[20%] left-0 z-[2] flex flex-col gap-6"
+                className="absolute top-[20%] left-0 z-[2] flex flex-col gap-8"
                 variants={navVariants}
               >
                 <h1 className="font-bold pl-8 mb-4 text-5xl leading-tight">seonest</h1>

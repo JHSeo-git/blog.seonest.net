@@ -1,7 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
 import Container from '../Container';
-import Spacer from '../Spacer';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
@@ -25,7 +24,7 @@ function LayoutBase({ children, headerMode = 'base' }: LayoutBaseProps) {
       </Container>
       <Container className="pt-14">
         <main>{children}</main>
-        <Spacer size="$12" />
+        <div className="h-14" />
       </Container>
       <Container>
         <Footer />

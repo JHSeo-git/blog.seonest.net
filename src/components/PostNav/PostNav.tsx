@@ -1,6 +1,3 @@
-import styled from 'styled-components';
-
-import { spaces, typography } from '@/constants/theme';
 import type { Post } from '@/utils/mdxUtils.server';
 
 import HeadingViewProvider from './HeadingViewProvider';
@@ -13,14 +10,14 @@ export interface PostNavProps {
 
 function PostNavChildren({ title, toc }: PostNavProps) {
   return (
-    <Nav>
-      <NavTitle>{title}</NavTitle>
+    <nav className="mb-8">
+      <h2 className="text-lg tracking-[1px] uppercase mb-4 font-bold">{title}</h2>
       {toc.map((tocItem) => (
         <PostNavItem href={tocItem.link} key={tocItem.id} id={tocItem.id} level={tocItem.level}>
           {tocItem.text}
         </PostNavItem>
       ))}
-    </Nav>
+    </nav>
   );
 }
 
@@ -31,16 +28,5 @@ function PostNav({ title, toc }: PostNavProps) {
     </HeadingViewProvider>
   );
 }
-
-const Nav = styled.nav`
-  margin-bottom: ${spaces.$8};
-`;
-const NavTitle = styled.h2`
-  font-size: ${typography.fontSizes.lg};
-  letter-spacing: 1px;
-  text-transform: uppercase;
-
-  margin-bottom: ${spaces.$4};
-`;
 
 export default PostNav;

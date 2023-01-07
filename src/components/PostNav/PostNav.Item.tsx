@@ -1,6 +1,4 @@
-import styled, { css } from 'styled-components';
-
-import { colors, spaces, typography } from '@/constants/theme';
+import { cn } from '@/utils/styleUtils';
 
 import { useHeadingView } from './HeadingViewProvider';
 import useHeadingInViewEffect from './useHeadingInViewEffect';
@@ -15,42 +13,19 @@ function PostNavItem({ id, level, ...rest }: PostNavItemProps) {
   const { headingId } = useHeadingView();
   const isActive = headingId === id;
 
-  return <NavItem {...rest} $active={isActive} $level={level} />;
+  return (
+    <a
+      {...rest}
+      className={cn(
+        'block text-sm font-medium my-2 opacity-70 transition-opacity hover:opacity-100 active:opacity-100',
+        isActive && 'opacity-100 text-indigo-700',
+        level === 3 && 'pl-3 mt-1',
+        level === 4 && 'pl-6 mt-1',
+        level === 5 && 'pl-9 mt-1',
+        level === 6 && 'pl-12 mt-1'
+      )}
+    />
+  );
 }
-
-const NavItem = styled.a<{ $level: number; $active: boolean }>`
-  display: block;
-
-  font-size: ${typography.fontSizes.sm};
-  font-weight: ${typography.fontWeights.medium};
-  margin-top: ${spaces.$2};
-  margin-bottom: ${spaces.$2};
-  opacity: 0.7;
-
-  transition: opacity 0.5s ease;
-
-  ${(props) =>
-    props.$active &&
-    css`
-      opacity: 1;
-      color: ${colors.primary900};
-    `}
-
-  ${(props) =>
-    props.$level >= 3 &&
-    css`
-      padding-left: calc(${props.$level - 2} * ${spaces.$3});
-      margin-top: ${spaces.$1};
-    `}
-
-  @media (hover: hover) {
-    &:hover {
-      opacity: 1;
-    }
-  }
-  &:focus {
-    opacity: 1;
-  }
-`;
 
 export default PostNavItem;

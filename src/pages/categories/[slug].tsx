@@ -1,14 +1,11 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Link from 'next/link';
-import styled from 'styled-components';
 
 import appConfig from '@/app.config';
 import { PageSEO } from '@/components/_seo';
 import Hidden from '@/components/Hidden';
 import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
-import Spacer from '@/components/Spacer';
-import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import type { MDXFrontMatter } from '@/utils/mdxUtils.server';
 import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils.server';

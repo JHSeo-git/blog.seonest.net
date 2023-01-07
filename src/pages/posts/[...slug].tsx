@@ -2,7 +2,6 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote';
-import styled, { css } from 'styled-components';
 
 import components from '@/components/_mdxComponents';
 import Hr from '@/components/_mdxComponents/Hr';
@@ -11,8 +10,6 @@ import Bio from '@/components/Bio';
 import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
 import PostNav from '@/components/PostNav';
-import Spacer from '@/components/Spacer';
-import { breakpoints, colors, spaces, typography } from '@/constants/theme';
 import { getDistanceToNow } from '@/utils/dateUtils';
 import type { MDXFrontMatter, Post } from '@/utils/mdxUtils.server';
 import { getPrevNextBySlug } from '@/utils/mdxUtils.server';
@@ -108,11 +105,12 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
         modifiedTime={frontMatter.lastModified ?? ''}
       />
       <Layout mode="post" postFrontMatter={frontMatter}>
-        <MDXWrapper>
-          <MDXArticle>
+        <div className="flex items-start justify-center">
+          <article className="flex-grow flex-shrink basis-[720px] max-w-[min(720px,100%)]">
             {frontMatter.thumbnail && (
-              <MDXThumbnailWrapper>
-                <MDXThumbnail
+              <div className="relative mb-10">
+                <Image
+                  className="w-full h-full object-cover"
                   src={frontMatter.thumbnail}
                   alt="Thumbnail"
                   width={750}
@@ -121,169 +119,59 @@ const PostPage: NextPage<PostPageProps> = ({ source, frontMatter, toc, prev, nex
                   blurDataURL={frontMatter.thumbnail}
                   priority
                 />
-              </MDXThumbnailWrapper>
+              </div>
             )}
             <MDXRemote {...source} components={components} />
-            <MDXFooter>
-              <MDXFooterTop>
-                <DateBox>
-                  <BoxLabel>마지막 업데이트</BoxLabel>
-                  <BoxValue>
+            <div className="mt-20">
+              <div className="flex items-center justify-end">
+                <div>
+                  <h3 className="text-xs font-bold text-rose-500 text-right">마지막 업데이트</h3>
+                  <p className="mt-1 text-sm font-bold text-gray-500 text-right">
                     {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
-                  </BoxValue>
-                </DateBox>
-              </MDXFooterTop>
+                  </p>
+                </div>
+              </div>
               <Hr />
               <Bio />
-              <Spacer size="$14" />
-              <MDXFooterNav>
-                <PrevNextWrapper>
+              <div className="h-16" />
+              <div className="flex items-center justify-between flex-wrap gap-6">
+                <div className="w-full md:w-auto">
                   {prev && (
-                    <PrevNext href={`/posts/${prev.slug}`}>
-                      <PrevNextLabel>이전</PrevNextLabel>
-                      <PrevNextTitle>{prev.title}</PrevNextTitle>
-                    </PrevNext>
+                    <Link href={`/posts/${prev.slug}`} className="flex flex-col group">
+                      <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700">
+                        이전
+                      </h3>
+                      <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700">
+                        {prev.title}
+                      </p>
+                    </Link>
                   )}
-                </PrevNextWrapper>
-                <PrevNextWrapper $isNext>
+                </div>
+                <div className="w-full md:w-auto">
                   {next && (
-                    <PrevNext href={`/posts/${next.slug}`} $isNext>
-                      <PrevNextLabel>다음</PrevNextLabel>
-                      <PrevNextTitle>{next.title}</PrevNextTitle>
-                    </PrevNext>
+                    <Link href={`/posts/${next.slug}`} className="flex flex-col group items-end">
+                      <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700">
+                        다음
+                      </h3>
+                      <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700">
+                        {next.title}
+                      </p>
+                    </Link>
                   )}
-                </PrevNextWrapper>
-              </MDXFooterNav>
-              <Spacer size="$14" />
+                </div>
+              </div>
+              <div className="h-14" />
               <Comment />
-            </MDXFooter>
-          </MDXArticle>
-          <MDXAside>
+            </div>
+          </article>
+          <aside className="hidden flex-grow-0 flex-shrink-[100000] basis-[250px] ml-auto sticky top-[100px] max-h-[calc(100vh_-_100px)] overflow-y-auto xl:block">
             <PostNav toc={toc} title="Table Of Contents" />
-          </MDXAside>
-        </MDXWrapper>
-        <Spacer size="$10" />
+          </aside>
+        </div>
+        <div className="h-12" />
       </Layout>
     </>
   );
 };
-
-const MDXWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-`;
-
-const MDXThumbnailWrapper = styled.div`
-  position: relative;
-  margin-bottom: ${spaces.$10};
-`;
-
-const MDXThumbnail = styled(Image)`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const MDXArticle = styled.article`
-  flex: 1 1 720px;
-  max-width: min(720px, 100%);
-`;
-const MDXAside = styled.aside`
-  display: none;
-  flex: 0 100000 250px;
-  margin-left: auto;
-
-  position: sticky;
-  top: 100px;
-
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-
-  @media (min-width: ${breakpoints.xl}) {
-    display: block;
-  }
-`;
-
-const MDXFooter = styled.div`
-  margin-top: ${spaces.$14};
-`;
-const MDXFooterTop = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
-const MDXFooterNav = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: ${spaces.$6};
-`;
-const DateBox = styled.div``;
-const BoxLabel = styled.h3`
-  font-size: ${typography.fontSizes.xs};
-  font-weight: ${typography.fontWeights.bold};
-  color: ${colors.secondary900};
-  text-align: right;
-`;
-const BoxValue = styled.p`
-  margin-top: ${spaces.$1};
-  font-size: ${typography.fontSizes.sm};
-  font-weight: ${typography.fontWeights.bold};
-  color: ${colors.gray11};
-  text-align: right;
-`;
-const PrevNextWrapper = styled.div<{ $isNext?: boolean }>`
-  width: 100%;
-  ${({ $isNext }) =>
-    $isNext &&
-    css`
-      align-items: flex-end;
-    `};
-
-  @media (min-width: ${breakpoints.md}) {
-    width: auto;
-  }
-`;
-const PrevNext = styled(Link)<{ $isNext?: boolean }>`
-  display: flex;
-  flex-direction: column;
-
-  ${({ $isNext }) =>
-    $isNext &&
-    css`
-      align-items: flex-end;
-    `};
-`;
-const PrevNextLabel = styled.h3`
-  font-size: ${typography.fontSizes.sm};
-  font-weight: ${typography.fontWeights.bold};
-  color: ${colors.gray11};
-  transition: color 0.2s ease;
-
-  @media (hover: hover) {
-    ${PrevNext}:hover & {
-      color: ${colors.primary900};
-    }
-  }
-`;
-const PrevNextTitle = styled.p`
-  margin-top: ${spaces.$1};
-  font-size: ${typography.fontSizes.base};
-  font-weight: ${typography.fontWeights.bold};
-  color: ${colors.hiContrast};
-  transition: color 0.2s ease;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-
-  @media (hover: hover) {
-    ${PrevNext}:hover & {
-      color: ${colors.primary900};
-    }
-  }
-`;
 
 export default PostPage;
