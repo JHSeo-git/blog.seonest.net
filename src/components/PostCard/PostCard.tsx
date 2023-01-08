@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
+import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
 import { getDistanceToNow } from '@/utils/dateUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { cn } from '@/utils/styleUtils';
@@ -16,7 +17,7 @@ function PostCard({ post, mode = 'base' }: PostCardProps) {
   const { title, subTitle, description, date } = post;
   const [distanceDate, setDistanceDate] = useState<string | undefined>();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setDistanceDate(getDistanceToNow(date));
   }, [date]);
 

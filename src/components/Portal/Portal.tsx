@@ -4,6 +4,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
+
 interface PortalProps {
   parent?: HTMLElement;
   className?: string;
@@ -17,7 +19,7 @@ export default function Portal({ children, parent, className }: PortalProps) {
     return document.createElement('div');
   }, []);
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!el) {
       return;
     }
