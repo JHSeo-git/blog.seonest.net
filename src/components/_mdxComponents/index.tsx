@@ -1,3 +1,5 @@
+'use client';
+
 import type { MDXRemoteProps } from 'next-mdx-remote';
 
 import Admonition from '../Admonition';

@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -27,6 +29,10 @@ function MenuButton() {
             stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
+            x1={lineTopVariants.close.x1}
+            y1={lineTopVariants.close.y1}
+            x2={lineTopVariants.close.x2}
+            y2={lineTopVariants.close.y2}
           />
           <motion.line
             animate={open ? 'open' : 'close'}
@@ -34,6 +40,10 @@ function MenuButton() {
             stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
+            x1={lineBottomVariants.close.x1}
+            y1={lineBottomVariants.close.y1}
+            x2={lineBottomVariants.close.x2}
+            y2={lineBottomVariants.close.y2}
           />
         </motion.svg>
       </button>

@@ -1,8 +1,8 @@
-import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 import { getDistanceToNow } from '@/utils/dateUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils';
 
 import { CalendarIcon, TimeIcon } from '../_icons';
+import BodyBackgroundColor from '../BodyBackgroundColor';
 import Container from '../Container';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
@@ -13,10 +13,9 @@ export interface LayoutPostProps {
 }
 
 function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
-  useBodyBackgroundColorEffect('#f0f9ff');
-
   return (
     <div className="bg-sky-50">
+      <BodyBackgroundColor color="#f0f9ff" />
       <Container className="sticky top-0 z-10">
         <Header />
       </Container>

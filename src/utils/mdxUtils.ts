@@ -8,6 +8,8 @@ import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
+import appConfig from '@/app.config';
+
 import { getSlug, globPromise } from './fileUtils';
 
 const WORDS_PER_MINUTE_ENG = 200;
@@ -285,4 +287,9 @@ export const getReadTime = (markdown: string) => {
   const imgReadTime = calculateImageReadTime(imgCount);
 
   return textReadTime + imgReadTime;
+};
+
+export const generateFullUrl = (url: string) => {
+  const fullUrl = `${appConfig.siteUrl}${url.startsWith('/') ? url : `/${url}`}`;
+  return encodeURI(fullUrl);
 };

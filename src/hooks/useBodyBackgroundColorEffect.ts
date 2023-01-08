@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect';
 
 export default function useBodyBackgroundColorEffect(color: string) {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (window?.document) {
       document.body.style.backgroundColor = color;
     }

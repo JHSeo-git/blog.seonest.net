@@ -1,16 +1,14 @@
-import type { GetStaticProps, NextPage } from 'next';
 import Link from 'next/link';
 
 import Hidden from '@/components/Hidden';
-import Layout from '@/components/Layout';
 import PostCard from '@/components/PostCard';
-import type { CategoryInfo, MDXFrontMatter } from '@/utils/mdxUtils';
+import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { getAllCategories } from '@/utils/mdxUtils';
 import { getAllPosts } from '@/utils/mdxUtils';
 
 type SerializedPostFromatter = { id: string } & MDXFrontMatter;
 
-export const getStaticProps: GetStaticProps = async () => {
+const getPostsAndCategories = async () => {
   const posts = await getAllPosts();
   const categories = await getAllCategories();
 
@@ -27,20 +25,16 @@ export const getStaticProps: GetStaticProps = async () => {
   }));
 
   return {
-    props: {
-      posts: serializedPost,
-      categories,
-    },
+    posts: serializedPost,
+    categories,
   };
 };
 
-interface HomePageProps {
-  posts: SerializedPostFromatter[];
-  categories: CategoryInfo[];
-}
-const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
+async function IndexPage() {
+  const { posts, categories } = await getPostsAndCategories();
+
   return (
-    <Layout mode="base">
+    <>
       <Hidden>
         <h1>Seonest homepage</h1>
       </Hidden>
@@ -73,8 +67,8 @@ const HomePage: NextPage<HomePageProps> = ({ posts, categories }) => {
           ))}
         </section>
       </div>
-    </Layout>
+    </>
   );
-};
+}
 
-export default HomePage;
+export default IndexPage;

@@ -4,6 +4,7 @@ export { default as GithubIcon } from './Github';
 export { default as ImportantIcon } from './Important';
 export { default as InfoIcon } from './Info';
 export { default as LightBulbIcon } from './LightBulb';
+export { default as LoadingIcon } from './Loading';
 export { default as LogoIcon } from './Logo';
 export { default as TextLogoIcon } from './TextLogo';
 export { default as TimeIcon } from './Time';
