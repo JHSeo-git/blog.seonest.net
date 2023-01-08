@@ -22,7 +22,6 @@
   "dependencies": {
     "@giscus/react": "^2.2.0",
     "@next/font": "^13.1.1",
-    "@radix-ui/colors": "^0.1.8",
     "cjk-slug": "^0.3.0",
     "clsx": "^1.2.1",
     "date-fns": "^2.29.3",
