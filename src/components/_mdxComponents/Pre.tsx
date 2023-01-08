@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
+interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   language?: string;
 }
 

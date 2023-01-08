@@ -1,4 +1,4 @@
-export interface HiddenProps {
+interface HiddenProps {
   children: React.ReactNode;
 }
 

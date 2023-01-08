@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export interface SpicyTextProps {
+interface SpicyTextProps {
   children: React.ReactNode;
   em?: boolean;
 }

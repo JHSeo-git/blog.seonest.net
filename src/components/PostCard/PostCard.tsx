@@ -8,7 +8,7 @@ import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { cn } from '@/utils/styleUtils';
 
 type Mode = 'base' | 'card';
-export interface PostCardProps {
+interface PostCardProps {
   post: MDXFrontMatter;
   mode?: Mode;
 }

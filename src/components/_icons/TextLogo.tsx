@@ -1,4 +1,4 @@
-export type TextLogoProps = {
+type TextLogoProps = {
   width?: string | number;
   height?: string | number;
 };

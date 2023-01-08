@@ -7,7 +7,7 @@ import Container from '../Container';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
-export interface LayoutPostProps {
+interface LayoutPostProps {
   children: React.ReactNode;
   postFrontMatter?: MDXFrontMatter;
 }

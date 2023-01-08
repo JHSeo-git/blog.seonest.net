@@ -1,7 +1,7 @@
 import { FireIcon, ImportantIcon, InfoIcon, LightBulbIcon, WarningFillIcon } from '../_icons';
 import type { AdmonitionType } from './Admonition';
 
-export interface AdmonitionIconProps {
+interface AdmonitionIconProps {
   admonitionType: AdmonitionType;
 }
 

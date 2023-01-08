@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 
-export interface BaseLayoutProps {
+interface BaseLayoutProps {
   children: React.ReactNode;
 }
 

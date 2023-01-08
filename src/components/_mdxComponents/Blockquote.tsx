@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export type BlockquoteProps = React.HTMLAttributes<HTMLQuoteElement>;
+type BlockquoteProps = React.HTMLAttributes<HTMLQuoteElement>;
 
 function Blockquote({ className, ...rest }: BlockquoteProps) {
   return (

@@ -6,7 +6,7 @@ import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 
 type HeaderMode = 'base' | 'grayscale';
-export interface LayoutBaseProps {
+interface LayoutBaseProps {
   children: React.ReactNode;
   headerMode?: HeaderMode;
 }

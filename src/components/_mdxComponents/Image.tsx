@@ -2,7 +2,7 @@ import NextImage from 'next/image';
 
 import { cn } from '@/utils/styleUtils';
 
-export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
+type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 function Image({ src, className, ...rest }: ImageProps) {
   if (!src) {

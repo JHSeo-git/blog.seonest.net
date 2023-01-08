@@ -3,7 +3,7 @@ import { cn } from '@/utils/styleUtils';
 import AdmonitionIcon from './AdmonitionIcon';
 
 export type AdmonitionType = 'note' | 'info' | 'tip' | 'caution' | 'danger';
-export interface AdmonitionProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AdmonitionProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: AdmonitionType;
 }
 

@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export type VideoProps = React.VideoHTMLAttributes<HTMLVideoElement>;
+type VideoProps = React.VideoHTMLAttributes<HTMLVideoElement>;
 
 function Video({ className, ...rest }: VideoProps) {
   return (

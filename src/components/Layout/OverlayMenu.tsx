@@ -7,7 +7,7 @@ import Container from '../Container';
 import Portal from '../Portal';
 import { containerVariants, navItemVariants, navVariants } from './overlayMenuVariants.constants';
 
-export interface OverlayMenuProps {
+interface OverlayMenuProps {
   open: boolean;
   setOpen: (open: boolean) => void;
 }

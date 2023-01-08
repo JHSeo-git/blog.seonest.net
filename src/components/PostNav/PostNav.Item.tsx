@@ -3,7 +3,7 @@ import { cn } from '@/utils/styleUtils';
 import { useHeadingView } from './HeadingViewProvider';
 import useHeadingInViewEffect from './useHeadingInViewEffect';
 
-export interface PostNavItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface PostNavItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   id: string;
   level: number;
 }

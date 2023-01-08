@@ -1,4 +1,4 @@
-export type TwitterProps = React.SVGProps<SVGSVGElement>;
+type TwitterProps = React.SVGProps<SVGSVGElement>;
 
 function Twitter({ width = 24, height = 24, ...rest }: TwitterProps) {
   return (

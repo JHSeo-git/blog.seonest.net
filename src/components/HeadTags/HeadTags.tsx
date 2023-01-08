@@ -9,7 +9,7 @@ const generateFullSiteUrl = (url?: string) => {
   return generateFullUrl(url);
 };
 
-export interface HeadTagsProps {
+interface HeadTagsProps {
   title?: string;
   description?: string;
   ogImage?: string;

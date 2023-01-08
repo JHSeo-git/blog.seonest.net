@@ -1,4 +1,4 @@
-export type ImportantProps = React.SVGProps<SVGSVGElement>;
+type ImportantProps = React.SVGProps<SVGSVGElement>;
 
 function Important({ width = 24, height = 24, ...rest }: ImportantProps) {
   return (

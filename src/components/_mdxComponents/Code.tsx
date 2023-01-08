@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export type CodeProps = React.HTMLAttributes<HTMLElement>;
+type CodeProps = React.HTMLAttributes<HTMLElement>;
 
 function Code({ className, ...rest }: CodeProps) {
   const inline = !className?.match('code-highlight');

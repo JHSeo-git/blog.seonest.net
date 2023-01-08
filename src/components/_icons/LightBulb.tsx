@@ -1,4 +1,4 @@
-export type LightBulbProps = React.SVGProps<SVGSVGElement>;
+type LightBulbProps = React.SVGProps<SVGSVGElement>;
 
 function LightBulb({ width = 24, height = 24, ...rest }: LightBulbProps) {
   return (

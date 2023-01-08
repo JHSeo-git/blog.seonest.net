@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export type HrProps = React.HTMLAttributes<HTMLHRElement>;
+type HrProps = React.HTMLAttributes<HTMLHRElement>;
 
 function Hr({ className, ...rest }: HrProps) {
   return (

@@ -1,4 +1,4 @@
-export type LoadingProps = React.SVGProps<SVGSVGElement>;
+type LoadingProps = React.SVGProps<SVGSVGElement>;
 
 function Loading({ width = 24, height = 24, ...rest }: LoadingProps) {
   return (

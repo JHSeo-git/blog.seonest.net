@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { cn } from '@/utils/styleUtils';
 
-export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
+type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
 function Anchor({ href, className, ...rest }: AnchorProps) {
   if (!href) {

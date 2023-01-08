@@ -20,7 +20,7 @@ const firaMono = Fira_Mono({
   weight: ['400', '700'],
 });
 
-export interface RootLayoutProps {
+interface RootLayoutProps {
   children: React.ReactNode;
 }
 

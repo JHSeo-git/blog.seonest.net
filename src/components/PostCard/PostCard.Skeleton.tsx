@@ -1,7 +1,7 @@
 import { cn } from '@/utils/styleUtils';
 
 type Mode = 'base' | 'card';
-export interface PostCardThumbnailProps {
+interface PostCardThumbnailProps {
   mode?: Mode;
 }
 

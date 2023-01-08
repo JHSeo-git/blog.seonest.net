@@ -1,4 +1,4 @@
-export type InfoProps = React.SVGProps<SVGSVGElement>;
+type InfoProps = React.SVGProps<SVGSVGElement>;
 
 function Info({ width = 24, height = 24, ...rest }: InfoProps) {
   return (
