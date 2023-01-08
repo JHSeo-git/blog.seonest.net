@@ -13,7 +13,7 @@ async function PostHead({ params }: { params: { slug: string[] } }) {
     return <HeadTags />;
   }
 
-  const slug = slugs.join('/');
+  const slug = slugs.map((slug) => decodeURIComponent(slug)).join('/');
   const post = await getPost(slug);
 
   if (!post) {
