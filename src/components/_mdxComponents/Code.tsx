@@ -6,7 +6,12 @@ function Code({ className, ...rest }: CodeProps) {
   const inline = !className?.match('code-highlight');
 
   if (inline) {
-    return <code className={cn('font-mono font-medium text-rose-700 px-1', className)} {...rest} />;
+    return (
+      <code
+        className={cn('font-mono font-medium text-rose-700 px-1 break-all', className)}
+        {...rest}
+      />
+    );
   }
 
   return <code className={className} {...rest} />;

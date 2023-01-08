@@ -1,13 +1,14 @@
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+
+import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
 
 import { useHeadingView } from './HeadingViewProvider';
 
 export default function useHeadingInViewEffect(id: string) {
   const { setHeadingId } = useHeadingView();
-  const { asPath } = useRouter();
+  const pathname = usePathname();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
@@ -32,5 +33,5 @@ export default function useHeadingInViewEffect(id: string) {
     return () => {
       observer.disconnect();
     };
-  }, [asPath]);
+  }, [pathname]);
 }

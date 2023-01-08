@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
 
 export default function useHTMLOverflowEffect(hidden: boolean) {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (typeof window === 'undefined' || !window.document) {
       return;
     }

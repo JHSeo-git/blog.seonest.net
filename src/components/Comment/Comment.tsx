@@ -1,10 +1,12 @@
+'use client';
+
 import Giscus from '@giscus/react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 
 import appConfig from '@/app.config';
 
 function Comment() {
-  const { asPath } = useRouter();
+  const pathname = usePathname();
 
   if (!appConfig.comment) {
     return null;
@@ -13,7 +15,7 @@ function Comment() {
   return (
     <div className="mt-10">
       <Giscus
-        key={asPath}
+        key={pathname}
         id="comments"
         repo="JHSeo-git/seonest-comments"
         repoId="R_kgDOGRegJA"

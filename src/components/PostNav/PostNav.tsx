@@ -1,3 +1,5 @@
+'use client';
+
 import type { Post } from '@/utils/mdxUtils';
 
 import HeadingViewProvider from './HeadingViewProvider';

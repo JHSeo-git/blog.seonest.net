@@ -25,4 +25,5 @@ function Layout({ mode = 'base', children, postFrontMatter }: LayoutProps) {
   );
 }
 
+export { LayoutPost };
 export default Layout;

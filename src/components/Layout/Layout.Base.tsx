@@ -1,5 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
+import BodyBackgroundColor from '../BodyBackgroundColor';
 import Container from '../Container';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
@@ -13,6 +14,7 @@ export interface LayoutBaseProps {
 function LayoutBase({ children, headerMode = 'base' }: LayoutBaseProps) {
   return (
     <>
+      {headerMode === 'grayscale' && <BodyBackgroundColor color="#f3f4f6" />}
       <Container
         className={cn(
           //
