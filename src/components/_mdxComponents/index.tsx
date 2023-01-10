@@ -14,6 +14,7 @@ import Image from './Image';
 import List from './List';
 import Paragraph from './Paragraph';
 import Pre from './Pre';
+import Strong from './Strong';
 import Table from './Table';
 import Video from './Video';
 
@@ -28,6 +29,7 @@ const components: MDXRemoteProps['components'] = {
   p: (props) => <Paragraph {...props} />,
   del: (props) => <Del {...props} />,
   a: (props) => <Anchor {...props} />,
+  strong: (props) => <Strong {...props} />,
 
   blockquote: (props) => <Blockquote {...props} />,
   code: (props) => <Code {...props} />,

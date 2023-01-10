@@ -40,28 +40,28 @@ async function IndexPage() {
       </Hidden>
       <div className="grid [grid-template:'posts'_'categories'] gap-[72px] md:[grid-template:'posts_categories'_/_2fr_1fr]">
         <section className="[grid-area:posts]">
-          <h2 className="leading-normal text-rose-600 font-bold">최신 글</h2>
+          <h2 className="leading-normal text-rose-600 dark:text-rose-500 font-bold">최신 글</h2>
           <div className="h-14" />
           {posts.map((post) => (
             <Link
               key={post.id}
               href={`/posts/${post.slug}`}
-              className="block transition-colors hover:text-indigo-700 [&:not(:first-of-type)]:mt-[72px]"
+              className="block transition-colors [&:not(:first-of-type)]:mt-[72px]"
             >
               <PostCard post={post} />
             </Link>
           ))}
         </section>
         <section className="[grid-area:categories]">
-          <h2 className="leading-normal text-rose-600 font-bold">카테고리</h2>
+          <h2 className="leading-normal text-rose-600 dark:text-rose-500 font-bold">카테고리</h2>
           <div className="h-14" />
           {categories.map((category) => (
             <Link
               key={category.name}
               href={`/categories/${category.name}`}
-              className="inline-block text-sm font-bold px-3 py-2 mr-4 mb-4 capitalize text-indigo-700 relative group"
+              className="inline-block text-sm font-bold px-3 py-2 mr-4 mb-4 capitalize text-indigo-700 dark:text-indigo-100 relative group"
             >
-              <div className="absolute inset-0 -z-[1] w-full h-full rounded-md origin-center transition-all bg-indigo-50 group-hover:scale-110 group-hover:bg-indigo-100" />
+              <div className="absolute inset-0 -z-[1] w-full h-full rounded-md origin-center transition-all bg-indigo-50 group-hover:bg-indigo-100 dark:bg-indigo-900 dark:group-hover:bg-indigo-800 group-hover:scale-110" />
               {category.name}
             </Link>
           ))}

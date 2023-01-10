@@ -108,8 +108,10 @@ async function PostPage({ params }: PageProps) {
           <div className="mt-20">
             <div className="flex items-center justify-end">
               <div>
-                <h3 className="text-xs font-bold text-rose-500 text-right">마지막 업데이트</h3>
-                <p className="mt-1 text-sm font-bold text-gray-500 text-right">
+                <h3 className="text-xs font-bold text-rose-500 dark:text-rose-400 text-right">
+                  마지막 업데이트
+                </h3>
+                <p className="mt-1 text-sm font-bold text-gray-500 dark:text-gray-400 text-right">
                   {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
                 </p>
               </div>
@@ -121,10 +123,10 @@ async function PostPage({ params }: PageProps) {
               <div className="w-full md:w-auto">
                 {prev && (
                   <Link href={`/posts/${prev.slug}`} className="flex flex-col group">
-                    <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700">
+                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
                       이전
                     </h3>
-                    <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700">
+                    <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
                       {prev.title}
                     </p>
                   </Link>
@@ -133,10 +135,10 @@ async function PostPage({ params }: PageProps) {
               <div className="w-full md:w-auto">
                 {next && (
                   <Link href={`/posts/${next.slug}`} className="flex flex-col group items-end">
-                    <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700">
+                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
                       다음
                     </h3>
-                    <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700">
+                    <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
                       {next.title}
                     </p>
                   </Link>

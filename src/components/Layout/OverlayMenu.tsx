@@ -5,6 +5,7 @@ import { cn } from '@/utils/styleUtils';
 
 import Container from '../Container';
 import Portal from '../Portal';
+import ToggleTheme from '../ToggleTheme';
 import { containerVariants, navItemVariants, navVariants } from './overlayMenuVariants.constants';
 
 interface OverlayMenuProps {
@@ -24,7 +25,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             variants={containerVariants}
             className={cn(
               'fixed inset-0 z-[10] w-full h-full top-[60px]',
-              'bg-[rgba(255,255,255,0.85)] backdrop-filter backdrop-blur-sm'
+              'bg-[rgba(255,255,255,0.85)] dark:bg-[rgba(0,0,0,0.15)] backdrop-filter backdrop-blur-sm'
             )}
           >
             <button
@@ -33,13 +34,13 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             />
             <Container className="relative w-full h-full">
               <motion.nav
-                className="absolute top-[20%] left-0 z-[2] flex flex-col gap-8"
+                className="absolute top-[20%] left-0 bottom-[20%] z-[2] flex flex-col gap-8"
                 variants={navVariants}
               >
                 <h1 className="font-bold pl-8 mb-4 text-5xl leading-tight">seonest</h1>
                 <Link href="/" passHref legacyBehavior>
                   <motion.a
-                    className="px-14 text-4xl font-bold text-indigo-700"
+                    className="px-14 text-4xl font-bold text-indigo-700 dark:text-indigo-400"
                     variants={navItemVariants}
                   >
                     &#47;home
@@ -47,13 +48,18 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
                 </Link>
                 <Link href="/about" passHref legacyBehavior>
                   <motion.a
-                    className="px-14 text-4xl font-bold text-indigo-700"
+                    className="px-14 text-4xl font-bold text-indigo-700 dark:text-indigo-400"
                     variants={navItemVariants}
                   >
                     &#47;about
                   </motion.a>
                 </Link>
+                <div className="flex-1" />
+                <div className="pl-8 flex items-center">
+                  <ToggleTheme />
+                </div>
               </motion.nav>
+              <motion.div></motion.div>
             </Container>
           </motion.div>
         )}

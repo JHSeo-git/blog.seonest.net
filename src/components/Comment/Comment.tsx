@@ -1,12 +1,14 @@
 'use client';
 
 import Giscus from '@giscus/react';
+import { useTheme } from '@wits/next-themes';
 import { usePathname } from 'next/navigation';
 
 import appConfig from '@/app.config';
 
 function Comment() {
   const pathname = usePathname();
+  const { theme } = useTheme();
 
   if (!appConfig.comment) {
     return null;
@@ -24,8 +26,7 @@ function Comment() {
         mapping="title"
         lang="ko"
         loading="lazy"
-        // TODO: dark mode
-        theme="light"
+        theme={theme}
       />
     </div>
   );

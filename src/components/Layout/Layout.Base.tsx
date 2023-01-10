@@ -1,11 +1,11 @@
 import { cn } from '@/utils/styleUtils';
 
-import BodyBackgroundColor from '../BodyBackgroundColor';
 import Container from '../Container';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
+import LayoutBodyBackgroudColor from './Layout.BodyBackgroudColor';
 
-type HeaderMode = 'base' | 'grayscale';
+export type HeaderMode = 'base' | 'grayscale';
 interface LayoutBaseProps {
   children: React.ReactNode;
   headerMode?: HeaderMode;
@@ -14,12 +14,12 @@ interface LayoutBaseProps {
 function LayoutBase({ children, headerMode = 'base' }: LayoutBaseProps) {
   return (
     <>
-      {headerMode === 'grayscale' && <BodyBackgroundColor color="#f3f4f6" />}
+      <LayoutBodyBackgroudColor headerMode={headerMode} lightColor="#f3f4f6" darkColor="#292524" />
       <Container
         className={cn(
           //
-          'sticky top-0 z-10 bg-white',
-          headerMode === 'grayscale' && 'bg-gray-100'
+          'sticky top-0 z-10 bg-white dark:bg-stone-900',
+          headerMode === 'grayscale' && 'bg-gray-100 dark:bg-stone-800'
         )}
       >
         <Header />
