@@ -55,11 +55,10 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
                   </motion.a>
                 </Link>
                 <div className="flex-1" />
-                <div className="pl-8 flex items-center">
+                <div className="pl-14 flex items-center">
                   <ToggleTheme />
                 </div>
               </motion.nav>
-              <motion.div></motion.div>
             </Container>
           </motion.div>
         )}
