@@ -2,7 +2,7 @@
 
 import useBodyBackgroundColorEffect from '@/hooks/useBodyBackgroundColorEffect';
 
-export interface BodyBackgroundColorProps {
+interface BodyBackgroundColorProps {
   color: string;
 }
 

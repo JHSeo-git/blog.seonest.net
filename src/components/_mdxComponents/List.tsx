@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
+interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
   listType: 'ol' | 'ul';
 }
 
@@ -20,10 +20,10 @@ function List({ listType, className, ...rest }: ListProps) {
   );
 }
 
-export type ItemProps = React.HTMLAttributes<HTMLLIElement>;
+type ItemProps = React.HTMLAttributes<HTMLLIElement>;
 
 function Item({ className, ...rest }: ItemProps) {
-  return <li className={cn('my-2 break-words', className)} {...rest} />;
+  return <li className={cn('my-2 break-words text-black dark:text-white', className)} {...rest} />;
 }
 
 List.Item = Item;

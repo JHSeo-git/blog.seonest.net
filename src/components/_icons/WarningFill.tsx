@@ -1,4 +1,4 @@
-export type WarningFillProps = React.SVGProps<SVGSVGElement>;
+type WarningFillProps = React.SVGProps<SVGSVGElement>;
 
 function WarningFill({ width = 24, height = 24, ...rest }: WarningFillProps) {
   return (

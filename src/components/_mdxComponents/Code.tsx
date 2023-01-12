@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export type CodeProps = React.HTMLAttributes<HTMLElement>;
+type CodeProps = React.HTMLAttributes<HTMLElement>;
 
 function Code({ className, ...rest }: CodeProps) {
   const inline = !className?.match('code-highlight');
@@ -8,7 +8,10 @@ function Code({ className, ...rest }: CodeProps) {
   if (inline) {
     return (
       <code
-        className={cn('font-mono font-medium text-rose-700 px-1 break-all', className)}
+        className={cn(
+          'font-mono font-medium text-rose-700 dark:text-rose-400 px-1 break-all',
+          className
+        )}
         {...rest}
       />
     );

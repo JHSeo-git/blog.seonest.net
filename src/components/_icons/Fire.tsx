@@ -1,4 +1,4 @@
-export type FireProps = React.SVGProps<SVGSVGElement>;
+type FireProps = React.SVGProps<SVGSVGElement>;
 
 function Fire({ width = 24, height = 24, ...rest }: FireProps) {
   return (

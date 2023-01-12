@@ -1,4 +1,4 @@
-export type CalendarProps = React.SVGProps<SVGSVGElement>;
+type CalendarProps = React.SVGProps<SVGSVGElement>;
 
 function Calendar({ width = 24, height = 24, ...rest }: CalendarProps) {
   return (

@@ -9,5 +9,5 @@ export default function useBodyBackgroundColorEffect(color: string) {
     return () => {
       document.body.style.backgroundColor = '';
     };
-  }, []);
+  }, [color]);
 }

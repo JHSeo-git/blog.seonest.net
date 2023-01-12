@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { cn } from '@/utils/styleUtils';
 
-export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
+type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
 function Anchor({ href, className, ...rest }: AnchorProps) {
   if (!href) {
@@ -11,7 +11,7 @@ function Anchor({ href, className, ...rest }: AnchorProps) {
         href="#"
         target="_blank"
         rel="noopener noreferrer"
-        className={cn('text-blue-700 font-bold hover:underline', className)}
+        className={cn('text-blue-700 dark:text-blue-500 font-bold hover:underline', className)}
         {...rest}
       />
     );
@@ -25,13 +25,19 @@ function Anchor({ href, className, ...rest }: AnchorProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn('text-blue-700 font-bold hover:underline', className)}
+        className={cn('text-blue-700 dark:text-blue-500 font-bold hover:underline', className)}
         {...rest}
       />
     );
   }
 
-  return <Link href={href} className="text-blue-700 font-bold hover:underline" {...rest} />;
+  return (
+    <Link
+      href={href}
+      className="text-blue-700 dark:text-blue-500 font-bold hover:underline"
+      {...rest}
+    />
+  );
 }
 
 export default Anchor;

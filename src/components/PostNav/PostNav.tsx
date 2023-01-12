@@ -5,7 +5,7 @@ import type { Post } from '@/utils/mdxUtils';
 import HeadingViewProvider from './HeadingViewProvider';
 import PostNavItem from './PostNav.Item';
 
-export interface PostNavProps {
+interface PostNavProps {
   title: string;
   toc: NonNullable<Post>['toc'];
 }

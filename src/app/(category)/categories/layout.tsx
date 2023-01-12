@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 
-export interface CategoryLayoutProps {
+interface CategoryLayoutProps {
   children: React.ReactNode;
 }
 

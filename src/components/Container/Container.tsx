@@ -1,6 +1,6 @@
 import { cn } from '@/utils/styleUtils';
 
-export interface ContainerProps {
+interface ContainerProps {
   children: React.ReactNode;
   className?: string;
 }

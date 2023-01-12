@@ -1,4 +1,4 @@
-export type GithubProps = React.SVGProps<SVGSVGElement>;
+type GithubProps = React.SVGProps<SVGSVGElement>;
 
 function Github({ width = 24, height = 24, ...rest }: GithubProps) {
   return (

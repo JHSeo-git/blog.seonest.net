@@ -1,4 +1,4 @@
-export type TimeProps = React.SVGProps<SVGSVGElement>;
+type TimeProps = React.SVGProps<SVGSVGElement>;
 
 function Time({ width = 24, height = 24, ...rest }: TimeProps) {
   return (
