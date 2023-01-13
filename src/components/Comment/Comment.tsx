@@ -17,7 +17,7 @@ function Comment() {
   return (
     <div className="mt-10">
       <Giscus
-        key={pathname}
+        key={`${pathname}_${theme}`}
         id="comments"
         repo="JHSeo-git/seonest-comments"
         repoId="R_kgDOGRegJA"
