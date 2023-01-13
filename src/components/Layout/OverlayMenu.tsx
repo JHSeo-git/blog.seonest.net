@@ -6,7 +6,7 @@ import { cn } from '@/utils/styleUtils';
 import Container from '../Container';
 import Portal from '../Portal';
 import ToggleTheme from '../ToggleTheme';
-import { containerVariants, navItemVariants, navVariants } from './overlayMenuVariants.constants';
+import { navItemVariants, navVariants, opacityVariants } from './overlayMenuVariants.constants';
 
 interface OverlayMenuProps {
   open: boolean;
@@ -22,7 +22,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             initial="closed"
             animate="open"
             exit="closed"
-            variants={containerVariants}
+            variants={opacityVariants}
             className={cn(
               'fixed inset-0 z-[10] w-full h-full top-[60px]',
               'bg-white/80 dark:bg-stone-900/80 backdrop-filter backdrop-blur-md'
@@ -34,7 +34,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             />
             <Container className="relative w-full h-full">
               <motion.nav
-                className="absolute top-[20%] left-0 bottom-[20%] z-[2] flex flex-col gap-8"
+                className="absolute top-[20%] left-0 z-[2] flex flex-col gap-8"
                 variants={navVariants}
               >
                 <h1 className="font-bold pl-8 mb-4 text-5xl leading-tight">seonest</h1>
@@ -54,11 +54,12 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
                     &#47;about
                   </motion.a>
                 </Link>
-                <div className="flex-1" />
+              </motion.nav>
+              <motion.div className="absolute bottom-[20%] left-0 z-[2]" variants={opacityVariants}>
                 <div className="pl-14 flex items-center">
                   <ToggleTheme />
                 </div>
-              </motion.nav>
+              </motion.div>
             </Container>
           </motion.div>
         )}

@@ -33,7 +33,7 @@ function RootLayout({ children }: RootLayoutProps) {
       <html lang="ko" className="scroll-smooth motion-reduce:scroll-auto antialiased">
         <head />
         <body
-          className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white dark:bg-stone-900`}
+          className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white dark:bg-stone-900 transition duration-500`}
         >
           <Providers>{children}</Providers>
         </body>

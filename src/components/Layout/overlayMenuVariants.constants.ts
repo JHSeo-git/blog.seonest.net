@@ -1,4 +1,4 @@
-export const containerVariants = {
+export const opacityVariants = {
   open: {
     opacity: 1,
   },
