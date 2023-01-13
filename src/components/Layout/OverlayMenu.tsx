@@ -25,7 +25,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             variants={containerVariants}
             className={cn(
               'fixed inset-0 z-[10] w-full h-full top-[60px]',
-              'bg-[rgba(255,255,255,0.85)] dark:bg-[rgba(0,0,0,0.15)] backdrop-filter backdrop-blur-sm'
+              'bg-white/80 dark:bg-stone-900/80 backdrop-filter backdrop-blur-md'
             )}
           >
             <button
