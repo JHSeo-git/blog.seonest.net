@@ -23,6 +23,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             animate="open"
             exit="closed"
             variants={opacityVariants}
+            transition={{ duration: 0.5 }}
             className={cn(
               'fixed inset-0 z-[10] w-full h-full top-[60px]',
               'bg-white/80 dark:bg-stone-900/80 backdrop-filter backdrop-blur-md'
@@ -34,7 +35,7 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             />
             <Container className="relative w-full h-full">
               <motion.nav
-                className="absolute top-[20%] left-0 z-[2] flex flex-col gap-8"
+                className="absolute top-[15%] left-0 z-[2] flex flex-col gap-8"
                 variants={navVariants}
               >
                 <h1 className="font-bold pl-8 mb-4 text-5xl leading-tight">seonest</h1>
@@ -55,8 +56,12 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
                   </motion.a>
                 </Link>
               </motion.nav>
-              <motion.div className="absolute bottom-[20%] left-0 z-[2]" variants={opacityVariants}>
-                <div className="pl-14 flex items-center">
+              <motion.div
+                className="absolute bottom-[15%] left-0 z-[2]"
+                // variants={opacityVariants}
+                // transition={{ duration: 0.5 }}
+              >
+                <div className="pl-8 flex items-center">
                   <ToggleTheme />
                 </div>
               </motion.div>

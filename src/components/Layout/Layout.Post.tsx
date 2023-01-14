@@ -14,12 +14,12 @@ interface LayoutPostProps {
 
 function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
   return (
-    <div className="bg-sky-50 dark:bg-stone-900">
+    <div className="bg-sky-50 dark:bg-stone-900 transition duration-500">
       <LayoutBodyBackgroudColor lightColor="#f0f9ff" darkColor="#1c1917" />
       <Container className="sticky top-0 z-10">
         <Header />
       </Container>
-      <div className="h-[60px] sticky top-0 z-[1] bg-sky-50 dark:bg-stone-900" />
+      <div className="h-[60px] sticky top-0 z-[1] bg-sky-50 dark:bg-stone-900 transition duration-500" />
       {postFrontMatter && (
         <Container className="pt-10 pb-16">
           <h1 className="text-4xl leading-tight font-bold">{postFrontMatter.title}</h1>
@@ -37,8 +37,8 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
           </div>
         </Container>
       )}
-      <div className="h-[60px] sticky top-0 z-[1] bg-white dark:bg-zinc-900" />
-      <main className="bg-white dark:bg-zinc-900">
+      <div className="h-[60px] sticky top-0 z-[1] bg-white dark:bg-zinc-900 transition duration-500" />
+      <main className="bg-white dark:bg-zinc-900 transition duration-500">
         <Container className="pt-14">{children}</Container>
       </main>
       <Container>
