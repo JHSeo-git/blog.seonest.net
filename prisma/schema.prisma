@@ -9,3 +9,35 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int        @id @default(autoincrement())
+  ipHash    String     @unique
+  code      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  PostView  PostView[]
+  PostLike  PostLike[]
+}
+
+model PostView {
+  id        Int      @id @default(autoincrement())
+  slug      String
+  viewer    User     @relation(fields: [viewerId], references: [id])
+  viewerId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  slug      String
+  liker     User     @relation(fields: [likerId], references: [id])
+  likerId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
