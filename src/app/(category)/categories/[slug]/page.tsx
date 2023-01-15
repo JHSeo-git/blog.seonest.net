@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import Hidden from '@/components/Hidden';
-import PostCard, { PostCardSkeleton } from '@/components/PostCard';
+import PostCard from '@/components/PostCard';
 import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils';
 

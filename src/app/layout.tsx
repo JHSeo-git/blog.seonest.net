@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import { Acme, Fira_Mono, PT_Sans } from '@next/font/google';
 import { ServerThemeProvider } from '@wits/next-themes';
 
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Providers from '@/components/Providers';
 
 const ptSans = PT_Sans({
@@ -36,6 +37,7 @@ function RootLayout({ children }: RootLayoutProps) {
           className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white dark:bg-stone-900 transition duration-500`}
         >
           <Providers>{children}</Providers>
+          {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
         </body>
       </html>
     </ServerThemeProvider>
