@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
@@ -29,6 +30,7 @@ model PostView {
   updatedAt DateTime @updatedAt
 
   @@index([slug])
+  @@index([viewerId])
 }
 
 model PostLike {
@@ -40,4 +42,5 @@ model PostLike {
   updatedAt DateTime @updatedAt
 
   @@index([slug])
+  @@index([likerId])
 }
