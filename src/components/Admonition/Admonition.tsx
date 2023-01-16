@@ -27,7 +27,7 @@ function Admonition({ type = 'note', children, ...rest }: AdmonitionProps) {
     >
       <div className="flex items-center gap-2">
         <AdmonitionIcon admonitionType={type} />
-        <p className="uppercase font-bold text-sm">{type}</p>
+        <p className="text-sm font-bold uppercase">{type}</p>
       </div>
       <div className="mt-2 [&_*:last-of-type]:m-0">{children}</div>
     </div>

@@ -25,6 +25,7 @@ specifiers:
   eslint-plugin-json-format: latest
   eslint-plugin-react: latest
   eslint-plugin-simple-import-sort: latest
+  eslint-plugin-tailwindcss: ^3.8.0
   framer-motion: ^7.6.2
   github-slugger: ^2.0.0
   glob: ^8.0.3
@@ -96,6 +97,7 @@ devDependencies:
   eslint-plugin-json-format: 2.0.1_eslint@8.32.0
   eslint-plugin-react: 7.32.0_eslint@8.32.0
   eslint-plugin-simple-import-sort: 8.0.0_eslint@8.32.0
+  eslint-plugin-tailwindcss: 3.8.0
   husky: 8.0.2
   lint-staged: 13.0.4
   postcss: 8.4.20
@@ -1981,6 +1983,17 @@ packages:
       eslint: '>=5.0.0'
     dependencies:
       eslint: 8.32.0
+    dev: true
+
+  /eslint-plugin-tailwindcss/3.8.0:
+    resolution: {integrity: sha512-Lsyncgp/eXZriAEUK9zfGHOH+9iQplygHiOuGY8SFFHKIeT0BYjyST/ownHF8UPa1TEh+jJPkdE2vlV3778C3w==}
+    engines: {node: '>=12.13.0'}
+    dependencies:
+      fast-glob: 3.2.12
+      postcss: 8.4.20
+      tailwindcss: 3.2.4_postcss@8.4.20
+    transitivePeerDependencies:
+      - ts-node
     dev: true
 
   /eslint-scope/5.1.1:

@@ -7,6 +7,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:tailwindcss/recommended',
     'next/core-web-vitals',
     'prettier',
   ],
@@ -16,7 +17,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['json-format', 'simple-import-sort', 'react', '@typescript-eslint'],
+  plugins: ['json-format', 'simple-import-sort', 'react', 'tailwindcss', '@typescript-eslint'],
   rules: {
     'simple-import-sort/exports': 'error',
     'simple-import-sort/imports': 'error',
@@ -30,5 +31,5 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-empty-interface': 'warn',
   },
-  ignorePatterns: ['**/lib/**/*', '**/dist/**/*', 'tailwind.config.js'],
+  ignorePatterns: ['**/dist/**/*', 'tailwind.config.js'],
 };

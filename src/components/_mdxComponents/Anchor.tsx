@@ -34,7 +34,7 @@ function Anchor({ href, className, ...rest }: AnchorProps) {
   return (
     <Link
       href={href}
-      className="text-blue-700 dark:text-blue-500 font-bold hover:underline"
+      className="font-bold text-blue-700 hover:underline dark:text-blue-500"
       {...rest}
     />
   );

@@ -15,7 +15,7 @@ function Bio() {
       />
       <div className="ml-4">
         <p className="font-bold">
-          <span className="py-1 px-2 bg-indigo-700 text-white dark:bg-indigo-500 dark:text-gray-300 rounded-md text-sm">
+          <span className="rounded-md bg-indigo-700 py-1 px-2 text-sm text-white dark:bg-indigo-500 dark:text-gray-300">
             {appConfig.author}
           </span>
         </p>
@@ -25,7 +25,7 @@ function Bio() {
             href={`https://github.com/${appConfig.social.github}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-sm text-indigo-700 dark:text-indigo-500"
+            className="text-sm font-bold text-indigo-700 dark:text-indigo-500"
           >
             Github
           </a>
@@ -33,7 +33,7 @@ function Bio() {
             href={`https://twitter.com/${appConfig.social.twitter}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-sm text-indigo-700 dark:text-indigo-500"
+            className="text-sm font-bold text-indigo-700 dark:text-indigo-500"
           >
             Twitter
           </a>

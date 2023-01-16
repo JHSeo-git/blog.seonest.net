@@ -24,10 +24,10 @@ async function AbountPage() {
         <h1>About JHSeo</h1>
       </Hidden>
       <div className="flex items-center justify-end">
-        <p className="text-xs text-gray-700 dark:text-gray-400 mr-2 italic font-bold">
+        <p className="mr-2 text-xs font-bold italic text-gray-700 dark:text-gray-400">
           Last updated:
         </p>
-        <p className="text-xs text-gray-700 dark:text-gray-400 mr-2 italic">
+        <p className="mr-2 text-xs italic text-gray-700 dark:text-gray-400">
           {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
         </p>
       </div>

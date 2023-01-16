@@ -23,16 +23,16 @@ function PostCard({ post, mode = 'base' }: PostCardProps) {
 
   return (
     <article className={cn('group', mode === 'card' && 'p-8 bg-white dark:bg-black rounded-md')}>
-      <h3 className="text-2xl font-bold leading-normal text-black dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
+      <h3 className="text-2xl font-bold leading-normal text-black transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-400">
         {title}
       </h3>
       {subTitle && (
-        <h4 className="text-xl leading-normal text-gray-700 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 mt-4">
+        <h4 className="mt-4 text-xl leading-normal text-gray-700 group-hover:text-indigo-700 dark:text-gray-200 dark:group-hover:text-indigo-400">
           {subTitle}
         </h4>
       )}
       {description && (
-        <p className="leading-7 text-gray-900 dark:text-gray-200 mt-4">{description}</p>
+        <p className="mt-4 leading-7 text-gray-900 dark:text-gray-200">{description}</p>
       )}
       <div className="h-4" />
       <div className="flex items-center justify-between">
