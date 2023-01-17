@@ -35,7 +35,7 @@ function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
                 {getDistanceToNow(postFrontMatter.date, { humanize: false })}
               </p>
             </div>
-            <PostViews slug={postFrontMatter.slug} initialViews={postFrontMatter.views ?? 0} />
+            <PostViews slug={postFrontMatter.slug} />
           </div>
         </Container>
       )}

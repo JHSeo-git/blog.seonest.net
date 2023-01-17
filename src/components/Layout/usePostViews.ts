@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { getPostViews } from '@/lib/api/posts';
 
 export function usePostViews(slug: string) {
-  const [views, setViews] = useState(0);
+  const [views, setViews] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
 
