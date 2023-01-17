@@ -17,8 +17,7 @@
     "format": "pnpm lint --fix --ext .ts,.tsx,.js,.jsx --ignore-path .gitignore && prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint": "next lint",
     "post": "seonest-post-gen",
-    "start": "next start",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "start": "next start"
   },
   "dependencies": {
     "@giscus/react": "^2.2.0",
