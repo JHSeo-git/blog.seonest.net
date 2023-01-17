@@ -1,4 +1,4 @@
-import type { MDXFrontMatter } from '@/utils/mdxUtils';
+import type { SerializedPostFromatter } from '@/app/(post)/posts/[...slug]/page';
 
 import LayoutBase from './Layout.Base';
 import LayoutPost from './Layout.Post';
@@ -12,7 +12,7 @@ type LayoutProps =
   | {
       mode?: 'post';
       children: React.ReactNode;
-      postFrontMatter?: MDXFrontMatter;
+      postFrontMatter?: SerializedPostFromatter;
     };
 
 function Layout({ mode = 'base', children, postFrontMatter }: LayoutProps) {

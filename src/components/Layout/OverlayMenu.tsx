@@ -30,15 +30,15 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             )}
           >
             <button
-              className="p-0 absolute inset-0 z-[1] touch-none bg-transparent"
+              className="absolute inset-0 z-[1] touch-none bg-transparent p-0"
               onClick={() => setOpen(false)}
             />
-            <Container className="relative w-full h-full">
+            <Container className="relative h-full w-full">
               <motion.nav
                 className="absolute top-[15%] left-0 z-[2] flex flex-col gap-8"
                 variants={navVariants}
               >
-                <h1 className="font-bold pl-8 mb-4 text-5xl leading-tight">seonest</h1>
+                <h1 className="mb-4 pl-8 text-5xl font-bold leading-tight">seonest</h1>
                 <Link href="/" passHref legacyBehavior>
                   <motion.a
                     className="px-14 text-4xl font-bold text-indigo-700 dark:text-indigo-400"
@@ -56,12 +56,8 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
                   </motion.a>
                 </Link>
               </motion.nav>
-              <motion.div
-                className="absolute bottom-[15%] left-0 z-[2]"
-                // variants={opacityVariants}
-                // transition={{ duration: 0.5 }}
-              >
-                <div className="pl-8 flex items-center">
+              <motion.div className="absolute bottom-[15%] left-0 z-[2]">
+                <div className="flex items-center pl-8">
                   <ToggleTheme />
                 </div>
               </motion.div>

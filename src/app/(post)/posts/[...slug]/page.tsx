@@ -14,7 +14,12 @@ import { getBlurThumbnail } from '@/utils/imageUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { getAllSlugs, getPost, getPrevNextBySlug } from '@/utils/mdxUtils';
 
-type SerializedPostFromatter = MDXFrontMatter & { id: string; blurThumbnail?: string | null };
+export type SerializedPostFromatter = MDXFrontMatter & {
+  id: string;
+  blurThumbnail?: string | null;
+  views?: number;
+  likes?: number;
+};
 
 const getPostInfo = async (slugs: string[]) => {
   const slug = slugs.map((slug) => decodeURIComponent(slug)).join('/');
@@ -24,8 +29,10 @@ const getPostInfo = async (slugs: string[]) => {
     notFound();
   }
 
-  const prevnext = await getPrevNextBySlug(slug);
-  const thumbnailPlaceHolder = await getBlurThumbnail(mdx.frontMatter.thumbnail);
+  const [prevnext, thumbnailPlaceHolder] = await Promise.all([
+    getPrevNextBySlug(slug),
+    getBlurThumbnail(mdx.frontMatter.thumbnail),
+  ]);
 
   const serializedFrontMatter: SerializedPostFromatter = {
     id: `${mdx.frontMatter.slug}_${mdx.frontMatter.date ?? Date.now()}`,
@@ -41,6 +48,8 @@ const getPostInfo = async (slugs: string[]) => {
     lastModified: mdx.frontMatter.lastModified,
     thumbnail: mdx.frontMatter.thumbnail,
     blurThumbnail: thumbnailPlaceHolder ?? mdx.frontMatter.thumbnail,
+    views: 0,
+    likes: 0,
   };
 
   return {
@@ -89,11 +98,11 @@ async function PostPage({ params }: PageProps) {
   return (
     <Layout mode="post" postFrontMatter={frontMatter}>
       <div className="flex items-start justify-center">
-        <article className="flex-grow flex-shrink basis-[720px] max-w-[min(720px,100%)]">
+        <article className="max-w-[min(720px,100%)] shrink grow basis-[720px]">
           {frontMatter.thumbnail && (
             <div className="relative mb-10">
               <Image
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
                 src={frontMatter.thumbnail}
                 alt="Thumbnail"
                 width={750}
@@ -108,10 +117,10 @@ async function PostPage({ params }: PageProps) {
           <div className="mt-20">
             <div className="flex items-center justify-end">
               <div>
-                <h3 className="text-xs font-bold text-rose-500 dark:text-rose-400 text-right">
+                <h3 className="text-right text-xs font-bold text-rose-500 dark:text-rose-400">
                   마지막 업데이트
                 </h3>
-                <p className="mt-1 text-sm font-bold text-gray-500 dark:text-gray-400 text-right">
+                <p className="mt-1 text-right text-sm font-bold text-gray-500 dark:text-gray-400">
                   {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
                 </p>
               </div>
@@ -119,14 +128,14 @@ async function PostPage({ params }: PageProps) {
             <Hr />
             <Bio />
             <div className="h-16" />
-            <div className="flex items-center justify-between flex-wrap gap-6">
+            <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="w-full md:w-auto">
                 {prev && (
-                  <Link href={`/posts/${prev.slug}`} className="flex flex-col group">
-                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
+                  <Link href={`/posts/${prev.slug}`} className="group flex flex-col">
+                    <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
                       이전
                     </h3>
-                    <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
+                    <p className="mt-1 truncate font-bold transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
                       {prev.title}
                     </p>
                   </Link>
@@ -134,11 +143,11 @@ async function PostPage({ params }: PageProps) {
               </div>
               <div className="w-full md:w-auto">
                 {next && (
-                  <Link href={`/posts/${next.slug}`} className="flex flex-col group items-end">
-                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
+                  <Link href={`/posts/${next.slug}`} className="group flex flex-col items-end">
+                    <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
                       다음
                     </h3>
-                    <p className="mt-1 font-bold transition-all truncate group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
+                    <p className="mt-1 truncate font-bold transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
                       {next.title}
                     </p>
                   </Link>
@@ -149,7 +158,7 @@ async function PostPage({ params }: PageProps) {
             <Comment />
           </div>
         </article>
-        <aside className="hidden flex-grow-0 flex-shrink-[100000] basis-[250px] ml-auto sticky top-[100px] max-h-[calc(100vh_-_100px)] overflow-y-auto xl:block">
+        <aside className="sticky top-[100px] ml-auto hidden max-h-[calc(100vh_-_100px)] shrink-[100000] grow-0 basis-[250px] overflow-y-auto xl:block">
           <PostNav toc={toc} title="Table Of Contents" />
         </aside>
       </div>

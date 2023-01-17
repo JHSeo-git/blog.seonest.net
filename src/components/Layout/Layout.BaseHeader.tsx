@@ -5,8 +5,8 @@ import MenuButton from './MenuButton';
 
 function LayoutBaseHeader() {
   return (
-    <header className="h-[60px] flex items-center justify-center">
-      <div className="flex items-center flex-1">
+    <header className="flex h-[60px] items-center justify-center">
+      <div className="flex flex-1 items-center">
         <Link href="/">
           <TextLogoIcon />
         </Link>

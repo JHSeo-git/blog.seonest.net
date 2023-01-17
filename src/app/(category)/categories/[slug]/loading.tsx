@@ -4,8 +4,8 @@ function CategoryPageLoading() {
   return (
     <section>
       <div className="flex items-baseline justify-between px-6">
-        <h1 className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded-md w-36 h-10" />
-        <p className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded-md hidden sm:block w-16 h-7" />
+        <h1 className="h-10 w-36 animate-pulse rounded-md bg-gray-300 dark:bg-gray-700" />
+        <p className="hidden h-7 w-16 animate-pulse rounded-md bg-gray-300 dark:bg-gray-700 sm:block" />
       </div>
       <div className="h-6" />
       <div>

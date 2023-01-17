@@ -3,9 +3,9 @@ import { cn } from '@/utils/styleUtils';
 
 function IndexPageLoading() {
   return (
-    <div className="grid [grid-template:'posts'_'categories'] gap-[72px] md:[grid-template:'posts_categories'_/_2fr_1fr]">
+    <div className="grid gap-[72px] [grid-template:'posts'_'categories'] md:[grid-template:'posts_categories'_/_2fr_1fr]">
       <section className="[grid-area:posts]">
-        <h2 className="leading-normal text-rose-600 dark:text-rose-500 font-bold">최신 글</h2>
+        <h2 className="font-bold leading-normal text-rose-600 dark:text-rose-500">최신 글</h2>
         <div className="h-14" />
         <div>
           {Array.from({ length: 6 }).map((_, idx) => (
@@ -16,7 +16,7 @@ function IndexPageLoading() {
         </div>
       </section>
       <section className="[grid-area:categories]">
-        <h2 className="leading-normal text-rose-600 dark:text-rose-500 font-bold">카테고리</h2>
+        <h2 className="font-bold leading-normal text-rose-600 dark:text-rose-500">카테고리</h2>
         <div className="h-14" />
         {Array.from({ length: 6 }).map((_, idx) => (
           <div

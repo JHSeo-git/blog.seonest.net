@@ -4,7 +4,7 @@ const StyledLink = ({ href, children }: { href: string; children: React.ReactNod
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="ml-1 text-indigo-700 font-bold dark:text-indigo-400"
+      className="ml-1 font-bold text-indigo-700 dark:text-indigo-400"
     >
       {children}
     </a>

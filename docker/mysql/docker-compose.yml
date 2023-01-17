@@ -1,0 +1,15 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  mysql:
+    image: mysql
+    container_name: seonest_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: seonest
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db_data:/var/lib/mysql
+    ports:
+      - 3306:3306
