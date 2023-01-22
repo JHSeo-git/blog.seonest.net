@@ -16,7 +16,7 @@ interface LayoutPostProps {
 function LayoutPost({ children, postFrontMatter }: LayoutPostProps) {
   return (
     <div className="bg-sky-50 transition duration-500 dark:bg-stone-900">
-      <LayoutBodyBackgroudColor lightColor="#f0f9ff" darkColor="#1c1917" />
+      <LayoutBodyBackgroudColor headerMode="grayscale" lightColor="#f0f9ff" darkColor="#1c1917" />
       <Container className="sticky top-0 z-10">
         <Header />
       </Container>
