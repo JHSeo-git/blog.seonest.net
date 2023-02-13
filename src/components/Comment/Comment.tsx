@@ -1,8 +1,8 @@
 'use client';
 
 import Giscus from '@giscus/react';
-import { useTheme } from '@wits/next-themes';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 import appConfig from '@/app.config';
 

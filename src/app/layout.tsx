@@ -1,7 +1,6 @@
 import '@/styles/globals.css';
 
 import { Acme, Fira_Mono, PT_Sans } from '@next/font/google';
-import { ServerThemeProvider } from '@wits/next-themes';
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Providers from '@/components/Providers';
@@ -30,17 +29,19 @@ interface RootLayoutProps {
 
 function RootLayout({ children }: RootLayoutProps) {
   return (
-    <ServerThemeProvider attribute="class">
-      <html lang="ko" className="scroll-smooth antialiased motion-reduce:scroll-auto">
-        <head />
-        <body
-          className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white dark:bg-stone-900`}
-        >
-          <Providers>{children}</Providers>
-          {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
-        </body>
-      </html>
-    </ServerThemeProvider>
+    <html
+      lang="ko"
+      className="scroll-smooth antialiased motion-reduce:scroll-auto"
+      suppressHydrationWarning
+    >
+      <head />
+      <body
+        className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white dark:bg-stone-900`}
+      >
+        <Providers>{children}</Providers>
+        {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
+      </body>
+    </html>
   );
 }
 

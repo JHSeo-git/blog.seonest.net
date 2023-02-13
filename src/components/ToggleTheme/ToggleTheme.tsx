@@ -1,7 +1,7 @@
 'use client';
 
 import * as Toggle from '@radix-ui/react-toggle';
-import { useTheme } from '@wits/next-themes';
+import { useTheme } from 'next-themes';
 
 import { cn } from '@/utils/styleUtils';
 

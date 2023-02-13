@@ -95,7 +95,7 @@ async function PostPage({ params }: PageProps) {
       <div className="flex items-start justify-center">
         <article className="max-w-[min(720px,100%)] shrink grow basis-[720px]">
           {frontMatter.thumbnail && (
-            <div className="relative mb-10 overflow-hidden rounded-[20px] bg-slate-300">
+            <div className="relative mb-10 overflow-hidden rounded-[20px]">
               <Image
                 className="h-full w-full object-cover"
                 src={frontMatter.thumbnail}

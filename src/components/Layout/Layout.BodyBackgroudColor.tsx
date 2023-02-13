@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@wits/next-themes';
+import { useTheme } from 'next-themes';
 import { useMemo } from 'react';
 
 import BodyBackgroundColor from '../BodyBackgroundColor';
@@ -18,10 +18,7 @@ function LayoutBodyBackgroudColor({
   darkColor,
 }: LayoutBodyBackgroudColorProps) {
   const { theme } = useTheme();
-  const color = useMemo(
-    () => (theme === 'light' ? lightColor : darkColor),
-    [theme, lightColor, darkColor]
-  );
+  const color = theme === 'light' ? lightColor : darkColor;
 
   return <>{headerMode === 'grayscale' && <BodyBackgroundColor color={color} />}</>;
 }
