@@ -34,7 +34,7 @@ function RootLayout({ children }: RootLayoutProps) {
       <html lang="ko" className="scroll-smooth antialiased motion-reduce:scroll-auto">
         <head />
         <body
-          className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white transition duration-500 dark:bg-stone-900`}
+          className={`${ptSans.variable} font-sans ${acme.variable} ${firaMono.variable} bg-white dark:bg-stone-900`}
         >
           <Providers>{children}</Providers>
           {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}

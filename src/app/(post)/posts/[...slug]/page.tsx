@@ -10,7 +10,6 @@ import Layout from '@/components/Layout';
 import MDXRemoteClient from '@/components/MDXRemoteClient';
 import PostNav from '@/components/PostNav';
 import { getDistanceToNow } from '@/utils/dateUtils';
-import { getBlurThumbnail } from '@/utils/imageUtils';
 import type { MDXFrontMatter } from '@/utils/mdxUtils';
 import { getAllSlugs, getPost, getPrevNextBySlug } from '@/utils/mdxUtils';
 
@@ -29,10 +28,7 @@ const getPostInfo = async (slugs: string[]) => {
     notFound();
   }
 
-  const [prevnext, thumbnailPlaceHolder] = await Promise.all([
-    getPrevNextBySlug(slug),
-    getBlurThumbnail(mdx.frontMatter.thumbnail),
-  ]);
+  const prevnext = await getPrevNextBySlug(slug);
 
   const serializedFrontMatter: SerializedPostFromatter = {
     id: `${mdx.frontMatter.slug}_${mdx.frontMatter.date ?? Date.now()}`,
@@ -47,7 +43,6 @@ const getPostInfo = async (slugs: string[]) => {
     readingTime: mdx.frontMatter.readingTime,
     lastModified: mdx.frontMatter.lastModified,
     thumbnail: mdx.frontMatter.thumbnail,
-    blurThumbnail: thumbnailPlaceHolder ?? mdx.frontMatter.thumbnail,
     views: 0,
     likes: 0,
   };
@@ -100,15 +95,13 @@ async function PostPage({ params }: PageProps) {
       <div className="flex items-start justify-center">
         <article className="max-w-[min(720px,100%)] shrink grow basis-[720px]">
           {frontMatter.thumbnail && (
-            <div className="relative mb-10">
+            <div className="relative mb-10 overflow-hidden rounded-[20px] bg-slate-300">
               <Image
                 className="h-full w-full object-cover"
                 src={frontMatter.thumbnail}
                 alt="Thumbnail"
                 width={750}
                 height={488}
-                placeholder={frontMatter.blurThumbnail ? 'blur' : undefined}
-                blurDataURL={frontMatter.blurThumbnail || undefined}
                 priority
               />
             </div>

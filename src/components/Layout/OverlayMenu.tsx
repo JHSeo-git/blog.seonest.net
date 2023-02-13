@@ -23,7 +23,6 @@ function OverlayMenu({ open, setOpen }: OverlayMenuProps) {
             animate="open"
             exit="closed"
             variants={opacityVariants}
-            transition={{ duration: 0.5 }}
             className={cn(
               'fixed inset-0 z-[10] w-full h-full top-[60px]',
               'bg-white/80 dark:bg-stone-900/80 backdrop-filter backdrop-blur-md'
