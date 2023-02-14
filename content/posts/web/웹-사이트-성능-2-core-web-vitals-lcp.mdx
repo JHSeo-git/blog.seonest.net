@@ -1,0 +1,745 @@
+---
+title: '웹 사이트 성능(2) - Core web vitals, LCP'
+description: '웹 사이트 성능 지표인 Core web vitals의 LCP(Largest Contentful Paint)에 대해 알아보았습니다.'
+date: '2021-10-17T05:35:31.865Z'
+category: 'web'
+tags: ['Core web vitals', 'LCP', 'Web']
+thumbnail: '/post/web/웹-사이트-성능-1-지표/thumbnail.png'
+---
+
+> 이번 포스트에서는 core web vitals와 그 중 하나인 LCP애 대해서 알아보도록 하겠습니다.
+
+문제 해결을 위해서는 문제 정의가 우선되어야 합니다.
+
+웹 사이트 성능 개선을 위해서는 성능 측정이 우선 되어야 합니다.
+
+다양한 웹 사이트 성능 측정 도구들이 많이 있습니다.
+
+## PageSpeed Insights, Lighthouse
+
+> [구글 PageSpeed Insights와 구글 Lighthouse는 어떤 차이가 있는가?](https://medium.com/@OPTASY.com/google-pagespeed-vs-lighthouse-how-are-they-different-and-which-tool-should-you-use-3f03270c674)
+
+- PageSpeed Insights는 오직 성능 지표만을 측정합니다. 반면에 Lighthouse는 웹 사이트의 다른 측면을 포함해서 검사합니다.(SEO, 접근성, PWA 등등)
+- PageSpeed는 Lab 데이터와 실제 데이터의 "combo"를 사용합니다. 반면에 Lighthouse는 오직 Lab 데이터만 사용합니다.
+
+> Lighthouse는 PageSpeed Insights에 통합되었습니다. Lighthouse는 PageSpeed의 통합 분석 엔진입니다.
+
+### PageSpeed Insights는 언제 사용해야 할까?
+
+- 웹사이트 성능 보고서 공유를 해야할 때
+- 웹사이트 페이지 로딩 속도를 측정해야할 때
+- 웹사이트 방문자들이 실제 경험한 로딩 속도의 정확한 보고서가 필요할 때
+- 웹사이트 성능을 분석하기 위해 크롬 개발자 도구를 사용하는 "Big Fan"이 아닐 때
+
+### Lighthouse는 언제 사용해야 할까?
+
+- 프로그래밍 방식으로 검사가 필요할 때
+- 사이트 로딩 시간 뿐만아니라 사이트의 다양한 측면에서 평가가 필요할 때
+- 본인 시스템에 Lighthouse API를 사용할 때
+
+> 예를 들어 Lighthouse API를 사용하여 성능, SEO 표준, 접근성 등 기준을 충족하지 않을 때는 릴리스를 하지 않도록 막을 수 있습니다.
+
+### 결론은
+
+> Google PageSpeed는 Lighthouse에서 생성된 정보를 사용하여 실제 데이터로 정보를 보강합니다. Lighthouse는 성능 지표 뿐만 아니라 다양한 지표를 제공합니다. 웹사이트의 로딩 시간을 측정뿐만 아니라 그 이상을 확인입니다.
+
+사이트를 테스트하는데 필요한 정보나 지표에 따라 선택하여 사용하면 될 것 같습니다.
+
+## 개선 사례를 통한 경험(Wix)
+
+> [Wix가 인프라 개선으로 웹사이트 성능을 향상시킨 사례](https://developers.google.com/search/blog/2021/03/wix?hl=ko)
+
+Wix는 홈페이지를 만드는데 필요한 다양한 도구, 템플릿을 제공하는 사이트입니다.
+(전 세계 약 1억 6천만명이 홈페이지 제작을 위해 선택)
+
+결과적으로 PageSpeed Ingishts와 core web vitals를 이용해 성능 측면에서 약 3배정도 향상이 되었다고 하는데 어떤 개선을 통해 3배 개선이 되었는지 확인해보면 좋을 것 같습니다.
+(기존에도 많은 개선을 통해서 운영을 했을 텐데... 대단한 느낌이랄까)
+
+### 개요
+
+성능 개선 분야는 [참으로 복잡](https://www.youtube.com/watch?v=ctavZT87syI)합니다(라고 여기서도 적혀있는데 실제로도 분석하기에 엄청 복잡한 것 같습니다.)
+
+> 위 링크는 2019년 performance.now()라는 컨퍼런스에서 크롬 모니터링 성능 지표팀에서 많은 일을 해온 Aniie Sullivan의 성능 지표에 관한 강연입니다)
+>
+> 성능 지표에 왜 썼는지, 그리고 그것을 통해 어떻게 측정을 하는지에 대한 이야기들과 개선에 대한 내용을 말합니다.
+
+Wix는 수백만개 사이트를 지원하고 있고, 그 중에는 아주 오래전에 제작된 이후 업데이트가 되지 않아 한번에 개선하기 어려운 것들도 있었습니다.
+
+Wix는 매니지드 환경이기 때문에 사용자가 건드리지 못하는 단점도 있었지만 모든 웹사이트에 규모의 경제를 통해 주요한 개선사항을 전체적으로 적용하는 것이 가능했습니다.
+
+여기서는 초기 HTML을 제공하는 단계에서 무엇을 개선했는지 초첨을 두었습니다.
+
+### 용어
+
+성능에 관해서는 기계적인 성능뿐만 아니라 다양한 지표에 대한 용어를 통일하는 것이 쉽지 않습니다.
+
+구글에서는 core web vital을 기준으로 모니터링 시스템과 내부 토의를 진행하였습니다.
+![google-용어](https://developers.google.com/search/blog/images/core-web-vitals.jpeg?hl=ko)
+
+- LCP: Largest Contentful Paint
+  가장 큰 시각 컨텐츠가 그려지는 시간
+- FID: First Input Delay
+  사용자가 사이트에서 첫 상호작용에 반응되는 시간
+- CLS: Cumulative Layout Shift
+  예상치 못한 레이아웃에 대한 정량적 지표
+
+### 웹사이트 복잡도와 성능 지수
+
+간단한 HTML문서를 CDN을 통해 제공하는 경우라면 로딩 속도가 정말 빠른 웹사이트를 만드는 것은 정말 쉽습니다.(https://justinjackson.ca/words.html)
+
+그렇지만 대부분 사이트는 애플리케이션에 가까운 복잡한 프로그램이 됩니다.
+
+### 개선 과정
+
+~~태초에 HTML이 계시니라~~
+
+웹사이트 로딩 시나리오에서 가장 첫 번째는 항상 HTML 문서를 가져오는 것 부터 시작합니다.
+
+HTML 응답은 클라이언트가 다음 요청을 하게 되고 브라우저 로직을 실행하여 렌더링으로 이어집니다.
+
+**이것이 가장 중요한 부분입니다.
+HTTP응답이 오기전까지 (TTFB: Time To First Byte) 아무 일도 일어나지 않기 때문입니다.**
+
+#### 과거: 클라이언트 사이드 렌더링(CSR)
+
+Wix는 몇 년전까지만 해도 백엔드의 운영비용을 증가시키지 않으면서 대규모 사이트를 운영하기 위해 실제 HTML 콘텐츠는 클라이언트에서 CSR하도록 구성되어 있었습니다. HTML 빈 파일이 오게 되면 자바스크립트를 통해 HTML 내용을 채웁니다.
+
+#### 현재: 서버 사이드 렌더링(SSR)
+
+SEO와 속도를 개선하기 위해 서버 사이드 렌더링으로 변경하였습니다.
+페이지의 최초 콘텐츠를 빠르게 표시하고 자바스크립트를 지원하지 않는 검색 엔진의 색인을 돕기 위함이었습니다.
+
+의미있는 속도 향상을 이루었고 특히 저사양 디바이스와 느린 통신망 환경에서 개선의 결과가 두드러졌고 추가적인 성능개선으로 이어졌습니다.
+
+하지만 매 페이지를 새로운 요청을 통한 실시간 SSR하는 것은 결코 최적의 솔루션이 아니었습니다. 특히 엄청나게 많은 페이지뷰를 가진 웹사이트는 서버에 많은 부하를 가져다 줍니다.
+
+### 다양한 곳에 캐시 설치하기
+
+각 사이트의 정적 HTML에는 몇 가지 문제가 있습니다.
+
+1. 자주 바뀝니다. 사용자가 자신의 사이트를 수정하거나 재고사항같은 사이트 데이터를 바꿀때마다 HTML이 변경된다는 이야기입니다.
+2. 일부 데이터와 쿠키는 개별 사용자마다 달라지는데 그에 따라 HTML 내용도 조금씩 달라진다. 예를 들어 장바구니를 기억한다던지 사용자가 방금전에 채팅을 통한 메시지 유지등의 작업이 여기 해당합니다.
+3. 캐시에 포함시키지 못하는 페이지도 있습니다. 예를 들어 현재 시간을 보여주는 사용자의 커스텀 코드는 캐시할 수 없습니다.
+
+그래서 사용자 데이터를 제외한 HTML 부분만 캐시하고 나중에 캐시에서 꺼낼 때마다 사용자 데이터만 따로 포함시키도록 했습니다.(hydrate)
+
+### 웹브라우저 캐싱
+
+각 웹페이지는 해당 엔드포인트로부터 경량의 JSON 데이터로 hydrate하여 최종 결과물에 이르게 되었습니다.
+
+이 방식으로 사용자 재방문시 웹브라우저가 캐시한 HTML을 그대로 사용할 수 있게 되었고 서버 연결은 콘텐츠가 변경되었는지 체크할 때만 필요하게 되었습니다.
+
+HTML 리소스의 업데이트 여부는 식별자인 HTML ETag으로 구현하였습니다.
+
+### Brotli compression(vs. gzip)
+
+gzip을 오랫동안 사용하였습니다. 가장 많이 쓰이는 압축방식이지만 무려 30년이나 된 기술입니다.
+
+브로틀리 압축방식은 비교적 최근에 발표되었습니다. 주요 웹브라우저에서 지원하기 시작한지도 꽤 되었습니다.
+
+nginx 프록시를 지원하는 모든 클라이언트에 브로틀리를 적용하였습니다.
+그래서 파일 크기가 중위값을 기준으로 21%에서 25% 정도 감소하였습니다. 네트워크 대역폭 사용량이 줄었을뿐만 아니라 로딩 시간도 향상되었습니다.
+
+### 결론
+
+여기에서는 Wix라는 사이트가 core web vital을 이용하여 문제점을 파악하여, 웹브라우저 캐시, CDN, 브로틀리 압축방식, SSR 등을 이용한 개선사항을 얘기하였습니다.
+
+다양한 개선점 중 하나를 보게 된 것 같습니다.
+
+## Core Web Vitals
+
+> https://web.dev/vitals/ > https://web.dev/defining-core-web-vitals-thresholds/
+
+구글에서는 web vital이라고 하는 사용자 경험 품질 최적화 지침을 관리합니다.
+
+그중 core web vitals는 가장 중심적이며 사용자 경험의 고유한 측면을 나타냅니다.
+
+각 성능은 "양호(good)", "개선 필요(needs improvement)" 또는 "나쁨(poor)"으로 분류하는 관련 지표가 있습니다.
+
+> 추가적으로 페이지 또는 사이트의 전반적인 성능을 분류하기 위해 해당 페이지 또는 사이트에 대한 모든 페이지 조회수의 75번째 백분위수 값을 사용합니다. 즉, 사이트에 대한 페이지 조회수의 75% 이상이 "양호"를 충족하는 경우 해당 사이트는 해당 메트릭에 대해 "양호"한 성능을 보이는 것으로 간주됩니다
+
+2020년 core web vitals는 다음과 같습니다.
+
+- LCP: Largest Contentful Paint
+  가장 큰 시각 컨텐츠가 그려지는 시간
+  인지된 로드 속도를 측정하고 페이지 로드 타임라인에서 페이지의 메인
+- FID: First Input Delay
+  사용자가 사이트에서 첫 상호작용에 반응되는 시간
+  응답성을 측정하고 사용자가 페이지와 처음 상호 작용을 시도할 때 느끼는 경험을 수량화
+- CLS: Cumulative Layout Shift
+  사용자 경험을 방해할 수 있는 예상치 못한 레이아웃에 대한 정량적 지표
+  시각적 안정성을 측정하고 시각적 페이지 콘텐츠의 예기치 못한 레이아웃 이동을 수치화하여 표현
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/73/image.png)
+
+### 기타 web vitals
+
+> 링크된 곳을 한 번 쭉 둘러봅시다.
+
+core web vitals는 우수한 사용자 경험을 이해하고 제공하는데 중요한 지표이지만 다른 중요 지표 또한 존재합니다.
+
+예를 들어 [TTFB(Time To First Byte)](https://web.dev/time-to-first-byte/), [FCP(First Contentful Paint)](https://web.dev/fcp/) 둘 다 로딩 경험에 중요한 요소이며 LCP와 함께 문제를 진단하는데 유용합니다. 느린 [서버 응답 시간](https://web.dev/overloaded-server/), [렌더링 차단 리소스](https://web.dev/render-blocking-resources/) 문제를 진단하는데 유용합니다.
+
+마찬가지로 [TBT(Total Blocking Time, 총 차단 시간)](https://web.dev/tbt/) 및 [TTI(Time to Interactive, 상호 작용까지의 시간)](https://web.dev/tti/)와 같은 지표는 FID에 영향을 줄 잠재적인 상호 작용 문제를 파악하고 진단하는데 필수적인 지표입니다. 그러나 필드에서 측정할 수 없고 사용자 중심 결과를 반영하지도 않기 때문에 core web vitals 세트에 속하지 않습니다.
+
+### 진화하는 web vitals
+
+web vitals, core web vitals는 개발자가 웹 전반에 대한 경험 품질을 측정하기 위해 현재 사용할 수 있는 최상의 신호를 나타내지만 이러한 신호는 완벽하지 않으며 향후 개선 또는 추가가 이루어질 수 있습니다.
+
+그렇지만 정의와 임계값이 안정적이고, 예측 가능한 주기로 업데이트가 이루어질 것입니다.
+
+## LCP 최적화
+
+> 메인 콘텐츠를 더 빠르게 렌더링하는 방법
+
+![lcp](https://web-dev.imgix.net/image/tcFciHGuF3MxnTr1y5ue01OGLBn2/elqsdYqQEefWJbUM2qMO.svg)
+
+열악한 사용자 경험에 큰 영향을 미치는 요소 중 하나는 사용자가 화면에 렌더링되는 콘텐츠를 보기까지 얼마나 걸리냐 입니다.
+
+FCP(First Contentful Paint)는 초기 DOM이 렌더링되는데 걸리는 시간은 측정하지만 페이지에서 가장 크고 일반적으로 의미있는 콘텐츠를 렌더링하는데 걸린 시간은 포작하지 않습니다.
+
+LCP는 뷰포트에서 가장 큰 콘텐츠 요소가 표시되는 시점을 측정합니다.
+페이지의 메인 콘텐츠(라고 예상되는)가 화면에서 렌더링되는데 걸린 시간으로 사용할 수 있습니다.
+
+LCP 측정에서 Poor가 발생하는 일반적인 이유는 다음과 같습니다.
+
+1. 느린 서버 응답 시간
+2. 렌더링 차단 Javascript, css
+3. 느린 리소스 로드 시간
+4. 느린 CSR
+
+### 1. 느린 서버 응답 시간
+
+브라우저가 서버에서 콘텐츠를 받는데 오래 걸린다면 무엇이든 렌더링하는데 더 오래 걸립니다. 더 빠른 서버 응답 시간은 LCP를 포함한 모든 단일 페이지 로드를 직접적으로 향상시킵니다.
+
+가장 먼저 해야할 일은 서버에서 콘텐츠를 처리하는 방법과 위치를 개선하는 것입니다.
+
+TTFB(Time To First Byte, 최초 바이트까지의 시간)으로 서버 응답 시간을 측정하세요.
+다음과 같은 방식으로 TTFB를 개선할 수 있습니다.
+
+- 서버 최적화
+- CDN 사용
+- Asset 캐시
+- HTML 페이지 cache-first 제공
+- establish thrid-party connections early
+- use signed exchange
+
+#### 서버 최적화
+
+서버에서 상당한 시간이 걸리는 쿼리가 실행되고 있나요?
+아니면 서버에서 복잡한 작업으로 인해 페이지 콘텐츠를 반환하는 프로세스가 지연되나요?
+서버 코드 효율성을 분석하고 개선하면 브라우저가 데이터를 수신하는데 걸리는 시간이 빨라집니다.
+
+대부분 서버 측 웹 프레임워크는 브라우저가 요청할 때 정적 페이지를 즉시 제공하는 것이 아니라 동적으로 생성해야 합니다.
+이는 데이터베이스 쿼리의 결과가 보류 중이거나 구성 요소가 UI 프레임워크(react 같은)에 의해 마크업으로 생성되어야 하기 때문일 수 있습니다.
+
+서버에서 실행되는 여러가지 웹 프레임워크에는 이 프로세스의 속도를 높이는데 사용할 수 있는 성능 지침이 있습니다.
+
+> Fix an overloaded server: https://web.dev/overloaded-server/
+
+#### CDN 사용
+
+콘텐츠 전송 네트워크는 여러 위치에 분산된 서버 네트워크 입니다.
+
+지리적으로 가까운 서버에서 제공한다면 더 빠른 응답을 통해 서버에 대한 네트워크 요청을 기다리지 않게 할 수 있습니다.
+
+#### Asset 캐시
+
+HTML이 정적이며 모든 요청에 대해 변경할 필요가 없는 경우 캐싱을 통해 불필요하게 다시 생성하는 것을 방지할 수 있습니다.
+
+서버 측 캐싱은 생성된 HTML의 복사본을 디스크에 저장해 TTFB을 줄이고 리소스 사용을 최소화할 수 있습니다.
+
+상황에 따라 다양한 방법이 있습니다.
+
+- 서버에서 캐쉬된 콘텐츠를 제공하거나 reverse proxy(ex, nginx) 를 구성하여 캐시 서버 역할을 할 수 있게 합니다.
+- 클라우드 공급자(AWS, Firebase, Azure)의 캐시 동작 구성 및 관리
+- CDN 캐시 사용
+
+#### HTML 페이지 cache-first 제공
+
+> **Service Worker API**
+> 서비스 워커는 웹 응용 프로그램, 브라우저, 그리고 (사용 가능한 경우) 네트워크 사이의 프록시 서버 역할을 합니다.
+> 서비스 워커는 출처와 경로에 대해 등록하는 이벤트 기반 워커로서 Javascript 파일의 형태를 갖고 있습니다.
+> 서비스 워커는 연관된 웹 페이지/사이트를 통제하여 탐색과 리소스 요청을 가로채 수정하고, 리소스를 굉장히 세부적으로 캐싱할 수 있습니다. 이를 통해 어떤 상황에서 어떻게 동작해야 하는지 완벽하게 바꿀 수 있습니다.(예를 들어 offline 상황 등에서)
+
+[서비스워커](https://developer.mozilla.org/ko/docs/Web/API/Service_Worker_API)가 설치되면 브라우저 백그라운드에서 실행되고 서버의 요청을 가로챌 수 있습니다.
+
+서비스워커를 통한 캐시 제어를 통해 HTML 페이지 콘텐츠의 일부 또는 전체를 캐시하고 콘텐츠가 변경된 경우에만 캐시를 업데이트할 수 있습니다.
+
+다음 차트는 이 패턴을 사용한 사이트에서 LCP 분포가 어떻게 감소했는지 보여줍니다.
+
+![service-worker-caching](https://web-dev.imgix.net/image/admin/uB0Sm56R88MRF16voQ1k.png?auto=format&w=845)
+
+#### establish thrid-party connections early
+
+> https://web.dev/preconnect-and-dns-prefetch/
+
+![preconnect](https://web-dev.imgix.net/image/admin/988BgvmiVEAp2YVKt2jq.png?auto=format&w=845)
+
+thrid-party 서버 요청은 특히 페이지에 중요한 콘텐츠를 표시해야 하는 경우 LCP에 영향을 줄 수 있습니다. (예를 들어 웹폰트 등)
+
+`rel="preconnect"`를 사용하여 페이지가 최대한 빨리 연결을 구축할 것임을 브라우저에게 알립니다.
+`rel="dns-prefetch"`를 사용하여 DNS 조회를 더 빠르게 해결할 수도 있습니다.
+
+```html
+<head>
+  …
+  <link rel="preconnect" href="https://example.com" />
+  <link rel="dns-prefetch" href="https://example.com" />
+</head>
+```
+
+#### SXG(signed exchanges) 사용
+
+> https://web.dev/signed-exchanges/
+
+서명된 교환이란 쉽게 캐시할 수 있는 형식으로 콘텐츠를 제공하여 더 빠른 사용자 경험을 가능하게 하는 전달 메커니즘입니다.
+
+[구글 검색](https://developers.google.com/search/docs/advanced/experience/signed-exchange)은 SXG를 캐시하고 때로는 미리 가져옴으로써 성능 향상에 도움을 줍니다.
+
+### 2. 렌더링 차단 Javascript, css
+
+브라우저는 콘텐츠를 렌더링할 때 먼저 HTML을 DOM트리로 구문 분석을 합니다.
+
+HTML 파서는 외부 스타일시트`<link rel="stylesheet">` 코드 또는 동기식 Javscript 태그`<script src="main.js">` 코드를 만나면 Blocking 됩니다.
+
+스크립트와 스타일시트는 모두 FCP를 지연시키고 결과적으로 LCP까지 지연시키는 렌더링 차단 리소스 입니다.
+중요하지 않은 Javascript, CSS를 제외하면 웹 페이지의 메인 콘텐츠 로드 속도를 빠르게 할 수 있습니다.
+
+- CSS Blocking 단축 방법
+- Javascript Blocking 단축 방법
+
+#### CSS Blocking 단축 방법
+
+- CSS 최소화
+- Defer non-critical CSS
+- Inline critical CSS
+
+**CSS 최소화**
+
+> https://web.dev/minify-css/
+
+가독성을 높이기 위해 CSS 파일에는 공백, 들여쓰기, 주석등이 들어가 있습니다.
+이런 내용들을 제거하여 파일을 축소합니다.
+
+주로 모듈 번틀러, 태스크 러너를 사용하는 경우 적절한 플러그인을 포함하여 CSS minify 합니다.
+
+- webpack5: [CssMinimizerWebpackPlugin](https://webpack.js.org/plugins/css-minimizer-webpack-plugin/)
+- rollup: [rollup-plugin-postcss](https://www.npmjs.com/package/rollup-plugin-postcss) + (cssnano, clean-css)
+- gulp: [gulp-postcss](https://github.com/postcss/gulp-postcss) + (cssnano, clean-css)
+
+![css-minify-example1](https://web-dev.imgix.net/image/admin/vQXSKrY1Eq3CKkNbu9Td.png?auto=format&w=845)
+
+**Defer non-critical CSS**
+
+> https://web.dev/defer-non-critical-css/
+
+크롬 개발자 도구의 커버리지(Coverage) 탭을 사용하여 웹 페이지에서 사용하지 않는 CSS를 찾습니다.
+
+![coverage](https://files.seonest.net/images/qnfqnfqnf/post/74/스크린샷%202021-10-17%20오후%206.45.14.png)
+
+다음과 같은 방법으로 최적화할 수 있습니다.
+
+- 사용하지 않는 CSS를 완전히 제거하거나 사이트의 별도 페이지에서 사용하는 경우 다른 스타일시트로 이동합니다.
+- 초기 렌더링에 필요하지 않은 CSS의 경우 loadCSS를 사용해 `rel="preload"` 및 `onload`를 활용해 비동기식으로 파일을 도르합니다.
+
+```html
+<link rel="preload" href="stylesheet.css" as="style" onload="this.rel='stylesheet'" />
+```
+
+![web.dev-preload-examples](https://web-dev.imgix.net/image/admin/2fcwrkXQRQrM8w1qyy3P.png?auto=format&w=845)
+
+UI 프레임워크를 사용하거나 CSS-in-JS등 전처리기를 사용한다면 거기에서 제공하는 critical-css 옵션들을 사용해야되는 경우도 있습니다. 그러나 기본적인 동작방식을 이해한다면 적용하는데도 조금 더 수월하게 진행할 수 있을 것 같습니다.
+
+**Inline critical CSS**
+
+> https://web.dev/extract-critical-css/
+
+Critical CSS라는 것은 스크롤 없이 볼 수 있는 콘텐츠에 사용되는 중요 CSS를 말합니다.
+
+이 CSS를 `<head>`에 inline style로 처리하도록 합니다.
+이렇게 처리하면 critical css를 가져오기 위한 추가 요청이 필요없습니다.
+그리고 이 외 non-critical css를 가져오는 것은 비동기처리하면 Blocking 시간을 최소화할 수 있습니다.
+
+사이트에 inline style을 수동으로 추가할 수 없다면 라이브러리를 사용해 프로세스를 자동화하세요.
+
+- [Critical](https://github.com/addyosmani/critical), [CriticalCSS](https://github.com/filamentgroup/criticalcss), [Penthouse](https://github.com/pocketjoso/penthouse/tree/master): Critical CSS Extract library
+- [Critters](): 웹팩 플러그인
+
+![critical-css-examples](https://web-dev.imgix.net/image/admin/L8sc51bd3ckxwnUfczC4.png?auto=format&w=845)
+
+#### Javascript Blocking 단축 방법
+
+필요한 최소한의 Javscript를 다운로드하여 사용자에게 제공합니다. 차단하는 Javascripe의 양을 줄이면 렌더링 속도가 빨라지고 결과적으로 LCP가 향상됩니다.
+
+몇 가지 방법으로 스크립트를 최적화하여 이를 수행할 수 있습니다.
+
+- Javascript 파일 축소, 압축
+- Defer unused Javascript
+- Minimize unused Polyfills
+
+**Javascript 파일 축소, 압축**
+사이즈를 줄이기 위한 노력은 크게 2개가 있습니다.
+
+> terser
+> A Javascript parser and manger/compressor toolkit for ES6+
+> _- [terser github](https://github.com/terser/terser)_
+
+- minification
+  모듈 번들러에서는 이미 제공되는 부분도 많기 때문에 잘 활용하면 됩니다.
+  webpack같은 경우 [terser](https://github.com/terser/terser)가 기본적으로 webpack4부터는 제공되며 어떤 설정도 없이 동작하게끔 되어 있습니다.
+  그 전 버전에는 `TerserWebpackPlugin`을 사용하면 됩니다.
+  만약 모듈 번들러를 사용하지 않는다면 [terser](https://github.com/terser/terser)를 직접 받아서 사용할 수 있습니다.
+- data compression
+  gzip은 서버 및 클라이언트 통신에 가장 널리 사용되는 압축 방식입니다. brotli는 gzip보다 훨씬 더 나은 압축 결과를 제공할 수 있는 최신 압축 알고리즘입니다.
+
+> 파일을 압축하면 성능이 크게 향상될 수 있지만 직접 수행할 필요는 거의 없습니다. 많은 플랫폼, CDN, reverse proxy 서버는 기본적으로 압축방식을 쉽게 구성할 수 있도록 합니다. 자체적으로 압축하기 전에 압축이 이미 지원되는지 확인하고 진행하면 좋을 것 같습니다.
+
+- Dynamic Compression
+  브라우저에서 요청을 받을 때 동적으로 압축하는 방식입니다. 이 방식은 기본적으로 수동으로 압축하거나 빌드 시에 압축할 때보단 더 쉽습니다. 그러나 매 요청마다 수행하기 때문에 더 늦게 응답될 수 있습니다.
+  nodejs 서버 중 express에서는 compression middleware 라이브러리를 제공합니다.
+  이 라이브러리는 `gzip`을 사용하여 압축된 결과를 응답합니다.
+  (brotli를 위해 [shrink-ray](https://github.com/aickin/shrink-ray#readme)나 [compress-brotli](https://github.com/Kikobeats/compress-brotli)를 사용할 수도 있습니다.)
+
+```js
+const express = require('express');
+const compression = require('compression');
+
+const app = express();
+
+app.use(compression());
+```
+
+- Static Compression
+  정적압축은 미리 빌드 시에 압축하고 저장하는 작업입니다. 높은 압축을 한다면 빌드 시간이 더 걸릴 수는 있지만 브라우저가 압축된 리소스를 가져올 때 추가 지연 시간 없이 응답할 수 있습니다.
+  webpack을 사용하여 빌드 한다면 brotli 압축을 위해 [BrotliWebpackPlugin](https://github.com/mynameiswhm/brotli-webpack-plugin)을 사용하세요. gzip 압축을 사용한다면 [CompressionPlugin]()을 사용하면 됩니다.
+  js 파일에 대해 요청이 왔을 때 압축된 파일을 제공하기 javascript endpoint를 제공하세요
+
+```js
+var BrotliPlugin = require('brotli-webpack-plugin');
+module.exports = {
+  plugins: [
+    new BrotliPlugin({
+      asset: '[file].br',
+      test: /\.(js)$/,
+    }),
+  ],
+};
+```
+
+```js
+const express = require('express');
+const app = express();
+
+app.get('*.js', (req, res, next) => {
+  req.url = req.url + '.br';
+  res.set('Content-Encoding', 'br');
+  res.set('Content-Type', 'application/javascript; charset=UTF-8');
+  next();
+});
+
+app.use(express.static('public'));
+```
+
+**Defer unused Javascript**
+대용량 JavaScript 페이로드를 전송하면 사이트 속도에 상당한 영향을 미칩니다. 애플리케이션의 첫 페이지가 로드되는 즉시 모든 JavaScript를 사용자에게 제공하는 대신 번들을 여러 조각으로 나누고 맨 처음에 필요한 것만 보내십시오.
+
+webpack, parcel, rollup 과 같은 인기 있는 모듈 번들러는 dynamic imports를 사용하여 번들을 분할 할 수 있습니다.(code splitting)
+
+모듈을 구성하는 코드는 초기 번들에 포함되지 않고 lazy loading되거나 필요할 때만 사용자에게 제공될 것입니다. 페이지 성능을 더욱 향상시키려면 [중요한 청크를 미리 로드하여 우선순위를 정하여 더 빠르게 가져오게](https://web.dev/preload-critical-assets/) 할 수 있습니다.
+
+외부 라이브러리를 사용할 때도 마찬가지로 분할해서 제공되면 더 좋습니다.
+일반적으로 외부 라이브러리 종속성은 자주 업데이트 되지 않기 때문에 캐시될 수 있는 별도의 vendor 번들로 분할됩니다.
+
+webpack의 [SplitChunksPlugin](https://webpack.js.org/plugins/split-chunks-plugin/)이 이러한 작업을 어떻게 도울 수 있는 자세히 볼 수 잇습니다.
+
+클라이언트 측 프레임워크를 사용할 때 route 또는 component에서 분할하는 것은 애플리케이션을 lazy loading하는 심플한 방법입니다.
+
+webpack을 사용하는 많은 인기 있는 프레임워크는 지연 로딩을 쉽게 하기 위해 추상화를 제공합니다.
+
+**Minimize unused Polyfills**
+모든 주요 브라우저에서 잘 작동하는 웹사이트를 구축하는 것은 웹 개발의 핵심입니다.
+그러나 이는 작성하려는 모든 코드가 각 브라우저에서 지원되도록 하는 추가 작업을 의미합니다.
+새로운 JavaScript 언어 기능을 사용하려면 이러한 기능을 아직 지원하지 않는 브라우저에 대해 이전 버전과 호환되는 형식으로 변환해야 합니다.
+
+Babel 은 새로운 구문을 포함하는 코드를 다른 브라우저와 환경(예: Node)이 이해할 수 있는 코드로 컴파일하는 데 가장 널리 사용되는 도구입니다.
+
+> 재미있는 사실: Lebab은 Babel과 반대되는 작업을 수행하는 별도의 라이브러리입니다. 이전 코드를 새로운 구문으로 변환합니다.
+
+Babel을 사용하여 사용자에게 **필요한 것만** 트랜스파일하려면 다음을 수행해야 합니다.
+(이런 최적화 과정이 없다면 불필요한 변환코드들도 함께 들어가 코드가 상당히 커질 수 있습니다.)
+
+- 타겟팅 하려는 브라우저를 식별합니다.
+  애플리케이션의 코드가 변환되는 방식을 수정하기 전에 애플리케이션에 액세스하는 브라우저를 식별해야 합니다. 정보에 입각한 결정을 내리기 위해 사용자가 현재 사용하고 있는 브라우저와 타겟팅하려는 브라우저를 분석합니다
+- 적절한 브라우저 target과 함께 `@babel/preset-env`을 사용하세요.
+  [browserslist](https://github.com/browserslist/browserslist#full-list) 문서를 확인하면 다양한 브라우저 리스트 명세를 확인할 수 있습니다.
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": ">0.25%",
+        "bugfixes": true
+      }
+    ]
+  ]
+}
+```
+
+`bugfixes`는 babel 7.10 이상부터 지원되며 babel 8부터는 기본적으로 활성화됩니다.
+(최신 버그 수정을 해주는 option입니다.)
+
+- 변환이 필요하지 않는 브라우저에 변환된 코드 전송을 멈추기 위해 `<script type="module">`을 사용하세요.
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "esmodules": true
+        }
+      }
+    ]
+  ]
+}
+```
+
+ES6에서 모듈시스템이 들어오게 되면서 모든 주요 브라우저에서 지원되는 비교적 새로운 기능입니다.
+esmodule을 지원하는 브라우저를 특정하기 위해 특정 브라우저 버전이나 시장 점유율을 쿼리하는 대신 `"esmodules": true` 를 지정하는 것이 좋습니다.
+이렇게 하면 실제로 필요한 브라우저에 대해 트랜스파일된 코드만 사용되도록 하는 프로세스를 단순화할 수 있습니다.
+모듈을 지원하는 브라우저는 `nomodule`속성이 있는 스크립트를 무시 합니다. 반대로 모듈을 지원하지 않는 브라우저는 `type="module"`속성이 있는 스크립트를 무시합니다. 이것은 모듈과 컴파일된 폴백을 포함할 수 있음을 의미합니다.
+
+```html
+<script type="module" src="main.mjs"></script>
+<script nomodule src="compiled.js" defer></script>
+```
+
+모듈을 지원하는 브라우저는 `main.mjs`을 다운로드하고 실행하고 `compiled.js`를 무시합니다. 모듈을 지원하지 않는 브라우저는 그 반대입니다.
+(**이러한 방식은 특정 브라우저에서 정상동작하지 않을 수 있습니다. 가령 2개의 Javascript 파일을 모두 가져온다던지 하는 일종의 버그가 있습니다.)**
+
+> main.mjs: 모듈을 지원하는 브라우저 전용 버전입니다.
+> compiled.js: 모든 레거시 브라우저에서 작동하는 컴파일된 스크립트가 포함된 버전입니다. 더 넓은 범위의 브라우저를 지원해야 하기 때문에 파일 크기가 더 큽니다.
+
+> 모듈 스크립트는 기본적으로 지연됩니다. 그래서 `nomodule` 또한 동일한 동작을 위해 스크립트 defer 속성을 추가합니다.
+
+### 3. 느린 리소스 로드 시간
+
+CSS또는 Javascript 차단 시간이 증가는 성능 저하에 직접적 영향을 미치지만 다른 많은 유형의 리소스를 로드하는데 걸리는 시간도 페인트 시간에 영향을 줄 수 있습니다.
+
+- `<img>`
+- `<svg>` 요소 내부의 `<img>`
+- `<video>`
+- `url()` 함수를 통해 로드된 배경 이미지가 있는 요소
+- 텍스트 노드 또는 기타 lnline-level 텍스트 요소를 포함하는 block-level 요소
+
+> block-level 요소
+> https://developer.mozilla.org/ko/docs/Web/HTML/Block-level_elements > `<p>` `<div>` `<h1>~<h6>`등 display: block 요소
+> inline-level 요소: `<span>` `<a>` 등 display: inline 요소
+
+이러한 요소를 로드하는데 걸리는 시간은 LCP에 직접적인 영향을 미칩니다. 이러한 파일이 가능한 빨리 로드되도록 하는 몇 가지 방법이 있습니다.
+
+- 이미지 최적화 및 압축
+- 중요한 리소스 미리 로드
+- 텍스트 파일 압축
+- 네트워크 연결에 기반한 다른 asset 제공(적응형 제공)
+- 서비스워커를 통한 asset 캐시
+
+#### 이미지 최적화 및 압축
+
+대부분의 사이트에서 이미지는 페이지 로드가 완료되었을 때 표시되는 가장 큰 요소입니다. hero 이미지, 큰 carousels, 배너 이미지등이 이러한 예시에 속합니다.
+![image1.png](https://files.seonest.net/images/qnfqnfqnf/post/76/image.png)
+
+랜더링 개선을 위해서는 다음 방법들이 있습니다.
+
+- 처음부터 이미지를 사용하지 않는 것이 좋습니다. 콘텐츠와 관련이 없는 경우 삭제하세요.
+- 이미지 압축(ex, [Imagemin](https://web.dev/use-imagemin-to-compress-images/) 사용)
+  압축되지 않은 이미지들은 불필요한 바이트와 함께 페이지를 부풀립니다.
+
+![20kb](https://web-dev.imgix.net/image/admin/LRE2JJAuShXTjQF5ZSaR.jpg?auto=format&w=385)
+![12kb](https://web-dev.imgix.net/image/admin/u9hncwN4TsT7zw2ObU10.jpg?auto=format&w=385)
+아래 이미지는 위 이미지보다 40% 더 작지만 거의 동일하게 보입니다.
+(20kb vs 12kb)
+
+Imagemin은 이미지 포맷에 맞는 다양한 npm 라이브러리를 제공합니다.
+모듈번들러 플러그인도 제공됩니다. [webpack](https://webpack.js.org/plugins/image-minimizer-webpack-plugin/)
+
+- 이미지를 최신 형식(webp)으로 변환
+  WebP 이미지는 JPEG 및 PNG 이미지보다 작습니다. 일반적으로 파일 크기가 25-35% 감소합니다. 압축과 마찬가지로 Imagemin에서 제공되고, 다른 라이브러리도 있습니다.([cwebp](https://www.npmjs.com/package/cwebp))
+- 반응형 이미지 사용
+  데스크톱 크기의 이미지를 모바일 기기에 그대로 제공하게 되면 필요한 데이터에 비해 2~4배 더 많은 데이터를 사용하여 보게 될 수 있습니다.
+  다양한 기기에 다양한 이미지 크기를 제공하세요.
+  그리고 브라우저에서는 뷰포트에 대한 적절한 이미지만 다운로드하여 제공할 수 있도록 하세요. (단, src 속성에 의해 지정된 이미지는 모든 크기에서 잘 작동할 만큼 충분히 커야 합니다. w 단위를 사용하여 1024px 대신 1024w를 사용하세요.)
+
+```html
+<img src="flower-large.jpg" srcset="flower-small.jpg 480w, flower-large.jpg 1080w" sizes="50vw" />
+```
+
+- 이미지 CDN 사용
+  이미지 CDN은 이미지 변환, 최적화, delivery을 전문으로 합니다. 사이트에서 사용되는 이미지에 엑세스하고 조작하기 위한 API로 생각할 수도 있습니다. 이미지 CDN에서 로드된 이미지의 경우 이미지 URL은 로드할 이미지뿐만 아니라 크기, 형식, 퀄리티와 같은 매개변수도 사용할 수 있습니다.
+  ![image-cdn](https://web-dev.imgix.net/image/admin/OIF2VcXp8P6O7tQvw53B.jpg?auto=format&w=845)
+  ![image-cdn2](https://web-dev.imgix.net/image/admin/GA4udXeYUEjHSY4N0Qew.jpg?auto=format&w=845)
+  (self-managed image CDNs: [Thumbor](https://thumbor.readthedocs.io/en/latest/index.html)를 직접 설치 후 제공 )
+  (Third-party image CDNs: [imgix](https://imgix.com), [sirv](https://sirv.com/), [imagekit](https://imagekit.io/))
+
+> [Optimize your images](https://web.dev/fast/#optimize-your-images)
+>
+> - [Choose the right image format](https://web.dev/choose-the-right-image-format/)
+> - [Choose the correct level of compression](https://web.dev/compress-images/)
+> - [Use Imagemin to compress images](https://web.dev/use-imagemin-to-compress-images/)
+> - [Replace animated GIFs with video for faster page loads](https://web.dev/replace-gifs-with-videos/)
+> - [Serve responsive images](https://web.dev/serve-responsive-images/)
+> - [Serve images with correct dimensions](https://web.dev/serve-images-with-correct-dimensions/)
+> - [Use WebP images](https://web.dev/serve-images-webp/)
+> - [Use image CDNs to optimize images](https://web.dev/image-cdns/)
+
+#### 중요한 리소스 미리 로드
+
+특정 CSS 또는 Javascript 파일에서 선언되거나 사용되는 중요한 리소스가 다른 Asset에 밀려 생각보다 늦게 가져오게 될 수 있습니다.
+
+이런 경우에 우선순위를 지정해야 하는 경우 `<link rel="preload">`를 사용해 더 빨리 가져올 수 있습니다. 다양한 유형의 리소스를 미리 로드할 수 있지만 먼저 폰트, Critical 이미지, Critical 동영상, Critical CSS, Critical Javascript와 같은 중요한 리소스를 미리 로드하는데 집중해야 합니다.
+
+```js
+<link rel="preload" as="script" href="script.js" />
+<link rel="preload" as="style" href="style.css" />
+<link rel="preload" as="image" href="img.png" />
+<link rel="preload" as="video" href="vid.webm" type="video/webm" />
+<link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin />
+```
+
+크롬에서는 반응형 이미지와 함께 preload를 사용해 더 빠른 이미지 로드를 위한 두 가지 패턴을 조합할 수 있습니다.
+
+```js
+<link
+  rel="preload"
+  as="image"
+  href="wolf.jpg"
+  imagesrcset="wolf_400px.jpg 400w, 
+               wolf_800px.jpg 800w, 
+               wolf_1600px.jpg 1600w"
+  imagesizes="50vw"
+/>
+```
+
+#### 텍스트 파일 압축
+
+gzip, brotli와 같은 압축 알고리즘은 서버와 브라우저 사이에 전송되는 텍스트 파일(HTML, CSS, Javascript)의 크기를 줄일 수 있습니다.
+
+- 먼저 서버에서 이미 파일을 자동으로 압축하는 것은 아닌지 확인하세요. 많은 플랫폼, CDN, reverse proxy 서버는 기본적으로 압축방식을 쉽게 구성할 수 있도록 합니다.
+- 파일을 압축하기 위해 서버를 수정해야 하는 경우 gzip 대신 더 나은 압축 비율을 제공하는 Brotli를 사용하는 것이 좋습니다.
+- 사용할 압축 알고리즘을 선택한 후에는 브라우저에서 요청할 때 압축하는 대신 빌드 프로세스 중에 미리 리소스를 압축하세요. 이렇게 하면 서버 오버헤드가 최소화되고, 특히 높은 압축률을 사용한 경우 요청 시 지연이 방지됩니다.
+
+#### 네트워크 연결에 기반한 다른 asset 제공(적응형 제공)
+
+> https://developer.mozilla.org/ko/docs/Web/API/Navigator
+>
+> 페이지의 메인 콘텐츠를 구성하는 리소스를 로드할 때 사용자의 기기나 네트워크 상황에 따라 조건부로 다른 asset을 가져오는 것이 효과적일 수 있습니다.
+> 네트워크 정보, 장치 메모리 및 HardwareConcurrency API를 사용하여 수행할 수 있습니다.
+
+- navigator.connection.effectiveType: 유효 연결 유형
+- navigator.connection.saveData: 데이터 절약 활성화/비활성화
+- navigator.hardwareConcurrency: CPU 코어 수
+- navigator.deviceMemory: 장치 메모리
+
+```js
+if (navigator.connection && navigator.connection.effectiveType) {
+  if (navigator.connection.effectiveType === '4g') {
+    // Load video
+  } else {
+    // Load image
+  }
+}
+```
+
+#### 서비스워커를 통한 asset 캐시
+
+서비스 워커는 앞에서 언급했듯 더 작은 HTML 응답을 제공하는 것을 포함하여 여러 가지 유용한 작업에 사용될 수 있습니다.
+또한 반복 요청 시 네트워크에서 대신 브라우저에 제공할 수 있는 정적 리소스를 캐시하는 데 사용할 수도 있습니다.
+
+서비스 워커를 사용하여 중요한 리소스를 미리 캐싱하면 로드 시간을 크게 줄일 수 있습니다.
+연결 상태가 약한 상태에서, 심지어는 오프라인에서 웹 페이지를 다시 로드하는 사용자의 경우 특히 그렇습니다.
+[Workbox](https://developers.google.com/web/tools/workbox/)와 같은 라이브러리는 사전 캐시된 리소스 업데이트 프로세스를 만들 수 있으며 이는 커스텀으로 서비스 워커를 작성하는 것보다 쉽습니다.
+
+### 4. 느린 CSR
+
+> https://developers.google.com/web/updates/2019/02/rendering-on-the-web
+
+많은 사이트에서 클라이언트 JavaScript 라이브러리를 사용하여 브라우저에서 직접 페이지를 렌더링합니다.
+React , Angular 및 Vue 같은 프레임워크 및 라이브러리를 사용하면 웹 페이지를 서버가 아닌 클라이언트에서 처리하는 단일 페이지 애플리케이션을 더 쉽게 구축할 수 있습니다.
+
+대부분 클라이언트에서 렌더링되는 사이트를 구축하는 경우 대규모 JavaScript 번들을 사용한다면 LCP에 미칠 수 있는 영향에 주의해야 합니다.
+이를 방지하기 위한 최적화가 이루어지지 않으면 모든 JavaScript 파일을 다운로드 및 실행이 완료될 때까지 사용자가 페이지의 콘텐츠를 보거나 상호 작용할 수 없습니다.
+
+CSR 구축할 때는 다음과 같은 최적화 방식을 고려하세요.
+
+- Critical Javascript 최소화
+- SSR 사용
+- Pre-rendering 사용
+
+#### Critical Javascript 최소화
+
+사이트의 콘텐츠가 Javascript가 다운로드된 후에만 표시되거나 상호 작용할 수 있는 경우 번들의 크기를 최대한 줄여야 합니다.
+
+이를 위해서는 다음과 같은 방법을 사용하세요.
+
+- Minify Javascript
+- Defer unused Javascript
+- Miminizing unused Polyfills
+
+위 [Javascript Blocking 단축 방법](#javascript-blocking-단축-방법)을 참고하세요.
+
+#### SSR 사용
+
+대부분 클라이언트에서 렌더링되는 사이트의 경우 항상 JavaScript의 양을 최소화하는 것에 가장 먼저 집중해야 합니다. 그러나 최대한 LCP를 개선하기 위해 서버 사이드 렌더링을 결합하는 것도 고려해볼 수 있습니다.
+
+이 개념은 서버를 사용하여 애플리케이션을 HTML로 렌더링하는 방식으로 작동합니다.
+
+그러면 클라이언트가 모든 JavaScript 및 필수 데이터를 동일한 DOM 콘텐츠에 "하이드레이션"합니다. 이렇게 하면 페이지의 주요 콘텐츠가 클라이언트에서만이 아니라 서버에서 먼저 렌더링되도록 하여 LCP를 개선할 수 있지만 몇 가지 단점이 있습니다.
+
+- 서버와 클라이언트에서 동일한 JavaScript 렌더링 애플리케이션을 유지 관리하면 복잡성이 증가할 수 있습니다.
+- 서버에서 HTML 파일을 렌더링하기 위해 JavaScript를 실행하면 서버에서 정적 페이지를 제공하는 것과 비교하여 항상 서버 응답 시간(TTFB)이 늘어납니다.
+- 서버에서 렌더링된 페이지는 상호 작용할 수 있는 것처럼 보이지만 모든 클라이언트 측 JavaScript가 실행될 때까지 사용자 입력에 응답할 수 없습니다. 이로 인해 Time to Interactive(상호 작용까지의 시간, TTI)는 점수가 낮아집니다.
+
+이럴 때 사용할 수 있는 방식이 Pre-rendering 입니다.
+
+#### Pre-rendering
+
+> [웹 렌더링](https://developers.google.com/web/updates/2019/02/rendering-on-the-web)
+>
+> pre-rendering: 빌드 타임에 클라이언트 측 애플리케이션을 실행하여 초기 상태를 정적 HTML로 캡쳐합니다.
+> Next.js에서는 SSG라는 이름으로 pre-rendering을 제공합니다.
+
+pre-rendering은 서버 사이트 렌더링보단 덜 복잡하면서도 LCP를 개선하는 방법을 제공하는 별도의 기술입니다.
+
+사용자 인터페이스가 없는 브라우저인 headless 브라우저는 빌드 시 모든 route의 정적 HTML 파일을 생성하는 데 사용됩니다. 이러한 파일은 이후 애플리케이션에 필요한 Javascript 번들과 함께 제공될 수 있습니다.
+
+pre-rendering을 사용하면 TTI에는 여전히 부정적이지만, 서버 응답 시간은 서버 사이드 렌더링 만큼 영향을 받지 않습니다.
+
+> 서버 렌더링
+> ![server-rendering](https://developers.google.com/web/updates/images/2019/02/rendering-on-the-web/server-rendering-tti.png)
+
+> 정적 렌더링
+> ![static-rendering](https://developers.google.com/web/updates/images/2019/02/rendering-on-the-web/static-rendering-tti.png)
+
+> 클라이언트 렌더링
+> ![client-rendering](https://developers.google.com/web/updates/images/2019/02/rendering-on-the-web/client-rendering-tti.png)
+
+## 마무리하며
+
+core web vitals 중 LCP와 관련된 지표와 개선사항들을 살펴보았습니다.
+나머지 FID, CLS 최적화는 다음 포스트에서 다루어 볼 예정이지만 아마 겹치는 부분이 꽤 존재하지 않을까 싶습니다. 모두 연관이 되어있기 때문입니다.
+
+다음 포스트에서는 FID부터 다뤄보도록 하겠습니다.
+
+## reference
+
+- https://developers.google.com/search/blog/2021/03/wix?hl=ko
+- https://medium.com/@OPTASY.com/google-pagespeed-vs-lighthouse-how-are-they-different-and-which-tool-should-you-use-3f03270c674
+- https://web.dev/fast/
+- https://web.dev/vitals/
+- https://web.dev/defining-core-web-vitals-thresholds/
+- https://ko.reactjs.org/docs/react-dom.html#hydrate
+- https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/speed/README.md

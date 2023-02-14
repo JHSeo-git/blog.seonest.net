@@ -1,0 +1,353 @@
+---
+title: 'Why React Re-Renders'
+description: '왜 리액트는 리렌더링 될까요? Josh.W.Comeau 블로그에서 좋은 글이 있어 옮겨보면서 이해하고 정리해보았습니다.'
+date: '2022-08-17T12:12:54.449Z'
+category: 'react'
+tags: ['React', 'Web']
+thumbnail: '/post/react/why-react-re-renders/thumbnail.png'
+---
+
+> joshwcomeau 블로그에서 [Why React Re-Renders](https://www.joshwcomeau.com/react/why-react-re-renders/) 를 옮긴 글입니다.
+
+> 저는 리액트를 꽤 사용한 지 대략 2년 정도 된 것 같습니다. 솔직하게 리액트의 리렌더링 작동 방식을 정확하게 이해하고 개발하고 있다고 말하기 쉽지 않은 것 같습니다.
+
+많은 개발자들에게 _"리액트에서 리렌더링을 일으키는 것이 무엇인가요?"_ 와
+같은 질문을 한다면 다양한 답변을 들을 수 있습니다.
+
+그러나 이 주제에 많은 오해가 있으며 잘못된 이해를 가질 수 있습니다. 리액트 렌더링 주기를 이해하지 못한다면 `React.memo`를 사용하는 방법이나 `Reaact.useCallback`로 언제 함수를 감싸서 사용해야되는지를 알기 쉽지 않습니다.
+
+이 글에서 우리는 리액트가 언제, 왜 리렌더링을 하는지에 대한 멘탈모델을 얻을 것입니다.
+
+## The core React loop
+
+> 핵심
+
+**리액트에서 모든 리렌더링은 상태(state) 변경에서 시작합니다.**
+이는 리액트에서 컴포넌트가 리렌더링되는 **유일한** 트리거입니다.
+(과거에는 "forceUpdate()" 메소드에 의해서 가능했지만 현재는 존재하지 않습니다.)
+
+아마도 이상하게 들릴 수도 있습니다. _"props가 변경될 때도 컴포넌트가 리렌더링 되지 않나요?"_, _"Context를 사용할 때도 그렇지 않나요??"_
+
+질문에 대한 답은 다음과 같습니다:
+
+> 컴포넌트가 리렌더링될 때 **단지 모든 하위 컴포넌트 또한 리렌더링된다는 것입니다.**
+
+예시를 보겠습니다.
+
+```jsx
+function App() {
+  return <Counter />;
+}
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <main>
+      <BigCountNumber count={count} />
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </main>
+  );
+}
+
+function BigCountNumber({ count }) {
+  return (
+    <p>
+      <span className="prefix">Count:</span>
+      {count}
+    </p>
+  );
+}
+
+export default App;
+```
+
+여기 3개 컴포넌트가 있습니다: `App`, `Counter`, `BigCountNumber`
+
+모든 리액트 상태는 특정 컴포넌트에 연결되어 있습니다. 예시에는 `Counter` 컴포넌트에 `count` 상태가 연결되어 있습니다.
+
+이 상태가 변경될 때마다 `Counter` 컴포넌트는 리렌더링됩니다. 그리고 `Counter`가 리렌더링 됐기 때문에 `BigCountNumber` 역시 리렌더링됩니다.
+
+![counter-rerender.gif](https://files.seonest.net/images/qnfqnfqnf/post/311/counter-rerender.gif)
+
+`첫 번째 큰 오해`: **상태가 변경될 때마다 전체 앱이 리렌더링 된다.**
+
+리액트에서 모든 상태 변경이 어플리케이션 렌더링을 일으킨다고 오해하는 경우가 있습니다. 그러나 그것은 사실이 아닙니다. 리렌더링은 상태 + 하위 컴포넌트(존재한다면)를 가진 컴포넌트에만 영향을 미칩니다. `App` 컴포넌트는 `count` 상태가 변경되더라도 리렌더링 되지 않습니다.
+
+이것을 외우기보다는 한 발 물러서서 왜 이렇게 동작하는지 알아보도록 하겠습니다.
+
+---
+
+리액트의 "메인 작업"은 리액트 상태와 어플리케이션 UI를 동기화된 상태로 유지하는 것입니다.
+리렌더링의 중점은 **변경이 필요한 것을 파악하는 것** 입니다.
+
+`Counter`를 다시 봅시다. 어플리케이션이 처음 마운트되면 리액트는 모든 컴포넌트를 렌더링하고 DOM이 어떻게 생겼는지에 대한 스케치를 제공합니다.
+
+```html
+<main>
+  <p>
+    <span class="prefix">Count:</span>
+    0
+  </p>
+  <button>Increment</button>
+</main>
+```
+
+유저가 버튼을 클릭하면 `count`는 `0`에서 `1`로 변경됩니다. UI에 어떤 영향을 줄까요?
+
+리액트는 `Conter`, `BigCountNumber` 컴포넌트에 대한 코드를 재실행하고 새로운 DOM을 생성합니다.
+
+```html
+<main>
+  <p>
+    <span class="prefix">Count:</span>
+    1
+  </p>
+  <button>Increment</button>
+</main>
+```
+
+각 렌더는 카메라로 사진을 찍은 것과 같은 스냅샷으로, 현재 어플리케이션 상태에 기반하여 UI가 _무엇을 보여줘야 하는지를_ 말해줍니다.
+
+리액트는 2개의 스냅샷 사이에서 "틀린 그림 찾기" 게임을 합니다. 이 경우는 paragraph가 `0`에서 `1`로 바뀐 텍스트 노드가 있는 것을 확인하고 스냅샷과 일치하도록 텍스트 노드를 수정 합니다. 작업이 완료가 되면 리액트는 제자리로 돌아가 다음 상태 변경을 기다립니다.
+
+**이것이 The core React Loop 입니다.**
+
+`count` 상태는 `Counter` 컴포넌트에 연결되어 있습니다. 리액트 앱에서 데이터는 "위로" 흐를 수 없기 때문에 `<App />`에 영향을 줄 수 없다는 것을 알 수 있습니다. 따라서 해당 컴포넌트를 리렌더링 할 필요가 없습니다.
+
+하지만 `Counter`의 자식 컴포넌트(`BigCountNumber`)는 리렌더링 해야합니다. 실제로 `count` 상태를 표시하는 컴포넌트 입니다. 리렌더링 하지 않는다면 `0`에서 `1`로 변경되어야 한다는 것을 알 수 없습니다. 이 컴포넌트를 스케치에 포함해야 합니다.
+
+리렌더링의 요점은 상태 변경이 UI에 어떻게 영향을 미치는지를 파악하는 것입니다. 따라서 정확한 스냅샷을 얻으려면 잠재적으로 영향을 받을 수 있는 모든 컴포넌트를 리렌더링해야 합니다.
+
+## It's not about the props
+
+> props에 대한 것이라기 보단...
+
+`두 번째 큰 오해`: **props가 변경되어서 컴포넌트가 리렌더링 될 것이다.**
+
+예시를 보겠습니다.
+
+```jsx
+function App() {
+  return <Counter />;
+}
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <main>
+      <BigCountNumber count={count} />
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+
+      {/* 👇 기존 예시에서 추가된 부분 👇 */}
+      <Decoration />
+    </main>
+  );
+}
+
+function BigCountNumber({ count }) {
+  return (
+    <p>
+      <span className="prefix">Count:</span>
+      {count}
+    </p>
+  );
+}
+
+{
+  /* 👇 기존 예시에서 추가된 부분 👇 */
+}
+function Decoration() {
+  return <div className="decoration">⛵️</div>;
+}
+
+export default App;
+```
+
+(`Decoration`을 제외한 부분은 기존 예시와 동일합니다.)
+
+![example](https://files.seonest.net/images/qnfqnfqnf/post/312/image.png)
+
+`Decoration` 컴포넌트는 props로 `count`를 받지 않기 때문에 의존하지 않습니다. 그래서 `count`가 변경될 때 리렌더링되지 않을 것으로 예상됩니다. 근데 정말로 그렇나요?
+
+**실제로 그렇지 않습니다.**
+
+![second.gif](https://files.seonest.net/images/qnfqnfqnf/post/313/second.gif)
+
+한 컴포넌트가 리렌더링되면 props를 통해 특정 상태가 전달되는지 여부와 상관없이 _모든_ 하위 컴포넌트가 리렌더링 합니다.
+
+props에 `count`를 전달하지 않았는데 왜 `<Decoration />` 을 리렌더링해야 될까요?
+
+질문에 대한 답은 다음과 같습니다:
+리액트는 `<Decoration />`이 `count`에 직간접적으로 의존하는지를 100% 확실하게 알기는 어렵습니다.
+
+그 이유가 무엇일까요?
+
+이상적인 경우에 리액트 컴포넌트는 항상 "pure(순수)" 합니다. pure 컴포넌트는 **동일한** props가 주어질 때 **항상** 같은 UI를 만듭니다.
+
+> **Pure function(순수 함수)**
+> 함수형 프로그래밍에서 중요한 개념 중에 하나입니다.
+>
+> 1. 동일한 Props가 주어질 때, 항상 같은 결과값을 반환한다.
+> 2. 사이트 이펙트가 없다: 내부에서 외부의 상태를 변경하거나 외부에서 내부와 소통할 수 있는 수단이 존재해서는 안된다.
+
+그러나 실세계에서는 많은 컴포넌들이 **순수**하지 않습니다. **순수**하지 않는 컴포넌트를 쉽게 만들어 볼 수 있습니다.
+
+```jsx
+function CurrentTime() {
+  const now = new Date();
+  return <p>It is currently {now.toString()}</p>;
+}
+```
+
+위 컴포넌트는 현재 시간에 의존하고 있기 때문에 렌더링될 때마다 다른 값을 표시합니다.
+`CurrentTime` 컴포넌트는 위에서 말한 **pure** 컴포넌트가 아닙니다.
+
+리액트의 첫 번째 목표는 유저가 보는 UI와 어플리케이션 상태를 "동기화" 상태로 유지하는 것입니다. 리액트는 렌더링이 _과도하게 많은_ 렌더에 대해 오류가 나타날 것입니다. 리액트는 유저에게 오래된 UI를 보여주려 하지 않습니다.
+
+다시 "오해"로 돌아가면: **props는 리렌더링과 아무 관련이 없습니다.**
+
+`<BigCountNumber />` 컴포넌트는 `count` prop이 바뀌었기 때문에 리렌더링하는 것이 아닙니다.
+
+어떤 컴포넌트가 리렌더링 될 때(컴포넌트 내 상태 중 하나가 변경되어), 리액트는 새로운 스냅샷을 캡쳐하고 새로운 스케치의 세부정보를 채우기 위해 해당 컴포넌트 트리 아래쪽으로 리렌더링이 Cascade 됩니다.
+
+이것이 바로 리액트의 기본적인 운영입니다. 그러나 이것을 피하기 위한 방법이 하나가 있습니다.
+
+## Creating pure components
+
+> 순수 컴포넌트 만들기
+
+아마도 `React.memo` 또는 `React.PureComponent` 클래스 컴포넌트에 대해 알고 있을 것입니다. 이 2가지 도구는 _**특정한 리렌더링 요청을 무시하게 해줍니다.**_
+
+예시를 보겠습니다:
+
+```jsx
+function Decoration() {
+  return <div className="decoration">⛵️</div>;
+}
+export default React.memo(Decoration);
+```
+
+`Decoration` 컴포넌트를 `React.memo`로 감싸서, 리액트에게 말합니다: **"저기..., 저는 이 컴포넌트가 순수(Pure)하다는 것을 _알고 있어요._ 그래서 props가 변경되지 않는 한 리랜더링 하지 않아도 돼요."**
+
+이것이 **_memoization_** 으로 알고있는 기술입니다.
+
+"R" 스펠링이 없지만 "memo**r**ization" 이라고 생각할 수 있습니다. 이 아이디어는 리액트가 이전 스냅샷을 기억한다는 것입니다. 변경되는 props가 없다면 리액트는 새롭게 만들지 않고 이전의 스냅샷을 재사용합니다.
+
+그럼 `BigCountNumber`와 `Deocration`을 `React.memo`로 감싸보겠습니다. 이것이 리렌더링에 어떤 영향을 미치는지 다음과 같습니다:
+
+![memo.gif](https://files.seonest.net/images/qnfqnfqnf/post/314/memo.gif)
+
+`count`가 변경될 때 `Counter`가 리렌더링되고 리액트는 2개의 하위 컴포넌트를 리렌더링하려고 합니다.
+
+`BigCountNumber`는 prop으로 `count`를 가지기 때문에 `count`가 변경되면 `BigCountNumber`는 리렌더링 됩니다. 하지만 `Decoration`의 prop은 변경되지 않았기 때문에(prop이 없기 때문에) _원래_ 스냅샷이 대신 사용됩니다.
+
+저(저자)는 `React.memo`를 게으른 사진사로 비유하는 것을 좋아합니다. 만약 똑같은 사진을 5장 요청받는다면 딱 1장만 찍고 그 사진을 5장 복사해서 제공할 것입니다. 사진사는 지시사항이 바뀔 때만 다시 새로운 사진을 찍습니다.
+
+그런데 궁금한 점이 있습니다: **리액트에서 이것을 왜 기본동작으로 하지 않을까요?** 대부분의 경우 원하는 것이 아닌가요? 렌더링할 때 렌더링할 필요가 없는 컴포넌트를 건너뛴다면 성능이 확실히 향상될까요?
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/316/image.png)
+
+개발자로써 리렌더링에 드는 비용을 과대평가하는 경향이 있다고 생각합니다. `Decoration` 컴포넌트 경우 리렌더링은 빛의 속도만큼 빠릅니다.
+
+만약 어떤 컴포넌트가 거대한 props를 가지고 하위 컴포넌트가 많지 않은 경우라면, 리렌더링하는 것과 비교하여 props가 변경되었는지를 확인하는 것이 실제로 _더 느리게_ 동작할 수 있습니다. (이 경우에 대한 출처가 없지만 트위터에서 이런 케이스를 Dan Abramov같은 유명한 개발자가 사례를 만드는 것을 봤습니다.)
+
+따라서 모든 단일 컴포넌트를 memo하는 것은 비생산적입니다. 리액트는 이러한 스냅샷을 정말 빠르게 캡쳐하도록 설계 되어있습니다! 그러나 특정 상황에서, 하위 컴포넌트가 많이 있을 경우 _또는_ 내부 작업이 많은 컴포넌트 경우, 이런 경우에는 도움이 됩니다.
+
+> **미래에는 바뀔 수 있습니다!**
+>
+> 리액트 팀은 컴파일 시에 "auto-memoize"가 가능한지 여부를 적극적으로 연구하고 있습니다. 아직까지는 연구 단계에 있습니다만 early experimentation으로 나오길 희망하고 있습니다.
+> 더 많은 정보를 알고 싶다면 Xuan Huang이 발표한 ["React without memo"](https://www.youtube.com/watch?v=lGEMwh32soc) 를 확인해보세요.
+
+## What about context?
+
+아직까지 context에 대해서는 전혀 언급하지 않았습니다. 하지만 다행히도 너무 복잡하지는 않습니다.
+
+기본적으로 부모 컴포넌트의 상태가 변경되면 모든 하위 컴포넌트는 리렌더링 됩니다. 따라서 context를 통해 모든 하위 컴포넌트에게 해당 상태를 제공하든 안하든 바뀌는 것은 없습니다. 어느 쪽이든, 해당 컴포넌트들은 리렌더링됩니다!
+
+_pure_ 컴포넌트의 경우에 context는 "보이지 않는 props" 또는 "내부 props" 같은 것과 같습니다.
+
+`UserContext` context를 소비하는 pure 컴포넌트 예시를 보겠습니다:
+
+```jsx
+const GreetUser = React.memo(() => {
+  const user = React.useContext(UserContext);
+  if (!user) {
+    return 'Hi there!';
+  }
+  return `Hello ${user.name}!`;
+});
+```
+
+위 예시에서 `GreetUser`는 props을 가지지는 않지만 "보이지 않는" 또는 "내부" 디펜던시(리액트 상태에 저장된, 그리고 context를 통해 전달된 `user`)\_를 가지는 pure 컴포넌트 입니다.
+
+만약 `user` 상태가 변경된다면 리렌더링이 일어나고 `GreetUser`는 기존 사진에 의존하지 않고 새로운 스냅샷을 만듭니다. 리액트는 이 컴포넌트가 특정 context를 소비하기에 마치 prop인 것처럼 취급합니다.
+
+이는 다음 코드와 거의 동일합니다:
+
+```jsx
+const GreetUser = React.memo(({ user }) => {
+  if (!user) {
+    return 'Hi there!';
+  }
+  return `Hello ${user.name}!`;
+});
+```
+
+pure 컴포넌트가 `React.useContext` hook으로 만든 **_context를 소비하는 경우에만_** 발생한다는 것을 기억하세요. context를 소비하지 않는 pure 컴포넌트들에 대해서 걱정할 필요는 없습니다.
+
+## Going deeper
+
+[React Devtool 프로파일러](https://www.joshwcomeau.com/react/why-react-re-renders/#profiling-with-the-react-devtools)를 사용하면 아무것도 변경된게 없는 것처럼 보이더라도 pure 컴포넌트가 리렌더링되는 경우가 있습니다.
+
+React에 대해 쉽게 잊어버리는 것 중 하나는 컴포넌트가 JavaScript 함수라는 것입니다. 컴포넌트를 렌더링한다는 것은 함수를 호출하는 것입니다. (클래스 컴포넌트도 동일합니다. render 메소드를 호출하기 때문에 다르지 않습니다.)
+
+이는 매번 렌더링 될 때마다 리액트 컴포넌트 내부에 정의된 모든 것이 다시 만들어진다는 것을 의미합니다.
+
+간단한 예를 보겠습니다:
+
+```jsx
+function App() {
+  const dog = {
+    name: 'Spot',
+    breed: 'Jack Russell Terrier',
+  };
+  return <DogProfile dog={dog} />;
+}
+```
+
+`App` 컴포넌트가 렌더링할 때마다 완전히 새로운 `dog`객체를 만듭니다. 이는 pure 컴포넌트에 큰 영향을 줍니다; `DogProfile` 자식 컴포넌트는 `React.memo`로 감싸는 것과 상관없이 리렌더링 될 것입니다.
+
+저(저자)는 몇 주 내에 "Part 2"를 포스트할 예정입니다. 그 글에서는 리액트에서 가장 유명한 2개의 hook, `useMemo`와 `useCallback`을 다뤄볼 예정입니다. 그리고 이 문제를 어떻게 해결하는지 볼 것입니다.
+
+## Bonus: Performance tips
+
+리액트에서 성능 최적화는 거대한 주제입니다. 이 튜토리얼이 React 성능에 대해 배울 수 있는 견고한 기반을 만드는데 도움이 되었기를 바랍니다!
+
+리액트 성능 최적화에 대한 몇 가지 팁을 공유드립니다:
+
+- 리액트 프로파일러에서 보여주는 렌더링 시간은 **실제 동작시간과 다릅니다.** 우리는 일반적으로 "development 모드"에서 프로파일합니다. 리액트는 "production 모드"에서는 **_훨씬 더 빠릅니다._** 어플리케이션 성능을 **_실제로_** 이해하기 위해서는 배포된 production 어플리케이션에서 "Performance" 탭을 사용해 측정해야 합니다. 이는 실제 리렌더링 수치 뿐만 아니라 레이아웃/페인트 변경에 대한 실제 수치도 보여줍니다.
+- 90 백분위수(정규분포에서 90번째)와 같은 것을 확인하기 위해 저성능 하드웨어에서 여러분의 어플리케이션을 테스트하는 것을 강력하게 추천합니다. 예를 들어, 저(저자)는 중저가 스마트폰인 샤오미 레드미8로 주기적으로 테스트합니다. [트위터에 공유하기도 했습니다.](https://twitter.com/JoshWComeau/status/1322552961973821441)
+- Lighthouse 성능 점수는 실제 사용자 경험을 정확하게 **_반영하지 않습니다._** 자동화된 도구가 보여주는 지표보단 어플리케이션의 실질적인 경험을 훨씬 더 신뢰합니다.
+- 저(저자)는 몇 년 전 리액트 유럽에서 리액트 성능에 대한 모든 이야기를 했습니다. 여기에서는 많은 개발자들이 소홀히 하는 영역인 "로드 이후(post-load)" 경험에 더 중점을 둡니다. [여기서](https://www.youtube.com/watch?v=viPhwbusWuE) 영상을 확인할 수 있습니다.
+- **무리하게 최적화를 하지마세요!** 가능한 최대한 렌더링 횟수를 줄이는 것을 목표로 최적화를 지속하려고 할 수 있습니다만, 솔직하게 리액트는 이미 기본적으로 매우 최적화가 잘 되어 있습니다. 이러한 도구들(리액트 Profiler, Lighthouse, ...)은 어플리케이션이 꽤 느려졌다고 느껴지기 시작했을 때 _어디서 성능 문제가 있는지 찾기 위해_ 사용하는게 가장 좋습니다.
+
+## 마무리하며
+
+joshwcomeau 블로그는 틈만 나면 들어가서 글을 읽기도 하고, 제 블로그로 옮긴 글 중에서도 상당히 많이 있습니다. 글에서 느껴지는 좋은 의도가 잘 느껴져서 좋기도 하고 쉽게 설명해주는 글이어서 배울점도 많다고 생각됩니다.
+
+이 글이 얼마 전 포스트되었다고 트위터에서 보았을 때 제목을 보고 꽤 흥분되었습니다.
+머리글에도 적혀있지만 리액트로 개발하는 입장에서 리렌더링 최적화는 항상 중요한 주제였습니다.
+
+"리액트가 언제 리렌더링되나요?" 질문에 대한 답변을 "State와 Prop이 변할 때 리렌더링 되는거 아닌가요?" 라고 대답하고 대충(?) 넘어 간것 같습니다. (반성합니다.)
+
+늘 관심을 두고 이해해보려고 하지만 "멘탈모델" 튼튼하게 만들기는 부족했었는데 이번 글을 일고나서 튼튼한 토대를 만든것 같아서 참 좋은 것 같습니다.
+
+이 글을 읽으시는(~~0명~~) 분들은 [joshwcomeau 블로그](https://www.joshwcomeau.com/)에 가셔서 신기하고 재밌는 UI를 만나셨으면 좋겠습니다. (좋아요 버튼, 마크다운 내에 다양한 UI 컴포넌트, 반응형 디자인 등)
+
+다음 글에서 `useMemo`와 `useCallback`에 대해 작성한다고 했는데, 그 글 또한 매우 기대됩니다.
+
+## reference
+
+- https://www.joshwcomeau.com/react/why-react-re-renders/
