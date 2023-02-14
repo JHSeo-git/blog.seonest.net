@@ -4,7 +4,8 @@ import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import path from 'path';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import rehypePrism from 'rehype-prism-plus';
+import type { Options } from 'rehype-pretty-code';
+import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
@@ -96,6 +97,23 @@ export async function getPrevNextBySlug(slug: string) {
   return { prev, next };
 }
 
+const rehypePrettyCodeOptions: Partial<Options> = {
+  theme: 'one-dark-pro',
+  keepBackground: true,
+  onVisitLine(node) {
+    // Prevent lines from collapsing in `display: grid` mode, and allow empty
+    // lines to be copy/pasted
+    if (node.children.length === 0) {
+      node.children = [{ type: 'text', value: ' ' }];
+    }
+  },
+  onVisitHighlightedLine(node) {
+    node.properties.className.push('line--highlighted');
+  },
+  onVisitHighlightedWord(node) {
+    node.properties.className = ['word--highlighted'];
+  },
+};
 export async function getMdxSource(filePath: string, slug: string) {
   const source = await fs.readFile(filePath);
   const stat = await fs.stat(filePath);
@@ -108,8 +126,10 @@ export async function getMdxSource(filePath: string, slug: string) {
         remarkGfm,
       ],
       rehypePlugins: [
+        // https://rehype-pretty-code.netlify.app/
+        [rehypePrettyCode, rehypePrettyCodeOptions],
         // https://github.com/timlrx/rehype-prism-plus#sample-markdown-to-html-output
-        rehypePrism,
+        // rehypePrism,
         // https://github.com/rehypejs/rehype-slug
         rehypeSlug,
         // https://github.com/rehypejs/rehype-autolink-headings

@@ -42,10 +42,12 @@
     "react-dom": "^18.2.0",
     "react-is": "18.2.0",
     "rehype-autolink-headings": "^6.1.1",
+    "rehype-pretty-code": "^0.9.3",
     "rehype-prism-plus": "^1.5.1",
     "rehype-slug": "^5.1.0",
     "remark-gfm": "^3.0.1",
     "sharp": "^0.31.3",
+    "shiki": "^0.14.1",
     "tailwind-merge": "^1.9.1"
   },
   "devDependencies": {
