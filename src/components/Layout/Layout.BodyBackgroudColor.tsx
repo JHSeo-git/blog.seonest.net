@@ -1,7 +1,6 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { useMemo } from 'react';
 
 import BodyBackgroundColor from '../BodyBackgroundColor';
 import type { HeaderMode } from './Layout.Base';

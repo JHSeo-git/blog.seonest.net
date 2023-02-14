@@ -9,7 +9,7 @@ function Code({ className, ...rest }: CodeProps) {
     return (
       <code
         className={cn(
-          'font-mono font-medium text-rose-700 dark:text-rose-400 px-1 break-all',
+          'font-mono text-sm font-semibold rounded text-slate-900 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-1 py-0.5',
           className
         )}
         {...rest}
