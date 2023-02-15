@@ -1,4 +1,4 @@
-import type { SerializedPostFromatter } from '@/app/(post)/posts/[...slug]/page';
+import type { Post } from 'contentlayer/generated';
 
 import LayoutBase from './Layout.Base';
 import LayoutPost from './Layout.Post';
@@ -7,20 +7,20 @@ type LayoutProps =
   | {
       mode?: 'base' | 'category';
       children: React.ReactNode;
-      postFrontMatter?: never;
+      post?: never;
     }
   | {
       mode?: 'post';
       children: React.ReactNode;
-      postFrontMatter?: SerializedPostFromatter;
+      post?: Post;
     };
 
-function Layout({ mode = 'base', children, postFrontMatter }: LayoutProps) {
+function Layout({ mode = 'base', children, post }: LayoutProps) {
   return (
     <>
       {mode === 'base' && <LayoutBase>{children}</LayoutBase>}
       {mode === 'category' && <LayoutBase headerMode="grayscale">{children}</LayoutBase>}
-      {mode === 'post' && <LayoutPost postFrontMatter={postFrontMatter}>{children}</LayoutPost>}
+      {mode === 'post' && <LayoutPost post={post}>{children}</LayoutPost>}
     </>
   );
 }

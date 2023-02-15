@@ -1,77 +1,26 @@
 import '@/styles/mdx.css';
 
+import { allPosts } from 'contentlayer/generated';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import components from '@/components/_mdxComponents';
 import Hr from '@/components/_mdxComponents/Hr';
 import Bio from '@/components/Bio';
 import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
-import MDXRemoteClient from '@/components/MDXRemoteClient';
+import MDXContentlayerContent from '@/components/MDXContentlayerContent';
 import PostNav from '@/components/PostNav';
-import { getDistanceToNow } from '@/utils/dateUtils';
-import type { MDXFrontMatter } from '@/utils/mdxUtils';
-import { getAllSlugs, getPost, getPrevNextBySlug } from '@/utils/mdxUtils';
-
-export type SerializedPostFromatter = MDXFrontMatter & {
-  id: string;
-  blurThumbnail?: string | null;
-  views?: number;
-  likes?: number;
-};
-
-const getPostInfo = async (slugs: string[]) => {
-  const slug = slugs.map((slug) => decodeURIComponent(slug)).join('/');
-  const mdx = await getPost(slug);
-
-  if (!mdx) {
-    notFound();
-  }
-
-  const prevnext = await getPrevNextBySlug(slug);
-
-  const serializedFrontMatter: SerializedPostFromatter = {
-    id: `${mdx.frontMatter.slug}_${mdx.frontMatter.date ?? Date.now()}`,
-    title: mdx.frontMatter.title,
-    subTitle: mdx.frontMatter.subTitle,
-    description: mdx.frontMatter.description,
-    date: mdx.frontMatter.date,
-    category: mdx.frontMatter.category,
-    tags: mdx.frontMatter.tags,
-    draft: mdx.frontMatter.draft,
-    slug: mdx.frontMatter.slug,
-    readingTime: mdx.frontMatter.readingTime,
-    lastModified: mdx.frontMatter.lastModified,
-    thumbnail: mdx.frontMatter.thumbnail,
-    views: 0,
-    likes: 0,
-  };
-
-  return {
-    source: mdx.source,
-    frontMatter: serializedFrontMatter,
-    toc: mdx.toc,
-    prev: prevnext.prev && {
-      title: prevnext.prev.frontMatter.title,
-      slug: prevnext.prev.frontMatter.slug,
-    },
-    next: prevnext.next && {
-      title: prevnext.next.frontMatter.title,
-      slug: prevnext.next.frontMatter.slug,
-    },
-  };
-};
+import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
+import { getDistanceToNow } from '@/utils/date-utils';
 
 type PageParams = {
   slug: string[];
 };
 
 export async function generateStaticParams(): Promise<PageParams[]> {
-  const slugs = await getAllSlugs();
-  return slugs.map((slug) => ({
-    slug: slug.startsWith('/') ? slug.slice(1).split('/') : slug.split('/'),
+  return allPosts.map((post) => ({
+    slug: post.slugAsParams.split('/'),
   }));
 }
 
@@ -80,27 +29,31 @@ type PageProps = {
 };
 
 async function PostPage({ params }: PageProps) {
-  const slugs = params?.slug;
+  const slug = params?.slug?.join('/') || '';
 
-  if (!Array.isArray(slugs)) {
+  const decodedSlug = decodeURIComponent(slug);
+  const sortedPosts = allPosts.sort(postSorter);
+  const postIndex = sortedPosts.findIndex((post) => post.slugAsParams === decodedSlug);
+  const post = sortedPosts[postIndex];
+
+  if (!post) {
     notFound();
   }
 
-  if (slugs.some((slug) => typeof slug !== 'string')) {
-    notFound();
-  }
+  const next = postIndex - 1 >= 0 && sortedPosts[postIndex - 1];
+  const prev = postIndex + 1 < sortedPosts.length && sortedPosts[postIndex + 1];
 
-  const { source, frontMatter, toc, prev, next } = await getPostInfo(slugs);
+  const toc = getHeadings(post.body.raw);
 
   return (
-    <Layout mode="post" postFrontMatter={frontMatter}>
+    <Layout mode="post" post={post}>
       <div className="flex items-start justify-center">
         <article className="max-w-[min(720px,100%)] shrink grow basis-[720px]">
-          {frontMatter.thumbnail && (
+          {post.thumbnail && (
             <div className="relative mb-10 overflow-hidden rounded-[20px]">
               <Image
                 className="h-full w-full object-cover"
-                src={frontMatter.thumbnail}
+                src={post.thumbnail}
                 alt="Thumbnail"
                 width={750}
                 height={488}
@@ -108,7 +61,7 @@ async function PostPage({ params }: PageProps) {
               />
             </div>
           )}
-          <MDXRemoteClient {...source} components={components} />
+          <MDXContentlayerContent code={post.body.code} />
           <div className="mt-20">
             <div className="flex items-center justify-end">
               <div>
@@ -116,7 +69,7 @@ async function PostPage({ params }: PageProps) {
                   마지막 업데이트
                 </h3>
                 <p className="mt-1 text-right text-sm font-bold text-gray-500 dark:text-gray-400">
-                  {getDistanceToNow(frontMatter.lastModified, { humanize: false })}
+                  {getDistanceToNow(post.lastModified, { humanize: false })}
                 </p>
               </div>
             </div>
@@ -126,7 +79,7 @@ async function PostPage({ params }: PageProps) {
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="w-full md:w-auto">
                 {prev && (
-                  <Link href={`/posts/${prev.slug}`} className="group flex flex-col">
+                  <Link href={prev.slug} className="group flex flex-col">
                     <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
                       이전
                     </h3>
@@ -138,7 +91,7 @@ async function PostPage({ params }: PageProps) {
               </div>
               <div className="w-full md:w-auto">
                 {next && (
-                  <Link href={`/posts/${next.slug}`} className="group flex flex-col items-end">
+                  <Link href={next.slug} className="group flex flex-col items-end">
                     <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
                       다음
                     </h3>

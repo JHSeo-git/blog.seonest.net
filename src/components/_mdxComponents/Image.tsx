@@ -1,6 +1,6 @@
 import NextImage from 'next/image';
 
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 type ImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 

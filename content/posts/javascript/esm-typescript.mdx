@@ -1,0 +1,554 @@
+---
+title: 'ESM + TypeScript'
+description: JavaScript의 모듈 시스템에 대해 간단히 이해해보고 Node.js와 TypeScript에서 ES Module를 지원하고 사용하는 방법에 대해 알아보겠습니다.
+date: '2022-09-25T12:16:25.741Z'
+category: 'javascript'
+tags: ['JavaScript', 'TypeScript', 'ESM', 'CJS', 'Web']
+thumbnail: '/post/javascript/esm-typescript/thumbnail.png'
+---
+
+## 들어가면서
+
+JavaScript 진영에서 모듈 시스템은 복잡하고 역사적으로도 많은 변화가 있었습니다.
+여기서는 모듈 시스템에 대해서 깊게 다루진 않겠지만 다른 분이 쓴 [좋은 글](https://wormwlrm.github.io/2020/08/12/History-of-JavaScript-Modules-and-Bundlers.html)을 공유합니다.
+
+ES6와 함께 도입된 ES Module 시스템은 현재 우리가 가장 많이 사용하는 `import`, `export` 구문을 사용합니다.
+그에 비해 CommonJS 모듈 시스템은 `require`, `module.exports` 구문을 사용합니다.
+
+Node.js는 CommonJS 모듈 시스템을 선택하였습니다.
+개발자가 Node.js에서 `import`, `export`와 같은 ES Module 구문으로 모듈을 작성하고 실행하면 에러가 발생합니다.
+babel과 같은 트랜스파일러를 통해서 ES Module 구문을 CommonJS 구문으로 변환해야 했습니다.
+TypeScript도 별도의 설정 없이는 디폴트로 CommonJS 모듈 시스템으로 컴파일합니다.
+
+Node.js도 12버전부터 ES Module 시스템을 지원하기 시작했습니다.
+현재 LTS버전에서는 CJS 모듈 시스템과 ESM 모듈 시스템이 [공존](https://nodejs.org/api/modules.html#enabling)하고 있습니다.
+
+## CommonJS와 ES Module 간의 호출
+
+최근 [chalk](https://github.com/chalk/chalk) 라이브러리를 사용한 적이 있었는데 이 라이브러리는 v5 부터는 ES Module로 작성된 package만 제공합니다.
+그래서 CommonJS 모듈 시스템에서 `require()`를 통해 이 라이브러리를 호출할 수 없습니다.
+
+그래서 먼저 궁금했던 CJS와 ESM 사이의 호환성에 대해 알아보았습니다.
+
+> [got](https://github.com/sindresorhus/got) 라이브러리 메인테이너인 [sindresorhus](https://github.com/sindresorhus)가 작성한 [ESM 가이드 파일](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c)은 ESM을 다룰 때 다양한 케이스를 설명하고 있습니다.
+> 이 글에서도 위 gist 문서를 참고하였습니다.
+
+### CJS에서 ESM 호출
+
+<Admonition>ES Module을 ESM, CommonJS를 CJS라고 표현하겠습니다.</Admonition>
+
+CJS에서는 기본적으로 ESM 모듈을 **호출할 수 없습니다.**
+
+다시 말해, `require()` 함수를 통해서 ESM 모듈을 호출하면 에러가 발생합니다.
+
+```bash
+Error [ERR_REQUIRE_ESM]: Must use import to load ES Module: /Users/.../index.js
+```
+
+우리는 이를 해결하기 위해서 어떤 방법이 있을까요?
+
+1. CJS를 사용하지 않고 ESM으로 사용. (**preferred**)  
+   package를 import하기 위해서 `const foo = require('foo')` 대신에 `import foo from 'foo'` 와 같이 사용하기 위해 ESM 모듈 시스템을 사용하는 것이 가장 좋습니다.
+   그러기 위해서는 `package.json` 파일에 `"type": "module"`을 추가해야 합니다.
+   `.mjs` 확장자를 사용하는 방법이 있지만 프로젝트에 ESM을 사용하기 위해서는 `package.json`에 `"type": "module"`을 추가하는 것이 좋습니다.
+2. package가 비동기로 사용된다면, CJS에서 [await import(...)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports)를 사용할 수 있습니다.
+3. 본인 프로젝트를 ESM으로 옮기기 전까지 해당 package 버전을 업데이트하지 않고 유지.  
+   오랫동안 사랑받는 Node.js의 여러 라이브러리는 기본적으로 CJS를 제공하였기에 기존 버전을 사용하는 것도 하나의 방법입니다. 그러나 추천하진 않습니다.
+
+결론은 CJS에서 ESM으로 옮기는 것을 강력하게 추천합니다. ESM은 CJS package를 호출할 수 있지만 CJS에서는 동기(synchronously)로 ESM package를 호출할 수 없습니다.
+
+### ESM에서 CJS 호출
+
+ESM에서는 CJS 모듈을 **호출할 수 있습니다.**
+
+즉, `import` 구문을 통해서 CJS 모듈을 호출할 수 있습니다. ESM에서 CJS를 호출하는 것은 크게 문제가 되지 않습니다.
+또는 `createRequire` 함수를 통해서 CJS 모듈을 호출할 수도 있습니다.
+
+```js
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+
+// sibling-module.js은 CJS 모듈입니다.
+const siblingModule = require('./sibling-module');
+```
+
+## TypeScript에서 ESM 사용하기
+
+> https://www.typescriptlang.org/docs/handbook/esm-node.html
+
+JavaScript와 Node.js에서 ESM을 설정하고 동작하는 것도 복잡하고 헷갈립니다.
+거기에 TypeScript를 사용하면서 번들러까지 사용해야한다면 ESM을 사용하는 것은 더욱 복잡해집니다.
+
+Node.js가 공식적으로 ESM을 지원하기 시작하면서 TypeScript도 빠르게 ESM을 지원할 수 있었습니다.
+
+TypeScript 4.7버전 이상에서 공식 문서에 이를 위한 [가이드](https://www.typescriptlang.org/docs/handbook/esm-node.html)를 제공합니다.
+
+위에도 설명했지만 Node.js 프로젝트에서 ESM을 사용하기 위해서는 `package.json`에 `"type": "module"`을 추가해야 합니다.
+
+```json {4}
+{
+  "name": "my-project",
+  "version": "0.0.1",
+  "type": "module",
+  ...
+}
+```
+
+TypeScript에서는 ESM 지원을 위해 `tsconfig.json`에 `module`과 `moduleResolution`의 새로운 설정인 `node16`과 `nodenext`를 공개했습니다.
+
+```json
+{
+  "compilerOptions": {
+    "module": "nodenext", // es6, esnext, node16, nodenext...
+    "moduleResolution": "nodenext" // classic, node, node16, nodenext...
+  }
+}
+```
+
+고려해야 되는 몇가지 케이스가 있습니다.
+
+- `import/export` 구문은 top-level `await`를 사용할 수 있습니다
+- 상대 경로로 import할 경우에 `import "./foo.js"` 와 같이 `.js` 확장자를 명시해야 합니다. TypeScript 파일도 마찬가지로 `.js` 확장자로 명시해야 합니다. (이러한 컨벤션이 조금 더 복잡하게 만드는게 아닌가 싶기도 합니다만...)
+
+```ts {6}
+// ./foo.ts
+export function helper() {
+  // ...
+}
+// ./bar.ts
+import { helper } from './foo'; // only works in CJS
+helper();
+```
+
+```ts {2}
+// ./bar.ts
+import { helper } from './foo.js'; // works in ESM & CJS
+helper();
+```
+
+- CJS 모듈 시스템에서만 사용가능했던 `require` 구문은 ESM에서는 사용할 수 없습니다. 또한 `__dirname`과 `__filename`도 사용할 수 없습니다. 대신 [`node:url`과 `node:path`를 이용](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c#what-do-i-use-instead-of-__dirname-and-__filename)해 사용할 수 있습니다.
+- `node:fs`와 같이 [node:](https://nodejs.org/api/esm.html#esm_node_imports) 프로토콜을 사용해 Node.js 모듈을 사용하는 것을 권장합니다.([이 이슈](https://github.com/nodejs/node/issues/38343)에서 `node:` 프로토콜에 대한 몇 가지 장점을 설명합니다.)
+
+## Package.json
+
+Node.js의 package.json 시스템은 볼 때마다 복잡하고 어렵습니다.
+이번 기회에 한 번 더 보게되었지만 자주 바뀌었고 그에 따라 많은 변화가 있었기에 더 헷갈리는 것 같습니다.
+그래도 어느정도 이젠 틀이 잡힌것 같아 이번에는 조금 더 쉽게 이해할 수 있었습니다.
+
+만약 Node.js 패키지의 entry point를 지정하기 위해서는 어떻게 해야 할까요?
+
+[해당 문서](https://nodejs.org/api/packages.html#package-entry-points)를 찾아보면 아래와 같은 내용을 볼 수 있습니다.
+
+- `main`은 Node.js의 모든 버전의 entry point입니다. 그러나 **main** entry point만 지정할 수 있기 때문에 한계가 있습니다.
+- `exports`는 `main`의 한계를 극복하고 더 현대적인 방법을 제공합니다. exports map을 통해 다양한 entry point를 지정할 수 있습니다.
+
+```json
+{
+  "name": "my-package",
+  "exports": {
+    ".": "./lib/index.js",
+    "./lib": "./lib/index.js",
+    "./lib/index": "./lib/index.js",
+    "./lib/index.js": "./lib/index.js",
+    "./feature": "./feature/index.js",
+    "./feature/index": "./feature/index.js",
+    "./feature/index.js": "./feature/index.js",
+    "./package.json": "./package.json"
+  }
+}
+```
+
+아래와 같은 형태로도 사용가능합니다.
+
+```json
+{
+  "name": "my-package",
+  "exports": {
+    ".": "./lib/index.js",
+    "./feature/*.js": "./feature/*.js",
+    "./feature/internal/*": null
+  }
+}
+```
+
+`main` 필드를 사용하는 대신에 `exports` 필드를 사용하라고 권장하고 있습니다.
+물론 하위 호환성을 위해 2개 필드를 둘 다 적용하는 것은 문제가 없습니다.
+
+다양한 케이스가 [문서에서 잘 설명하고](https://nodejs.org/api/packages.html#package-entry-points) 있어서 참고하시면 도움이 될 것 같습니다.
+
+### Conditional Exports
+
+Node.js는 `exports` 필드에서 conditional로 export하여 해당 프로젝트에서 모듈 시스템에 따라 import할 수 있도록 기능을 가지고 있습니다.
+
+```json
+// package.json
+{
+  "name": "my-package",
+  "type": "module",
+  "exports": {
+    ".": {
+      // TypeScript 프로젝트에서 타입을 사용할 시에 Entry-point로 지정할 타입 파일
+      "types": "./types/index.d.ts",
+      // ESM 프로젝트에서 import할 시에 Entry-point로 지정할 파일
+      "import": "./esm/index.js",
+      // CJS 프로젝트에서 require할 시에 Entry-point로 지정할 파일
+      "require": "./commonjs/index.cjs"
+    }
+  },
+  // Node.js의 오래된 버전을 사용하고 있는 CJS 프로젝트에서 fall-back으로 지정할 파일
+  "main": "./commonjs/index.cjs",
+  // Node.js의 공식적인 필드는 아니지만 esbuild, rollup 등 몇몇 번들러에서 ESM 지원을 위한 목적으로 사용될 수 있는 필드
+  "module": "./esm/index.js",
+  // TypeScript의 오래된 버전을 사용하고 있는 프로젝트에서 Fall-back으로 지정할 타입 파일
+  "types": "./types/index.d.ts"
+}
+```
+
+추가로 이와 유사한 방식으로 동작하는 [imports 필드](https://nodejs.org/api/packages.html#packages_imports)도 참조하시면 도움이 될 것 같습니다.
+
+## ESM을 위한 VSCode 설정
+
+> 최신 버전 VSCode, TypeScript를 사용하고 있다면 별다른 설정없이 ESM 프로젝트에서는 `.js` 확장자를 붙여줍니다.
+
+최근 VSCode와 TypeScript버전에서는 별다른 설정을 하지 않아도 `tsconfig.json`의 `moduleResolution`에 따라
+VSCode가 자동으로 `.js`와 같은 확장자를 알아서 붙여줍니다.
+
+### 자동으로 `.js` 확장자가 붙지 않는 경우
+
+```json
+// .vscode/settings.json
+{
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.preferences.importModuleSpecifierEnding": "js"
+}
+```
+
+## Example: 직접 라이브러리를 만들어보자
+
+> https://github.com/JHSeo-git/practice-typescript-esm-node  
+> 여기서 코드를 확인할 수 있습니다.
+
+CJS와 ESM 둘 다 제공하는 예시 라이브러리를 만들고, 이를 사용하는 CJS, ESM 프로젝트를 만들어보겠습니다.
+
+번들러는 [rollup](https://rollupjs.org/)을 사용했습니다.
+
+- Node.js: v16.17.0
+- TypeScript: v4.8.3
+- yarn berry: v3.2.3
+
+yarn berry 프로젝트는 기존에 만들어둔 [boilerplate](https://github.com/JHSeo-git/boilerplate-yarn-2-monorepo)를 사용하였습니다.
+
+### 1. init
+
+Node.js 설정과 TypeScript 설정을 먼저 해주겠습니다.
+
+```bash
+yarn init -y
+yarn add -D typescript
+yarn tsc --init
+```
+
+빌드 폴더는 `lib` 폴더로 지정하고 `src` 폴더에 소스코드를 작성합니다.
+
+```bash
+├── lib
+│   ├── index.js
+│   ├── index.cjs
+│   └── ...
+├── package.json
+├── src
+│   ├── index.ts
+│   └── ...
+└── tsconfig.json
+```
+
+위 폴더 구조로 작업을 진행하겠습니다.
+
+가이드대로 `package.json`을 설정해주고, `tsconfig.json`을 설정해줍니다.
+
+```json
+{
+  "name": "@seo-practice/practice-library",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "require": "./lib/index.cjs",
+      "types": "./lib/index.d.ts"
+    }
+  },
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.js",
+  "source": "./src/index.ts",
+  "types": "./lib/index.d.ts",
+  ...
+}
+```
+
+- `"type": "module"`을 선언하여 해당 프로젝트가 ESM을 사용하도록 만들었습니다.
+- `exports` 필드를 사용하여 conditional export가 가능하도록 만들었습니다.
+- `main` 필드를 사용하여 오래된 Node 버전을 가진 프로젝트를 위한 fall-back도 만들어두었습니다.
+- TypeSciprt를 위해 `exports` 필드와 `types` 필드에 적용하였습니다.
+
+TypeScript 설정을 위한 `tsconfig.json`을 다음과 같이 작성합니다.
+
+```json
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "rootDir": "./src",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "outDir": "./lib",
+    ...
+  }
+}
+```
+
+TypeScript ESM 가이드 문서에 따라
+
+- `module` 필드와 `moduleResolution` 필드를 `NodeNext`로 설정해주었습니다.
+- declaration을 위해 `outDir` 필드와 `declaration` 필드를 설정해주었습니다.
+
+rollup 번들러를 사용하여 CJS파일과 ESM파일을 생성하기 위해 빌드를 진행합니다.
+
+```js
+// rollup.config.js
+import esbuild from 'rollup-plugin-esbuild';
+
+const packageJson = require('./package.json');
+
+const bundle = (config) => ({
+  ...config,
+  input: 'src/index.ts',
+  external: (id) => !/^[./]/.test(id),
+});
+
+export default [
+  bundle({
+    plugins: [esbuild()],
+    output: [
+      {
+        file: packageJson.main,
+        format: 'cjs',
+        sourcemap: true,
+      },
+      {
+        file: packageJson.module,
+        format: 'es',
+        sourcemap: true,
+      },
+    ],
+  }),
+];
+```
+
+declaration 파일은 번들러를 통하지 않고 `tsc` 사용하여 생성하도록 하였습니다.
+
+따라서 build script는 다음과 같습니다.
+
+```json
+{
+  "scripts": {
+    "build": "yarn build:rollup",
+    "build:rollup": "yarn clear && rollup -c && tsc --emitDeclarationOnly",
+    "clear": "rimraf lib"
+  }
+}
+```
+
+### 2. build
+
+라이브러리 코드는 간단하게 작성하였습니다.
+
+```ts
+// src/index.ts
+export { getSlug } from './utils.js';
+
+// src/utils.ts
+const slugify = (str: string) =>
+  str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+
+export const getSlug = (str: string) => {
+  const slug = slugify(str);
+  return slug === '-' ? '' : slug;
+};
+```
+
+빌드 결과는 다음과 같습니다.
+
+```bash
+$ yarn build
+```
+
+```js
+// lib/index.cjs
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+const getSlug = (...)
+
+exports.getSlug = getSlug;
+//# sourceMappingURL=index.cjs.map
+```
+
+```js
+// lib/index.js
+const getSlug = (...)
+
+export { getSlug };
+//# sourceMappingURL=index.js.map
+```
+
+위 빌드 결과를 보면 CJS는 `exports.getSlug`, ESM은 `export { getSlug }`로 export되는 것을 확인할 수 있습니다.
+
+### 3. 라이브러리 사용
+
+CJS 프로젝트와 ESM 프로젝트 2개를 생성하여 라이브러리를 사용해보았습니다.
+
+#### CJS 프로젝트
+
+`package.json`과 `tsconfig.json`을 다음과 같이 설정합니다.
+
+```json
+// practice-node-cjs/package.json
+{
+  "name": "practice-node-cjs",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc",
+    "start": "yarn build && node ./dist/index.js"
+  },
+  "dependencies": {
+    "@seo-practice/practice-library": "*"
+  }
+  ...
+}
+```
+
+`package.json`에서 `type` 필드를 선언하지않으면 기본적으로 CJS로 인식합니다.
+
+```json
+// practice-node-cjs/tsconfig.json
+{
+  "compilerOptions": {
+    "incremental": true,
+    "composite": true,
+    "target": "es2016",
+    "module": "commonjs",
+    "rootDir": "./src",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    ...
+  }
+}
+```
+
+- 모노레포로 구성된 내부 프로젝트를 의존하고 있는 모듈을 참조, 빌드하기 위해 `composite` 옵션을 사용합니다.
+- `module`과 `moduleResolution` 옵션을 `node`로 설정하여 commonjs로 인식하고 빌드합니다.
+
+```ts
+// practice-node-cjs/src/index.ts
+import { getSlug } from '@seo-practice/practice-library';
+
+const title = 'Hello World';
+const slug = getSlug(title);
+console.log(slug);
+```
+
+여기서는 따로 번들러를 쓰지 않고 `tsc`로 빌드합니다.
+
+```js
+// practice-node-cjs/dist/index.js
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+const practice_library_1 = require('@seo-practice/practice-library');
+const title = 'Hello World';
+const slug = (0, practice_library_1.getSlug)(title);
+console.log(slug);
+```
+
+```bash
+hello-world
+```
+
+`require()`를 이용해 import하는 CJS로 빌드된 라이브러리를 사용하는 것을 확인할 수 있습니다.
+
+#### ESM 프로젝트
+
+`src/index.ts` 코드는 동일하게 작성되어있습니다.
+
+`package.json`과 `tsconfig.json`을 다음과 같이 설정합니다.
+
+```json
+// practice-node-esm/package.json
+{
+  "name": "practice-node-esm",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "yarn build && node ./dist/index.js"
+  },
+  "dependencies": {
+    "@seo-practice/practice-library": "*"
+  }
+  ...
+}
+```
+
+```json
+// practice-node-esm/tsconfig.json
+{
+  "compilerOptions": {
+    "incremental": true,
+    "composite": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "rootDir": "./src",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    ...
+  }
+}
+```
+
+- CJS 프로젝트와 마찬가지로 `composite` 옵션을 사용합니다.
+- `module`과 `moduleResolution` 옵션을 `NodeNext`로 설정하여 ESM으로 인식하고 빌드합니다.
+
+마찬가지로 여기서도 `tsc`로 빌드하여 실행합니다.
+
+```js
+// practice-node-esm/dist/index.js
+import { getSlug } from '@seo-practice/practice-library';
+const title = 'Hello World';
+const slug = getSlug(title);
+console.log(slug);
+```
+
+빌드 결과물을 확인해보면 `import`를 이용해 import하는 ESM으로 빌드된 라이브러리를 사용하는 것을 확인할 수 있습니다.
+
+## 마무리하며
+
+CommonJS 모듈 시스템과 ES Module 시스템에 대한 이해를 위해 간단한 예시와 함께 정리해보았습니다.
+`ERR_REQUIRE_ESM`와 같은 에러를 해결하기 위해 매번 구글링을 하거나 포기하고 지나쳤던 적이 많았습니다.
+
+시작은 `chalk` 라이브러리로 인해 이러한 공부를 시작했지만, 조금은 깊게 들어가서 더 많은 것을 알게 되었습니다.
+점점 라이브러리가 ESM**만** 지원하는 라이브러리가 많아지는 것 같습니다.
+그래서 ESM에 대해 그리고 CJS와 차이에 대해 알아보고 싶었는데, 이번 기회에 좋은 공부가 되었습니다.
+
+Node.js 진영에서도 어느정도 커뮤니티에서 ESM이 자리잡히고 나면 이해하기 복잡하거나 번거로운 부분들이 개선될 것으로 기대합니다.
+
+## Reference
+
+- https://nodejs.org/api/modules.html
+- https://nodejs.org/api/packages.html
+- https://www.typescriptlang.org/docs/handbook/esm-node.html
+- https://2ality.com/2021/06/typescript-esm-nodejs.html
+- https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c

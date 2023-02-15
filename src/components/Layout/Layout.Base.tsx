@@ -1,4 +1,4 @@
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 import Container from '../Container';
 import Footer from './Layout.BaseFooter';

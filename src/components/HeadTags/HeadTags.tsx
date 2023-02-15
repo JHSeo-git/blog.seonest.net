@@ -1,5 +1,5 @@
 import appConfig from '@/app.config';
-import { generateFullUrl } from '@/utils/mdxUtils';
+import { generateFullUrl } from '@/utils/contentlayer-utils';
 
 const generateFullSiteUrl = (url?: string) => {
   if (!url) {

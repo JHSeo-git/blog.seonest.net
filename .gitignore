@@ -46,3 +46,6 @@ __backup
 
 # sitemap
 public/sitemap.xml
+
+# contentlayer
+.contentlayer

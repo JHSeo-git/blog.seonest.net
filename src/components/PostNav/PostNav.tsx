@@ -1,13 +1,13 @@
 'use client';
 
-import type { Post } from '@/utils/mdxUtils';
+import type { TOCItem } from '@/utils/contentlayer-utils';
 
 import HeadingViewProvider from './HeadingViewProvider';
 import PostNavItem from './PostNav.Item';
 
 interface PostNavProps {
   title: string;
-  toc: NonNullable<Post>['toc'];
+  toc: TOCItem[];
 }
 
 function PostNavChildren({ title, toc }: PostNavProps) {

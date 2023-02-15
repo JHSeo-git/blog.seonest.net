@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 import Container from '../Container';
 import Portal from '../Portal';

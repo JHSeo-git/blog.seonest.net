@@ -1,0 +1,322 @@
+---
+title: 'JavaScript Object(2) - Class'
+description: 'JavaScript에서 Class Syntax와 사용법, 특징에 대해서 살펴보았습니다.'
+date: '2021-09-21T15:36:13.806Z'
+category: 'javascript'
+tags: ['JavaScript', 'Class', 'Web']
+thumbnail: '/post/javascript/javascript-object-2-class/thumbnail.png'
+---
+
+Javascript에서 Class syntax는 ES6에 공식적으로 추가되었습니다.
+이 전 포스트에서 살펴봤듯이 ES6이전에 객체와 상속과 같은 객체 지향은 프로토타입을 통해 진행되었습니다.
+
+ES6의 Class syntax 도입을 통하여 클래스 기반 언어에 익숙한 프로그래머가 보다 빠르게 학습할 수 잇는 단순 명료한 새로운 문법을 제시하였습니다.
+
+## Classes
+
+> Class는 사실 "특별한 함수"입니다. 함수를 함수 표현식과 함수 선언으로 정의할 수 있듯이 class 문법도 Class 선언과 Class 표현식 두 가지 방법을 제공합니다.
+> _- [Class 정의](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Classes#class_%EC%A0%95%EC%9D%98)\_
+
+## Class 선언
+
+> 함수 선언과 클래스 선언의 중요한 차이점은 호이스팅 여부입니다.
+> 함수 선언의 경우 호이스팅이 일어나지만
+> 클래스 선언은 그렇지 않습니다.
+
+```js
+class Rectangle {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+}
+```
+
+위와 같은 문법으로 Rectangle이라는 Class 선언이 가능합니다.
+앞서서도 설명했지만 이전 함수 선언(프로토타입)과 달리 Class는 호이스팅이 일어나지 않습니다.
+다시 말해 클래스 사용을 위해서(인스턴스화)는 반드시 먼저 클래스를 선언해야 합니다.
+
+## Class 표현식
+
+> Class 표현식에는 Class 선언에서 설명된 것과 동일하게 호이스팅 제한이 적용됩니다.
+
+```js
+// unnamed
+let Rectangle = class {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+};
+console.log(Rectangle.name);
+// 출력: "Rectangle"
+
+// named
+let Rectangle = class Rectangle2 {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+};
+console.log(Rectangle.name);
+// 출력: "Rectangle2"
+```
+
+## 정적 메소드와 속성
+
+> Class 문법 안에 있는 코드는 항상 strict mode로 실행됩니다.
+
+static 키워드를 이용해 메소드를 정적 메소드로 사용할 수 있습니다.
+
+```js
+class Animal {
+  speak() {
+    return this;
+  }
+  static eat() {
+    return this;
+  }
+}
+```
+
+정적 메소드는 인스턴스화를 거치지 않고도 사용할 수 있게 해줍니다.
+클래스를 사용하지 않더라도 메모리에 올라가게 된다는 말입니다.
+
+다음 예시를 보겠습니다.
+
+```js
+let obj = new Animal();
+obj.speak(); // the Animal object
+let speak = obj.speak;
+speak(); // undefined
+
+Animal.eat(); // class Animal
+let eat = Animal.eat;
+eat(); // undefined
+```
+
+위에서도 설명했지만 Class 내부는 항상 strict mode로 동작합니다.
+non-strict mode라면 this는 기본적으로 전역 객체인 초기 this 값에 자동 바인딩 됩니다. 하지만 strict mode 이기 때문에 this 값은 전달된 대로 유지됩니다.
+
+그래서 위와 같이 this를 가지지 않는 메소드를 호출하게 되면 undefined가 나타나게 됩니다.
+
+## 인스턴스 속성
+
+> 인스턴스 속성은 반드시 클래스 메소드 내에 정의
+> 정적 속성과 프로토타입 속성은 반드시 클래스 선언부 바깥쪽에서
+
+```js
+class Rectangle {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+}
+```
+
+인스턴스 속성은 인스터스화가 되면서 사용될 수 있도록 해야하며,
+
+```js
+Rectangle.staticWidth = 20;
+Rectangle.prototype.prototypeWidth = 25;
+```
+
+정적 속성이나 프로토타입 속성은 인스턴스화가 이루어지지 않아도 사용될 수 있어야 하기 때문에 그렇습니다.
+
+## Private Field 선언(feat, #)
+
+> Class 내에 private 필드를 선언하려면 #을 붙이면 됩니다.
+> (현재 stage3에 올라가 있고, 지원하는 브라우저는 제한적입니다.)
+
+```js
+class Rectangle {
+  #height = 0;
+  #width;
+  constructor(height, width) {
+    this.#height = height;
+    this.#width = width;
+  }
+}
+```
+
+그리고 private 필드를 선언하여 사용하고 싶을 땐 반드시 사용 전에는 선언되어야 합니다. 일반적인 속성과 다르게 할당과 동시에 만들어질 수 없습니다.
+
+## extends를 통한 상속(sub classing)
+
+> class Dog extends Animal
+
+다른 언어와 흡사한 상속 기능입니다.
+
+```js
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    console.log(`${this.name} makes a noise.`);
+  }
+}
+```
+
+동물 클래스가 있고, 상속받은 강아지 클래스를 예시로 보겠습니다.
+
+```js
+class Dog extends Animal {
+  constructor(name) {
+    super(name); // super class 생성자를 호출하여 name 매개변수 전달
+  }
+
+  speak() {
+    console.log(`${this.name} barks.`);
+  }
+}
+```
+
+subclass에 constructor가 있다면, "this"를 사용하기 전에 가장 먼저 super()를 호출해야 합니다. 그렇지 않다면 "this"를 사용할 수 없습니다.
+
+![this-error.png](https://files.seonest.net/images/qnfqnfqnf/post/62/image.png)
+
+## Function bind, call, apply
+
+이전 포스트에서 상속 시 `Function.prorotype.call`을 통해 생성자를 상속하여 사용하는 것을 보았습니다.
+
+Function prototype에서 꽤 많이 사용 되지만 자세히 몰랐던 3개 메소드와 this관점에서 알아보려고 합니다.
+
+### bind
+
+> bind() 메소드가 호출되면 새로운 함수를 생성합니다.
+> 첫 번째 인자: this 키워드를 설정
+> 이어지는 인자: 바인드된 함수의 인수에 제공
+
+function.bind(thisArg, arg1, arg2, ...)
+
+bind 함수는 새로운 바인딩한 함수를 만듭니다.
+call 함수와 비슷하지만 call은 즉시 실행하는데 반해 bind 함수는 바인딩 된(캡쳐된) 새로운 함수를 만듭니다.
+
+2가지 이유로 주로 사용되는데
+
+1. this(스코프) 제한을 위해
+2. 매개변수를 고정하기 위해
+
+#### 1. this(스코프) 제한
+
+```js
+this.x = 9;
+var module = {
+  x: 81,
+  getX: function () {
+    return this.x;
+  },
+};
+
+module.getX(); // 81
+
+var retrieveX = module.getX;
+retrieveX();
+// 9 반환 - 함수가 전역 스코프에서 호출됐음
+```
+
+만약 마지막 줄에서 retrieveX를 호출하였을 때 this를 module 내부로 한정하고 싶다면 어떻게 해야할까요?
+
+```js
+var boundGetX = retrieveX.bind(module);
+boundGetX(); // 81
+```
+
+retriveX가 bind함수를 호출하면서 첫 번째 인자로 this값인 module을 호출하였습니다. 그리하여 this값이 module이 되어 스코프가 module 내로 한정되며 되는 것입니다.
+
+#### 2. 매개변수를 고정하기 위해
+
+```js
+function addArguments(arg1, arg2) {
+  return arg1 + arg2;
+}
+var result1 = addArguments(1, 2); // 3
+```
+
+위와 같은 add함수를 만들었다고 생각해봅시다.
+그런데 항상 10을 더하는 함수를 생성하고 싶다고 하면 다음과 같이 하면 됩니다.
+
+```js
+// 첫 번째 인수를 지정하여 함수를 생성합니다.
+var addTen = addArguments.bind(null, 10);
+```
+
+this 는 무시하고, 두 번째 인자부터는 함수에 대한 매개변수를 뜻하므로 arg1에 항상 10이 들어가는 함수를 만들게 되었습니다.
+
+```js
+var result2 = addTen(5); // 10 + 5 = 15
+
+// 두 번째 인수는 무시됩니다.
+var result3 = addTen(5, 10); // 10 + 5 = 15
+```
+
+### call
+
+> call() 메소드는 주어진 this 값 및 각각 전달된 인수와 함께 함수를 호출합니다.
+> 첫 번째 인자: this
+> 이어지는 인자: 바인드된 함수의 인수에 제공
+
+bind와 마찬가지로 새롭게 this를 한정하거나 매개변수를 한정하면서 함수를 호출할 때 사용합니다.
+
+```js
+function Product(name, price) {
+  this.name = name;
+  this.price = price;
+
+  if (price < 0) {
+    throw RangeError('Cannot create product ' + this.name + ' with a negative price');
+  }
+}
+
+function Food(name, price) {
+  Product.call(this, name, price);
+  this.category = 'food';
+}
+
+function Toy(name, price) {
+  Product.call(this, name, price);
+  this.category = 'toy';
+}
+
+var cheese = new Food('feta', 5);
+var fun = new Toy('robot', 40);
+```
+
+![call.png](https://files.seonest.net/images/qnfqnfqnf/post/63/image.png)
+
+### apply
+
+> apply() 메소드는 주어진 this값과 배열로 제공되는 arguments로 함수를 호출합니다
+> 첫 번째 인자: this
+> 두 번째 인자: array
+
+apply는 call과 거의 유사합니다. 근본적인 차이점은 call()은 함수에 전달될 인수 리스트를 받는데 비해, apply()는 인수들의 단일 배열을 받습니다.
+
+```js
+const numbers = [5, 6, 2, 3, 7];
+
+const max = Math.max.apply(null, numbers);
+
+console.log(max);
+// expected output: 7
+
+const min = Math.min.apply(null, numbers);
+
+console.log(min);
+// expected output: 2
+```
+
+## 마무리하며
+
+Class는 다른 객체 지향 언어에서 자주 접할 수 있기 때문에 javascript에서 사용할 수 없었다는 건 상상할 수 없었습니다.
+그와 별개로 prototype은 완전히 다른 의미의 키워드로만 생각했습니다.
+
+그러나 자바스크립트는 prorotype기반의 객체 지향 언어라는 것을 이번 기회를 통해 느끼게 된 것 같습니다. 귀찮거나 회피하기만 했던 prototype을 어려운 존재로만 느끼지말고 유연하게 사용할 수 있게 해봐야겠습니다.
+
+## Reference
+
+> - https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Function
+> - https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Classes
+> - https://poiemaweb.com/es6-class
