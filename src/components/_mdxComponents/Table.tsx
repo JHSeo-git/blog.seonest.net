@@ -1,16 +1,12 @@
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 type TableProps = React.TableHTMLAttributes<HTMLTableElement>;
 
 function Table({ className, ...rest }: TableProps) {
   return (
-    <table
-      className={cn(
-        'w-full border-collapse my-6 [&_th]:p-4 [&_td]:p-4 [&_tr]:border-b [&_tr]:border-gray-300 dark:[&_tr]:border-gray-500',
-        className
-      )}
-      {...rest}
-    />
+    <div className="my-6 w-full overflow-y-auto">
+      <table className={cn('w-full', className)} {...rest} />
+    </div>
   );
 }
 

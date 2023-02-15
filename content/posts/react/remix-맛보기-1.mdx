@@ -158,7 +158,7 @@ tailwindcss는 워낙 유명하고 간편하게 설정할 수 있어서 자주 �
 
 create-remix를 통해 프로젝트를 구성하면 다음과 같은 모습으로 구조가 잡힙니다.
 
-```
+```bash
 remix-jokes
 ├── README.md
 ├── app
@@ -273,7 +273,7 @@ module.exports = {
 > Next.js에도 파일 기반 라우팅을 쓰고 있습니다.
 > `pages/` 폴더 아래에 파일을 생성하면 프레임워크가 자동으로 url route를 생성합니다.
 
-```
+```bash
 /
 /jokes
 /jokes/:jokeId
@@ -283,7 +283,7 @@ module.exports = {
 
 위와 같은 route를 만들기 위해서는 다음과 같은 경로와 파일을 생성합니다.
 
-```
+```bash
 /index.tsx
 /jokes.tsx
 /jokes/index.tsx
@@ -401,7 +401,7 @@ dynamic segment와 달리 splat은 다음 `/`이 나타나도 무시하고 route
 
 예를 들어 다음과 같은 route가 있다고 가정해보겠습니다.
 
-```
+```bash
 app
 ├── root.jsx
 └── routes
@@ -414,11 +414,11 @@ app
 
 만약 URL이 `example.com/files/images/work/flyer.jpg` 라면 splat param은 `files/` 이후의 모든 url에 대해 캡쳐합니다.
 
-```
+```jsx
 // app/routes/files/$.jsx
 
 export function loader({ params }) {
-  params["*"]; // "images/work/flyer.jpg"
+  params['*']; // "images/work/flyer.jpg"
 }
 ```
 
@@ -471,7 +471,7 @@ export default function JokesIndexRoute() {
 
 예를 들어 다음과 같은 route가 있다고 가정해보겠습니다.
 
-```
+```bash
 └── app
     ├── root.jsx
     └── routes
@@ -501,7 +501,7 @@ Remix는 `?index` query param을 부모 layout route 대신에 index route를 �
 
 Remix는 마찬가지로 파일 구조로 구분합니다.
 
-```
+```bash
 └── app
     ├── root.jsx
     └── routes
@@ -555,7 +555,7 @@ Remix에서는 이와 같은 것을 pathless layout routes를 통해 구현할 �
 
 Login route를 authentication 하기 위해서 Auth를 부모 route를 가진 nested route를 만들었습니다.
 
-```
+```bash
 app
 ├── root.jsx
 └── routes
@@ -573,7 +573,7 @@ app
 
 `__auth`와 같은 `__` prefix를 가진 파일을 만든다면 해당 파일은 url nesting에서 제거되어 `/login`과 같은 url을 만들 수 있습니다.
 
-```
+```bash
 app
 ├── root.jsx
 └── routes
@@ -613,7 +613,7 @@ npx prisma init --datasource-provider sqlite
 - `prisma/schema.prisma`: 스키마 정의 파일
 - `.env`: DATABASE_URL 환경변수
 
-```
+```prisma
 // prisma/schema.prisma
 
 // This is your Prisma schema file,
@@ -629,7 +629,7 @@ datasource db {
 }
 ```
 
-```
+```bash
 # .env
 # Environment variables declared in this file are automatically made available to Prisma.
 # See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
@@ -642,7 +642,7 @@ DATABASE_URL="file:./dev.db"
 
 Database 스키마는 다음과 같이 schema.prisma 파일에 정의되어져야 합니다.
 
-```
+```prisma
 // prisma/schema.prisma
 
 ...

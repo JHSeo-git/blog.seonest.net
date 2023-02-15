@@ -1,4 +1,4 @@
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 interface ListProps extends React.HTMLAttributes<HTMLUListElement> {
   listType: 'ol' | 'ul';

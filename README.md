@@ -19,19 +19,21 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
   - [v13.x](https://www.npmjs.com/package/next)
   - [appDir](https://beta.nextjs.org/docs/app-directory-roadmap)
   - [@next/font](https://www.npmjs.com/package/@next/font)
-- db
+- DB
   - [Prisma](https://www.prisma.io/)
   - [PlanetScale](https://planetscale.com/)
-- ui
-  - [tailwindcss](https://tailwindcss.com/)
+- UI
   - [framer-motion](https://www.framer.com/motion/)
-- mdx
-  - [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote)
+  - [next-themes](https://github.com/pacocoursey/next-themes)
+  - [radix-ui](https://www.radix-ui.com/)
+  - [tailwindcss](https://tailwindcss.com/)
+- MDX
+  - [contentlayer](https://www.contentlayer.dev/)
   - [rehype-autolink-headings](https://github.com/rehypejs/rehype-autolink-headings)
-  - [rehype-prism-plus](https://github.com/timlrx/rehype-prism-plus)
-  - [rehype-slug](https://github.com/rehypejs/rehype-slug)
   - [remark-gfm](https://github.com/remarkjs/remark-gfm)
-- sitemap
+  - [rehype-pretty-code](https://github.com/atomiks/rehype-pretty-code)
+  - [rehype-slug](https://github.com/rehypejs/rehype-slug)
+- SITEMAP
   - [next-sitemap](https://github.com/iamvishnusankar/next-sitemap)
 - [pnpm](https://pnpm.io/)
 

@@ -31,5 +31,5 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-empty-interface': 'warn',
   },
-  ignorePatterns: ['**/dist/**/*', 'tailwind.config.js', 'next.config.js'],
+  ignorePatterns: ['**/dist/**/*', 'tailwind.config.js'],
 };

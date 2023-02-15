@@ -1,4 +1,4 @@
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 type Mode = 'base' | 'card';
 interface PostCardThumbnailProps {

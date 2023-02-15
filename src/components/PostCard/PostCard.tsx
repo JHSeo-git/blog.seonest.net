@@ -1,20 +1,20 @@
 'use client';
 
+import type { Post } from 'contentlayer/generated';
 import { useState } from 'react';
 
 import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
-import { getDistanceToNow } from '@/utils/dateUtils';
-import type { MDXFrontMatter } from '@/utils/mdxUtils';
-import { cn } from '@/utils/styleUtils';
+import { getDistanceToNow } from '@/utils/date-utils';
+import { cn } from '@/utils/style-utils';
 
 type Mode = 'base' | 'card';
 interface PostCardProps {
-  post: MDXFrontMatter;
+  post: Post;
   mode?: Mode;
 }
 
 function PostCard({ post, mode = 'base' }: PostCardProps) {
-  const { title, subTitle, description, date } = post;
+  const { title, description, date } = post;
   const [distanceDate, setDistanceDate] = useState<string | undefined>();
 
   useIsomorphicLayoutEffect(() => {
@@ -26,11 +26,6 @@ function PostCard({ post, mode = 'base' }: PostCardProps) {
       <h3 className="text-2xl font-bold leading-normal text-black transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-400">
         {title}
       </h3>
-      {subTitle && (
-        <h4 className="mt-4 text-xl leading-normal text-gray-700 group-hover:text-indigo-700 dark:text-gray-200 dark:group-hover:text-indigo-400">
-          {subTitle}
-        </h4>
-      )}
       {description && (
         <p className="mt-4 leading-7 text-gray-900 dark:text-gray-200">{description}</p>
       )}
@@ -38,7 +33,7 @@ function PostCard({ post, mode = 'base' }: PostCardProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center" />
         <div className="flex items-center">
-          <p className="text-sm text-gray-700 dark:text-gray-500">{distanceDate}</p>
+          <p className="min-h-[20px] text-sm text-gray-700 dark:text-gray-500">{distanceDate}</p>
         </div>
       </div>
     </article>

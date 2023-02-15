@@ -1,4 +1,4 @@
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 import { useHeadingView } from './HeadingViewProvider';
 import useHeadingInViewEffect from './useHeadingInViewEffect';

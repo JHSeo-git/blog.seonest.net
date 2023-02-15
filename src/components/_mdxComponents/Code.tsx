@@ -1,4 +1,4 @@
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 type CodeProps = React.HTMLAttributes<HTMLElement>;
 
@@ -9,7 +9,7 @@ function Code({ className, ...rest }: CodeProps) {
     return (
       <code
         className={cn(
-          'font-mono text-sm font-semibold rounded text-slate-900 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-1 py-0.5',
+          'font-mono text-sm font-semibold rounded text-indigo-800 bg-indigo-50 dark:bg-indigo-800 dark:text-indigo-100 px-1 py-0.5',
           className
         )}
         {...rest}

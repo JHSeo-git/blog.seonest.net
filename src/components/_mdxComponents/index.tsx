@@ -1,6 +1,4 @@
-'use client';
-
-import type { MDXRemoteProps } from 'next-mdx-remote';
+import type { MDXComponents } from 'mdx/types';
 
 import Admonition from '../Admonition';
 import SpicyText from '../SpicyText';
@@ -18,8 +16,7 @@ import Strong from './Strong';
 import Table from './Table';
 import Video from './Video';
 
-const components: MDXRemoteProps['components'] = {
-  // style override
+export const components: MDXComponents = {
   h1: (props) => <Heading {...props} as="h1" />,
   h2: (props) => <Heading {...props} as="h2" />,
   h3: (props) => <Heading {...props} as="h3" />,
@@ -50,5 +47,3 @@ const components: MDXRemoteProps['components'] = {
   Admonition,
   Video,
 };
-
-export default components;

@@ -64,7 +64,7 @@ mariadb 10.2.x 버전 부터 제공되는 기능으로 binlog를 통해서 스�
 
 문제는 db 설정을 잘 해놨어야 binlog가 저장된다는 것이었습니다.
 
-```
+```conf
 // (custom).cnf
 
 [mysqld]
@@ -88,7 +88,7 @@ datadir                         = /var/lib/mysql/log
 
 binlog를 통해 백업하는 방법은 mysqlbinlog를 통해 sql을 생성해서 동작시키면 되는 방법입니다.
 
-```
+```bash
 $ mysqlbinlog /var/log/mysql/mybin-log.000001 > restore.sql
 ```
 
@@ -155,7 +155,6 @@ export class UserTableCreate1615828367540 implements MigrationInterface {
     }
 
 }
-
 ```
 
 내부에 실제 동작할 DDL을 작성해줍니다.

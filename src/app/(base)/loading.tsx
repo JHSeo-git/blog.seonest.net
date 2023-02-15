@@ -1,5 +1,5 @@
 import { PostCardSkeleton } from '@/components/PostCard';
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 function IndexPageLoading() {
   return (

@@ -3,7 +3,7 @@
 import * as Toggle from '@radix-ui/react-toggle';
 import { useTheme } from 'next-themes';
 
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 import Moon from '../_icons/Moon';
 import Sun from '../_icons/Sun';

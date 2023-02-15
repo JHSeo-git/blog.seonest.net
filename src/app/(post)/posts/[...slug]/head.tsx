@@ -1,6 +1,8 @@
+import { allPosts } from 'contentlayer/generated';
+
 import appConfig from '@/app.config';
 import HeadTags from '@/components/HeadTags';
-import { generateFullUrl, getPost } from '@/utils/mdxUtils';
+import { generateFullUrl } from '@/utils/contentlayer-utils';
 
 async function PostHead({ params }: { params: { slug: string[] } }) {
   const slugs = params?.slug;
@@ -14,18 +16,17 @@ async function PostHead({ params }: { params: { slug: string[] } }) {
   }
 
   const slug = slugs.map((slug) => decodeURIComponent(slug)).join('/');
-  const post = await getPost(slug);
+
+  const post = allPosts.find((post) => post.slugAsParams === slug);
 
   if (!post) {
     return <HeadTags />;
   }
 
-  const title = `${post.frontMatter.title || 'Post'} - ${appConfig.title}`;
-  const description = post.frontMatter.description || post.frontMatter.title;
-  const ogImage = post.frontMatter.thumbnail
-    ? generateFullUrl(post.frontMatter.thumbnail)
-    : undefined;
-  const url = `posts/${post.frontMatter.slug}`;
+  const title = `${post.title || 'Post'} - ${appConfig.title}`;
+  const description = post.description || post.title;
+  const ogImage = post.thumbnail ? generateFullUrl(post.thumbnail) : undefined;
+  const url = post.slug;
 
   return <HeadTags title={title} description={description} ogImage={ogImage} url={url} />;
 }

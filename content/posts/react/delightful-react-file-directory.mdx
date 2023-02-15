@@ -37,23 +37,23 @@ thumbnail: '/post/react/delightful-react-file-directory/thumbnail.png'
 만들어진 파일 구조를 미리 보면서 차근차근 설명하는 방향으로 글이 진행됩니다.
 (저자는 js파일을 이용했고, 저는 ts로 적용했습니다.)
 
-```
+```bash
 src
 ├── components
-│   ├── App
-│   │   ├── App.tsx
-│   │   └── index.tsx
-│   ├── Header
-│   │   ├── Header.tsx
-│   │   └── index.tsx
-│   └── Widget
-│       ├── Widget.constants.ts
-│       ├── Widget.helpers.ts
-│       ├── Widget.tsx
-│       ├── Widget.types.ts
-│       ├── WidgetChild.tsx
-│       ├── index.tsx
-│       └── use-stuff.hook.ts
+│   ├── App
+│   │   ├── App.tsx
+│   │   └── index.tsx
+│   ├── Header
+│   │   ├── Header.tsx
+│   │   └── index.tsx
+│   └── Widget
+│       ├── Widget.constants.ts
+│       ├── Widget.helpers.ts
+│       ├── Widget.tsx
+│       ├── Widget.types.ts
+│       ├── WidgetChild.tsx
+│       ├── index.tsx
+│       └── use-stuff.hook.ts
 ├── index.tsx
 ```
 
@@ -119,7 +119,7 @@ import Button from '@components/Button';
 
 ### Components
 
-```
+```bash
 src
 └── components
     └── FileViewer
@@ -179,7 +179,7 @@ hook이 특정한 component에서 사용한다면, 저는 위 구조를 유지�
 
 공통적으로 사용되고, 재사용가능한 hook은 `src/hooks` 폴더에 정의해두고, 다음과 같이 사용하고 있습니다.
 
-```
+```bash
 src
 └── hooks
     ├── use-boop.hook.js
@@ -271,7 +271,7 @@ create-react-app과 같은 것을 사용할 때, pages를 가지지 않습니다
 
 아래는 feature로 구조화된 코드 예시입니다.
 
-```
+```bash
 src/
 ├── base/
 │   └── components/

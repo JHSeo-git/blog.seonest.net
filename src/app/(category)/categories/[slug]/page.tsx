@@ -1,43 +1,22 @@
+import { allPosts } from 'contentlayer/generated';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import Hidden from '@/components/Hidden';
 import PostCard from '@/components/PostCard';
-import type { MDXFrontMatter } from '@/utils/mdxUtils';
-import { getAllCategories, getPostsByCategory } from '@/utils/mdxUtils';
-
-type SerializedPostFromatter = MDXFrontMatter & { id: string };
-
-const getPostsByCategoryInfo = async (slug: string) => {
-  const posts = await getPostsByCategory(slug);
-
-  const serializedPost: SerializedPostFromatter[] = posts.map((post) => ({
-    id: `${post.frontMatter.slug}_${post.frontMatter.date ?? Date.now()}`,
-    title: post.frontMatter.title,
-    subTitle: post.frontMatter.subTitle,
-    description: post.frontMatter.description,
-    date: post.frontMatter.date,
-    category: post.frontMatter.category,
-    tags: post.frontMatter.tags,
-    draft: post.frontMatter.draft,
-    slug: post.frontMatter.slug,
-  }));
-
-  return {
-    category: slug,
-    posts: serializedPost,
-  };
-};
+import { postSorter } from '@/utils/contentlayer-utils';
 
 type PageParams = {
   slug: string;
 };
 
 export async function generateStaticParams(): Promise<PageParams[]> {
-  const categories = await getAllCategories();
-  return categories.map((category) => ({
-    slug: category.name,
-  }));
+  return allPosts
+    .map((post) => decodeURIComponent(post.category))
+    .filter((category, index, self) => self.indexOf(category) === index)
+    .map((category) => ({
+      slug: category,
+    }));
 }
 
 type PageProps = {
@@ -45,13 +24,14 @@ type PageProps = {
 };
 
 async function CategoryPage({ params }: PageProps) {
-  const slug = params?.slug;
+  const category = params?.slug;
 
-  if (typeof slug !== 'string') {
+  if (typeof category !== 'string') {
     notFound();
   }
 
-  const { category, posts } = await getPostsByCategoryInfo(slug);
+  const decodedCategory = decodeURIComponent(category);
+  const posts = allPosts.filter((post) => post.category === decodedCategory).sort(postSorter);
 
   return (
     <>
@@ -67,11 +47,7 @@ async function CategoryPage({ params }: PageProps) {
         </div>
         <div className="h-6" />
         {posts.map((post) => (
-          <Link
-            key={post.id}
-            href={`/posts/${post.slug}`}
-            className="block [&:not(:first-of-type)]:mt-8"
-          >
+          <Link key={post._id} href={post.slug} className="block [&:not(:first-of-type)]:mt-8">
             <PostCard post={post} mode="card" />
           </Link>
         ))}

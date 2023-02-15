@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { cn } from '@/utils/styleUtils';
+import { cn } from '@/utils/style-utils';
 
 type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 

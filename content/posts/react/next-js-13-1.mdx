@@ -56,11 +56,11 @@ Next.js 13 버전에서 새로운 `app` 폴더(beta)를 발표했습니다.
 이 내부 모듈이 `next-transpile-modules` 패키지를 대체합니다.
 
 ```diff
--const withTM = require('next-transpile-modules')(['awesome_module']);
--module.exports = withTM({});
-+module.exports = {
-+  transpilePackages: ['awesome_module'],
-+};
+- const withTM = require('next-transpile-modules')(['awesome_module']);
+- module.exports = withTM({});
++ module.exports = {
++   transpilePackages: ['awesome_module'],
++ };
 ```
 
 migration 가이드는 next-transpile-modules 메인테이너인 [@martpie](https://github.com/martpie)가 작성한 [이 글](https://github.com/martpie/next-transpile-modules/releases/tag/the-end)을 확인하시면 됩니다.
