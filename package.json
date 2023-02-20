@@ -67,7 +67,7 @@
     "eslint-plugin-json-format": "latest",
     "eslint-plugin-react": "latest",
     "eslint-plugin-simple-import-sort": "latest",
-    "eslint-plugin-tailwindcss": "^3.8.3",
+    "eslint-plugin-tailwindcss": "latest",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.1",
     "postcss": "^8.4.21",
