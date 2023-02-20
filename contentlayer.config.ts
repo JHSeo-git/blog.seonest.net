@@ -1,7 +1,7 @@
 import { defineDocumentType, makeSource } from 'contentlayer/source-files';
-import type { Options as autolinkHeadingsOptions } from 'rehype-autolink-headings';
+import type { Options as AutolinkHeadingsOptions } from 'rehype-autolink-headings';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import type { Options as prettyCodeOptions } from 'rehype-pretty-code';
+import type { Options as PrettyCodeOptions } from 'rehype-pretty-code';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
@@ -62,7 +62,7 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-const rehypePrettyCodeOptions: Partial<prettyCodeOptions> = {
+const rehypePrettyCodeOptions: Partial<PrettyCodeOptions> = {
   theme: 'one-dark-pro',
   keepBackground: true,
   onVisitLine(node) {
@@ -78,7 +78,7 @@ const rehypePrettyCodeOptions: Partial<prettyCodeOptions> = {
   },
 };
 
-const rehypeAutolinkHeadingsOptions: Partial<autolinkHeadingsOptions> = {
+const rehypeAutolinkHeadingsOptions: Partial<AutolinkHeadingsOptions> = {
   properties: {
     className: ['heading-anchor'],
     ariaLabel: 'Link to this heading',

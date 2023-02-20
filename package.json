@@ -18,7 +18,7 @@
     "dev": "next dev",
     "format": "pnpm lint --fix --ext .ts,.tsx,.js,.jsx --ignore-path .gitignore && prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint": "next lint",
-    "post": "seonest-post-gen",
+    "post": "seonest-post-gen -d content/posts",
     "start": "next start",
     "typecheck": "contentlayer build && tsc --noEmit"
   },
