@@ -6,14 +6,18 @@ interface PostWithIpHashParams extends PostParams {
   ipHash: string;
 }
 
+export type GetPostParams = PostParams;
+
 export type GetViewsParams = PostParams;
 
-export type GetViewsByUserParams = PostWithIpHashParams;
+export type GetViewsByUserParamsWithIpHash = PostWithIpHashParams;
+
+export type ViewPostParams = PostParams;
+
+export type ViewPostParamsWithIpHash = PostWithIpHashParams;
 
 export type GetLikesParams = PostParams;
 
-export type GetLikesByUserParams = PostWithIpHashParams;
+export type GetLikesByUserParamsWithIpHash = PostWithIpHashParams;
 
-export type ViewPostParams = PostWithIpHashParams;
-
-export type LikePostParams = PostWithIpHashParams;
+export type LikePostParamsWithIpHash = PostWithIpHashParams;

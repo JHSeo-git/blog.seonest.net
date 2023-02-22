@@ -2,6 +2,14 @@ import { db } from '@/lib/prisma';
 
 import type * as PostTypes from './types';
 
+export function getPost({ slug }: PostTypes.GetPostParams) {
+  return db.post.findUnique({
+    where: {
+      slug,
+    },
+  });
+}
+
 export function getViews({ slug }: PostTypes.GetViewsParams) {
   return db.postView.count({
     where: {
@@ -10,7 +18,10 @@ export function getViews({ slug }: PostTypes.GetViewsParams) {
   });
 }
 
-export async function getViewsByUser({ slug, ipHash }: PostTypes.GetViewsByUserParams) {
+export async function getViewsByUserWithIpHash({
+  slug,
+  ipHash,
+}: PostTypes.GetViewsByUserParamsWithIpHash) {
   const viewer = await db.user.findUnique({
     where: {
       ipHash,
@@ -29,34 +40,24 @@ export async function getViewsByUser({ slug, ipHash }: PostTypes.GetViewsByUserP
   });
 }
 
-export function getLikes({ slug }: PostTypes.GetViewsParams) {
-  return db.postLike.count({
+export async function viewPost({ slug }: PostTypes.ViewPostParams) {
+  return db.post.upsert({
     where: {
       slug,
+    },
+    create: {
+      slug,
+      viewCount: 1,
+    },
+    update: {
+      viewCount: {
+        increment: 1,
+      },
     },
   });
 }
 
-export async function getLikesByUser({ slug, ipHash }: PostTypes.GetLikesByUserParams) {
-  const liker = await db.user.findUnique({
-    where: {
-      ipHash,
-    },
-  });
-
-  if (!liker) {
-    return 0;
-  }
-
-  return db.postLike.count({
-    where: {
-      slug,
-      likerId: liker.id,
-    },
-  });
-}
-
-export async function viewPost({ slug, ipHash }: PostTypes.ViewPostParams) {
+export async function viewPostWithIpHash({ slug, ipHash }: PostTypes.ViewPostParamsWithIpHash) {
   let viewer = await db.user.findUnique({
     where: {
       ipHash,
@@ -79,7 +80,37 @@ export async function viewPost({ slug, ipHash }: PostTypes.ViewPostParams) {
   });
 }
 
-export async function likePost({ slug, ipHash }: PostTypes.LikePostParams) {
+export function getLikes({ slug }: PostTypes.GetViewsParams) {
+  return db.postLike.count({
+    where: {
+      slug,
+    },
+  });
+}
+
+export async function getLikesByUserWithIpHash({
+  slug,
+  ipHash,
+}: PostTypes.GetLikesByUserParamsWithIpHash) {
+  const liker = await db.user.findUnique({
+    where: {
+      ipHash,
+    },
+  });
+
+  if (!liker) {
+    return 0;
+  }
+
+  return db.postLike.count({
+    where: {
+      slug,
+      likerId: liker.id,
+    },
+  });
+}
+
+export async function likePostWithIpHash({ slug, ipHash }: PostTypes.LikePostParamsWithIpHash) {
   let liker = await db.user.findUnique({
     where: {
       ipHash,
