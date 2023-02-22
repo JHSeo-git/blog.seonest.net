@@ -17,6 +17,7 @@
     "postbuild": "next-sitemap",
     "dev": "next dev",
     "format": "pnpm lint --fix --ext .ts,.tsx,.js,.jsx --ignore-path .gitignore && prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
+    "postinstall": "npx prisma generate",
     "lint": "next lint",
     "post": "seonest-post-gen -d content/posts",
     "start": "next start",
@@ -46,6 +47,7 @@
     "remark-gfm": "^3.0.1",
     "sharp": "^0.31.3",
     "shiki": "^0.14.1",
+    "swr": "^2.0.3",
     "tailwind-merge": "^1.9.1"
   },
   "devDependencies": {

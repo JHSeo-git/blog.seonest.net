@@ -1,10 +1,8 @@
-import { createHash } from 'crypto';
 import type { NextApiHandler } from 'next';
 
 import { withCatch } from '@/lib/api-middlewares/with-catch';
 import { withMethods } from '@/lib/api-middlewares/with-methods';
 import AppError from '@/lib/error';
-import getIP from '@/lib/get-ip';
 import * as postService from '@/services/post.service';
 
 const postViewsIndexHandler: NextApiHandler = async (req, res) => {
@@ -17,16 +15,24 @@ const postViewsIndexHandler: NextApiHandler = async (req, res) => {
     }
 
     const slug = decodeURIComponent(encodedSlug);
-    const ip = getIP(req);
-    const ipHash = createHash('sha256').update(ip).digest('hex');
 
-    await postService.viewPost({ slug, ipHash });
-    const views = await postService.getViews({ slug });
+    const post = await postService.getPost({ slug });
 
-    return res.status(200).json({
-      views,
-    });
+    return res.status(200).json({ views: post?.viewCount ?? 0 });
+  }
+
+  if (method === 'POST') {
+    const encodedSlug = req.body.slug;
+    if (!encodedSlug || typeof encodedSlug !== 'string') {
+      throw new AppError('BadRequest');
+    }
+
+    const slug = decodeURIComponent(encodedSlug);
+
+    const updatedPost = await postService.viewPost({ slug });
+
+    return res.status(200).json({ views: updatedPost.viewCount });
   }
 };
 
-export default withCatch(withMethods(['GET'], postViewsIndexHandler));
+export default withCatch(withMethods(['GET', 'POST'], postViewsIndexHandler));
