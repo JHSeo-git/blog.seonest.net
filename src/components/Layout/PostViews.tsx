@@ -29,7 +29,7 @@ function PostViews({ slug }: PostViewsProps) {
     <div className="flex items-center gap-1">
       <LineChart width={16} height={16} />
       <AnimatePresence>
-        {data ? (
+        {data && (
           <motion.p
             key="post-views"
             className="text-xs tabular-nums"
@@ -39,8 +39,6 @@ function PostViews({ slug }: PostViewsProps) {
           >
             {data.views.toLocaleString()}
           </motion.p>
-        ) : (
-          <p className="text-xs">—</p>
         )}
       </AnimatePresence>
     </div>
