@@ -1,0 +1,433 @@
+---
+date: '2023-02-25T01:49:27.231Z'
+category: react
+title: Next.js 13.2
+description: Next.js App Router(/app) Major 업데이트
+thumbnail: /post/react/next-js-13-2/thumbnail.png
+---
+
+## 들어가면서
+
+Next.js가 13.2 버전이 업데이트 되었습니다.
+App Router(`app` directory를 이용한 nested routing 명칭을 이렇게 정한 것 같습니다.)에 Built-in SEO 기능과 같은 Major 업데이트가 있었습니다.  
+특히 몇 가지 기능은 편의성을 위해 기존에는 third-party library와 조합하여 사용했다면 이번 업데이트를 통해 third-party library를 Built-in 기능으로 교체할 수 있을 것 같습니다.
+그로인해 번들 사이즈가 줄어들고 더 빠른 빌드 속도, 더 나은 사용자 경험을 기대할 수 있을 것 같습니다.
+
+## Next.js 13.2
+
+- [Built-in SEO 지원](#built-in-seo-지원): 정적, 동적으로 `meta` 태그를 설정할 수 있는 새로운 메타데이터 API
+- [Route Handlers](#route-handlers): App Router에서 사용가능한 Web `Request`, `Response`에 기반한 커스텀 request handler
+- [Server Component용 MDX](#server-component용-mdx): 마크다운 내 server-side용 React component
+- [Rust MDX Parser](#rust-mdx-parser): 새로운 Rust Plugin으로 더 빨라진 MDX 파싱
+- [Error Overlay 개선](#error-overlay-개선): 가독성 향상을 위하 Next.js와 React stack trace를 분리합니다.
+- [Statically Typed Links (Beta)](#statically-typed-links-beta): `next/link`와 TypeScript로 타입 안전한 링크를 만들 수 있습니다.
+- [Turbopack 개선 (Alpha)](#turbopack-개선-alpha): Webpack 로더와 호환성 및 지원 개선
+- [Next.js Cache (Beta)](#nextjs-cache-beta): 점진적 ISR과 코드 변경에 대한 더 빨라진 재빌드
+
+```bash
+npm i next@latest react@latest react-dom@latest eslint-config-next@latest
+```
+
+## Built-in SEO 지원
+
+<ImageCaption src="/post/react/next-js-13-2/metadata-api.png" alt="metadata-api">
+  <span>https://twitter.com/shadcn/status/1629137062631800832/photo/1</span>
+</ImageCaption>
+
+Next.js는 처음부터 [검색 엔진에 최적화되도록](https://nextjs.org/learn/seo/introduction-to-seo) 설계되었습니다.
+
+pre-render된 HTML 콘텐츠를 제공한다면 검색 엔진의 인덱싱을 개선하는데 도움을 줄 뿐 아니라 애플리케이션의 성능 향상에도 도움이 됩니다.
+Next.js는 많은 버전에서 애플리케이션의 메타데이터를 수정하기 위한 간단한 API(next/head)를 제공해 왔지만,
+App Router(`app`)을 통해 검색 엔진을 최적화하는 방법을 재설계하고 개선하려고 했다고 합니다.
+
+새로운 메타데이터 API를 사용하면 Server Component인 layout이나 page에서 설정을 통해 메타데이터(예시: HTML head 요소 내에 있는 meta, link tag 등)를 정의할 수 있습니다.
+
+```tsx
+// app/layout.tsx
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'Welcome to Next.js',
+};
+```
+
+이 API는 간단하게 사용가능하며 streaming server rendering과 호환되도록 설계되었습니다.
+예를 들어, 전체 애플리케이션의 root layout에서 공통 메타데이터 속성을 설정하고 하위 또는 다른 라우트에서 메타데이터를 합쳐서 사용할 수 있습니다.
+
+```ts
+// Static metadata
+export const metadata = {
+  title: '...',
+};
+
+// Dynamic metadata
+export async function generateMetadata({ params, searchParams }) {
+  const product = await getProduct(params.id);
+  return { title: product.title };
+}
+```
+
+커스텀 메타데이터를 포함한 모든 메타데이터 옵션을 사용할 수 있으며, [TypeScript 플러그인](https://beta.nextjs.org/docs/configuring/typescript#using-the-typescript-plugin)을 통해서
+또는 `Metadata` 타입을 추가하여 TypeScript 지원을 받을 수 있습니다.
+
+예를 들어, 메타데이터를 통해서 open graph 이미지를 정의할 수 있습니다:
+
+```ts
+export const metadata = {
+  openGraph: {
+    title: 'Next.js',
+    description: 'The React Framework for the Web',
+    url: 'https://nextjs.org',
+    siteName: 'Next.js',
+    images: [
+      {
+        url: 'https://nextjs.org/og.png',
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: 'en-US',
+    type: 'website',
+  },
+};
+```
+
+Metadata API는 13.2 버전부터 App Router(`app`)에서 사용할 수 있습니다.
+이전 `head.js` 파일을 대체합니다. `pages` 폴더에서는 사용할 수 없습니다.
+
+[SEO에 대해 더 알아보거나](https://beta.nextjs.org/docs/guides/seo)
+또는 [메타데이터를 위한 API reference](https://beta.nextjs.org/docs/api-reference/metadata)를 참고하세요.
+
+저도 메타데이터를 위해 얼마전까지 썼었던 라이브러리인 [next-seo](https://github.com/garmeeh/next-seo)팀이 커뮤니티 패키지에서 작업과 초기 API 디자엔에 대한 피드백에 대해 참여했다고 합니다.
+
+## Route Handlers
+
+<ImageCaption src="/post/react/next-js-13-2/route-handlers.png" alt="route-handlers">
+  <span>https://twitter.com/shadcn/status/1629137067820126208/photo/1</span>
+</ImageCaption>
+
+이 기능이 이번에 릴리즈 되면서 App Router에 대한 전반적인 기능이 모두 들어가게 된 것 같습니다.
+
+App Router(`app`)의 기존 beta release에서 누락된 부분 중 하나는 `pages/api`폴더에 존재하는 API Routes 였습니다.
+새로운 routing 시스템과 함께 앱과 깊게 통합된 새롭고 현대적인 API Routes 기능을 만들려고 했다고 합니다.
+
+Route Handler를 사용하면 Web Fetch API인 [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)와 [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) API를 사용하여 커스텀 request handler를 만들 수 있습니다.
+
+```ts
+export async function GET(request: Request) {}
+```
+
+Route handler는 streaming response 지원을 포함하여 Edge, Node.js 런타임을 모두 원활하게 지원하는 isomorphic API를 가집니다.
+Route handler는 page와 layout과 같은 [route segment 구성](https://beta.nextjs.org/docs/routing/fundamentals)을 사용하기 때문에,
+범용 [Static Rendering](https://beta.nextjs.org/docs/rendering/static-and-dynamic-rendering#static-rendering-default), [Revalidation](https://beta.nextjs.org/docs/data-fetching/revalidating)과 같은 오랫동안 기다려온 기능들을 지원합니다.
+
+`route.ts` 파일은 HTTP 동사로 명명된(`GET`, `HEAD`, `OPTIONS`, `POST`, `PUT`, `DELETE`, `PATCH`) async 함수를 export할 수 있습니다.
+그리고 이 함수를 감싸고 추상화하여 helper를 만들거나 커스텀 route logic에 대한 재사용가능한 logic을 만들 수 있습니다.
+
+쿠키나 헤더와 같은 서버 함수는 Route Handler내부에서 모든 Web API와 함께 사용할 수 있습니다.
+이는 Server Component와 Route handler 간에 코드를 공유할 수 있게 해줍니다.
+
+```ts
+import { cookies } from 'next/headers';
+
+export async function GET(request: Request) {
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
+
+  return new Response('Hello, Next.js!', {
+    status: 200,
+    headers: { 'Set-Cookie': `token=${token}` },
+  });
+}
+```
+
+Route Handler는 13.2 버전부터 `route.ts` 파일을 사용하여 App Router(`app`)에서 사용할 수 있습니다.
+Route Handler는 API Routes를 대체하기 때문에 `pages` 폴더에서는 사용할 수 없습니다.
+
+[Route Handler에 대해 더 알아보거나](https://beta.nextjs.org/docs/routing/route-handlers) [API Refernce를 참고하세요](https://beta.nextjs.org/docs/api-reference/file-conventions/route).
+
+이 Route Handler는 [SveltKit에서 영감](https://kit.svelte.dev/docs/routing#server)을 얻었다고 합니다.
+
+## Server Component용 MDX
+
+<ImageCaption
+  src="/post/react/next-js-13-2/mdx-for-server-components.png"
+  alt="mdx-for-server-components"
+>
+  <span>https://twitter.com/shadcn/status/1629137070705844224/photo/1</span>
+</ImageCaption>
+
+MDX는 markdown의 슈퍼셋으로, JSX를 markdown파일에 직접 작성할 수 있습니다.
+동적인 상호작용을 추가하고 콘텐츠내에 React component를 삽입할 수 있는 강력한 방법입니다.
+
+13.2 버전부터 React Server Component와 함께 MDX를 완전하게 사용할 수 있습니다.
+즉, client-side JavaScript를 줄여 페이지 로딩 속도를 높이고, 동시에 React의 강력한 기능은 그대로 유지할 수 있습니다.
+
+<a href="https://twitter.com/_dardarbinks/status/1623746081958797312?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1623746081958797312%7Ctwgr%5E1ed76c5f70c5763e76aadeaef6ca801d8e740204%7Ctwcon%5Es1_&ref_url=https%3A%2F%2Fnextjs.org%2Fblog%2Fnext-13-2">
+  <img
+    style={{ margin: '0 auto' }}
+    src="/post/react/next-js-13-2/mdx-for-server-components-tweet.png"
+    alt="mdx-for-server-component tweet"
+  />
+</a>
+
+`@next/mdx` 플러그인은 MDX 커스텀 컴포넌트를 제공하기 위해 애플리케이션 root에 정의된 새로운 파일인 `mdx-components.js|ts`를 지원하도록 업데이트 되었습니다.
+
+```tsx
+// 이 파일은 MDX 파일에서 사용하기 위한 커스텀 React 컴포넌트를 제공합니다.
+// 원하는 컴포넌트를 import하고 사용할 수 있으며, 다른 라이브러리에서 제공하는
+// 컴포넌트도 사용할 수 있습니다.
+function H1({ children }) {
+  // ...
+}
+
+function H2({ children }) {
+  // ...
+}
+
+export function useMDXComponents(components) {
+  return { h1: H1, h2: H2, ...components };
+}
+```
+
+또한, MDX 콘텐츠를 fetching하는 커뮤니티 패키지들인 `next-mdx-remote`와 `contentlayer`와 협력하여 React Server Component에 대해서 지원을 추가했다고 합니다.
+
+[Server Component와 함께 MDX를 설정하는 방법에 대해서 알아보거나](https://beta.nextjs.org/docs/guides/mdx) [예제를 확인해보세요](https://github.com/vercel/next.js/tree/canary/examples/app-dir-mdx).
+
+## Rust MDX Parser
+
+Server Component용 MDX를 사용하기 위한 일환으로, 성능 개선을 위해 Rust로 MDX Parser를 재작성했다고 합니다.
+이는 많은 수의 MDX 파일을 처리할 때 눈에 띄게 느려졌던 이전 JavaScript 기반 parser에 비해 크게 향상되었다고 합니다.
+
+`next.config.js`에서 Rust parser를 사용하도록 선택할 수 있습니다. 예를 들어, `@next/mdx`는 다음과 같이 설정할 수 있습니다:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+    mdxRs: true,
+  },
+};
+
+const withMDX = require('@next/mdx')();
+module.exports = withMDX(nextConfig);
+```
+
+[Titus Wormer](https://wooorm.com/)가 이 프로젝트를 진행했다고 하고, Next.js 외부에서 사용하려면 [mdxjs-rs](https://github.com/wooorm/mdxjs-rs)를 확인하면 됩니다.
+
+## Statically Typed Links (Beta)
+
+<ImageCaption
+  src="/post/react/next-js-13-2/statically-typed-links.png"
+  alt="statically-typed-links"
+>
+  <span>https://twitter.com/shadcn/status/1629137073633361922/photo/1</span>
+</ImageCaption>
+
+이제 Next.js에서 app폴더와 함께 `next/link`를 사용할 때 오타, 오류를 방지하고 페이지 간 탐색 시 타입 완전한 링크를 사용할 수 있습니다.
+
+```tsx
+import Link from 'next/link'
+
+// ✅
+<Link href="/about" />
+// ✅
+<Link href="/blog/nextjs" />
+// ✅
+<Link href={`/blog/${slug}`} />
+
+// ❌ href가 유효한 route가 아니면 TypeScript 에러가 나타납니다.
+<Link href="/aboot" />
+```
+
+이 기능을 사용하려면 App Router와 TypeScript를 사용해야 합니다.
+
+```js
+// next.config.js
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+    typedRoutes: true,
+  },
+};
+
+module.exports = nextConfig;
+```
+
+아직 이 기능은 베타 버전으로 이용가능합니다. `rewrites`와 `redirects`는 아직 지원하지 않습니다.
+
+[여기서](https://beta.nextjs.org/docs/configuring/typescript#statically-typed-links) 더 확인해보세요.
+
+## Error Overlay 개선
+
+![imporved-error-overlay](/post/react/next-js-13-2/imporved-error-overlay.png)
+
+에러 가독성과 디버깅을 개선하기 위해 Next.js Error Overlay가 업데이트되었습니다.
+
+13.2 버전에서는 이제 Next.js와 React stack trace가 분리되어 오류가 발생한 위치를 더 쉽게 확인할 수 있습니다.
+또한, Error Overlay에 Next.js의 현재 버전이 표시되어 버전이 최신인지 파악하는데 도움이 될 수 있습니다.
+
+추가로 React hydration 에러 경우도 가독성과 디버깅을 위해 [에러 output을 개선했습니다](https://github.com/facebook/react/issues/24519#issuecomment-1439915463).
+
+## Turbopack 개선 (Alpha)
+
+[Turbopack](https://turbo.build/pack)은 Next.js 13과 함께 알파 버전으로 발표되었고, 로컬 개발은 물론 향후 프로덕션 빌드 속도를 높이기 위해 설계된 점진적 번들러입니다.
+
+베타 버전으로 전환하면서 Next.js 기존 기능을 지원하고 전반적인 안정성을 개선하는데 중점을 두었다고 합니다.
+지난 릴리즈 이후 다음 기능이 추가되었습니다:
+
+- `next/dynamic` 지원
+- `rewrites`, `redirects`, `headers`, `next.config.js`내 `pageExtensions` 지원을
+- `pages` 내에 404와 에러 지원
+- CSS module `composes: ... from ...` 지원
+- Fast Refresh 안정성과 오류 복구 개선
+- CSS 우선순위 처리 개선
+- 컴파일 시간 평가 개선
+
+또한, 대규모 내부 Next.js 애플리케이션과 Vercel 고객과 함께 Turbopack 테스트를 하는 동안 많은 버그를 수정하고 안정성을 개선했다고 합니다.
+
+### Webpack 로더를 사용한 파일 변환
+
+이제 Turbopack은 일부 Webpack 로더에 대해 호환성을 지원합니다.
+즉, Webpack 에코시스템의 다양한 로더를 사용하여 여러 유형의 파일을 JavaScript로 변환할 수 있습니다.
+`@mdx-js/loader`, `@svgr/webpack`, `babel-loader`와 같은 로더가 지원됩니다.
+지원되는 로더나 Turbopack 커스터마이징 설정은 [여기서](https://turbo.build/pack/docs/features/customizing-turbopack) 확인하세요.
+
+예를 들어, `experimental.turbo.loaders`를 사용하여 각 파일 확장자에 대한 로더 목록을 구성할 수 있습니다.
+
+```js
+// next.config.js
+module.exports = {
+  experimental: {
+    turbo: {
+      loaders: {
+        '.md': [
+          {
+            // Option format
+            loader: '@mdx-js/loader',
+            options: {
+              format: 'md',
+            },
+          },
+        ],
+        '.svg': ['@svgr/webpack'],
+      },
+    },
+  },
+};
+```
+
+[Turbopack 예제](https://github.com/vercel/next.js/tree/canary/examples/with-turbopack-loaders)를 확인해보세요.
+
+### Webpack-style Resolve Aliases
+
+이제 Turbopack은 Webpack의 `resolve.alias`와 유사한 `experimental.turbo.resolveAliases`를 지원합니다.
+
+```js
+// next.config.js
+module.exports = {
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        underscore: 'lodash',
+        mocha: { browser: 'mocha/browser-entry.js' },
+      },
+    },
+  },
+};
+```
+
+## Next.js Cache (Beta)
+
+Next.js 13.2에서는 Next.js Cache(beta)를 도입하여 [ISR](https://beta.nextjs.org/docs/data-fetching/revalidating)의 기능이 한 단계 더 발전했습니다:
+
+- 컴포넌트 레벨에서 점진적 ISR
+- 네트워크 요청 없이 더 빠른 refresh
+- 정적 페이지의 코드 변경에 대한 더 빠른 redeploy
+
+완전히 정적인 페이지의 ISR은 현재와 동일한 방식으로 동작합니다.
+정적과 동적이 혼합된 보다 세분화된 data fetching이 있는 페이지의 경우, Next.js Cache는 더 세분화된, 일시적인 cache를 사용합니다.
+
+[React Server Component](https://beta.nextjs.org/docs/rendering/server-and-client-components) 기반과 Next.js App Router(`app`)의 data fetching를 통해, 정적 또는 동적 데이터를 사용하는 컴포넌트와 함께 캡슐화할 수 있습니다.
+
+```jsx
+// app/page.jsx
+
+export default async function Page() {
+  const [staticData, dynamicData, revalidatedData] = await Promise.all([
+    // 수동으로 invalidated될 때까지 캐시됩니다.
+    fetch(`https://...`),
+    // 매 요청마다 refetch 합니다.
+    fetch(`https://...`, { cache: 'no-store' }),
+    // Cached with a lifetime of 10 seconds
+    // 10초 라이프사이클을 가지고 캐시됩니다.
+    fetch(`https://...`, { next: { revalidate: 10 } }),
+  ]);
+
+  return <div>...</div>;
+}
+```
+
+이제 App Router를 통해 로컬에서 개발하는 동안, 개발 환경인 `next dev`는 프로덕션 환경인 `next start`과 동일한 caching 동작을 확인할 수 있습니다.
+따라서 Server Component 또는 데이터 loading 코드가 변경될 때 Fast Refresh 속도가 더 향상됩니다.
+
+Next.js Cache를 사용하면 애플리케이션이 third-party API가 아닌 cache를 컨트롤합니다.
+이는 업스트림에서 값이 캐시되는 기간을 제어하는 `cache-control` 헤더와는 다릅니다.
+
+### Next.js Cache with the Vercel Cache API
+
+[Vercel에서 동작하는 Next.js](https://vercel.com/docs/frameworks/nextjs)는 프레임워크 인프라 기능을 제공합니다.
+컴포넌트 레벨에서의 data fetching과 같은 코드를 작성하면 별도로 추가적인 작업 없이도 전 세계의 분산된 인프라를 스캐폴딩할 수 있습니다.
+
+새로운 Next.js Cache를 사용하면 코드 변경이 데이터 변경과 독립적으로 이루어집니다.
+정적 페이지를 재생성할 때 기존 캐시를 사용할 수 있으므로 정적 페이지 재배포 속도를 크게 높일 수 있습니다.
+
+새로운 Vercel Cache API는 모든 프레임워크에서 동작하도록 설계되었지만, Next.js Cache와 native 통합되어 있습니다.
+ISR이 Next.js Cache로 발전한 과정과 Vercel에 배포할 때 Next.js Cache가 어떻게 동작하는지 [여기서](https://vercel.com/blog/vercel-cache-api-nextjs-cache) 확인해보세요.
+
+### Next.js Cache when Self-Hosted
+
+self-hosting 시에는 기본값이 50MB인 LRU cache가 사용됩니다. 캐시에 있는 모든 항목은 기본적으로 디스크에 자동으로 기록됩니다.
+이 파일시스템 캐시는 [현재 ISR이 동작하는 방식](https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration#self-hosting-isr)과 유사하게 캐시 key가 같을 경우 노드 간에 공유될 수 있습니다.
+
+Next.js Cache의 코어를 더 커스텀하고 수정하려는 개발자의 경우,
+캐시 key를 수정할 수 있고 캐시 지속성을 완전히 비활성화 시키는 것을 포함하여 캐시 항목을 유지하는 방법과 위치를 변경할 수 있습니다.
+
+## 다른 개선들
+
+- **Fonts**: `@next/font`가 Next.js에서 기본으로 제공됩니다. 즉, 더 이상 `@next/font`를 별도로 설치할 필요가 없습니다.
+- **Fonts**: 커뮤니티 피드백에 따라 `next/font`의 `font-display` 기본 값이 `optional`에서 `swap`으로 변경되었습니다.
+- **Performance**: 빌드 프로세스를 최적화하여 메모리를 덜 사용하도록 개선했습니다. 테스트([PR](https://github.com/vercel/next.js/pull/45639))에서 약 550MB가 절약되었습니다.
+- **Performance**: 프로젝트 설정을 여러 번 로딩하는 것을 방지하여 테스트([PR](https://github.com/vercel/next.js/pull/45637))에서 평균 400ms 더 빨라졌습니다.
+- **Performance**: Error Component를 최적화하여 스타일링 변경 없이 HTML 사이즈를 0.4KB 줄였습니다.([PR](https://github.com/vercel/next.js/pull/45586))
+- **Performance**: Edge 번들 사이즈를 기존 대비 거의 절반인 130KB로 줄여 Vercel과 같은 edge 환경에 배포할 때 cold boot 크기를 더욱 줄였습니다.
+- **Security**: `images.contentDispositionType: "attachment"` 항목을 설정하면 이미지 최적화 API를 직접 방문할 때 이미지를 강제로 다운로드하도록 할 수 있습니다.([PR](https://github.com/vercel/next.js/pull/46254))
+
+## 마무리하며
+
+Next.js 13 버전과 함께 공개된 new routing system은 이제 App Router라고 불려지는 것 같습니다.
+그리고 Route Handler가 이번에 공개되면서 App Router에 대한 기본적인 기능이 모두 `pages`에서 `app`으로 옮겨진 것 같습니다.
+
+계속해서 컨벤션이 바뀌긴 하지만(Metadata API가 공개되면서 head.js가 deprecated 등등) 더 나은 방향으로 나아가고 있다고 생각됩니다.
+Next.js는 계속해서 개선되고 있고, 개발자들이 더욱 편리하게 사용할 수 있도록 개선되고 있습니다. 무엇보다 엄청난 속도로 개선되고 있습니다.
+
+Next.js가 개발자들에게 많은 사랑을 받고 있기에 기술 하나하나가 개발자에게 영향을 많이 주는 것 같습니다.
+Turbopack도 production mode에서도 동작하게 공개되고 안정화가 된다면 번들러 지각변동이 일어날 지도 모르겠습니다.
+
+최근에는 Rust가 많은 곳에 영향을 주고 있는 것 같습니다. 프론트엔드 지형에서도 Rust가 많이 사용되고 있고, WASI, WASM 도 그리 멀지 않은 미레에 사용될 것이라고 느껴집니다.
+
+어째뜬 Next.js가 13버전과 함께 공개한 App Router는 개발자 입장에서도 사용하기 편한 것 확실한 것 같습니다.
+기존에 Layout을 `_app.js`를 통해 구성하는 것이나 스타일 설정을 위해 `_document.js`로 구성하는 것과는 다르게
+파일 기반으로 nested 하게 구조를 잡고 layout, page 등 파일 컨벤션을 통해 더 직관적으로 사용할 수 있어서 더 편리하게 사용할 수 있는 것 같습니다.
+
+단순 번역에 가까운 글이긴 하지만 좋아하는 프레임워크이기도 하고 그리고 다음이 계속해서 기대되기 때문이기도 합니다.
+
+## reference
+
+- https://nextjs.org/blog/next-13-2
+- https://twitter.com/shadcn/status/1629137059976818688

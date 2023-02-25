@@ -9,6 +9,7 @@ import Del from './Del';
 import Heading from './Heading';
 import Hr from './Hr';
 import Image from './Image';
+import ImageCaption from './ImageCaption';
 import List from './List';
 import Paragraph from './Paragraph';
 import Pre from './Pre';
@@ -43,7 +44,8 @@ export const components: MDXComponents = {
   table: (props) => <Table {...props} />,
 
   // custom
-  SpicyText,
   Admonition,
+  ImageCaption,
+  SpicyText,
   Video,
 };

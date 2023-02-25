@@ -6,7 +6,7 @@ import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
-import { getLastModifiedByFileSystem, getReadingTime } from './src/utils/contentlayer-utils';
+import { getReadingTime } from './src/utils/contentlayer-utils';
 
 export const Post = defineDocumentType(() => ({
   name: 'Post',
@@ -40,6 +40,9 @@ export const Post = defineDocumentType(() => ({
       type: 'date',
       required: true,
     },
+    lastModifed: {
+      type: 'date',
+    },
   },
   computedFields: {
     slug: {
@@ -56,8 +59,7 @@ export const Post = defineDocumentType(() => ({
     },
     lastModified: {
       type: 'date',
-      resolve: (post) =>
-        getLastModifiedByFileSystem(`./content/${post._raw.sourceFilePath}`) ?? post.date,
+      resolve: (post) => post.lastModified ?? post.date,
     },
   },
 }));
