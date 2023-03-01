@@ -3,8 +3,6 @@ import fs from 'node:fs';
 import type { Post } from 'contentlayer/generated';
 import * as slugger from 'github-slugger';
 
-import appConfig from '../app.config';
-
 const WORDS_PER_MINUTE_ENG = 200;
 const WORDS_PER_MINUTE_KOR = 500;
 const IMG_READ_TIME_SEC = 12;

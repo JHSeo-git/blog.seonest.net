@@ -15,3 +15,18 @@ export function withCatch(handler: NextApiHandler) {
     }
   };
 }
+
+export declare type Handler = (request: Request, context?: unknown) => unknown | Promise<unknown>;
+export function withRouteCatch(handler: Handler) {
+  return async function catchMiddleware(request: Request, context?: unknown) {
+    try {
+      return await handler(request, context);
+    } catch (error) {
+      if (isAppError(error)) {
+        return new Response(error.message, { status: error.statusCode });
+      }
+
+      return new Response('Internal Server Error', { status: 500 });
+    }
+  };
+}
