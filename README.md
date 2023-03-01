@@ -18,7 +18,6 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
 - [Next.js](https://beta.nextjs.org/)
   - [v13.x](https://www.npmjs.com/package/next)
   - [appDir](https://beta.nextjs.org/docs/app-directory-roadmap)
-  - [@next/font](https://www.npmjs.com/package/@next/font)
 - DB
   - [Prisma](https://www.prisma.io/)
   - [PlanetScale](https://planetscale.com/)

@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 
-import { Acme, Fira_Mono, PT_Sans } from '@next/font/google';
+import { Acme, Fira_Mono, PT_Sans } from 'next/font/google';
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Providers from '@/components/Providers';
