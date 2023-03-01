@@ -100,11 +100,6 @@ export function getHeadings(source: string) {
   return headings;
 }
 
-export const generateFullUrl = (url: string) => {
-  const fullUrl = `${appConfig.siteUrl}${url.startsWith('/') ? url : `/${url}`}`;
-  return encodeURI(fullUrl);
-};
-
 export const postSorter = (a: Post, b: Post) => {
   const dateA = new Date(a.date);
   const dateB = new Date(b.date);

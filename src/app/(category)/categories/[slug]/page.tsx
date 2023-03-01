@@ -1,10 +1,12 @@
 import { allPosts } from 'contentlayer/generated';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import Hidden from '@/components/Hidden';
 import PostCard from '@/components/PostCard';
 import { postSorter } from '@/utils/contentlayer-utils';
+import { getMetadata } from '@/utils/metadata-utils';
 
 type PageParams = {
   slug: string;
@@ -22,6 +24,24 @@ export async function generateStaticParams(): Promise<PageParams[]> {
 type PageProps = {
   params: PageParams;
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const category = params?.slug;
+
+  const decodedCategory = decodeURIComponent(category);
+
+  if (!decodedCategory) {
+    return getMetadata();
+  }
+
+  const capitalized = decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1);
+
+  const title = `${capitalized} Posts`;
+  const description = `${capitalized} Posts`;
+  const url = `categories/${decodedCategory}`;
+
+  return getMetadata({ title, description, url });
+}
 
 async function CategoryPage({ params }: PageProps) {
   const category = params?.slug;

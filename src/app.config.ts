@@ -1,7 +1,7 @@
 const config = {
   siteName: 'Seonest',
   title: 'Seonest',
-  description: '웹 개발과 관련된 개발 블로그 입니다.',
+  description: 'JHSeo 개발 블로그 입니다.',
   ogImage: 'https://seonest.net/og.png',
   author: 'JHSeo',
   email: 'qnfqnfqnf@gmail.com',
