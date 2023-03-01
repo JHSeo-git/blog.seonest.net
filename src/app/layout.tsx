@@ -4,6 +4,9 @@ import { Acme, Fira_Mono, PT_Sans } from 'next/font/google';
 
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Providers from '@/components/Providers';
+import { getMetadata } from '@/utils/metadata-utils';
+
+export const metadata = getMetadata();
 
 const ptSans = PT_Sans({
   subsets: ['latin'],

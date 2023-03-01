@@ -1,6 +1,7 @@
 import '@/styles/mdx.css';
 
 import { allPosts } from 'contentlayer/generated';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,6 +14,7 @@ import MDXContentlayerContent from '@/components/MDXContentlayerContent';
 import PostNav from '@/components/PostNav';
 import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
 import { getDistanceToNow } from '@/utils/date-utils';
+import { generateFullUrl, getMetadata } from '@/utils/metadata-utils';
 
 type PageParams = {
   slug: string[];
@@ -27,6 +29,25 @@ export async function generateStaticParams(): Promise<PageParams[]> {
 type PageProps = {
   params: PageParams;
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const slug = params?.slug?.join('/') || '';
+
+  const decodedSlug = decodeURIComponent(slug);
+
+  const post = allPosts.find((post) => post.slugAsParams === decodedSlug);
+
+  if (!post) {
+    return getMetadata();
+  }
+
+  const title = `${post.title || 'Post'}`;
+  const description = post.description || post.title;
+  const ogImage = post.thumbnail ? generateFullUrl(post.thumbnail) : undefined;
+  const url = post.slug;
+
+  return getMetadata({ title, description, ogImage, url });
+}
 
 async function PostPage({ params }: PageProps) {
   const slug = params?.slug?.join('/') || '';

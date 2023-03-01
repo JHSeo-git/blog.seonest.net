@@ -3,6 +3,9 @@ import Link from 'next/link';
 
 import Hidden from '@/components/Hidden';
 import { postSorter } from '@/utils/contentlayer-utils';
+import { getMetadata } from '@/utils/metadata-utils';
+
+export const metadata = getMetadata({ title: 'About' });
 
 async function AbountPage() {
   const latestPosts = allPosts.sort(postSorter).slice(0, 5);
