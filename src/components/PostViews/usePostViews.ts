@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { getPostViews } from '@/lib/api/posts';
+import { viewPost } from '@/lib/api/posts';
 
 export function usePostViews(slug: string) {
   const [views, setViews] = useState<number | null>(null);
@@ -11,7 +11,7 @@ export function usePostViews(slug: string) {
     setLoading(true);
 
     try {
-      const data = await getPostViews({ slug });
+      const data = await viewPost({ slug });
 
       setViews(data.views);
     } catch (error) {

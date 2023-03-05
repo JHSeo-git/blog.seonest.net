@@ -1,15 +1,15 @@
-export interface ViewPostRequest {
+interface PostRequest {
   slug: string;
 }
 
-export interface ViewPostResponse {
+interface PostResponse {
   views: number;
 }
 
-export interface GetPostViewsRequest {
-  slug: string;
-}
+export type ViewPostRequest = PostRequest;
 
-export interface GetPostViewsResponse {
-  views: number;
-}
+export type ViewPostResponse = PostResponse;
+
+export type GetPostViewsRequest = PostRequest;
+
+export type GetPostViewsResponse = PostResponse;
