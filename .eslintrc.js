@@ -21,6 +21,7 @@ module.exports = {
   rules: {
     'simple-import-sort/exports': 'error',
     'simple-import-sort/imports': 'error',
+    '@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
     '@typescript-eslint/consistent-type-imports': [
       'error',
       {
