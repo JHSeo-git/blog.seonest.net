@@ -15,6 +15,7 @@ import Paragraph from './Paragraph';
 import Pre from './Pre';
 import Strong from './Strong';
 import Table from './Table';
+import Tweet from './Tweet';
 import Video from './Video';
 
 export const components: MDXComponents = {
@@ -48,4 +49,5 @@ export const components: MDXComponents = {
   ImageCaption,
   SpicyText,
   Video,
+  Tweet,
 };
