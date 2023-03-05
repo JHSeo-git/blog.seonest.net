@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import ApiClient from '@/lib/api-client';
 
 import { LineChart } from '../_icons';
-import { usePostView } from './usePostView';
+import { usePostViews } from './usePostViews';
 
 type PostView = {
   views: number;
@@ -19,7 +19,7 @@ export interface PostViewsProps {
 
 function PostViews({ slug }: PostViewsProps) {
   const { data } = useSWR<PostView>(`/api/posts/views?slug=${slug}`, ApiClient.request);
-  const { fetchViews } = usePostView(slug);
+  const { fetchViews } = usePostViews(slug);
 
   useEffect(() => {
     fetchViews();

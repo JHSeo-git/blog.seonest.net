@@ -4,10 +4,10 @@ import { getDistanceToNow } from '@/utils/date-utils';
 
 import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';
+import PostViews from '../PostViews';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
 import LayoutBodyBackgroudColor from './Layout.BodyBackgroudColor';
-import PostViews from './PostViews';
 
 interface LayoutPostProps {
   children: React.ReactNode;
