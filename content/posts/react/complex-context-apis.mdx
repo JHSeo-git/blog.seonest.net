@@ -172,6 +172,8 @@ function App() {
 위에서 말한 `consumer는 가장 가까운 Provider의 Context를 가져온다`는 원칙에 따라 `<AlertOpenerTrigger />`는 가장 가까운 `<Opener />`에서 제공되는 Context를 가져오게 됩니다.
 따라서 `AlertOpenerTrigger`를 클릭하면 `AlertOpenerContent`가 렌더링되는 대신 `OpenerContent`가 닫히게 됩니다.
 
+> 예제 사이트는 [여기서](https://practice-complex-context.vercel.app/) 확인하실 수 있습니다.
+
 이런 구조를 사용해야 하는 경우라면 어떻게 해결을 해야할까요?
 
 ## solution
