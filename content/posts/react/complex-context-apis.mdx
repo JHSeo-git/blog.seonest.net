@@ -536,7 +536,7 @@ scope가 존재하고 scope내에 `Opener`가 있기 때문에 해당 scope의 c
 
 하지만 compound component로 구성된 컴포넌트의 경우 위와 같은 case가 더 복잡한 형태로 많이 발생합니다. 그런 경우 이 방법이 좋은 해답이 될 수 있을 것 같단 생각이 들게 됩니다.
 
-## 결론
+## 마무리하며
 
 radix-ui의 `createContextScope`는 리액트 Context API의 `consumer는 가장 가까운 Provider의 Context를 가져온다`라는 원칙을 따르지 않고,
 `consumer는 scope를 기반으로 context를 선택하고 가져온다`라는 원칙을 사용했다는 것입니다.
@@ -546,3 +546,5 @@ radix-ui의 `createContextScope`는 리액트 Context API의 `consumer는 가장
 정확하게 문제를 파악했는지, 문제 해결방법을 잘 이해했는지는 잘 모르겠지만 몇 가지라도 도움이 되었으면 좋겠습니다.
 저는 주로 이런 라이브러리를 가져다 쓸 줄만 알았지만 어떤 원리로 동작하고 해결하는지 알아보진 못했습니다.
 이번 기회에 시간이 좀 걸렸지만 좋은 해결 방법을 확인할 수 있어서 좋았습니다.
+
+사용된 예제 코드는 [여기서](https://github.com/JHSeo-git/practice-complex-context) 확인할 수 있습니다.
