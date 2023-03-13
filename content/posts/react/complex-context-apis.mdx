@@ -181,7 +181,7 @@ function App() {
 ### 1. brute-force
 
 쉬운 접근법은 `<AlertOpener />`의 Context를 `<Opener />`의 Context로 덮어쓰는 것입니다.  
-즉, `<Opener />` 트리 상위에 동일 Context가 존재한다면 그 Context를 사용하도록 만드는 것입니다.
+즉, `<Opener />`에 Context를 주입하여 그 Context를 사용하도록 만드는 것입니다.
 
 ```tsx
 interface OpenerContextValue {
