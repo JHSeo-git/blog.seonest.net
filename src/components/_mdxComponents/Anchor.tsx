@@ -11,7 +11,10 @@ function Anchor({ href, className, ...rest }: AnchorProps) {
         href="#"
         target="_blank"
         rel="noopener noreferrer"
-        className={cn('text-blue-700 dark:text-blue-500 font-bold hover:underline', className)}
+        className={cn(
+          'text-blue-700 break-all dark:text-blue-500 font-bold hover:underline',
+          className
+        )}
         {...rest}
       />
     );
@@ -25,7 +28,10 @@ function Anchor({ href, className, ...rest }: AnchorProps) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn('text-blue-700 dark:text-blue-500 font-bold hover:underline', className)}
+        className={cn(
+          'text-blue-700 break-all dark:text-blue-500 font-bold hover:underline',
+          className
+        )}
         {...rest}
       />
     );
