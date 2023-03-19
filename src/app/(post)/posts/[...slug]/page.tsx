@@ -6,15 +6,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import Hr from '@/components/_mdxComponents/Hr';
 import Bio from '@/components/Bio';
 import Comment from '@/components/Comment';
 import Layout from '@/components/Layout';
-import MDXContentlayerContent from '@/components/MDXContentlayerContent';
+import { Mdx } from '@/components/Mdx';
 import PostNav from '@/components/PostNav';
 import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
 import { getDistanceToNow } from '@/utils/date-utils';
 import { generateFullUrl, getMetadata } from '@/utils/metadata-utils';
+import { cn } from '@/utils/style-utils';
 
 type PageParams = {
   slug: string[];
@@ -82,7 +82,7 @@ async function PostPage({ params }: PageProps) {
               />
             </div>
           )}
-          <MDXContentlayerContent code={post.body.code} />
+          <Mdx code={post.body.code} />
           <div className="mt-20">
             <div className="flex items-center justify-end">
               <div>
@@ -94,7 +94,13 @@ async function PostPage({ params }: PageProps) {
                 </p>
               </div>
             </div>
-            <Hr />
+            <hr
+              className={cn(
+                'm-0 p-0 outline-none border-none',
+                'm-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300',
+                'bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500'
+              )}
+            />
             <Bio />
             <div className="h-16" />
             <div className="flex flex-wrap items-center justify-between gap-6">

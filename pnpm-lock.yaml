@@ -17,6 +17,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.55.0
   '@typescript-eslint/parser': ^5.55.0
   autoprefixer: ^10.4.14
+  class-variance-authority: ^0.4.0
   clsx: ^1.2.1
   contentlayer: ^0.3.0
   date-fns: ^2.29.3
@@ -65,6 +66,7 @@ dependencies:
   '@prisma/client': 4.11.0_prisma@4.11.0
   '@radix-ui/react-toggle': 1.0.2_biqbaboplfbrettd7655fr4n2y
   '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.7
+  class-variance-authority: 0.4.0_typescript@5.0.2
   clsx: 1.2.1
   contentlayer: 0.3.0_esbuild@0.17.12
   date-fns: 2.29.3
@@ -2889,6 +2891,20 @@ packages:
     dependencies:
       normalize-cjk: 0.4.0
     dev: true
+
+  /class-variance-authority/0.4.0_typescript@5.0.2:
+    resolution:
+      {
+        integrity: sha512-74enNN8O9ZNieycac/y8FxqgyzZhZbxmCitAtAeUrLPlxjSd5zA7LfpprmxEcOmQBnaGs5hYhiSGnJ0mqrtBLQ==,
+      }
+    peerDependencies:
+      typescript: '>= 4.5.5 < 5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.0.2
+    dev: false
 
   /cli-cursor/4.0.0:
     resolution:
