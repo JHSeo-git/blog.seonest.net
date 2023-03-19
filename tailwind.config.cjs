@@ -3,17 +3,19 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: [
-    './src/app/**/*.{js,jsx,ts,tsx}',
-    './src/components/**/*.{js,jsx,ts,tsx}',
-    './src/pages/**/*.{js,jsx,ts,tsx}',
-    './content/**/*.mdx',
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './content/**/*.mdx'],
   future: {
     hoverOnlyWhenSupported: true,
   },
   theme: {
     extend: {
+      container: {
+        center: true,
+        padding: '1.5rem',
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', ...fontFamily.sans],
+      },
       keyframes: {
         circle: {
           '0%': {
@@ -33,11 +35,6 @@ module.exports = {
       animation: {
         'spin-loading': 'spin 1.4s linear 0s infinite normal none running',
         'circle-loading': 'circle 1.4s ease-in-out infinite',
-      },
-      fontFamily: {
-        sans: ['var(--font-pt-sans)', ...fontFamily.sans],
-        mono: ['var(--font-fira-mono)', ...fontFamily.mono],
-        spicy: ['var(--font-acme)', ...fontFamily.sans],
       },
     },
   },

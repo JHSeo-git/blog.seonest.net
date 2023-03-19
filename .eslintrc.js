@@ -19,8 +19,6 @@ module.exports = {
   },
   plugins: ['json-format', 'simple-import-sort', 'react', 'tailwindcss', '@typescript-eslint'],
   rules: {
-    'simple-import-sort/exports': 'error',
-    'simple-import-sort/imports': 'error',
     '@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
     '@typescript-eslint/consistent-type-imports': [
       'error',
@@ -31,6 +29,8 @@ module.exports = {
     ],
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-empty-interface': 'warn',
+    'simple-import-sort/exports': 'off',
+    'simple-import-sort/imports': 'error',
+    'tailwindcss/no-custom-classname': 'off',
   },
-  ignorePatterns: ['**/dist/**/*', 'tailwind.config.js', 'next.config.js'],
 };
