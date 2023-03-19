@@ -6,7 +6,7 @@ import useSWR from 'swr';
 
 import ApiClient from '@/lib/api-client';
 
-import { LineChart } from '../_icons';
+import { Icons } from '../Icons';
 import { usePostViews } from './usePostViews';
 
 type PostView = {
@@ -27,7 +27,7 @@ function PostViews({ slug }: PostViewsProps) {
 
   return (
     <div className="flex items-center gap-1">
-      <LineChart width={16} height={16} />
+      <Icons.LineChart width={16} height={16} />
       <AnimatePresence>
         {data && (
           <motion.p

@@ -33,6 +33,7 @@
     "date-fns": "^2.29.3",
     "framer-motion": "^7.10.3",
     "github-slugger": "^2.0.0",
+    "lucide-react": "^0.125.0",
     "next": "^13.2.4",
     "next-contentlayer": "^0.3.0",
     "next-sitemap": "^4.0.6",

@@ -5,8 +5,7 @@ import { useTheme } from 'next-themes';
 
 import { cn } from '@/utils/style-utils';
 
-import Moon from '../_icons/Moon';
-import Sun from '../_icons/Sun';
+import { Icons } from '../Icons';
 
 function IconWrapper({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
@@ -43,10 +42,10 @@ function ToggleTheme() {
       )}
     >
       <IconWrapper className={cn('rotate-0 opacity-100 dark:-rotate-90 dark:opacity-0')}>
-        <Sun className="h-6 w-6 sm:h-8 sm:w-8" />
+        <Icons.Sun className="h-6 w-6 sm:h-8 sm:w-8" />
       </IconWrapper>
       <IconWrapper className={cn('rotate-90 opacity-0 dark:rotate-0 dark:opacity-100')}>
-        <Moon className="h-6 w-6 sm:h-8 sm:w-8" />
+        <Icons.Moon className="h-6 w-6 sm:h-8 sm:w-8" />
       </IconWrapper>
     </Toggle.Root>
   );

@@ -2,8 +2,8 @@ import type { Post } from 'contentlayer/generated';
 
 import { getDistanceToNow } from '@/utils/date-utils';
 
-import { CalendarIcon, TimeIcon } from '../_icons';
 import Container from '../Container';
+import { Icons } from '../Icons';
 import PostViews from '../PostViews';
 import Footer from './Layout.BaseFooter';
 import Header from './Layout.BaseHeader';
@@ -27,11 +27,11 @@ function LayoutPost({ children, post }: LayoutPostProps) {
           <h1 className="text-4xl font-bold leading-tight">{post.title}</h1>
           <div className="mt-6 flex items-center gap-4 text-gray-700 dark:text-gray-300">
             <div className="flex items-center gap-1">
-              <TimeIcon width={16} height={16} />
+              <Icons.Timer width={16} height={16} />
               <p className="text-xs">{post.readingTime}</p>
             </div>
             <div className="flex items-center gap-1">
-              <CalendarIcon width={16} height={16} />
+              <Icons.Calendar width={16} height={16} />
               <p className="text-xs">{getDistanceToNow(post.date, { humanize: false })}</p>
             </div>
             <PostViews slug={post.slugAsParams} />

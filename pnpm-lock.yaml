@@ -32,6 +32,7 @@ specifiers:
   framer-motion: ^7.10.3
   github-slugger: ^2.0.0
   husky: ^8.0.3
+  lucide-react: ^0.125.0
   next: ^13.2.4
   next-contentlayer: ^0.3.0
   next-sitemap: ^4.0.6
@@ -44,7 +45,7 @@ specifiers:
   prisma: ^4.11.0
   react: ^18.2.0
   react-dom: ^18.2.0
-  react-is: 18.2.0
+  react-is: ^18.2.0
   rehype-autolink-headings: ^6.1.1
   rehype-pretty-code: ^0.9.4
   rehype-slug: ^5.1.0
@@ -69,6 +70,7 @@ dependencies:
   date-fns: 2.29.3
   framer-motion: 7.10.3_biqbaboplfbrettd7655fr4n2y
   github-slugger: 2.0.0
+  lucide-react: 0.125.0_react@18.2.0
   next: 13.2.4_rfdx5ocjtvb4b2h5j5ipjicct4
   next-contentlayer: 0.3.0_rxyzbctjuznd6cmvogf5xnmehq
   next-sitemap: 4.0.6_jccvrrmb7rb3yyi3af3znueaea
@@ -6111,6 +6113,17 @@ packages:
     engines: { node: '>=10' }
     dependencies:
       yallist: 4.0.0
+
+  /lucide-react/0.125.0_react@18.2.0:
+    resolution:
+      {
+        integrity: sha512-tadphtB6TPytEitR9vX75hqu9PQT/uz5RcvXMq976nC190eukAM9+cHMgBxfvfEGDXwIhIT9aFxTUGdAjxw9uQ==,
+      }
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /make-error/1.3.6:
     resolution:
