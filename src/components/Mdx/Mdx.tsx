@@ -8,9 +8,9 @@ import * as React from 'react';
 import { cn } from '@/utils/style-utils';
 
 import Admonition from '../Admonition';
-import SpicyText from '../SpicyText';
 
 const mdxImageStyle = cva('my-4 mx-auto w-full h-full object-contain');
+
 const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) {
     return <div className={cn(mdxImageStyle(), className)} />;
@@ -33,6 +33,7 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
     />
   );
 };
+
 const Video = ({ className, ...props }: React.VideoHTMLAttributes<HTMLVideoElement>) => (
   <video
     controls
@@ -182,7 +183,6 @@ const components: MDXComponents = {
 
   // custom
   Admonition,
-  SpicyText,
   Video,
   ImageCaption: ({
     src,

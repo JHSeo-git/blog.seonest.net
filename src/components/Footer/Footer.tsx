@@ -1,0 +1,27 @@
+import { cva } from 'class-variance-authority';
+import Link from 'next/link';
+
+const linkStyle = cva('ml-1 font-bold text-indigo-700 dark:text-indigo-400');
+
+export function Footer() {
+  return (
+    <footer className="p-10">
+      <div className="flex items-center justify-center text-xs font-medium text-slate-600 dark:text-slate-300">
+        &copy;
+        {new Date().getFullYear()}
+        <Link
+          href="https://github.com/JHSeo-git"
+          target="_blank"
+          rel="noreferrer"
+          className={linkStyle()}
+        >
+          JHSeo
+        </Link>
+        , Built with
+        <Link href="https://nextjs.org/" target="_blank" rel="noreferrer" className={linkStyle()}>
+          Next.js
+        </Link>
+      </div>
+    </footer>
+  );
+}

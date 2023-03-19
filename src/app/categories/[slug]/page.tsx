@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import Hidden from '@/components/Hidden';
 import PostCard from '@/components/PostCard';
 import { postSorter } from '@/utils/contentlayer-utils';
 import { getMetadata } from '@/utils/metadata-utils';
@@ -55,9 +54,6 @@ async function CategoryPage({ params }: PageProps) {
 
   return (
     <>
-      <Hidden>
-        <h2>Posts by {category}</h2>
-      </Hidden>
       <section>
         <div className="flex items-baseline justify-between px-6">
           <h1 className="text-5xl font-bold capitalize">{category}</h1>

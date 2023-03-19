@@ -8,7 +8,7 @@ function LayoutBaseHeader() {
     <header className="flex h-[60px] items-center justify-center">
       <div className="flex flex-1 items-center">
         <Link href="/">
-          <Icons.TextLogo />
+          <Icons.Logo />
         </Link>
         <nav className="flex items-center"></nav>
       </div>
