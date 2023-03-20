@@ -22,7 +22,7 @@ function IndexPageLoading() {
           <div
             key={`CategoriesLinkSkeleton_${idx}`}
             className={cn(
-              'inline-block px-3 py-2 mr-4 mb-4 h-9 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-md',
+              'mr-4 mb-4 inline-block h-9 animate-pulse rounded-md bg-gray-200 px-3 py-2 dark:bg-gray-800',
               idx % 2 === 0 ? 'w-14' : 'w-[72px]'
             )}
           />

@@ -5,7 +5,6 @@ import type { Options as PrettyCodeOptions } from 'rehype-pretty-code';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
-import { visit } from 'unist-util-visit';
 
 import { getReadingTime } from './src/utils/contentlayer-utils';
 
@@ -95,21 +94,6 @@ export default makeSource({
     remarkPlugins: [remarkGfm],
     rehypePlugins: [
       rehypeSlug,
-      () => (tree) => {
-        visit(tree, (node) => {
-          if (node?.type === 'element' && node?.tagName === 'pre') {
-            const [codeEl] = node.children;
-            if (codeEl.tagName !== 'code') {
-              return;
-            }
-
-            // codeEl value와 src를 node로 복사
-            console.log({ codeEl, node });
-            node.__rawString__ = codeEl.children?.[0].value;
-            node.__src__ = node.properties?.__src__;
-          }
-        });
-      },
       [rehypePrettyCode, rehypePrettyCodeOptions],
       [rehypeAutolinkHeadings, rehypeAutolinkHeadingsOptions],
     ],

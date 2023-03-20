@@ -8,9 +8,9 @@ import * as React from 'react';
 import { cn } from '@/utils/style-utils';
 
 import Admonition from '../Admonition';
-import { CopyButton } from '../CopyButton';
+import CopyToClipboard from '../CopyToClipboard';
 
-const mdxImageStyle = cva('my-4 mx-auto w-full h-full object-contain');
+const mdxImageStyle = cva('my-4 mx-auto h-full w-full object-contain');
 
 const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) {
@@ -138,52 +138,27 @@ const components: MDXComponents = {
       {children}
     </blockquote>
   ),
-  code: ({ className, ...props }) => {
-    const inline = !className?.match('code-highlight');
-
-    if (inline) {
-      return (
-        <code
-          className={cn(
-            'font-mono text-sm font-semibold rounded text-indigo-800 bg-indigo-50 dark:bg-indigo-800 dark:text-indigo-100 px-1 py-0.5',
-            className
-          )}
-          {...props}
-        />
-      );
-    }
-
-    return <code className={className} {...props} />;
-  },
-  pre: ({
-    className,
-    __rawString__,
-    __src__,
-    ...props
-  }: React.HTMLAttributes<HTMLPreElement> & {
-    __rawString__?: string;
-    __src__?: string;
-  }) => (
-    <div className="relative">
+  code: ({ className, ...props }) => (
+    <code
+      className={cn(
+        'relative rounded bg-slate-100 py-[0.2rem] px-[0.3rem] font-mono text-sm font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400',
+        className
+      )}
+      {...props}
+    />
+  ),
+  pre: ({ className, ...props }) => (
+    <CopyToClipboard>
       <pre
-        className={cn('py-4 my-6 flex overflow-auto rounded-md', 'font-semibold', className)}
+        className={cn('my-6 flex overflow-auto rounded-md py-4', 'font-semibold', className)}
         {...props}
       />
-      {__rawString__ && (
-        <CopyButton
-          value={__rawString__}
-          src={__src__}
-          className={cn(
-            'absolute top-4 right-4 border-none text-slate-300 opacity-50 hover:bg-transparent hover:opacity-100'
-          )}
-        />
-      )}
-    </div>
+    </CopyToClipboard>
   ),
   hr: ({ className, ...props }) => (
     <hr
       className={cn(
-        'm-0 p-0 outline-none border-none',
+        'border-none p-0 outline-none',
         'm-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300',
         'bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500',
         className

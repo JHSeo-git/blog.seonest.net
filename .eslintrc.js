@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   env: {
     browser: true,
     es2021: true,
@@ -19,6 +20,7 @@ module.exports = {
   },
   plugins: ['json-format', 'simple-import-sort', 'react', 'tailwindcss', '@typescript-eslint'],
   rules: {
+    '@next/next/no-html-link-for-pages': 'off',
     '@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
     '@typescript-eslint/consistent-type-imports': [
       'error',
@@ -32,5 +34,10 @@ module.exports = {
     'simple-import-sort/exports': 'off',
     'simple-import-sort/imports': 'error',
     'tailwindcss/no-custom-classname': 'off',
+  },
+  settings: {
+    tailwindcss: {
+      callees: ['cn', 'cva'],
+    },
   },
 };

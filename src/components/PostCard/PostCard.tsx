@@ -22,7 +22,7 @@ function PostCard({ post, mode = 'base' }: PostCardProps) {
   }, [date]);
 
   return (
-    <article className={cn('group', mode === 'card' && 'p-8 bg-white dark:bg-black rounded-md')}>
+    <article className={cn('group', mode === 'card' && 'rounded-md bg-white p-8 dark:bg-black')}>
       <h3 className="text-2xl font-bold leading-normal text-black transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-400">
         {title}
       </h3>

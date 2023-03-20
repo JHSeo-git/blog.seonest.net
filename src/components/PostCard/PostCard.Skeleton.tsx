@@ -7,7 +7,7 @@ interface PostCardThumbnailProps {
 
 function PostCardThumbnail({ mode = 'base' }: PostCardThumbnailProps) {
   return (
-    <article className={cn(mode === 'card' && 'p-8 bg-white dark:bg-black rounded-md')}>
+    <article className={cn(mode === 'card' && 'rounded-md bg-white p-8 dark:bg-black')}>
       <h3 className="h-9 w-1/2 animate-pulse rounded-md bg-gray-200 dark:bg-gray-800" />
       <div className="mt-4">
         <p className="h-7 animate-pulse rounded-md bg-gray-200 dark:bg-gray-800" />

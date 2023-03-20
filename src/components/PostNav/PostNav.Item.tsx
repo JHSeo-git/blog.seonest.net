@@ -17,12 +17,12 @@ function PostNavItem({ id, level, ...rest }: PostNavItemProps) {
     <a
       {...rest}
       className={cn(
-        'block text-sm font-medium my-2 opacity-70 transition-opacity hover:opacity-100 active:opacity-100',
-        isActive && 'opacity-100 text-indigo-700 dark:text-indigo-400',
-        level === 3 && 'pl-3 mt-1',
-        level === 4 && 'pl-6 mt-1',
-        level === 5 && 'pl-9 mt-1',
-        level === 6 && 'pl-12 mt-1'
+        'my-2 block text-sm font-medium opacity-70 transition-opacity hover:opacity-100 active:opacity-100',
+        isActive && 'text-indigo-700 opacity-100 dark:text-indigo-400',
+        level === 3 && 'mt-1 pl-3',
+        level === 4 && 'mt-1 pl-6',
+        level === 5 && 'mt-1 pl-9',
+        level === 6 && 'mt-1 pl-12'
       )}
     />
   );

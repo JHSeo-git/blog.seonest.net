@@ -68,10 +68,10 @@ async function PostPage({ params }: PageProps) {
   const toc = getHeadings(post.body.raw);
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl justify-center py-10">
-      <article className="w-full max-w-4xl">
+    <main className="mx-auto py-10 xl:grid xl:grid-cols-[1fr_280px] xl:gap-10">
+      <div className="mx-auto w-full max-w-4xl xl:max-w-none">
         {post.thumbnail && (
-          <div className="relative mb-10 overflow-hidden rounded-[20px]">
+          <div className="relative overflow-hidden rounded-xl md:rounded-[20px]">
             <Image
               className="h-full w-full object-cover"
               src={post.thumbnail}
@@ -82,17 +82,21 @@ async function PostPage({ params }: PageProps) {
             />
           </div>
         )}
-        <h1 className="text-4xl font-bold leading-tight">{post.title}</h1>
-        <div className="mt-6 mb-10 flex items-center gap-4 border-b border-b-slate-200 pb-3 text-gray-700 dark:border-b-slate-700 dark:text-gray-300">
-          <div className="flex items-center gap-1">
-            <Icons.Timer width={16} height={16} />
-            <p className="text-xs">{post.readingTime}</p>
+        <div className="mt-10 border-b border-b-slate-200 pb-4 dark:border-b-slate-700">
+          <div className="flex items-center gap-4 text-gray-700 dark:text-gray-300">
+            <div className="flex items-center gap-1">
+              <Icons.Timer width={16} height={16} />
+              <p className="text-xs">{post.readingTime}</p>
+            </div>
+            <div className="flex items-center gap-1">
+              <Icons.Calendar width={16} height={16} />
+              <p className="text-xs">{getDistanceToNow(post.date, { humanize: false })}</p>
+            </div>
+            <PostViews slug={post.slugAsParams} />
           </div>
-          <div className="flex items-center gap-1">
-            <Icons.Calendar width={16} height={16} />
-            <p className="text-xs">{getDistanceToNow(post.date, { humanize: false })}</p>
-          </div>
-          <PostViews slug={post.slugAsParams} />
+          <h1 className="mt-2 text-4xl font-bold leading-tight lg:mt-4 lg:text-6xl">
+            {post.title}
+          </h1>
         </div>
         <Mdx code={post.body.code} />
         <div className="mt-20">
@@ -108,7 +112,7 @@ async function PostPage({ params }: PageProps) {
           </div>
           <hr
             className={cn(
-              'm-0 p-0 outline-none border-none',
+              'border-none p-0 outline-none',
               'm-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300',
               'bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500'
             )}
@@ -144,9 +148,11 @@ async function PostPage({ params }: PageProps) {
           <div className="h-14" />
           <Comment />
         </div>
-      </article>
-      <div className="sticky top-[104px] ml-auto hidden max-h-[calc(100vh_-_104px)] shrink-[100000] grow-0 basis-[280px] overflow-y-auto xl:block">
-        <PostNav toc={toc} title="Table Of Contents" />
+      </div>
+      <div className="hidden xl:block">
+        <div className="sticky top-[104px] max-h-[calc(100vh_-_104px)] overflow-y-auto">
+          <PostNav toc={toc} title="On This Page" />
+        </div>
       </div>
       <div className="h-12" />
     </main>

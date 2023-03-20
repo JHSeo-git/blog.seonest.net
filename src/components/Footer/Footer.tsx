@@ -21,6 +21,15 @@ export function Footer() {
         <Link href="https://nextjs.org/" target="_blank" rel="noreferrer" className={linkStyle()}>
           Next.js
         </Link>
+        , UI referenced by
+        <Link
+          href="https://ui.shadcn.com/"
+          target="_blank"
+          rel="noreferrer"
+          className={linkStyle()}
+        >
+          ui.shadcn.com
+        </Link>
       </div>
     </footer>
   );

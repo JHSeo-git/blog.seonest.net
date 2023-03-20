@@ -12,6 +12,9 @@ module.exports = {
       container: {
         center: true,
         padding: '1.5rem',
+        screens: {
+          xl: '1280px',
+        },
       },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],

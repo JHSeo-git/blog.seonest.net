@@ -11,8 +11,8 @@ function IconWrapper({ className, children }: { className?: string; children: Re
   return (
     <span
       className={cn(
-        'absolute inset-0 flex items-center justify-center transform text-black dark:text-white',
-        '[transition-property:transform,_opacity,_color] duration-500',
+        'absolute inset-0 flex items-center justify-center text-black dark:text-white',
+        'duration-500 [transition-property:transform,_opacity,_color]',
         className
       )}
       style={{ transformOrigin: '50% 100px' }}
@@ -36,9 +36,9 @@ function ToggleTheme() {
       onClick={onClick}
       aria-label={isDark ? 'Toggle light mode' : 'Toggle dark mode'}
       className={cn(
-        'relative overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-700',
+        'relative overflow-hidden rounded-full border border-gray-300 bg-gray-200 dark:border-gray-700 dark:bg-gray-700',
         'transition duration-500',
-        'w-12 h-12 sm:w-14 sm:h-14'
+        'h-12 w-12 sm:h-14 sm:w-14'
       )}
     >
       <IconWrapper className={cn('rotate-0 opacity-100 dark:-rotate-90 dark:opacity-0')}>

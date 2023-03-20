@@ -30,14 +30,14 @@ function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body
         className={cn(
-          'min-h-screen font-sans bg-white text-slate-900 dark:text-slate-50 dark:bg-slate-900',
+          'min-h-screen bg-white font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-50',
           inter.variable
         )}
       >
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Header />
-            <div className="container flex-1">{children}</div>
+            <div className="container min-w-[360px] flex-1">{children}</div>
             <Footer />
           </div>
         </Providers>
