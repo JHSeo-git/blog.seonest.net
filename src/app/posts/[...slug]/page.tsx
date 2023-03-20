@@ -8,9 +8,10 @@ import { notFound } from 'next/navigation';
 
 import Bio from '@/components/Bio';
 import Comment from '@/components/Comment';
-import Layout from '@/components/Layout';
+import { Icons } from '@/components/Icons';
 import { Mdx } from '@/components/Mdx';
 import PostNav from '@/components/PostNav';
+import PostViews from '@/components/PostViews';
 import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
 import { getDistanceToNow } from '@/utils/date-utils';
 import { generateFullUrl, getMetadata } from '@/utils/metadata-utils';
@@ -67,78 +68,88 @@ async function PostPage({ params }: PageProps) {
   const toc = getHeadings(post.body.raw);
 
   return (
-    <Layout mode="post" post={post}>
-      <div className="flex items-start justify-center">
-        <article className="max-w-[min(720px,100%)] shrink grow basis-[720px]">
-          {post.thumbnail && (
-            <div className="relative mb-10 overflow-hidden rounded-[20px]">
-              <Image
-                className="h-full w-full object-cover"
-                src={post.thumbnail}
-                alt="Thumbnail"
-                width={750}
-                height={488}
-                priority
-              />
-            </div>
-          )}
-          <Mdx code={post.body.code} />
-          <div className="mt-20">
-            <div className="flex items-center justify-end">
-              <div>
-                <h3 className="text-right text-xs font-bold text-rose-500 dark:text-rose-400">
-                  마지막 업데이트
-                </h3>
-                <p className="mt-1 text-right text-sm font-bold text-gray-500 dark:text-gray-400">
-                  {getDistanceToNow(post.lastModified, { humanize: false })}
-                </p>
-              </div>
-            </div>
-            <hr
-              className={cn(
-                'm-0 p-0 outline-none border-none',
-                'm-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300',
-                'bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500'
-              )}
+    <main className="mx-auto flex w-full max-w-7xl justify-center py-10">
+      <article className="w-full max-w-4xl">
+        {post.thumbnail && (
+          <div className="relative mb-10 overflow-hidden rounded-[20px]">
+            <Image
+              className="h-full w-full object-cover"
+              src={post.thumbnail}
+              alt="Thumbnail"
+              width={750}
+              height={488}
+              priority
             />
-            <Bio />
-            <div className="h-16" />
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="w-full md:w-auto">
-                {prev && (
-                  <Link href={prev.slug} className="group flex flex-col">
-                    <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
-                      이전
-                    </h3>
-                    <p className="mt-1 truncate font-bold transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
-                      {prev.title}
-                    </p>
-                  </Link>
-                )}
-              </div>
-              <div className="w-full md:w-auto">
-                {next && (
-                  <Link href={next.slug} className="group flex flex-col items-end">
-                    <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
-                      다음
-                    </h3>
-                    <p className="mt-1 truncate font-bold transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
-                      {next.title}
-                    </p>
-                  </Link>
-                )}
-              </div>
-            </div>
-            <div className="h-14" />
-            <Comment />
           </div>
-        </article>
-        <aside className="sticky top-[100px] ml-auto hidden max-h-[calc(100vh_-_100px)] shrink-[100000] grow-0 basis-[250px] overflow-y-auto xl:block">
-          <PostNav toc={toc} title="Table Of Contents" />
-        </aside>
+        )}
+        <h1 className="text-4xl font-bold leading-tight">{post.title}</h1>
+        <div className="mt-6 mb-10 flex items-center gap-4 border-b border-b-slate-200 pb-3 text-gray-700 dark:border-b-slate-700 dark:text-gray-300">
+          <div className="flex items-center gap-1">
+            <Icons.Timer width={16} height={16} />
+            <p className="text-xs">{post.readingTime}</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <Icons.Calendar width={16} height={16} />
+            <p className="text-xs">{getDistanceToNow(post.date, { humanize: false })}</p>
+          </div>
+          <PostViews slug={post.slugAsParams} />
+        </div>
+        <Mdx code={post.body.code} />
+        <div className="mt-20">
+          <div className="flex items-center justify-end">
+            <div>
+              <h3 className="text-right text-xs font-bold text-rose-500 dark:text-rose-400">
+                마지막 업데이트
+              </h3>
+              <p className="mt-1 text-right text-sm font-bold text-gray-500 dark:text-gray-400">
+                {getDistanceToNow(post.lastModified, { humanize: false })}
+              </p>
+            </div>
+          </div>
+          <hr
+            className={cn(
+              'm-0 p-0 outline-none border-none',
+              'm-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300',
+              'bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500'
+            )}
+          />
+          <Bio />
+          <div className="h-16" />
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div className="w-full md:w-auto">
+              {prev && (
+                <Link href={prev.slug} className="group flex flex-col">
+                  <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
+                    이전
+                  </h3>
+                  <p className="mt-1 truncate font-bold transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
+                    {prev.title}
+                  </p>
+                </Link>
+              )}
+            </div>
+            <div className="w-full md:w-auto">
+              {next && (
+                <Link href={next.slug} className="group flex flex-col items-end">
+                  <h3 className="text-sm font-bold text-gray-700 transition-all group-hover:text-indigo-700 dark:text-gray-300 dark:group-hover:text-indigo-400">
+                    다음
+                  </h3>
+                  <p className="mt-1 truncate font-bold transition-all group-hover:text-indigo-700 dark:group-hover:text-indigo-400">
+                    {next.title}
+                  </p>
+                </Link>
+              )}
+            </div>
+          </div>
+          <div className="h-14" />
+          <Comment />
+        </div>
+      </article>
+      <div className="sticky top-[104px] ml-auto hidden max-h-[calc(100vh_-_104px)] shrink-[100000] grow-0 basis-[280px] overflow-y-auto xl:block">
+        <PostNav toc={toc} title="Table Of Contents" />
       </div>
       <div className="h-12" />
-    </Layout>
+    </main>
   );
 }
 

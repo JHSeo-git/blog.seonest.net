@@ -8,6 +8,7 @@ import * as React from 'react';
 import { cn } from '@/utils/style-utils';
 
 import Admonition from '../Admonition';
+import { CopyButton } from '../CopyButton';
 
 const mdxImageStyle = cva('my-4 mx-auto w-full h-full object-contain');
 
@@ -154,17 +155,29 @@ const components: MDXComponents = {
 
     return <code className={className} {...props} />;
   },
-  pre: ({ className, ...props }) => (
+  pre: ({
+    className,
+    __rawString__,
+    __src__,
+    ...props
+  }: React.HTMLAttributes<HTMLPreElement> & {
+    __rawString__?: string;
+    __src__?: string;
+  }) => (
     <div className="relative">
       <pre
-        className={cn(
-          'py-4 my-[1em] flex overflow-auto rounded-md',
-          'font-semibold',
-          '[--code-line-inset:16px] sm:[--code-line-inset:32px]',
-          className
-        )}
+        className={cn('py-4 my-6 flex overflow-auto rounded-md', 'font-semibold', className)}
         {...props}
       />
+      {__rawString__ && (
+        <CopyButton
+          value={__rawString__}
+          src={__src__}
+          className={cn(
+            'absolute top-4 right-4 border-none text-slate-300 opacity-50 hover:bg-transparent hover:opacity-100'
+          )}
+        />
+      )}
     </div>
   ),
   hr: ({ className, ...props }) => (

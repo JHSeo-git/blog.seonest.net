@@ -3,7 +3,7 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: ['./src/**/*.{js,jsx,ts,tsx}', './content/**/*.mdx'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
   future: {
     hoverOnlyWhenSupported: true,
   },
@@ -38,5 +38,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/line-clamp')],
 };
