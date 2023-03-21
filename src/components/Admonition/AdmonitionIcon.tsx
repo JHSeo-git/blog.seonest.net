@@ -5,7 +5,7 @@ interface AdmonitionIconProps {
   admonitionType: AdmonitionType;
 }
 
-function AdmonitionIcon({ admonitionType }: AdmonitionIconProps) {
+export function AdmonitionIcon({ admonitionType }: AdmonitionIconProps) {
   return (
     <>
       {admonitionType === 'note' && <Icons.Info />}
@@ -16,5 +16,3 @@ function AdmonitionIcon({ admonitionType }: AdmonitionIconProps) {
     </>
   );
 }
-
-export default AdmonitionIcon;

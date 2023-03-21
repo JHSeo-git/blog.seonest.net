@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import PostCard from '@/components/PostCard';
+import { Card } from '@/components/Card';
 import { postSorter } from '@/utils/contentlayer-utils';
 import { getMetadata } from '@/utils/metadata-utils';
 
@@ -53,22 +53,24 @@ async function CategoryPage({ params }: PageProps) {
   const posts = allPosts.filter((post) => post.category === decodedCategory).sort(postSorter);
 
   return (
-    <>
-      <section>
-        <div className="flex items-baseline justify-between px-6">
-          <h1 className="text-5xl font-bold capitalize">{category}</h1>
-          <p className="hidden text-lg text-gray-700 dark:text-gray-300 sm:block">
-            {posts.length} Post{posts.length > 0 ? 's' : ''}
-          </p>
-        </div>
-        <div className="h-6" />
-        {posts.map((post) => (
-          <Link key={post._id} href={post.slug} className="block [&:not(:first-of-type)]:mt-8">
-            <PostCard post={post} mode="card" />
-          </Link>
-        ))}
-      </section>
-    </>
+    <main className="mx-auto max-w-4xl py-10">
+      <div className="flex items-baseline justify-between px-6">
+        <h1 className="text-5xl font-bold capitalize">{category}</h1>
+        <p className="hidden text-lg text-gray-700 dark:text-gray-300 sm:block">
+          {posts.length} Post{posts.length > 0 ? 's' : ''}
+        </p>
+      </div>
+      <div className="h-14" />
+      {posts.map((post) => (
+        <Link
+          key={post._id}
+          href={post.slug}
+          className="block transition-colors [&:not(:first-of-type)]:mt-[72px]"
+        >
+          <Card post={post} />
+        </Link>
+      ))}
+    </main>
   );
 }
 

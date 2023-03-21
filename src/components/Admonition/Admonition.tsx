@@ -1,13 +1,13 @@
 import { cn } from '@/utils/style-utils';
 
-import AdmonitionIcon from './AdmonitionIcon';
+import { AdmonitionIcon } from './AdmonitionIcon';
 
 export type AdmonitionType = 'note' | 'info' | 'tip' | 'caution' | 'danger';
 interface AdmonitionProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: AdmonitionType;
 }
 
-function Admonition({ type = 'note', children, ...rest }: AdmonitionProps) {
+export function Admonition({ type = 'note', children, ...rest }: AdmonitionProps) {
   return (
     <div
       className={cn(
@@ -33,5 +33,3 @@ function Admonition({ type = 'note', children, ...rest }: AdmonitionProps) {
     </div>
   );
 }
-
-export default Admonition;

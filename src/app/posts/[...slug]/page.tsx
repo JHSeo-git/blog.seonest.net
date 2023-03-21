@@ -6,12 +6,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import Bio from '@/components/Bio';
-import Comment from '@/components/Comment';
+import { Bio } from '@/components/Bio';
+import { Comment } from '@/components/Comment';
+import { DateDistance } from '@/components/DateDistance';
 import { Icons } from '@/components/Icons';
 import { Mdx } from '@/components/Mdx';
 import PostNav from '@/components/PostNav';
-import PostViews from '@/components/PostViews';
+import { PostViews } from '@/components/PostViews';
 import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
 import { getDistanceToNow } from '@/utils/date-utils';
 import { generateFullUrl, getMetadata } from '@/utils/metadata-utils';
@@ -90,7 +91,7 @@ async function PostPage({ params }: PageProps) {
             </div>
             <div className="flex items-center gap-1">
               <Icons.Calendar width={16} height={16} />
-              <p className="text-xs">{getDistanceToNow(post.date, { humanize: false })}</p>
+              <DateDistance date={post.date} options={{ humanize: false }} className="text-xs" />
             </div>
             <PostViews slug={post.slugAsParams} />
           </div>

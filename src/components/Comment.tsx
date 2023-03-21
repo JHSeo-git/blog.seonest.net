@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 
 import appConfig from '@/app.config';
 
-function Comment() {
+export function Comment() {
   const pathname = usePathname();
   const { theme } = useTheme();
 
@@ -31,5 +31,3 @@ function Comment() {
     </div>
   );
 }
-
-export default Comment;

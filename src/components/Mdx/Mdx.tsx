@@ -7,7 +7,8 @@ import * as React from 'react';
 
 import { cn } from '@/utils/style-utils';
 
-import Admonition from '../Admonition';
+import { Admonition } from '../Admonition';
+import { Callout } from '../Callout';
 import CopyToClipboard from '../CopyToClipboard';
 
 const mdxImageStyle = cva('my-4 mx-auto h-full w-full object-contain');
@@ -171,6 +172,7 @@ const components: MDXComponents = {
 
   // custom
   Admonition,
+  Callout,
   Video,
   ImageCaption: ({
     src,

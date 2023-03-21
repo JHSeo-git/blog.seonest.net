@@ -47,9 +47,12 @@ services:
 
 PlanetScale은 MySQL 데이터베이스 클러스터링 시스템인 Vitess를 사용하여 만들어졌습니다. 덕분에 손쉬운 구성, 스케일링, 백업, 복구 등을 제공합니다.
 
-> Vitess는 Go로 작성된 MySQL 데이터베이스 클러스터링 [오픈 소스](https://github.com/vitessio/vitess) 시스템입니다.  
-> Youtube, Slack, Github 등에서 사용되고 있습니다.  
-> Vitess에 대해 더 자세한 내용을 알고 싶다면 [여기](https://vitess.io/)를 확인하세요.
+<Callout>
+  Vitess는 Go로 작성된 MySQL 데이터베이스 클러스터링 [오픈 소스](https://github.com/vitessio/vitess)
+  시스템입니다. <br />
+  Youtube, Slack, Github 등에서 사용되고 있습니다. <br />
+  Vitess에 대해 더 자세한 내용을 알고 싶다면 [여기](https://vitess.io/)를 확인하세요.
+</Callout>
 
 PlanetScale을 선택한 이유는 여러가지가 있습니다.
 
@@ -71,8 +74,10 @@ PlanetScale은 git 처럼 브랜치 기반으로 동작하며 브랜치별로 �
 `dev` 스키마 정보를 `main` 브랜치로 가져오고 싶다면 `dev` 브랜치에서 `main` 브랜치로 `pull request`를 진행하고, 승인을 득한 뒤 `merge`하면 반영됩니다.
 (Github 브랜치 머지와 비슷하다고 생각했습니다.)
 
-> 무료 플랜에서는 2개의 브랜치(production branch, development branch)만 사용할 수 있습니다.  
-> 더 자세한 플랜은 [여기](https://www.planetscale.com/pricing)를 참고해주세요.
+<Callout>
+  무료 플랜에서는 2개의 브랜치(production branch, development branch)만 사용할 수 있습니다.
+  <br />더 자세한 플랜은 [여기](https://www.planetscale.com/pricing)를 참고해주세요.
+</Callout>
 
 > 주의해야 될 것이 있는데 PlanetScale은 [외래키 제약사항을 지원하지 않습니다.](https://planetscale.com/docs/learn/operating-without-foreign-key-constraints#why-not-support-foreign-key-constraints)
 
@@ -134,7 +139,10 @@ mysql://....
 - production에는 vercel env setting에서 main branch 연결 정보를 저장합니다.
 - preview, dev에는 vercel env setting에서 preview branch 연결 정보를 저장합니다.
 
-> next.js 앱을 배포하기 위해 vercel 사용한다는 것을 전제로 작성되었습니다. 그 외 배포 방법은 비슷하게 env 설정하면 될 것 같습니다.
+<Callout>
+  next.js 앱을 배포하기 위해 vercel 사용한다는 것을 전제로 작성되었습니다. 그 외 배포 방법은
+  비슷하게 env 설정하면 될 것 같습니다.
+</Callout>
 
 ### schema migrate
 
@@ -166,10 +174,13 @@ preview에 prisma를 통해 `npx prisma db push`를 하면 preview branch에 tab
 npx prisma studio
 ```
 
-> https://github.com/prisma/prisma/issues/7292  
-> 위 issue를 확인해보면 planetscale에서 migrate 기능을 사용에 제한이 있다는 것과 해결할 수 있는 방법이 있습니다.  
-> 그러나 planetscale에서는 free tier에서는 최대 2개 브랜치만 제공하는데, 위 migrate 기능을 위해 shadow database를 사용하기 때문에 free tier에서는 브랜치를 더 생성할 수 없습니다.  
-> 그래서 migrate 기능을 사용하지 않고 prisma db push를 사용하였습니다.
+<Callout>
+  https://github.com/prisma/prisma/issues/7292 <br />
+  위 issue를 확인해보면 planetscale에서 migrate 기능을 사용에 제한이 있다는 것, 그리고 그에 대한 해결책이
+  있습니다. 그러나 planetscale에서는 free tier에서는 최대 2개 브랜치만 제공하는데, 위 migrate 기능을
+  위해 shadow database를 사용하기 때문에 free tier에서는 브랜치를 더 생성할 수 없습니다. <br />
+  그래서 migrate 기능을 사용하지 않고 prisma db push를 사용하였습니다.
+</Callout>
 
 ### schema deploy
 
