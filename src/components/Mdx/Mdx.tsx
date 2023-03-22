@@ -100,7 +100,7 @@ const components: MDXComponents = {
   a: ({ className, children, ...props }) => (
     <a
       className={cn(
-        'font-medium text-slate-900 underline underline-offset-4 dark:text-slate-50',
+        'break-all font-medium text-slate-900 underline underline-offset-4 dark:text-slate-50',
         className
       )}
       {...props}

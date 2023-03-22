@@ -11,7 +11,7 @@ export function Admonition({ type = 'note', children, ...rest }: AdmonitionProps
   return (
     <div
       className={cn(
-        'mb-2 rounded-lg border-l-[5px] border-gray-500 bg-gray-100 p-4 text-gray-900 shadow-sm dark:bg-gray-800 dark:text-gray-50',
+        'my-6 rounded-lg border-l-[5px] border-gray-500 bg-gray-100 p-4 text-gray-900 shadow-sm dark:bg-gray-800 dark:text-gray-50',
         type === 'note' &&
           'border-gray-500 bg-gray-50 text-gray-900 dark:bg-gray-800 dark:text-gray-50 [&>div:first-child]:text-gray-700 dark:[&>div:first-child]:text-gray-400',
         type === 'caution' &&
