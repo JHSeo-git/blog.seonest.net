@@ -1,1 +1,1 @@
-export { default } from './Bio';
+export { Bio } from './Bio';

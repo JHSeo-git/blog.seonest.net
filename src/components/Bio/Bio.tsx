@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import appConfig from '@/app.config';
 
-function Bio() {
+export function Bio() {
   return (
     <div className="flex items-center">
       <Image
@@ -42,5 +42,3 @@ function Bio() {
     </div>
   );
 }
-
-export default Bio;

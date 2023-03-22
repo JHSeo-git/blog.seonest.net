@@ -110,7 +110,7 @@ React Server Component를 사용하는 server-centric routing에는 몇 가지 �
 - 새로운 클라이언트 컴포넌트를 사용하지 않을 경우 client-side navigating할 때 브라우저에 추가적인 JavaScript가 로드되지 않습니다.
 - 라우터는 모든 데이터가 로드되기 이전에 렌더링을 시작할 수 있기 때문에 새로운 스트리밍 프로토콜을 활용합니다.
 
-사용자가 앱에서 navigate할 때, 라우터는 인메모리 client-side 캐시에 React Server Component <SpicyText>payload</SpicyText>의 결과를 저장합니다.
+사용자가 앱에서 navigate할 때, 라우터는 인메모리 client-side 캐시에 React Server Component `payload`의 결과를 저장합니다.
 캐시는 라우트 segment에 의해 분할됩니다. 라우트 segment는 어떤 레벨에서든 무효화를 허용하고 concurrent 렌더링에서 일관성을 보장합니다.
 이것은 특정 경우에 이전에 fetch된 segment의 캐시를 재사용할 수 있다는 것을 의미합니다.
 

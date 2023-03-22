@@ -1,1 +1,1 @@
-export { default } from './Admonition';
+export { Admonition } from './Admonition';

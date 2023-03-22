@@ -1,7 +1,7 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import ko from 'date-fns/locale/ko';
 
-type GetDistanceToNowOptions = {
+export type GetDistanceToNowOptions = {
   humanize?: boolean;
 };
 export const getDistanceToNow = (

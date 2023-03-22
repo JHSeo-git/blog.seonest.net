@@ -1,20 +1,18 @@
-import { FireIcon, ImportantIcon, InfoIcon, LightBulbIcon, WarningFillIcon } from '../_icons';
+import { Icons } from '../Icons';
 import type { AdmonitionType } from './Admonition';
 
 interface AdmonitionIconProps {
   admonitionType: AdmonitionType;
 }
 
-function AdmonitionIcon({ admonitionType }: AdmonitionIconProps) {
+export function AdmonitionIcon({ admonitionType }: AdmonitionIconProps) {
   return (
     <>
-      {admonitionType === 'note' && <InfoIcon />}
-      {admonitionType === 'caution' && <WarningFillIcon />}
-      {admonitionType === 'danger' && <FireIcon />}
-      {admonitionType === 'info' && <ImportantIcon />}
-      {admonitionType === 'tip' && <LightBulbIcon />}
+      {admonitionType === 'note' && <Icons.Info />}
+      {admonitionType === 'caution' && <Icons.AlertTriangle />}
+      {admonitionType === 'danger' && <Icons.Flame />}
+      {admonitionType === 'info' && <Icons.AlertCircle />}
+      {admonitionType === 'tip' && <Icons.Lightbulb />}
     </>
   );
 }
-
-export default AdmonitionIcon;

@@ -40,7 +40,7 @@ export const Post = defineDocumentType(() => ({
       type: 'date',
       required: true,
     },
-    lastModifed: {
+    update: {
       type: 'date',
     },
   },
@@ -59,7 +59,7 @@ export const Post = defineDocumentType(() => ({
     },
     lastModified: {
       type: 'date',
-      resolve: (post) => post.lastModified ?? post.date,
+      resolve: (post) => post.update ?? post.date,
     },
   },
 }));

@@ -104,7 +104,11 @@ Metadata API는 13.2 버전부터 App Router(`app`)에서 사용할 수 있습�
 [SEO에 대해 더 알아보거나](https://beta.nextjs.org/docs/guides/seo)
 또는 [메타데이터를 위한 API reference](https://beta.nextjs.org/docs/api-reference/metadata)를 참고하세요.
 
-저도 메타데이터를 위해 얼마전까지 썼었던 라이브러리인 [next-seo](https://github.com/garmeeh/next-seo)팀이 커뮤니티 패키지의 작업과 초기 API 디자인에 대한 피드백에 참여했다고 하네요.
+<Callout>
+  저도 메타데이터를 위해 얼마전까지 썼었던 라이브러리인
+  [next-seo](https://github.com/garmeeh/next-seo)팀이 커뮤니티 패키지의 작업과 초기 API 디자인에
+  대한 피드백에 참여했다고 하네요.
+</Callout>
 
 ## Route Handlers
 
@@ -152,7 +156,10 @@ Route Handler는 API Routes를 대체하기 때문에 `pages` 폴더에서는 �
 
 [Route Handler에 대해 더 알아보거나](https://beta.nextjs.org/docs/routing/route-handlers) [API Refernce를 참고하세요](https://beta.nextjs.org/docs/api-reference/file-conventions/route).
 
-이 Route Handler는 [SveltKit에서 영감](https://kit.svelte.dev/docs/routing#server)을 얻었다고 합니다.
+<Callout>
+  이 Route Handler는 [SveltKit에서 영감](https://kit.svelte.dev/docs/routing#server)을 얻었다고
+  합니다.
+</Callout>
 
 ## Server Component용 MDX
 
@@ -214,7 +221,11 @@ const withMDX = require('@next/mdx')();
 module.exports = withMDX(nextConfig);
 ```
 
+<Callout>
+
 [Titus Wormer](https://wooorm.com/)가 이 프로젝트를 진행했다고 하고, Next.js 외부에서 사용하려면 [mdxjs-rs](https://github.com/wooorm/mdxjs-rs)를 확인하면 됩니다.
+
+</Callout>
 
 ## Statically Typed Links (Beta)
 
