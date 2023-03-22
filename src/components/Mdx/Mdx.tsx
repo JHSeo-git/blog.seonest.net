@@ -151,7 +151,7 @@ const components: MDXComponents = {
   pre: ({ className, ...props }) => (
     <CopyToClipboard>
       <pre
-        className={cn('my-6 flex overflow-auto rounded-md py-4', 'font-semibold', className)}
+        className={cn('my-6 overflow-x-auto rounded-md py-4', 'font-semibold', className)}
         {...props}
       />
     </CopyToClipboard>

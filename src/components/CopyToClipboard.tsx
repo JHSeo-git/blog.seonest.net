@@ -13,7 +13,7 @@ async function copyToClipboard(value: string) {
 interface CopyToClipboardProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
-function CopyToClipboard({ className, children, ...props }: CopyToClipboardProps) {
+function CopyToClipboard({ children, ...props }: CopyToClipboardProps) {
   const [hasCopied, setHasCopied] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -29,8 +29,10 @@ function CopyToClipboard({ className, children, ...props }: CopyToClipboardProps
   };
 
   return (
-    <div className={cn('relative', className)} {...props}>
-      <div ref={ref}>{children}</div>
+    <>
+      <div ref={ref} {...props}>
+        {children}
+      </div>
       <button
         className={cn(
           'absolute top-4 right-4 z-20 inline-flex h-8 items-center justify-center rounded-md border-none p-2 text-sm font-medium text-slate-300 opacity-50 outline-none transition-all hover:bg-transparent hover:opacity-100 dark:text-slate-100 dark:hover:bg-slate-800'
@@ -40,7 +42,7 @@ function CopyToClipboard({ className, children, ...props }: CopyToClipboardProps
         <span className="sr-only">Copy</span>
         {hasCopied ? <Icons.Check className="h-4 w-4" /> : <Icons.Copy className="h-4 w-4" />}
       </button>
-    </div>
+    </>
   );
 }
 

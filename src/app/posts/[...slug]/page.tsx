@@ -70,7 +70,7 @@ async function PostPage({ params }: PageProps) {
 
   return (
     <main className="mx-auto py-10 xl:grid xl:grid-cols-[1fr_280px] xl:gap-10">
-      <div className="mx-auto w-full max-w-4xl xl:max-w-none">
+      <div className="mx-auto w-full min-w-0 max-w-4xl xl:max-w-none">
         {post.thumbnail && (
           <div className="relative overflow-hidden rounded-xl md:rounded-[20px]">
             <Image

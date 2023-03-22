@@ -5,7 +5,7 @@ const linkStyle = cva('ml-1 font-bold text-indigo-700 dark:text-indigo-400');
 
 export function Footer() {
   return (
-    <footer className="p-10">
+    <footer className="py-10 px-2">
       <div className="flex flex-col items-center justify-center text-xs font-medium text-slate-600 dark:text-slate-300 sm:flex-row">
         <div>
           &copy;
