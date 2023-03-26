@@ -11,9 +11,8 @@ thumbnail: '/post/web/great-developer-experience-vercel/thumbnail.png'
 > https://leerob.io/blog/dx  
 > _- [Lee Robinson](https://twitter.com/leeerob)_
 
-개발의 세계에서 기술들은 너무나도 빠르게 커지고 발전하고 있습니다.
+개발의 세계에서 기술들은 빠르게 발전하고 있어 개발자들이 알아야 할 것도 많아지고 있습니다.
 
-우리는 그 만큼 알아야할 것도 많아집니다.
 우리가 더 나은 사용자 경험을 위해 제품과 서비스에 적용할 수 많은 기술들이 그렇습니다.
 
 그렇다면 우리는 더 나은 사용자 경험을 만들기 위해 이 _세계_ 에서 어떤 경험을 통해 좋은 결과를 이루어 낼 수 있을까요?
@@ -21,10 +20,13 @@ thumbnail: '/post/web/great-developer-experience-vercel/thumbnail.png'
 다시 말해 어떤 개발자 경험이 더 나은 결과물을 만들어 낼까요?
 
 Vercel의 DevRel를 리딩하는 [Lee Robinson](https://leerob.io/)이 개발자 경험에 관한 짧은 블로그 글을 썼습니다.
-~~(이번에 Vercel의 DX 부사장이 되었네용...)~~
 
-> DevRel: Development Relations  
-> 개발자와 개발 커뮤니티를 성장시키는데 중점을 두고 있으며 팀 또는 회사 전체의 개발 문화를 조성하는 것을 담당하는 곳입니다.
+<Callout>
+  **DevRel: Development Relations**
+  <br />
+  개발자와 개발 커뮤니티를 성장시키는데 중점을 두고 있으며 팀 또는 회사 전체의 개발 문화를 조성하는
+  것을 담당하는 곳입니다.
+</Callout>
 
 이 글을 통해서
 
@@ -36,7 +38,7 @@ Vercel의 DevRel를 리딩하는 [Lee Robinson](https://leerob.io/)이 개발자
 
 ## 들어가면서
 
-개발자는 생산성을 원하지만 복잡한 개발툴 때문에 오히려 더 낮은 결과를 낼 때가 있습니다.
+개발자는 생산성을 원하지만 복잡한 개발 툴 때문에 오히려 더 낮은 결과를 낼 때가 있습니다.
 
 여러분들도 개발하면서 느끼시겠지만 툴에는 끌어당기는 힘이 존재합니다. 설명할 수 없는, 눈에 보이지 않는, 특별한 끌어당김이 있습니다.
 
@@ -44,11 +46,11 @@ Vercel의 DevRel를 리딩하는 [Lee Robinson](https://leerob.io/)이 개발자
 
 개발자 경험(DX)는 자기력(magentic force)과 같아서 밀어내거나 끌어당깁니다. 훌륭한 개발자 경험을 가진 제품은 개발자에게 매우 중요합니다.
 
-> 저(저자)는 수백 개의 devtools을 사용해 왔습니다. 그 중에서 좋은 워크플로우로 유지했던 제품들은 계속해서 주변에 맴돌았습니다. Vercel은 저에게 그런 제품 중 하나였기 때문에 이곳에 합류했습니다.
-
 ## 좋은 개발자 경험을 만드는 것은 무엇일까요?
 
-> [개발자 경험은 소프트웨어 아키텍처의 일부입니다.](https://twitter.com/matteocollina/status/1476237583105601538) > _- Matteo Collina(member of nodejs, maintainer of fastify)_
+<Tweet id="1476237583105601538" />
+
+> 개발자 경험은 소프트웨어 아키텍처의 일부입니다.
 
 - 프레임워크 및 라이브러리
 - 문서화
@@ -59,11 +61,6 @@ Vercel의 DevRel를 리딩하는 [Lee Robinson](https://leerob.io/)이 개발자
 - **가능한 빠르게 Onboard**: 신박한 아이디어를 최대한 빠르게 시작할 수 있게 하는 것. 프레임워크와 라이브러리가 이 일을 빠르게 시작할 수 있도록 최적화 하는것. 예를 들어, `npx create-next-app` 또는 `brew install bat`. 개발자에게 빠른 반복, 빠른 피드백 루프를 위해 최적화하세요.
 - **간편한 업그레이드**: 메이저 버전을 변경할 때 변경 사항의 "폭발 반경"을 제한하여 사람들이 종속성을 쉽게 업데이트 할 수 있도록 합니다. 이상적으로는 변경 사항이 메이저 버전에 도달하기 몇 개월 전부터 동의를 구하기 시작해야합니다. 그런 다음 메이저 버전에는 codemods(코드를 마이그레이션 하고 주요 변경사항을 수정하는 스크립트)를 포함해야합니다.
 - **유용한 에러 메시지**: 오류 메시지에 하이퍼링크를 포함하여 에러를 해결할 수 있는 방법을 제공합니다. 툴을 입력할 때 피드백을 제공해야 합니다. 런타임 오류 또는 컴파일 오류 전에 빠를 수록 더 좋습니다.(ex: type check, lint). [Don't make me think](https://www.swyx.io/write-errors-that-don-t-make-me-think-24hg)
-
-| Facebook 개발자가 로컬 샌드박스에서 보는 오류 메시지                               |
-| ---------------------------------------------------------------------------------- |
-| ![fb-error-message](https://files.seonest.net/images/qnfqnfqnf/post/273/image.png) |
-
 - **강력한 defaults와 컨벤션**: 소프트웨어를 만드는데 "올바른 방법"에 대한 의견이 있습니다. 예를 들어 라우팅 설정에 대해 생각하지 말고 Next.js의 파일 시스템 기반 라우팅을 사용하세요. 컴파일과 번들링을 구성하게 하지 말고 webpack/swc/vite/esbuild를 사용하여 적절한 default 구성을 설정하세요.
 - **탈출 구멍을 제공**: 강력한 defaults에 대한 반대로 default 구성에 벗어날 경우 탈출 구멍이 있는지 확인하는 것입니다. Next.js가 처음에 성공한 이유 중 하나는 프레임워크를 벗어나지 않고 웹팩을 쉽게 재정의할 수 있었기 때문입니다. 반면 CRA는 eject하거나 [craco](https://github.com/gsoft-inc/craco) 같은 것이 있어야만 웹팩을 재정의할 수 있습니다.
 - **디펜던시에 대한 위험을 감소하세요**: `npm i next`를 하면 오직 13개 디펜던시만 설치됩니다. 나머지 디펜던시는 Next.js에 인라인됩니다. 미래에는 Next.js를 설치할 수 있는 [single binary](https://leerob.io/blog/rust)로 되길 기대합니다.
@@ -78,26 +75,18 @@ Vercel의 DevRel를 리딩하는 [Lee Robinson](https://leerob.io/)이 개발자
 - **정확하게**: 전문용어와 관용구를 피하세요. 줄임말을 사용하는 경우 독자가 그것이 무엇인지 알고 있다고 가정하지 마세요. 문서는 초보자와 전문가 모두가 접근할 수 있어야 합니다. Happy Path는 아니지만 접고 펼침이 가능한 "deep dive" 영역을 두어 전문가에게 도움이 되도록 하세요.
 - **복잡함은 점진적으로 드러내세요**: 처음 경험을 선명하게 하면서 개발자가 제품을 계속 사용하면서 복잡한 기능에 대해 점진적으로 알립니다. 개발자가 처음부터 플랫폼 전체에 대해 배우기를 기대하는 것은 현실적이지 않습니다.
 
-> The four interfaces of developer experience: APIs, CLIs, GUIs, and docs. Treat each as a product, so that those products can treat developers as customers
->
+<Tweet id="1258579119740248066" />
+
 > 개발자 경험의 4가지 인터페이스: API, CLI, GUI 그리고 문서.  
 > 각각을 제품으로 다루고 해당 제품이 개발자를 고객으로 상대할 수 있도록 하세요.
->
-> _- [Roberta Carraro](https://twitter.com/itchymutt/status/1258579119740248066)_
 
 ### APIs
 
 - **API 워크플로우를 깨지 마세요**: API 버전 관리는 매우 명시적이어야 합니다. 개발자들에게 새로운 버전으로 업데이트를 위한 충분한 시간을 주세요. 개인적으로 [Stripe API 버저닝](https://stripe.com/blog/api-versioning)이 좋았습니다. AWS에서는 수년간 안정적이었던 API에 대한 사용 중단 이메일을 보내고 몇 년의 업그레이드 시간을 제공하는 경우를 본 적이 있습니다.
 - **API를 빠르게 사용해 볼 수 있게 하세요**: 좋아하는 API 문서들 중 몇몇은 API key를 생성하고 몇 초안에 endpoint를 시험해볼 수 있습니다. 일부는 이미 로그인되어 있다는 것을 인식하고 계정 정보를 기반으로 페이지를 개인화합니다. [Square가 아주 좋은 예입니다.](https://developer.squareup.com/explorer/square) 또한 전체 graph 스키마를 볼 수 있고 request를 만들고 mutation을 수행하고 코드를 format하고 등등을 제공하는 [GraphiQL](https://github.com/graphql/graphiql)도 좋은 예입니다.
 
-> An API needs designing. It needs
->
-> - a conscious language and consistent conventions.
-> - Standard auth.
-> - Paging.
-> - Careful error codes and messages.
-> - Versioning.
->
+<Tweet id="1471351025252519936" />
+
 > API는 설계가 필요합니다.
 >
 > - 의식적인 언어와 일관된 컨벤션
@@ -105,8 +94,6 @@ Vercel의 DevRel를 리딩하는 [Lee Robinson](https://leerob.io/)이 개발자
 > - 페이징처리
 > - 잘 만들어진 에러 코드와 메시지
 > - 버전 관리
->
-> _- [Jessica Joy Kerr](https://twitter.com/jessitron/status/1471351025252519936)_
 
 ## Investing in DX (Vercel)
 
@@ -115,9 +102,6 @@ DX는 고객에게만 중요한 것이 아니라 제품 주도 성장(product-le
 - **미래는 Edge**: 개발자가 몇 초만에 글로벌 애플리케이션을 `git push`하고, 수 초안에 글로벌 애플리케이션을 받아볼 있도록 함으로써 Vercel은 이제 매 주 250억 건이상의 요청을 Edge에서 처리하고 있습니다. 그리고 그 수는 꾸준히 성장하고 있습니다. Edge Function에서 [서버렌더링 SveltKit](https://sveltekit-on-the-edge.vercel.app/)과 같은 새로운 Edge 컴퓨팅 도구는 이를 더욱 발전 시킵니다.
 - **프론트엔드 개발자의 역량 강화**: Next.js Discord 커뮤니티의 40,000명 정도의 개발자, 40명의 JavaScript 개발자로 구성된 [하이퍼 로컬 그룹](https://twitter.com/leeerob/status/1531695305766445056), 다음 세대의 개발자를 교육하고 활성화하는데 도움을 주고 있습니다.
 - **프레임워크는 개발자를 가능하게 합니다**: 서버에서 렌더링된 React 애플리케이션을 만드는 프로세스를 단순화하기 위해 Next.js를 만들었습니다. _프레임워크_ 개발자 경험에 투자하고 개발자가 최적화된 React 사이트를 신속하게 구축할 수 있도록 함으로써 Next.js는 주간 다운로드 수 270만 이상을 달성했습니다.(그리고 Node.js / Kubernetes 보다 더 많은 [Github star](https://github.com/vercel/next.js) 도 달성했습니다.)
-
-> Next.js는 작년 NPM 다운로드에 비해 2배 이상 증가했습니다.
-> https://twitter.com/hashim_warren/status/1489309802417246212
 
 ## DX at Vercel
 
@@ -134,25 +118,26 @@ Vercel DX부서에는 4개의 기둥이 있습니다.
 - **커뮤니티**: 미팅, 컨퍼런스, 커뮤니티를 통해 함께 만들고 배울 수 있는 프론트엔드 개발자 커뮤니티를 육성합니다.
 - **템플릿**: 성능, 접근성, 디자인에 중점을 두면서 보다 쉽게 구축을 시작할 수 있도록 합니다.
 
-> 엔지니어링 조직에는 _내부_ 개발자 경험(또는 [개발자 생산성](https://www.airbnb.co.kr/careers/departments/engineering/dev_infra)) 팀이 있을 수도 있습니다.
+> 엔지니어링 조직에는 _내부_ 개발자 경험(또는 [개발자 생산성](https://www.airbnb.co.kr/careers/departments/engineering/dev_infra)) 팀이 있을 수도 있습니다.  
 > 테스트를 보다 안정적으로 만들고, 공유된 도구들을 만들고, 빌드 성능을 향상시키고 팀이 코드를 더 빠르게 배포할 수 있도록 돕습니다.
 
 [훌륭한 개발자 경험](https://leerob.io/blog/developer-experience-examples)을 구축하는데 도움이 되는 4가지 운영 원칙이 있습니다.
 
 - **노출되는 시간을 늘이기**: 개발자와 접촉하는 시간을 늘려서 우리 제품에 어떤 어려움을 겪는지 직접 이해합니다. 우리는 개발자들과 이야기하고 동영상을 보거나 기사를 읽고 실시간 스트리밍에 참여하기도 합니다.
 - **만들면서 배우기**: 새로운 기능에 대한 알파 테스터가 되어야 합니다. 이는 교육 콘텐츠를 만들 때 도움이 될 뿐만 아니라 제품 피드백과 개선에도 좋은 영향을 줍니다.
-  **- 공감대 형성이 첫번째**: 모든 개발자가 양질의 소프트웨어를 빌드할 수 있도록 하려면 일상적인 문제를 이해해야 합니다. 초보자와 전문가 모두에게 공감하는 것이 중요합니다.
+- **공감대 형성이 첫번째**: 모든 개발자가 양질의 소프트웨어를 빌드할 수 있도록 하려면 일상적인 문제를 이해해야 합니다. 초보자와 전문가 모두에게 공감하는 것이 중요합니다.
 - **Hell yeah 또는 아니오**: 느낌이 좋지 않다면 ["hell yeal!"](https://sive.rs/hyn) 라고 말하지말고 no라고 말하세요. 이를 우리의 가치와 일치하는 가장 중요한 작업에 집중하는데 도움이 됩니다.
 
 ## 마무리하며
 
 > Let's make the Web, faster
 
-몇 번 우연히 지나가다가 Lee Robinson의 글이나 영상을 본 적이 있었는데 좋은 영향력을 가진 사람이라는 것이 느껴졌습니다. ~~(글도 잘 쓰고... 말도 잘하고...)~~
+Lee Robinson은 개발자 경험에 대한 좋은 영향력을 가진 인물로서 그의 글과 영상은 많은 사람들에게 도움이 됩니다.
+Vercel 제품, 특히 Next.js를 사용하면서 개발자 경험이 좋다고 느끼지만 그 이유를 명확하게 설명하기 어려웠을지도 모릅니다.
+이 글을 통해 개발자 경험에 대한 명확한 이해를 할 수 있게 되었습니다.
 
-Vercel의 제품(특히 Next.js)을 쓰면서 문서도 정말 잘 되어있고, 개발자 경험이 좋다고 느낀적이 몇 번 있었는데 개발자 경험에 대해서 특정할 수 없는 무언가를 설명하긴 어려웠었는데 이 글을 보니 조금은 구체적으로 이해가 가는 것 같습니다.
-
-많은 사람들이 개발자 경험을 말하지만 막상 설명하기엔 어려운 주제였는데 이 글을 보면서 어느정도 구체화 된 부분이 있었던 것 같습니다.
+개발자 경험은 어려운 주제지만, 이 글을 통해 팀 내에서도 개발자 경험을 향상시키기 위한 관점을 생각해볼 수 있게 되었습니다.
+결국, 좋은 개발자 경험은 제품뿐만 아니라 팀 내에서도 중요한 역할을 하며, 이를 통해 개발 과정에서의 만족도와 생산성을 높일 수 있습니다.
 
 굳이 제품이 아닌 작게는 팀 내에서도 개발자 경험을 위해 어떤 관점에서 접근해야될지, 그런 부분도 생각하게 되는 글인 것 같습니다.
 
