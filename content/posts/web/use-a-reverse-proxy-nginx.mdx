@@ -5,10 +5,11 @@ date: '2022-03-27T14:14:41.139Z'
 category: 'web'
 tags: ['Nginx', 'Node.js', 'Web']
 thumbnail: '/post/web/use-a-reverse-proxy-nginx/thumbnail.png'
+update: '2023-03-26T15:03:51Z'
 ---
 
-> https://www.fastify.io/docs/latest/Guides/Recommendations/ > https://medium.com/intrinsic/why-should-i-use-a-reverse-proxy-if-node-js-is-production-ready-5a079408b2ca
-> 웹 서비스를 만들고 리버스 프록시를 쓰는데 왜 써야하는지에 대해서 모르고 쓰다가 지나가는 길에 읽고 기억하기 위해 작성합니다.
+> https://www.fastify.io/docs/latest/Guides/Recommendations/  
+> https://medium.com/intrinsic/why-should-i-use-a-reverse-proxy-if-node-js-is-production-ready-5a079408b2ca
 
 최근에 GraphQL을 익혀보려고 Node.js로 graphql 서버를 연습삼아 작성하고 있습니다.
 
@@ -16,26 +17,25 @@ thumbnail: '/post/web/use-a-reverse-proxy-nginx/thumbnail.png'
 
 ## 들어가면서
 
-Node.js는 표준 라이브러리 내에서 easy-to-use 웹 서버를 가진 얼리 어답터 프레임워크 입니다.
+Node.js는 표준 라이브러리 내에서 easy-to-use 웹 서버를 가진 프레임워크 입니다.
 이전에는 PHP, Python과 같은 언어에서는 웹 서버나 해당 언어와 작동하는 일종의 [CGI gateway](https://en.wikipedia.org/wiki/Common_Gateway_Interface)를 설정할 수 있는 기능이 필요했습니다.
 
-> **CGI gatweay: Common Gateway Interface**
+> **CGI gatweay: Common Gateway Interface**  
 > 웹 서버 상에서 어플리케이션을 동작시키기 위한 조합입니다.
-> 이름에서 알 수 있듯이, CGI는 어디까지나 인터페이스이며, 특정 플랫폼에 의존하지 않고, 웹 서버 등으로부터 외부 프로그램을 호출하는 조합을 가리킵니다.
-> (근래에는 어지간한 웹 서버는 CGI를 다 지원합니다.)
+> 이름에서 알 수 있듯이, CGI는 어디까지나 인터페이스이며, 특정 플랫폼에 의존하지 않고, 웹 서버 등으로부터 외부 프로그램을 호출하는 조합을 가리킵니다. 근래에는 어지간한 웹 서버는 CGI를 다 지원합니다.
 
 Node.js를 사용하면 _직접_ HTTP request를 다룰 수 있습니다.
 그로 인해 multiple domain에 대한 요청, muptiple port(ex, HTTP, HTTPS)에 대한 listen을 하는 이러한 어플리케이션을 인터넷에 직접 노출하여 request를 처리하려는 유혹이 있습니다.
 
 Fastify 팀은 이것은 안티패턴이자 극도로 나쁜 케이스로 **강력하게** 고려합니다.
 
-1. 초점을 흐리게하여 어플리케이션에 불필요한 복잡성을 추가합니다.
+1. 어플리케이션에 불필요한 복잡성을 추가합니다.
 2. horizontal scalability(스케일 아웃)을 막습니다.
 
 Reverse Proxy를 사용하는 논의에 대한 예는 다음과 같은 상황들이 있을 수 있습니다.
 
 1. 앱은 load를 처리하기 위해 여러 인스턴스가 필요합니다.
-2. 앱은 TLS(SSL) Termination이 필요합니다.
+2. 앱은 TLS(SSL) Termination이 필요합니다.  
    (TLS(SSL) Termination은 암호화된 데이터 트래픽을 해독하는 프로세스 입니다. HTTPS를 말합니다.)
 3. 앱은 HTTP요청을 HTTPS로 redirect 하는 기능이 필요합니다.
 4. 앱은 muptiple domain을 serve하는 기능이 필요합니다.
@@ -47,34 +47,27 @@ Reverse Proxy를 사용하는 논의에 대한 예는 다음과 같은 상황들
 
 > https://medium.com/intrinsic-blog/why-should-i-use-a-reverse-proxy-if-node-js-is-production-ready-5a079408b2ca
 
-2012년 PHP, Ruby on Rails가 웹 어플리케이션 서버의 최강자였습니다. 그러나 새로운 경쟁자가 커뮤니티를 폭풍으로 몰아넣었습니다. 그 경쟁자는 [1M concurrent connection](https://blog.caustik.com/2012/08/19/node-js-w1m-concurrent-connections/)을 다루는 서버였습니다. 이 기술은 Node.js였으며 그 이후로 꾸준히 인기를 얻고 있습니다.
+2012년 PHP, Ruby on Rails가 웹 어플리케이션 서버의 최강자였습니다. 그러나 새로운 경쟁자가 커뮤니티를 폭풍으로 몰아넣었습니다. 그 경쟁자는 [동시에 1M 연결](https://blog.caustik.com/2012/08/19/node-js-w1m-concurrent-connections/)을 다루는 서버였습니다. 이 기술은 Node.js였으며 그 이후로 꾸준히 인기를 얻고 있습니다.
 
-당시 대부분의 경쟁 서비스와 달리 Node.js는 웹 서버가 내장(built-in)되어 있었습니다. 이것은 개발자들이 많은 configuration file(php.ini등), 계층적 collection(.htaccess등)을 지나칠 수 있다는 것이었습니다. 내장된 웹 서버가 있으면 업로드된 파일을 처리하는 기능, Websocket 구현의 용이성과 같은 다른 편의성도 제공되었습니다.
+당시 대부분의 경쟁 서비스와 달리 Node.js는 웹 서버가 내장(built-in)되어 있었습니다. 이것은 개발자들이 많은 설정 파일(`php.ini`, `.htaccess`등)을 지나칠 수 있다는 것이었습니다. 내장된 웹 서버가 있으면 업로드된 파일을 처리하는 기능, Websocket 구현의 용이성과 같은 다른 편의성도 제공되었습니다.
 
-매일 Node.js 기반 웹 어플리케이션은 수십억 개의 요청을 문제없이 처리합니다. 세계에서 가장 큰 회사의 대부분은 Node.js에 의한 몇가지 방법으로 제공되고 있습니다. Node.js가 `production-ready`라고 말하는 것은 확실히 절제된 표현입니다. 그러나 Node.js가 시작된 이래로 유지되는 진실에 대한 몇 가지 조언이 있습니다: Node.js process를 웹에 노출하지 말고 reverse proxy뒤에 숨겨라.
+매일 Node.js 기반 웹 어플리케이션은 수십억 개의 요청을 문제없이 처리합니다. 세계의 많은 큰 회사에서도 대부분은 Node.js를 사용하여 서비스를 제공되고 있습니다. 그러나 Node.js가 시작된 이래로 유지되는 몇 가지 조언이 있습니다:
+
+**Node.js process를 웹에 노출하지 말고 reverse proxy뒤에 숨겨라.**
 
 reverse proxy를 사용해야하는지 이유를 보기 전에 먼저 reverse proxy가 무엇인지 살펴보겠습니다.
 
 ### Reverse Proxy
 
-> Reverse Proxy는 기본적으로 요청을 받고, 다른 곳에 있는 HTTP 서버에게 넘기고, 응답을 받고, 원래 요청자에게 응답을 하는 웹 서버의 특별한 형태입니다.
-> **no proxy:**
-> request: requester -> http server
-> response: http server -> requester
-> **with reverse proxy:**
-> request: requester(요청) -> **reverse proxy** -> http server(처리)
+> Reverse Proxy는 기본적으로 요청을 받고, 다른 곳에 있는 HTTP 서버에게 넘기고, 응답을 받고, 원래 요청자에게 응답을 하는 웹 서버의 특별한 형태입니다.  
+> **no proxy:**  
+> request: requester -> http server  
+> response: http server -> requester  
+> **with reverse proxy:**  
+> request: requester(요청) -> **reverse proxy** -> http server(처리)  
 > response: http server(응답) -> **reverse proxy** -> requester
 
 reverse proxy는 일반적으로 받았던 request와 동일한 request을 보내지 않습니다. 일반적으로 어떤 방식으로든 request를 수정합니다.
-
-여러 예가 있습니다.
-
-- reverse proxy가 `www.example.org:80`에 있고 request를 `ex.example.org:8080`으로 보낸다고 한다면, target의 Header와 일치하도록 original `Host`를 target의 `Host`로 재작성 하는 것
-- 이상한 request를 cleaning up하는 것
-- 프로토콜 간 변환하는 것 등 다양한 방식으로 request를 수정하는 것
-- response에 gzip 압축을 수행하는 것이 일반적인 것입니다.
-- 기본 서비스가 HTTP만 사용할 때 HTTPS 지원을 활성화 하는 것
-- 들어오는 요청을 여러 백엔드 인스턴스에 전달할 수 있습니다. 서비스가 `api.example.org` 노출되어 있다면, reverse proxy는 request를 `api1.internal.example.org`, `api2`등으로 전달할 수 있습니다.
 
 다양한 reverse proxy가 있습니다.
 
@@ -93,16 +86,18 @@ reverse proxy는 일반적으로 받았던 request와 동일한 request을 보�
 
 #### SSL Termination
 
-> https://...
+> https
 
 SSL Termination은 reverse proxy를 사용하는 가장 일반적인 이유 중 하나입니다.
 
-`http`에서 `https`로 변경하는 것은 단순히 `s`를 붙히는 것 보다 더 많은 것을 해야 합니다. Node.js는 스스로 `https`를 위해 필요한 encryption, decryption을 _수행할 수 있습니다._ 그리고 필요한 인증서 파일을 읽도록 구성할 수 있습니다.
+`http`에서 `https`로 변경하는 것은 단순히 `s`를 붙히는 것 보다는 더 많은 것을 해야 합니다. Node.js는 스스로 `https`를 위해 필요한 encryption, decryption을 _수행할 수 있습니다._ 그리고 필요한 인증서 파일을 읽도록 구성할 수 있습니다.
 
-그러나 어플리케이션과 통신하는데 사용되는 프로토콜을 구성하는 것과 계속 만료되는 SSL 인증서를 관리하는 것은 실제로 어플리케이션에서 걱정할 것들이 아닙니다. 코드베이스에서 인증서를 확인하는 것은 지루할 뿐만 아니라 보안상 위험이 있습니다. 어플리케이션 시작할 때 central location에서 인증서를 얻는 것 또한 위험을 가집니다.
+그러나 어플리케이션과 통신하는데 사용되는 프로토콜을 구성하는 것과 계속 만료되는 SSL 인증서를 관리하는 것은 실제로 어플리케이션에서 걱정할 것들이 아닙니다.
+코드베이스에서 인증서를 확인하는 것은 지루할 뿐만 아니라 보안상 위험이 있습니다. 어플리케이션 시작할 때 central location에서 인증서를 얻는 것 또한 위험을 가집니다.
 
-> [expressjs security best practices#use-tls](https://expressjs.com/en/advanced/best-practice-security.html#use-tls) > **Use TLS**
-> ...**In general, we recommend Nginx to handle TLS. For a good reference to configure TLS on Nginx (and other servers)**, ...
+> [expressjs security best practices#use-tls](https://expressjs.com/en/advanced/best-practice-security.html#use-tls)  
+> **Use TLS**  
+> ...**일반적으로 TLS을 처리하는데 Nginx를 권장합니다**...
 
 이러한 이유로 어플리케이션 외부, 일반적으로 reverse proxy 내에서 SSL Termination을 수행하는 것이 좋습니다.
 
@@ -127,9 +122,6 @@ gzip은 쉽게 활성화하거나 비활성화할 수 없으며 대응 가능한
 
 JavaScript는 싱글 스레드 언어입니다. 따라서 Node.js는 전통적으로 싱글 스레드 서버 플랫폼이었습니다. 즉, Node.js 어플리케이션에서 최대한 많은 처리량을 얻으려면 CPU 코어 수와 거의 동일한 수의 인스턴스를 실행해야 합니다.
 
-> 정확히 따지자면 싱글 스레드 환경은 아닙니다. 주로 여러 개의 스레드가 동작하고 있습니다. "V8 엔진이 단일 콜 스택을 사용한다"는 관점에서만 싱글 스레드입니다. 여기서는 싱글 스레드 관점으로만 바라보겠습니다.
-> [여기](https://www.seonest.net/posts/Javscript-%EB%8F%99%EC%9E%91-%EC%9B%90%EB%A6%AC#event-loop)
-
 Node.js는 내장된 `cluster` module과 함께 제공됩니다. 들어오는 HTTP request는 마스터 process에서 만들어질 것입니다. 그리고 cluster worker로 전달될 것입니다.
 
 그러나, cluster worker를 동적으로 스케일링하는 것은 몇 가지 노력이 필요합니다. 또한 마스터 process를 전달하는 것과 같은 추가적인 Node.js process를 동작하는 것은 보통 overhead가 발생합니다. 다른 machine으로 process를 스케일링하는 것은 `cluster` module이 할 수 없는 것들입니다.
@@ -146,11 +138,11 @@ reverse proxy는 request가 도착할 때 새로운 어플리케이션 process�
 
 이러한 도구는 sticky session, Blue/Green 배포, A/B 테스트 등과 같은 강력한 기능을 허용합니다.
 
-> **sticky session**: 한 서버 인스턴스에만 붙어있는 세션(A 서버에서 발급된 세션이어서 B 서버에서는 세션이 없습니다. 그래서 A 서버에서 계속 응답을 할 수 있게 처리하는 것, 복제해서 다른 서버에 동기화 해주는 것과 같은 것들이 해결방법으로 있습니다.)
-> **Blue/Green 배포**: 무중단 배포 기능 중 하나로 Blue는 구 버전, Green은 신 버전으로 서버들을 동시에 분리하여 구성하고, 일제히 전환하는 전략입니다.
+> **sticky session**: 한 서버 인스턴스에만 붙어있는 세션(A 서버에서 발급된 세션이어서 B 서버에서는 세션이 없습니다. 그래서 A 서버에서 계속 응답을 할 수 있게 처리하는 것, 복제해서 다른 서버에 동기화 해주는 것과 같은 것들이 해결방법으로 있습니다.)  
+> **Blue/Green 배포**: 무중단 배포 기능 중 하나로 Blue는 구 버전, Green은 신 버전으로 서버들을 동시에 분리하여 구성하고, 일제히 전환하는 전략입니다.  
 > **A/B 테스트**: 변수 A에 비해 대상이 변수 B에 대해 보이는 응답을 테스트하는 방식입니다.
 
-저자: 개인적으로 어플리케이션 내에서 수행했던 로직들이 있던 코드베이스에서 일했었는데, 이 접근법은 어플리케이션을 유지관리하는데 상당히 어려움을 주었습니다.
+> 저자: 개인적으로 어플리케이션 내에서 수행했던 로직들이 있던 코드베이스에서 일했었는데, 이 접근법은 어플리케이션을 유지관리하는데 상당히 어려움을 주었습니다.
 
 #### Performance Benefits
 
@@ -194,7 +186,7 @@ reverse proxy는 프로토콜과 프로세스 관리를 잊게하여 비지니�
 
 ## 추가: Nginx Configuration
 
-```bash
+```conf
 # This upstream block groups 3 servers into one named backend fastify_app
 # with 2 primary servers distributed via round-robin
 # and one backup which is used when the first 2 are not reachable
@@ -304,17 +296,15 @@ server {
 
 ## 마무리
 
-> 비록 Node.js가 production에서 완벽하게 수행함에도 불구하고, HTTP Node.js 어플리케이션을 reverse proxy와 함께 사용하는 것은 많은 이점이 있습니다.
->
-> SSL과 gzip과 같은 작업이 더 빠르고. SSL 인증서 관리를 더 간편하게 만들고. 많은 양의 어플리케이션 코드 또한 줄일 수 있습니다.
->
+> 비록 Node.js가 production에서 완벽하게 수행함에도 불구하고, HTTP Node.js 어플리케이션을 reverse proxy와 함께 사용하는 것은 많은 이점이 있습니다.  
+> SSL과 gzip과 같은 작업이 더 빠르고. SSL 인증서 관리를 더 간편하게 만들고. 많은 양의 어플리케이션 코드 또한 줄일 수 있습니다.  
 > Node.js 어플리케이션과 함께 reverse proxy를 사용하는 것을 강력하게 권장합니다.
 
-reverse proxy를 추상적으로 이해하고 사용하고 있었는데 이번 기회에 조금 더 자세히 알게되어 좋았습니다. 서버에 관한 지식은 추상적으로 이해하고 넘어가는 경우가 많았던 것 같습니다.
+Reverse proxy에 대한 추상적인 이해보다 조금 더 구체적으로 이해하게 된 좋은 기회였습니다.
 
-Node.js에서 다 제공되는 기능임에도 불구하고 reverse proxy로 옮기는 작업을 고민없이 행했던 적이 많았는데 이번 기회에 어느 정도는 이해하고 넘어갈 수 있었습니다.
+Node.js에서 제공되는 기능에도 불구하고, reverse proxy를 사용하는 것이 많은 이점이 있다는 것을 배웠습니다.
 
-왜 사용해야되지? 라는 의문점이 들었을 때 한 번쯤은 진득하게 알고 넘어가는게 중요할 것 같습니다.
+이와 관련된 일이 있다면 다음엔 좀 더 이해를 바탕으로 작업을 할 수 있을 것 같습니다.
 
 ## reference
 
