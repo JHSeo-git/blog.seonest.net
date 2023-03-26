@@ -5,23 +5,24 @@ date: '2021-08-13T12:17:53.427Z'
 category: 'web'
 tags: ['Architecture', 'Web']
 thumbnail: '/post/web/알아놓으면-좋은-10가지-모던-웹-아키텍쳐-컨셉/thumbnail.png'
+update: '2023-03-26T10:39:56Z'
 ---
 
-> [10 Must-Know Concepts of Modern Web Architecture](https://betterprogramming.pub/10-must-know-concepts-of-modern-web-architecture-9ecbefef8bc)
->
 > 이 글에 대한 번역과 작은 제 생각들을 작성해보았습니다.
+
+아래는 [10 Must-Know Concepts of Modern Web Architecture](https://betterprogramming.pub/10-must-know-concepts-of-modern-web-architecture-9ecbefef8bc)의 내용을 요약 정리한 것입니다.
 
 ## 들어가면서
 
-Tim Berners-Lee님이 WWW를 발명한 후로 약 30년 정도가 지났습니다.
+Tim Berners-Lee가 WWW를 발명한 후로 약 30년 정도가 지났습니다.
 
-급격하게 websites와 web application이 발전되면서 다양한 온라인 행동을 브라우저를 통해서 진행할 수 있게 되었습니다.
+급격하게 websites와 web application이 발전되면서 다양한 행위를 브라우저를 통해서 진행할 수 있게 되었습니다.
 
 최근에는 물리적 서비스의 모든 형태가 Cloud ecosystem 으로 옮겨지기 시작했습니다.
 
 Modern web application architecture는 모든 개발자들이 알아야만 하는 클라우드 컴퓨팅 구성 요소가 있습니다.
 
-저자는 Netflix, Medium, Airbnb, Facebook과 같은 거대 기업들에 대해 연구하고 다음 모던 웹 아키텍쳐를 구성하는 10가지 구성 요소에 대해 설명합니다.
+Netflix, Medium, Airbnb, Facebook과 같은 거대 기업들에 대해 연구하고 다음 모던 웹 아키텍쳐를 구성하는 10가지 구성 요소에 대해 설명합니다.
 
 1. Server
 2. Client
@@ -45,16 +46,16 @@ Modern web application architecture는 모든 개발자들이 알아야만 하�
 
 요즘에는 가상 서버들은 베어메탈 서버 보다 더 유명합니다.
 
-> 베어메탈 서버 : 가상화를 위한 하이퍼바이저 OS 없이 물리 서버를 그대로 제공하는 것. 다른 클라우드 사용자의 영향을 받지 않는 단독 서버를 사용하는 것입니다.
+> 베어메탈 서버 : 가상화를 위한 하이퍼바이저 OS 없이 물리 서버를 그대로 제공하는 것. 다른 클라우드 사용자의 영향을 받지 않는 단독 서버를 사용하는 것입니다.  
 > 즉, 물리적 서버 그대로를 서비스 받는 서버 입니다.
 
 클라우드 서비스 제공자들은 hypervisor와 가상화 소프트웨어를 사용함으로써 그들의 물리 하드웨어 위에 가상 머신을 생성합니다.
 
-클라우드 서비스 provider 3대장과 그 가상 머신 서비스들은...
+대표적으로 클라우드 서비스 Provider는 다음과 같습니다.
 
-- amazon aws - [AWS EC2](https://aws.amazon.com/ec2)
-- ms azure - [Azure Virtual Machine](https://azure.microsoft.com/ko-kr/services/virtual-machines/)
-- google gcp - [Google Compute Engine](https://cloud.google.com/compute)
+- Amazon AWS - [AWS EC2](https://aws.amazon.com/ec2)
+- Microsoft Azure - [Azure Virtual Machine](https://azure.microsoft.com/ko-kr/services/virtual-machines/)
+- Google GCP - [Google Compute Engine](https://cloud.google.com/compute)
 
 ## 2. Client
 
@@ -68,8 +69,8 @@ Modern web application architecture는 모든 개발자들이 알아야만 하�
 클라이언트-서버 모델에서 특정 유저에게 특정 서비스를 제공하는 인증과 같은 기술들이 들어가게 됩니다.
 여기에는 2가지 클라이언트 타입이 있습니다:
 
-- thin client: 일반적인 SPA(Single Page Application)과 같이 서버에 전적으로 의존하는 클라이언트 입니다.
-- thick client: thin client와 다르게 서버에 의존하지 않습니다. 서버에 데이터를 유지하는 standalone 어플리케이션과 유사합니다.
+- Thin Client: 서버에 전적으로 의존하는 클라이언트 입니다.
+- Thick Client: Thin client와 다르게 서버에 의존하지 않습니다. 서버에 데이터를 유지하는 Standalone 어플리케이션과 유사합니다.
 
 ## 3. Microservice
 
@@ -103,7 +104,7 @@ serverless 개념은 거대 시스템을 serverless function(aka cloud function)
 > serverless는 서버가 없다는 뜻이 아닙니다. **관리해야** 할 서버가 없다는 것을 말합니다.
 
 cloud function은 요청이 들어올 때에 활성화 됩니다.
-그렇지 않다면 cloud function은 hibernation(수면) 모드로 들어갑니다.
+그렇지 않다면 cloud function은 hibernation(수면) 모드로 들어갑니다. (cold start라는 말을 들어보셨을지도 모르겠습니다.)
 
 cloud function의 lifecycle은 각 클라우드 서비스 제공자에 의해 개발된 특정 서버에 의해 다루어집니다.
 
@@ -111,8 +112,8 @@ cloud function의 lifecycle은 각 클라우드 서비스 제공자에 의해 �
 
 ## 5. Load Balancer
 
-> 둘 혹은 셋 이상의 자원에게 작업을 나누는 것을 의미합니다.
-> *- [load balancing*위키](https://ko.wikipedia.org/wiki/%EB%B6%80%ED%95%98%EB%B6%84%EC%82%B0)\_
+> 둘 혹은 셋 이상의 자원에게 작업을 나누는 것을 의미합니다.  
+> _- [load balancing - 위키](https://ko.wikipedia.org/wiki/%EB%B6%80%ED%95%98%EB%B6%84%EC%82%B0/)_
 
 Web 아키텍쳐에서 로드 밸런서는 Web 트래픽을 가용성에 따라 다른 서버로 보내는 구성요소입니다.
 
@@ -123,12 +124,11 @@ Web 아키텍쳐에서 로드 밸런서는 Web 트래픽을 가용성에 따라 
 
 요즘엔 기본적으로 HLB가 비싸고 물리 서버가 필요하기 때문에 HLB보단 SLB가 더 선호됩니다.
 
-현재는 거의 모든 클라우드 서비스 provider에서 서비스들 중에 잘 알려진 서비스형(_as-a-service_) 모델을 사용한 로드 밸런서를 통합하여 제공합니다.
+현재는 거의 모든 클라우드 서비스 Provider에서 서비스들 중에 잘 알려진 서비스형(_as-a-service_) 모델을 사용한 로드 밸런서를 통합하여 제공합니다.
 
 ## 6. API Gateway
 
-> Amazon API Gateway는 어떤 규모에서든 개발자가 API를 손쉽게 생성, 게시, 유지 관리, 모니터링 및 보안 유지할 수 있도록 하는 완전관리형 서비스입니다.
->
+> Amazon API Gateway는 어떤 규모에서든 개발자가 API를 손쉽게 생성, 게시, 유지 관리, 모니터링 및 보안 유지할 수 있도록 하는 완전관리형 서비스입니다.  
 > _- [aws api gateway](https://aws.amazon.com/ko/api-gateway/)_
 
 ![aws-api-gateway](https://d1.awsstatic.com/serverless/New-API-GW-Diagram.c9fc9835d2a9aa00ef90d0ddc4c6402a2536de0d.png)
@@ -158,10 +158,6 @@ API Gateway는 모니터링, 속도 제한, 사용율, 버전관리 등과 같�
 
 이러한 이점은 트랜잭션 안정성이 높아야되는 아키텍쳐일 때 메시지 큐를 선택할 경우 이점이 될 수 있습니다.
 
-> [kafka](https://kafka.apache.org/)라는 잘 알져진 시스템이 있습니다.
->
-> AWS에서는 [SQS](https://aws.amazon.com/ko/sqs/) 라는 이름으로 제공합니다.
-
 ## 8. CDN
 
 > Content Delivery Network: 콘텐츠 전송 네트워크
@@ -177,10 +173,13 @@ CDN은 전 세계에 있는 서버들에 정적 컨텐츠를 캐쉬합니다. �
 
 더욱이 CDN 캐싱 서버가 원래 서버에 대한 프록시 서버 역할을 하기 때문에 DDoS 공격을 방어하거나 완화할 수 있습니다.
 
-> - [AWS CloudFront](https://aws.amazon.com/ko/cloudfront/) data center locations
->   ![cloudfront-datacenter](https://d2908q01vomqb2.cloudfront.net/5b384ce32d8cdef02bc3a139d4cac0a22bb029e8/2018/06/20/Cloudfront-Map-whiteBG-1024x581.png)
-> - [CloudFlare](https://www.cloudflare.com/) data center locations
->   ![cloudflare-datacenter](https://www.cloudflare.com/resources/images/slt3lc6tev37/69kkXHCeRSINfQR3nYlxqH/1e27afe358931b4e00409141aec25ff2/facebook-link-image.png)
+[AWS CloudFront](https://aws.amazon.com/ko/cloudfront/) data center locations
+
+![cloudfront-datacenter](https://d2908q01vomqb2.cloudfront.net/5b384ce32d8cdef02bc3a139d4cac0a22bb029e8/2018/06/20/Cloudfront-Map-whiteBG-1024x581.png)
+
+[CloudFlare](https://www.cloudflare.com/) data center locations
+
+![cloudflare-datacenter](https://www.cloudflare.com/resources/images/slt3lc6tev37/69kkXHCeRSINfQR3nYlxqH/1e27afe358931b4e00409141aec25ff2/facebook-link-image.png)
 
 ## 9. Database
 
@@ -217,12 +216,18 @@ Web 어플리케이션은 인증, emaling, loggin, 모니터링, 머신 러닝, 
 
 ## 마무리
 
-요즘에는 다양한 곳에서 많은 클라우드 서비스들이 많습니다.
+이번 글에서는 모던 웹 아키텍쳐에서 알아야 하는 10가지 구성 요소에 대해 설명했습니다.
 
-aws는 말할 것도 없이 이런 것들 조차 지원돼? 하는 것들도 많습니다.
+서버, 클라이언트, Microservice, Cloud Function, Load Balancer, API Gateway, Message Queue, CDN, Database, Services 이렇게 총 10가지의 구성 요소들을 살펴보았습니다.
 
-최근에는 개발 플랫폼 조차 github codespace처럼 브라우저에서도 개발할 수 있는 상당한 수준들의 플랫폼들이 나오고 있습니다.
+이러한 클라우드 기반 아키텍쳐들은 가상화 기술과 클라우드 서비스 provider들의 발전으로 점점 더 중요해지고 있습니다.
 
-항상 시야를 열고 다양한 정보를 받아들일 마음을 가지는 게 중요한 것 같습니다.
+개발자들은 이러한 기술들을 알아두고 적절하게 활용하여 자신의 웹 애플리케이션을 더욱 효율적으로 운영할 수 있을 것입니다.
 
-이젠 모든 플랫폼에서 클라우드 시대라는 것을 실감하고 있는 나날들이 이어져 나가는 것 같습니다.
+또한, 클라우드 기반 아키텍쳐는 접근성과 유지보수성 측면에서 매우 유용한 기술이며, 개인이나 스타트업 기업들도 비교적 저렴한 비용으로 활용할 수 있는 장점이 있습니다.
+
+다양한 클라우드 서비스 provider들이 다양한 서비스를 제공하고 있기 때문에, 항상 시야를 열고 다양한 정보를 받아들일 마음가짐이 중요하다는 것을 다시 한 번 상기시켜주는 글이었습니다.
+
+## reference
+
+- https://betterprogramming.pub/10-must-know-concepts-of-modern-web-architecture-9ecbefef8bc
