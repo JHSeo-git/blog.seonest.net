@@ -4,17 +4,17 @@ description: '웹 사이트 성능 지표인 Core web vitals의 FID(First Input 
 date: '2021-11-02T11:56:19.607Z'
 category: 'web'
 tags: ['Core web vitals', 'FID', 'Web']
-thumbnail: '/post/web/웹-사이트-성능-1-지표/thumbnail.png'
+thumbnail: '/post/web/웹-사이트-성능-3-core-web-vitals-fid/thumbnail.png'
+update: '2023-03-26T13:25:18Z'
 ---
 
-> 이번 포스트에서는 core web vitals 중 하나인 FID에 대해서 알아보도록 하겠습니다.
-> _- https://web.dev/fid_
+> https://web.dev/fid
 
 FID(First Input Delay, 최초 입력 지연)는 사용자가 페이지와 상호 작용할 때 느끼는 경험을 수량화하기 때문에 [Load Responsiveness](https://web.dev/user-centric-performance-metrics/#types-of-metrics)를 측정하기 위한 중요한 사용자 중심 성능 매트릭입니다.
 
 ## 사용자 중심 성능 매트릭(User-centric performance metrics)
 
-> 성능이 얼마나 중요한지는 모두가 알고 있습니다. 그러나 성능을 개선하고 웹사이트를 "빠르게" 만든다는 것은 구체적으로 무엇을 의미할까요?
+> 성능이 얼마나 중요한지는 모두가 알고 있습니다. 그러나 성능을 개선하고 웹사이트를 "빠르게" 만든다는 것은 구체적으로 무엇을 의미할까요?  
 > _-[web.dev: 사용자 중심 성능 매트릭](https://web.dev/user-centric-performance-metrics/)_
 
 성능은 상대적 입니다.
@@ -27,7 +27,8 @@ FID(First Input Delay, 최초 입력 지연)는 사용자가 페이지와 상호
 
 ### 매트릭 정의
 
-> 일반적으로 웹 성능은 [로드 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Window/load_event)로 측정하곤 합니다. 그러나 로드가 항상 사용자의 관심 부분과 반드시 일치하는 것은 아닙니다.
+> 일반적으로 웹 성능은 [로드 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Window/load_event)로 측정하곤 합니다.
+> 그러나 로드가 항상 사용자의 관심 부분과 반드시 일치하는 것은 아닙니다.
 
 지난 몇 년동안 Chrome 팀원들은 [W3C](https://www.w3.org/webperf/)과 협력하여 사용자가 웹 페이지 성능을 경험하는 방식을 보다 정확하게 측정하기 위한 새로운 API, 매트릭을 표준화하기 위해 노력했습니다.
 
@@ -42,8 +43,8 @@ FID(First Input Delay, 최초 입력 지연)는 사용자가 페이지와 상호
 
 ## FID
 
-> **First Input Delay:**
-> 사용자가 페이지와 처음 상호 작용할 때(링크를 클릭하거나 버튼을 탭하거나 사용자 기반 Javascript 컨트롤을 사용할 때)부터 해당 상호 작용에 대한 응답으로 브라우저가 실제로 이벤트 핸들러 처리를 시작하기까지의 시간을 측정합니다.
+> **First Input Delay:**  
+> 사용자가 페이지와 처음 상호 작용할 때(링크를 클릭하거나 버튼을 탭하거나 사용자 기반 JavaScript 컨트롤을 사용할 때)부터 해당 상호 작용에 대한 응답으로 브라우저가 실제로 이벤트 핸들러 처리를 시작하기까지의 시간을 측정합니다.
 
 ![FID](https://files.seonest.net/images/qnfqnfqnf/post/100/스크린샷%202021-11-04%20오후%2010.03.17.png)
 
@@ -52,18 +53,18 @@ Good 경험을 사용자에게 제공하기 위해서는 최초 입력 지연 �
 개발할 시에는 이벤트가 발생하는 즉시 응답을 하고 동작을 할 것이라고 예상합니다. 그러나 사용자는 그렇지 않은 경험을 하곤 합니다. 로드된 웹페이지에서 버튼 클릭을 했으나 아무 일도 일어나지 않는 경우를 말이죠.
 
 일반적으로 입력 지연(입력 대기 시간)은 브라우저의 메인 스레드가 다른 작업을 하고 있어 사용자에게 응답할 수 없기 때문에 발생합니다.
-이러한 일은 브라우저의 특성에 있습니다. 대규모 Javascript를 파싱하는 동안에는 로드 중인 Javascript가 다른 작업을 수행하도록 할 수 있기 때문에 이벤트 리스너를 실행할 수 없습니다.
+이러한 일은 브라우저의 특성에 있습니다. 대규모 JavaScript를 파싱하는 동안에는 로드 중인 JavaScript가 다른 작업을 수행하도록 할 수 있기 때문에 이벤트 리스너를 실행할 수 없습니다.
 
-> 잠깐!
->
-> FID는 "지연"에 대한 부분만 측정하기 때문에 이벤트 처리 시간이나 이벤트 처리를 통해 UI를 업데이트하는 시간은 측정하지 않습니다.
-> 위 시간은 사용자 경험에 미치지만 FID에 포함하지 않습니다.
-> 만약 이벤트 처리 시간이나 UI 업데이트 시간을 FID 지표에 포함하게 된다면 개발자는 FID 성능을 높이기 위해 이벤트 응답을 비동기적으로 처리하려고 할 수 있기 때문입니다.
-> 이 방식은 FID 성능을 높일진 몰라도 사용자 경험은 악화 시킬 수 있습니다.
->
-> 자세한 이유는 아래에서 다루도록 하겠습니다.
+<Callout>
+  FID는 "지연"에 대한 부분만 측정하기 때문에 이벤트 처리 시간이나 이벤트 처리를 통해 UI를
+  업데이트하는 시간은 측정하지 않습니다. 위 시간은 사용자 경험에 미치지만 FID에 포함하지 않습니다.
+  만약 이벤트 처리 시간이나 UI 업데이트 시간을 FID 지표에 포함하게 된다면 개발자는 FID 성능을 높이기
+  위해 이벤트 응답을 비동기적으로 처리하려고 할 수 있기 때문입니다. 이 방식은 FID 성능을 높일진
+  몰라도 사용자 경험은 악화 시킬 수 있습니다. <br />
+  자세한 이유는 아래에서 다루도록 하겠습니다.
+</Callout>
 
-### FID 성능에 이벤트 처리시간이나 UI 업데이트 시간을 포함하지 않는 이뉴는 무엇인가요?
+### FID 성능에 이벤트 처리시간이나 UI 업데이트 시간을 포함하지 않는 이유는 무엇인가요?
 
 이벤트 처리 시간, UI 업데이트 시간을 포함한다면 개발자가 FID 성능을 높이기 위해 이 시간을 피해가는 워크로드를 추가할 가능성이 있기 때문입니다.
 
@@ -77,7 +78,7 @@ Good 경험을 사용자에게 제공하기 위해서는 최초 입력 지연 �
 
 ![timeline1](https://files.seonest.net/images/qnfqnfqnf/post/101/image.png)
 
-위 이미지는 리소스(CSS, Javascript)에 대해서 네트워크 요청을 하고 해당 리소스를 다운로드를 완료한 후 메인 스레드에서 처리되는 시간을 표시합니다.
+위 이미지는 리소스(CSS, JavaScript)에 대해서 네트워크 요청을 하고 해당 리소스를 다운로드를 완료한 후 메인 스레드에서 처리되는 시간을 표시합니다.
 
 이로 인해 메인 스레드는 사용 중인 상태가 되며 노란색으로 [Task](https://html.spec.whatwg.org/multipage/webappapis.html#concept-task) 표시가 되어있습니다.
 
@@ -121,7 +122,7 @@ FID는 이벤트를 실행한 시점과 메인 스레드가 다음 Idle 상태�
 
 1. 최초 입력 지연은 사이트의 응답성에 대한 사용자의 **첫인상**이 될 것이며, 사이트의 품질과 신뢰성에 대한 전반적인 인상을 형성하는데 중요합니다.
 2. 오늘날 웹에서 볼 수 있는 가장 큰 상호 작용 문제는 페이지 로드에서 발생합니다. 따라서 최초 사용자 상호 작용을 개선하는데 중점을 두는 것이 웹의 전반적인 상호 작용을 개선하는 데 가장 큰 영향을 미치게 될 것입니다.
-3. 사이트의 긴 최초 입력 지연을 수정하는 방법에 대한 솔루션(코드 스플리팅, 작은 사이즈 Javascript부터 먼저 로드하기 등)과 페이지 로드 후 느린 입력 지연에 대한 솔루션이 반드시 같은 것은 아닙니다. 이를 분리함으로써 개발자에게 보다 특정한 성능 가이드라인을 제시할 수 있습니다.
+3. 사이트의 긴 최초 입력 지연을 수정하는 방법에 대한 솔루션(코드 스플리팅, 작은 사이즈 JavaScript부터 먼저 로드하기 등)과 페이지 로드 후 느린 입력 지연에 대한 솔루션이 반드시 같은 것은 아닙니다. 이를 분리함으로써 개발자에게 보다 특정한 성능 가이드라인을 제시할 수 있습니다.
 
 ## `최초` 입력으로 간주되는 상호작용은 무엇인가?
 
@@ -167,13 +168,13 @@ FID는 실제 사용자가 페이지와 상호 작용해야 하므로 사이트�
 - [Chrome User Experience Report](https://developers.google.com/web/tools/chrome-user-experience-report)
 - [PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
 - [Google Search Console - Core Web Vitals Report](https://support.google.com/webmasters/answer/9205520)
-- [web-vitals Javascript library](https://github.com/GoogleChrome/web-vitals)
+- [web-vitals JavaScript library](https://github.com/GoogleChrome/web-vitals)
 
-### Javascript FID측정
+### JavaScript FID측정
 
 자바스크립트를 이용해 FID를 측정하기 위해서 [Event Timing API](https://wicg.github.io/event-timing/)를 사용할 수 있습니다.
 
-> Event Timing API:
+> **Event Timing API:**  
 > [퍼포먼스이벤트](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEventTiming)에 대한 타이밍 정보를 제공하는 Web API
 
 ```js
@@ -206,10 +207,10 @@ Lighthouse를 실행하여 검사 결과에서 제안하는 특정 제안을 깊
 
 FID 개선 지침은 TBT를 개선하는 지침과 동일합니다.
 
-열악한 FID의 주요원인은 과도한 Javascript 실행입니다.
-Javascript가 웹 페이지에서 파싱, 컴파일, 실행하는 방식을 최적화하면 FID가 감소합니다.
+열악한 FID의 주요원인은 과도한 JavaScript 실행입니다.
+JavaScript가 웹 페이지에서 파싱, 컴파일, 실행하는 방식을 최적화하면 FID가 감소합니다.
 
-대규모 Javascript을 실행하는 동안 대부분의 사용자 입력에 응답할 수 없습니다.
+대규모 JavaScript을 실행하는 동안 대부분의 사용자 입력에 응답할 수 없습니다.
 즉, 메인 스레드가 사용 중인 경우 브라우저는 사용자 상호 작용에 응답할 수 없다는 의미입니다.
 
 이를 개선하기 위한 방법은 다음과 같습니다.
@@ -217,26 +218,27 @@ Javascript가 웹 페이지에서 파싱, 컴파일, 실행하는 방식을 최�
 - 긴 작업 세분화
 - 상호 작용 준비를 위해 페이지 최적화
 - web worker 사용
-- Javascript 실행 시간 단축
+- JavaScript 실행 시간 단축
 
 ### 긴 작업 세분화
 
-단일 페이지에 로드되는 Javascript를 줄이는 방법을 이미 시도했다면, 긴 작업을 더 작은 비동기 작업으로 세분화하는 방법이 유용할 수 있습니다.
+단일 페이지에 로드되는 JavaScript를 줄이는 방법을 이미 시도했다면, 긴 작업을 더 작은 비동기 작업으로 세분화하는 방법이 유용할 수 있습니다.
 
-> [긴 작업](https://web.dev/custom-metrics/#long-tasks-api) 이란 사용자가 UI가 응답하지 않는다는 것을 발견할 수 있는 Javascript 실행 기간입니다. 50ms 이상 메인 스레드를 차단하는 모든 코드는 긴 작업이라고 볼 수 있습니다.
+> [긴 작업](https://web.dev/custom-metrics/#long-tasks-api) 이란 사용자가 UI가 응답하지 않는다는 것을 발견할 수 있는 JavaScript 실행 기간입니다. 50ms 이상 메인 스레드를 차단하는 모든 코드는 긴 작업이라고 볼 수 있습니다.
 
 FID는 코드 스플리팅, 긴 작업 세분화 한다면 눈에 띄게 개선됩니다. TBT는 궁극적으로 Time To Interactive(상호 작용까지의 시간, TTI)와 FID를 모두 개선하기 위한 진행 상황을 확인하는 데 유용합니다.
 
 ![long-task](https://files.seonest.net/images/qnfqnfqnf/post/105/image.png)
 
 ![long-task2](https://files.seonest.net/images/qnfqnfqnf/post/106/image.png)
+
 ![long-task3](https://files.seonest.net/images/qnfqnfqnf/post/107/image.png)
 
 ### 상호 작용 준비를 위해 페이지 최적화
 
-Javascript에 의존하는 웹 어플리케이션에서 FID, TBT 점수가 좋지 않는 원인에는 여러가지 이유가 있습니다.
+JavaScript에 의존하는 웹 어플리케이션에서 FID, TBT 점수가 좋지 않는 원인에는 여러가지 이유가 있습니다.
 
-- **자바스크립트(first-party javascript) 실행으로 상호 작용 준비가 지연될 수 있음**
+- **자바스크립트(first-party JavaScript) 실행으로 상호 작용 준비가 지연될 수 있음**
   - 자바스크립트의 크기, 실행 시간, 비효율적인 청크로 인해 발생할 수 있습니다.
   - 코드와 기능을 점진적으로 로드하면 이 작업을 분산하고 성능 개선에 도움이 될 수 있습니다.
   - SSR의 경우 화면 렌더링은 빠르게 보여질 수 있습니다. 그러나 자바스크립트 실행이 거대하다면 이로 인해 상호 작용이 차단될 수 있는 점을 유의해야 합니다.
@@ -254,9 +256,9 @@ Javascript에 의존하는 웹 어플리케이션에서 FID, TBT 점수가 좋�
 
 ### Web worker 사용
 
-> **web worker:**
+> **web worker:**  
 > 웹 컨텐츠를 위해 브라우저 백그라운드 스레드에서 자바스크립트를 실행할 수 있게 간편한 방법을 제공합니다.
-> 메인 스레드와 별도 스레드에서 동작하기에 웹 페이지 블락에 영향을 주지 않습니다.
+> 메인 스레드와 별도 스레드에서 동작하기에 웹 페이지 블락에 영향을 주지 않습니다.  
 > 다만, 직접적으로 DOM을 제어할 순 없습니다. 그러나 몇 가지 제한 하에서 어떤 코드라도 실행할 수 있습니다.
 
 UI가 아닌 작업을 별도 worker 스레드로 이동시키면 메인 스레드 블락 시간을 줄이고 결과적으로 FID를 개선할 수 있습니다.
@@ -264,7 +266,7 @@ UI가 아닌 작업을 별도 worker 스레드로 이동시키면 메인 스레�
 > 참고
 > [Comlink](https://github.com/GoogleChromeLabs/comlink): [Worker.postMessage](https://developer.mozilla.org/ko/docs/Web/API/Worker/postMessage)를 추상화하여 쉽게 사용할 수 있도록 도와주는 라이브러리입니다.
 
-### Javascript 실행 시간 단축
+### JavaScript 실행 시간 단축
 
 > 자바스크립트 실행 시간을 단축하기 위한 방법은 자바스크립트 코드 크기를 줄이는 방법입니다.
 
@@ -297,10 +299,8 @@ Polyfills 사용을 최대한 최소화하고 필요한 환경에서만 사용�
 
 ## 마무리하며
 
-사용자가 사이트를 사용할지 말지를 첫 페이지 첫 인상에 굉장히 많은 영향이 있습니다.
+사이트 사용 여부에 첫 페이지의 첫 인상이 큰 영향을 미칩니다. 페이지가 로딩되었지만 기능이 동작하지 않는 경험을 했다면, 사용자는 해당 사이트를 이용하려는 의욕을 잃을 수 있습니다.
 
-페이지가 로딩되긴 했지만 기능이 동작하지 않는 경험을 했을 때 이 사이트를 이용할 마음이 생기지 않는 건 당연할 수 있습니다.
+FID를 통해 이러한 사용자 경험을 파악하고 개선 방안을 적용할 수 있습니다. 이를 통해 사용자에게 더 나은 경험을 제공할 수 있게 됩니다.
 
-우리는 `FID`를 통해 그 경험을 알아낼 수 있고 그에 따른 해결책을 적용할 수 있습니다.
-
-다음 포스트에는 Core Web Vitals 항목 중 3번째 `CLS(Cumulative Layout Shift)`에 대해서 알아보도록 하겠습니다.
+다음 포스트에서는 Core Web Vitals 항목 중 세 번째인 CLS(Cumulative Layout Shift)에 대해 알아볼 예정입니다. 이를 통해 웹 성능 최적화를 위한 전반적인 지식을 더욱 확장해 나갈 수 있을 것입니다.
