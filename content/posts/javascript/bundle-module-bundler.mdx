@@ -5,45 +5,40 @@ date: '2021-07-11T08:03:27.842Z'
 category: 'javascript'
 tags: ['JavaScript', 'Bundler', 'Module', 'Web']
 thumbnail: '/post/javascript/bundle-module-bundler/thumbnail.png'
+update: '2023-03-25T13:42:20Z'
 ---
 
-> 최신 자바스크립트 개발에서 **모듈**은 절대 빠져서는 안 될 용어 중 하나입니다.
-> 자바스크립트 파일을 기능 단위로 모듈화하고 이것을 하나로 묶어 관리할 방법이 필요하게 되면서 **번들러**의 역할도 중요해졌습니다.
-> 번들러를 사용하면 소스 코드를 모듈별로 작성할 수 있도 모듈간 또는 외부 라이브러리의 의존성도 쉽게 관리할 수 있습니다.
->
-> _- [번들러\_toast ui](https://ui.toast.com/fe-guide/ko_BUNDLER)_
+> 최신 자바스크립트 개발에서 **모듈**은 절대 빠져서는 안 될 용어 중 하나입니다.  
+> 자바스크립트 파일을 기능 단위로 모듈화하고 이것을 하나로 묶어 관리할 방법이 필요하게 되면서 **번들러**의 역할도 중요해졌습니다.  
+> 번들러를 사용하면 소스 코드를 모듈별로 작성할 수 있도 모듈간 또는 외부 라이브러리의 의존성도 쉽게 관리할 수 있습니다.  
+> _- [번들러 - toast ui](https://ui.toast.com/fe-guide/ko_BUNDLER)_
 
-Perl을 개발한 Larry Wall은 [프로그래머에 필요한 3대 덕목](https://www.mimul.com/blog/three-great-virtues-of-a-programmer/)을 재밌게 설명한 적이 있습니다.
+Perl을 개발한 Larry Wall은 [프로그래머에게 필요한 3대 덕목](https://www.mimul.com/blog/three-great-virtues-of-a-programmer/) 중 하나로 `게으름`을 꼽았습니다.
+이러한 게으름은 일반적인 의미와는 다르게, 불필요한 반복 작업을 줄이고 구조화하여 재사용성과 자동화를 고려하는 것을 의미합니다.
 
-그 중 하나가 `게으름` 입니다.
-여기서 말하는 게으름은 일반적인 게으름과는 다른 의미로 사용됩니다.
+자바스크립트 개발에서 번들러는 이러한 게으름을 실현할 수 있도록 도와줍니다.
+번들러 없이도 개발이 가능하지만, 매번 동일한 보일러 플레이트 코드 작성이나 중복성 방어를 위해 시간을 투자해야 하며, 이로 인해 개발 생산성이 저하됩니다.
 
-게을러지기 위해서 불필요한 반복 작업을 구조화하고 줄이며 재사용 성을 생각하고 자동화 할 수 있는 곳이 있는지 찾아서 그 방법을 생각해야 된다고 말합니다.
-
-~~의자에 앉아 티비 채널을 돌리기 위해 리모컨을 개발한 것처럼 말이죠~~
-
-자바스크립트 개발을 번들러 없이도 할 수 있습니다.
-하지만 매 프로젝트 개발 시 문제들을 제거하기 위한 동일한 보일러 플레이트를 작성한다던지 시간을 들여 중복성을 방어한다던지... 하는 행위가 반복되고 그로 인해 개발 생산성이 떨어집니다.
-
-한 마디로 게을러 질 수 없습니다.
+번들러를 사용함으로써 프로그래머는 이러한 반복적인 작업에서 벗어나 게으름을 실현할 수 있습니다.
+번들러는 모듈화와 의존성 관리를 통해 개발 과정을 간소화하고, 생산성을 높이는 데 기여합니다.
 
 그럼 번들러 의 어떤점이 `게으름`을 갖게 해주는 걸까요?
 
 ## 번들러
 
-> 번들러는 의존성이 있는 모듈 코드를 하나(또는 여러 개)의 파일로 만들어주는 도구이다.
+> 번들러는 의존성이 있는 모듈 코드를 하나(또는 여러 개)의 파일로 만들어주는 도구입니다.
 
-번들러는 크게 3가지 이유로 사용됩니다.
+번들러는 주로 다음과 같은 3가지 이유로 사용됩니다.
 
-1. 모든 브라우저 환경에서 완전한 모듈 시스템을 지원하기 위해서
-2. 모듈 간 종속성 관리, 외부 라이브러리 의존성 관리를 쉽게하기 위해서
-3. 종속성 순서와 이미지 asset, css asset 등을 포함한 assets를 효율적으로 load하기 위해서
+1. 모든 브라우저 환경에서 완전한 모듈 시스템을 지원하기 위해
+2. 모듈 간 종속성 관리와 외부 라이브러리 의존성 관리를 쉽게하기 위해
+3. 종속성 순서와 이미지, CSS 등의 assets를 효율적으로 로드하기 위해
 
-그 외에도 다양한 기능들을 포함하여 개발 생산성을 획기적으로 높이도록 여러 번들러들이 개발되고 발전해왔습니다.
+번들러는 이러한 기능을 제공함으로써 개발 생산성을 획기적으로 높였습니다.
 
-## 처음엔
+## 초기 번들러
 
-처음 번들러는 자바스크립트 모듈을 브라우저에서 실행할 수 있는 단일 자바스크립트 파일로 번들링하기 위함 이었습니다.
+처음에는 번들러가 자바스크립트 모듈을 브라우저에서 실행할 수 있는 단일 파일로 만드는 역할에 집중했습니다.
 
 ```html {2-6}
 <html>
@@ -55,116 +50,96 @@ Perl을 개발한 Larry Wall은 [프로그래머에 필요한 3대 덕목](https
 </html>
 ```
 
-위와 같은 경우에 어플리케이션 동작을 위해서 **5**번의 http 요청을 보냅니다.
-(script준비 시간 _ 5 + http요청응답 시간 _ 5)
-(이해를 위해 각 script parsing 시간을 동일하게 적용합니다.)
-
 ```html {2}
 <html>
   <script src="/dist/bundle.js"></script>
 </html>
 ```
 
-만약 하나의 파일로 합친다면 더 나은 결과를 보일 것입니다.
-(script준비 시간 _ 5 + http요청응답 시간 _ 1)
+이를 통해 HTTP 요청 횟수를 줄여 성능을 개선할 수 있었습니다.
+파일을 하나로 합치는 것이 더 나은 결과를 보였으며, HTTP/2의 도입으로도 이러한 이점이 유지되었습니다.
 
-http connection overhead문제를 해결하기 위해 HTTP/2를 사용하더라도 동일 테스트결과에서 하나의 파일로 합친 것이 더 나은 결과를 보입니다.
-(HTTP/2는 하나의 연결로 지속해서 진행되도록 되어있습니다. 더 많은 정보는 [여기서](https://www.seonest.net/posts/HTTP...-%EA%B7%B8%EA%B2%83%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC) 작성되어있습니다.)
+## 번들러의 발전
 
-## 발전
+`dist/bundle.js`를 생성하기 위해, 번들러는 다음과 같은 중요한 문제들을 해결해야 했습니다.
 
-그러면 어떻게 `dist/bundle.js`를 생성해낼까요?
-
-몇가지 해결해야 될 중요한 점이 있습니다.
-
-- 어떻게 포함될 `file`의 순서를 관리할 것인가?
-- 어떻게 `file`간 naming conflict를 막을 것인가?
-- 어떻게 사용되지 않는 `file`을 찾아낼 것인가?
+- 파일의 순서를 어떻게 관리할 것인가?
+- 파일 간 naming conflict를 어떻게 방지할 것인가?
+- 사용되지 않는 파일을 어떻게 찾아낼 것인가?
 
 이 문제를 해결하기 위한 정보는 다음과 같습니다.
 
-- 어떤파일이 다른파일에 의존적인가?
-- 파일로 부터 내보내진 인터페이스가 무엇인가? 그리고
-- 다른 파일에 의해 사용된 인터페이스가 어떤것인가?
+- 어떤 파일이 다른 파일에 의존하는지
+- 파일에서 내보낸 인터페이스가 무엇인지
+- 다른 파일에서 사용된 인터페이스가 어떤 것인지
 
-이 정보만 안다면 우리는 위 문제들을 해결할 수 있습니다.
+이 정보를 알면 문제를 해결할 수 있습니다. 파일 간의 관계를 설명하는 `선언적 방법`이 필요했고, 이는 자바스크립트 모듈 시스템으로 이어졌습니다.
 
-우리가 필요한 것은 파일 간의 관계를 설명하는 `선언적 방법` 입니다.
-그리고 이것은 자바스크립트 모듈 시스텝으로 이끌었습니다.
+초기에는 번들러가 단순히 번들링만을 수행했습니다.
+그러나 시간이 지남에 따라 사용되지 않는 코드 제거(Tree shaking), 적절한 코드 분리(Code splitting), 필요한 시점에서 로딩하기(lazy loading) 등의 최적화 작업이 요구되었습니다.
 
-처음엔 번들링만을 위한 번들러 였습니다.
+또한, 배포 시에 CSS를 구형 브라우저에서도 동작할 수 있게끔 전처리하는 작업을 자동화해주는 태스크 러너(grunt, gulp 등) 기능도 등장했습니다.
 
-그러나 단순히 번들하는 것을 넘어서 사용하지 않는 코드를 제거하는 기능(Tree shaking), 적당한 코드 분리(Code splitting), 필요한 시점에서 로딩하기(lazy loading) 등의 최적화 작업에 대한 필요성도 높아졌습니다.
+최신의 번들러들은 이러한 다양한 기능들을 자체에서 제공하거나 플러그인 형태로 사용할 수 있게 되었습니다. 이로 인해 번들러는 올인원 패키지처럼 이용할 수 있게 되었습니다.
 
-또한 배포 시에 css를 구형 브라우저에서도 동작할 수 있게끔 전처리하는 등 이러한 작업을 자동화 해주는 태스크 러너(grunt, gulp 등) 기능도 있었습니다.
-
-최근 번들러는 이러한 다양한 기능들을 자체에서 제공하거나 플러그인 형태로 사용할 수 있기 때문에 올인원 패키지 처럼 이용할 수 있습니다.
-
-번들러 내부에서 최적화를 동시에 처리할 수 있기 때문에 효율적으로 가능하고, 다양한 기능도 한번에 제공가능하니 당연한 흐름이었던 것 같습니다.
-
-현재는 웹 어플리케이션을 개발할 때 별도의 추가적인 툴 없이 Webpack과 같은 모듈 번들러 툴 하나로 처리하는 이유이기도 합니다.
+번들러 내부에서 최적화를 동시에 처리할 수 있기 때문에 효율적이며, 다양한 기능도 한 번에 제공 가능합니다.
+이런 흐름은 웹 애플리케이션 개발에 있어 별도의 추가적인 툴 없이 웹팩과 같은 모듈 번들러 하나로 처리하는 이유이기도 합니다.
 
 ## 대장들
 
 ![bundler-npm-trend.png](https://files.seonest.net/images/qnfqnfqnf/post/25/bundler-npm-trend.png)
 
-모듈 번들러는 **웹팩(Webpack)**, **롤업(Rollup)**, **파셀(Parcel)**, **스노우팩(Snowpack)**, **esbuild** 등이 있습니다.
+모듈 번들러로는 **웹팩(Webpack)**, **롤업(Rollup)**, **파셀(Parcel)**, **스노우팩(Snowpack)**, **esbuild** 등이 있습니다.
+이러한 번들러들은 주요 목적이 같지만 각각 특징과 장단점이 있습니다. 필요에 맞는 번들러를 선택하는 것이 중요합니다.([bundler tooling report](https://bundlers.tooling.report/#overview))
 
-아마 대부분 많이 들어봤던 번들러 일 것 같아요.
-
-각 모듈 번들러들은 큰 틀의 목표는 같지만 각자 특징과 장단점을 가지고 있습니다.
-
-가지고 있는 특징들을 잘 살펴보고 필요한 번들러를 사용하는 것도 하나의 좋은 방법이 될 것 같아요.
-
-[bundler.tooling.report](https://bundlers.tooling.report/#overview)
-![bulder-tooloing-report.png](https://files.seonest.net/images/qnfqnfqnf/post/26/bulder-tooloing-report.png)
-
-먼저 가장 많이 사용되고 있는 Webpack에 대해서 먼저 살펴보고자 합니다.
+먼저 가장 널리 사용되는 웹팩에 대해 알아봅시다.
 
 ## Webpack
 
 ![webpack logo](https://raw.githubusercontent.com/webpack/media/3e52c178e6ad2428585a2cbf5d22d6dbe0697f0f/logo/logo-on-white-bg.svg)
 
-> Webpack is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser, yet it is also capable of transforming, bundling, or packaging just about any resource or asset.
->
-> Webpack은 모듈 번들러입니다.
-> 주요 목적은 브라우저에서 사용할 수 있게 자바스크립트 파일을 번들링하는 것입니다.
-> 추가로 리소스나 asset에 대해 transforming, bundling, packaging 또한 가능합니다.
->
+> 웹팩은 모듈 번들러로, 주요 목적은 브라우저에서 사용할 자바스크립트 파일을 번들링하는 것입니다.  
+> 또한, 리소스나 자산에 대한 변환, 번들링, 패키징도 가능합니다.  
 > _- [webpack_github](https://github.com/webpack/webpack#webpack)_
 
 웹팩은 대부분 듣거나 경험해보셨을 것 같아요.
 
-그만큼 현재 가장 널리 쓰이는 번들러이며, 안정적인 모듈 번들러 입니다.
-(현재 버전은 웹팩 5 까지 나왔습니다.)
+웹팩은 현재 가장 인기 있는 번들러이며, 안정적입니다(웹팩 5까지 출시됨).
+CommonJS, AMD, ES Module 모듈을 지원하고, 자바스크립트뿐만 아니라 CSS, 이미지 파일 등 리소스의 의존성도 관리합니다.
+웹 애플리케이션의 모든 자원을 모듈로 인식합니다.
 
-CommonJS, AMD, ES Module 모듈을 모두 지원하며, 자바스크립트 뿐만 아니라 CSS, Image 파일 등 리소스의 의존성도 관리합니다.
-(웹 애플리케이션을 구성하는 모든 자원을 모듈로 인식합니다.)
+예를 들어, CSS/Sass/Less의 `@import, url(...)` 구문이나 HTML의 `<img src=...>` 태그를 관리합니다.
 
-예를 들어, CSS/Sass/Less 내부에서 사용하는 @import , url(...) 구문이나 HTML 내부의 `<img src=...>` 태그를 모두 관리합니다.
+또한, 트랜스파일 외에도 Minify/Uglify, Banner, CSS 전처리 작업을 자동화해주는 Task Runner 기능을 포함하고 있습니다.
 
-또한 트랜스파일 외 Minify/Uglify, Banner, CSS Preprocess 작업을 자동화해 주는 Task Runner 기능을 포함하고 있습니다.
-
-이 외에도 Code Spliting과 Dynamic imports(Lazy Loading), Tree Shaking, Dev Server(Node.js Express 웹서버) 등 효율적인 자바스크립트 개발을 위한 기능을 제공하고 있다.
-~~(많은 것을 포함하고 있는 것만큼 설정할 것도 많습니다.)~~
+이 외에도 Code Splitting, Dynamic imports(Lazy Loading), Tree Shaking, Dev Server(Node.js Express 웹서버) 등 효율적인 자바스크립트 개발을 위한 기능을 제공합니다.
+다양한 기능이 포함되어 있기 때문에 설정할 것도 많습니다.
 
 ### webpack.config.js
 
-웹팩에는 중요한 설정 4가지가 있습니다.
+웹팩(Webpack)은 자바스크립트 모듈 번들러로 사용되며, 프로젝트에서 사용하는 모든 종류의 파일들을 모아 번들링하는데 사용됩니다.
+이 글에서는 웹팩의 주요 설정 4가지를 다룹니다.
 
-1.  entry: 번들링해야될 파일의 진입점
-2.  output: 번들링하고나서 결과의 경로
-3.  loader: 모듈 로더(자바스크립트를 포함한 리소스(css, image, file 등)를 변환할 때 쓸 것들)
-4.  plugin: 추가적으로 결과물 형태를 바꾸고자할 때 쓸 것들
+1.  Entry: 번들링해야될 파일의 진입점
+2.  Output: 번들링하고나서 결과의 경로
+3.  Loader: 모듈 로더(자바스크립트를 포함한 리소스(css, image, file 등)를 변환할 때 쓸 것들)
+4.  Plugin: 추가적으로 결과물 형태를 바꾸고자할 때 쓸 것들
 
-#### 1. entry
+#### 1. Entry
 
-```js {3}
-// webpack.config.js
+Entry는 번들링할 파일의 시작점입니다. 웹팩 설정 파일에 다음과 같이 경로를 설정할 수 있습니다.
+
+```js
 module.exports = {
   entry: './src/index.js',
 };
+```
 
+webpack.config.js가 있는 경로에서 하위 "`src/index.js` 파일을 번들링 하겠다" 라는 뜻입니다.
+
+싱글 페이지 어플리케이션(SPA)의 경우 하나의 진입점만 있겠지만, 여러 개의 진입점이 필요한 경우도 있습니다.
+
+```js
 // ./src/index.js
 import LoginView from './LoginView.js';
 import HomeView from './HomeView.js';
@@ -179,21 +154,20 @@ function initApp() {
 initApp();
 ```
 
-webpack.config.js가 있는 경로에서 하위 src/index.js 파일을 번들링 하겠다 라는 뜻입니다.
-
-위 처럼 싱글 페이지 어플리케이션(SPA)같은 경우는 파일이 1개로 존재할 수 있겠지만 그렇지 않다면 여러 개 진입점도 가능합니다.
-
 ```js
-entry: {
-  login: './src/LoginView.js',
-  main: './src/MainView.js'
-}
+module.exports = {
+  entry: {
+    login: './src/LoginView.js',
+    main: './src/MainView.js',
+  },
+};
 ```
 
-#### 2. output
+#### 2. Output
 
-```js {3-5}
-// webpack.config.js
+Output은 번들링 결과물의 경로를 설정합니다. 웹팩 설정 파일에 다음과 같이 경로를 설정할 수 있습니다.
+
+```js
 module.exports = {
   output: {
     filename: 'bundle.js',
@@ -201,12 +175,11 @@ module.exports = {
 };
 ```
 
-webpack.config.js가 있는 경로에서 bundle.js 파일을 번들링 결과 파일로 생성하겠다 라는 뜻입니다.
+webpack.config.js가 있는 경로에서 "`bundle.js` 파일을 번들링 결과 파일로 생성하겠다" 라는 뜻입니다.
 
-entry와는 다르게 object 형태로 filename 등을 지정해주어야 합니다.
+Entry와는 다르게 object 형태로 filename 등을 지정해주어야 합니다.
 
-```js {5-8}
-// webpack.config.js
+```js
 var path = require('path');
 
 module.exports = {
@@ -217,14 +190,9 @@ module.exports = {
 };
 ```
 
-\_\_dirname은 현재 경로(webpack.config.js가 있는 경로이겠죠)에 대한 경로를 알려주는 Nodejs에서 제공하는 변수입니다.
+또한, 웹팩에서 제공하는 옵션을 사용하여 파일 이름에 해시값이나 id를 추가할 수도 있습니다.
 
-`webpack-sample` 이라는 프로젝트 안에서 설정하였다고 생각해보게씁니다.
-위 output 경로를 풀어보자면 `/Users/jhseo/webpack-sample/dist/bundle.js` 가 될 것입니다.
-
-추가로 배포 시에 브라우저 캐싱을 막기 위하거나 디버깅을 위해 해쉬값을 파일명으로 추가한다던가 id를 부여한다던지 등을 웹팩에서 기본적으로 제공하는 옵션으로 만들 수 있습니다.
-
-```js {4,11,18,25}
+```js
 // [name] 결과 파일 이름에 entry 속성을 포함하는 옵션
 module.exports = {
   output: {
@@ -254,38 +222,38 @@ module.exports = {
 };
 ```
 
-#### 3. loader
+#### 3. Loader
 
-엔트리, 아웃풋에 기반한 모든 자원들(css, image, file 등)에 대해서 변환할 때 쓰이는 모듈 로더 입니다.
+Loader는 웹팩이 모듈을 변환하는 과정에서 사용됩니다.
+예를 들어, CSS 파일을 자바스크립트에서 import하여 사용할 때, CSS 파일을 해석하고 변환하기 위해 로더를 사용합니다.
 
-가령 css 파일을 자바스크립트에서 import 하여 사용한다고 가정해보겠습니다.
+```css
+/* common.css */
+p {
+  color: blue;
+}
+```
 
 ```js
 // app.js
 import './common.css';
 
 console.log('css loaded');
+```
 
-
-/* common.css */
-p {
-  color: blue;
-}
-
-// webpack.config.js
+```js
 module.exports = {
   entry: './app.js',
   output: {
-    filename: 'bundle.js'
-  }
-}
+    filename: 'bundle.js',
+  },
+};
 ```
 
 위 대로 동작하면 빌드 시 에러가 나게 됩니다.
-common.css 를 해석할 수 없기 때문에 적절한 loader를 설정해주어야 합니다.
+`common.css` 를 해석할 수 없기 때문에 적절한 Loader를 설정해주어야 합니다.
 
 ```js
-// webpack.config.js
 module.exports = {
   entry: './app.js',
   output: {
@@ -307,12 +275,9 @@ module 이라는 객체에 rules라는 배열에 test와 use를 가진 object를
 - test: 로더를 적용할 파일 유형(regular expression으로 보통 작성합니다.)
 - use: 해당 파일에 적용할 로더 이름
 
-다시 말해 파일명이 .css로 끝나는 파일들에 대해서 css-loader를 적용하겠다라는 의미입니다.
+다시 말해 파일명이 `.css`로 끝나는 파일들에 대해서 `css-loader`를 적용하겠다라는 의미입니다.
 
-엔트리에 해당하는 모든 파일에 대해서 적용할 수 있기 때문에 전체 파일을 대상한다고 생각하시면 됩니다.
-(그래서 상당히 많은 로더들이 있습니다.)
-
-자주 사용되는 로더는
+자주 사용되는 로더는 다음과 같습니다:
 
 - [babel-loader](https://webpack.js.org/loaders/babel-loader/#root)
 - [sass-loader](https://webpack.js.org/loaders/sass-loader/)
@@ -322,13 +287,10 @@ module 이라는 객체에 rules라는 배열에 test와 use를 가진 object를
 
 > raw-loader, url-loader, file-loader는 webpack 5에서 deprecated 되고 [asset module](https://webpack.js.org/guides/asset-modules/) 로 추가적인 로더 설치 없이 사용가능합니다.
 
-등이 있습니다.
+로더를 설정할 때에는 파일 유형과 적용할 로더 이름을 지정해야 합니다. 다양한 로더가 있으며, 여러 로더를 한 번에 적용할 때에는 순서를 주의해야 합니다. 로더는 오른쪽에서 왼쪽으로 적용됩니다.
 
-특정 파일에 대해서 여러 개의 로더를 한 번에 적용할 때에는 순서를 주의해야 합니다.
-로더는 기본적으로 오른쪽에서 왼쪽으로 적용됩니다.
-
-```js {5}
-module: {
+```js
+module.exports = {
   rules: [
     {
       test: /\.scss$/,
@@ -338,22 +300,18 @@ module: {
 }
 ```
 
-.scss 파일에 대해 sass-loader를 먼저 적용을 하고 css-loader를 적용한다는 뜻입니다.(이렇게 해야만 정상 동작가능하기 때문에 순서를 주의해서 작성해야 합니다.)
+`.scss` 파일에 대해 `sass-loader`를 먼저 적용을 하고 `css-loader`를 적용한다는 뜻입니다.(이렇게 해야만 정상 동작가능하기 때문에 순서를 주의해서 작성해야 합니다.)
 
-위와 같이 배열 형태 뿐 만아니라 object 형태로도 작성가능합니다.
-(오른쪽에서 왼쪽으로, 아래에서 위로)
+위와 같이 배열 형태 뿐 만아니라 object 형태로도 작성가능합니다.(오른쪽에서 왼쪽으로, 아래에서 위로)
 
-```js {5-12}
-module: {
+```js
+module.exports = {
   rules: [
     {
       test: /\.scss$/,
       use: [
         { loader: 'style-loader' },
-        {
-          loader: 'css-loader',
-          options: { modules: true },
-        },
+        { loader: 'css-loader', options: { modules: true } },
         { loader: 'sass-loader' },
       ],
     },
@@ -361,19 +319,14 @@ module: {
 }
 ```
 
-.scss 파일에 대해 sass 컴파일 하고 css-loader를 통해 파일에 불러옵니다.
-style-loader는 인라인 `<style>` 태그로 추가되는 것을 할 수 있습니다.
-(인라인 형태로 제공되면 css 파일을 추가로 받지 않아도 되는 장점이 있겠죠)
+`.scss` 파일에 대해 sass 컴파일 하고 `css-loader`를 통해 파일에 불러옵니다. `style-loader`는 인라인 `<style>` 태그로 추가되는 것을 할 수 있습니다. (인라인 형태로 제공되면 css 파일을 추가로 받지 않아도 되는 점이 있습니다.)
 
-#### 4. plugins
+#### 4. Plugins
 
-로더랑 헷갈릴 수가 있는데 이렇게 이해하면 좋을 것 같습니다.
+플러그인은 결과물의 형태를 바꾸는 역할을 합니다.
+예를 들어, 웹팩으로 빌드한 결과물로 HTML 파일을 생성하거나 웹팩의 빌드 진행율을 표시하는 등의 기능을 제공합니다.
 
-로더는 파일을 해석하고 변환하는 과정에 관여하는 반면에
-플러그인은 해당 결과물의 형태를 바꾸는 역할을 한다고 생각하면 됩니다.
-
-```js {6-9}
-// webpack.config.js
+```js
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -384,8 +337,8 @@ module.exports = {
 
 위 처럼 생성자 함수로 생성한 객체 인스턴스만 추가될 수 있습니다.
 
-- HtmlWebpackPlugin: 웹팩으로 빌드한 결과물로 HTML 파일을 생성해줍니다.
-- ProgressPlugin: 웹팩의 빌드 진행율을 표시해줍니다.
+- `HtmlWebpackPlugin`: 웹팩으로 빌드한 결과물로 HTML 파일을 생성해줍니다.
+- `ProgressPlugin`: 웹팩의 빌드 진행율을 표시해줍니다.
 
 이 외에도 다양한 [플러그인](https://webpack.js.org/plugins/)이 존재합니다.
 
@@ -414,45 +367,41 @@ module.exports = {
 - 👎 tree shaking(dead-code elimination)이 rollup에 비해서 복잡하거나 부족합니다.
 - 👎 output 결과를 es module 로 출력할 수 없습니다.(그로 인해 번들 사이즈가 커지는 이유, tree-shaking이 지원되지 않는 이유 등이 있습니다)(webpack 5에서 실험적인 기능으로 [제공](https://webpack.kr/configuration/experiments/#experimentsexecutemodule)합니다.)
 
-webpack은 위 npm trend에도 보셨겠지만 2012년에 만들어진 이후에 상당히 많은 사랑을 받고 있습니다.
+웹팩은 위 npm trend에도 보셨겠지만 2012년에 만들어진 이후에 상당히 많은 사랑을 받고 있습니다.
 
 그 만큼 안정적이고 좋은 모듈 번들러임에는 확실합니다.
 
-웹 애플리케이션을 개발 시 모듈 번들러를 결정할 때 큰 고민 없이 webpack을 선택해도 큰 문제가 없는 이유입니다.
+웹 애플리케이션을 개발 시 모듈 번들러를 결정할 때 큰 고민 없이 웹팩을 선택해도 큰 문제가 없는 이유입니다.
 
 ## Rollup
 
 ![rollup-logo](https://rollupjs.org/images/twitter-card.jpg)
 
-> Next-generation ES module bundler
->
-> _- [rollup_github](https://github.com/rollup/rollup)_
+> The JavaScript module bundler  
+> _- [rollup github](https://github.com/rollup/rollup)_
 
 롤업은 웹팩과 유사한 모듈 번들러이지만 가장 큰 차이점은 ES Module 형태로 번들이 가능하다는 점입니다.
-
-이로 인해 코드 스플리팅 측면에서 다른 번들러와 비교해 강점을 보입니다.
-중복 제거에 특화되어 있는데, 특히 진입점(input)이 여러 개 있을 경우 이 부분이 두드러집니다.
-롤업은 진입점이 다를 수 있기 때문에 중복해서 번들될 수 있는 부분을 독립된 모듈로 분리해 낼 수 있습니다.
+이로 인해 코드 스플리팅 측면에서 다른 번들러와 비교하여 강점을 갖습니다.
+롤업은 중복 제거에 특화되어 있으며, 특히 여러 개의 진입점이 있을 경우 중복해서 번들될 수 있는 부분을 독립된 모듈로 분리해낼 수 있습니다.
 
 ```js
-// import the ajax function with an ES6 import statement
 import { ajax } from './utils';
 
 const query = 'Rollup';
 
-// call the ajax function
 ajax(`https://api.example.com?search=${query}`).then(handleResponse);
 ```
 
 ### rollup.config.js
 
-default로 설정하지 않을 수도 있지만 원하는 결과를 위해 대부분은 webpack과 같이 config를 설정합니다.
+롤업의 설정 파일인 `rollup.config.js`에서는 입력, 출력 및 플러그인을 설정할 수 있습니다.
+기본 설정을 사용하지 않고 원하는 결과를 얻기 위해서는 웹팩처럼 config 파일을 설정해야 합니다.
 
 1. input: 번들링해야될 파일의 진입점
 2. output: 번들링하고나서 결과
 3. plugins: 트랜스파일러 등 다양한 plugin array
 
-추가적인 config 정보는 [여기서](https://rollupjs.org/guide/en/#configuration-files) 확인하세요.
+추가적인 config 정보는 [여기서](https://rollupjs.org/command-line-interface/#configuration-files) 확인하세요.
 
 ```js
 import resolve from '@rollup/plugin-node-resolve';
@@ -460,7 +409,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
 
 export default [
-  // browser-friendly UMD build
+  // UMD
   {
     input: 'src/main.js',
     output: {
@@ -468,18 +417,9 @@ export default [
       file: pkg.browser,
       format: 'umd',
     },
-    plugins: [
-      resolve(), // so Rollup can find `ms`
-      commonjs(), // so Rollup can convert `ms` to an ES module
-    ],
+    plugins: [resolve(), commonjs()],
   },
-
-  // CommonJS (for Node) and ES module (for bundlers) build.
-  // (We could have three entries in the configuration array
-  // instead of two, but it's quicker to generate multiple
-  // builds from a single configuration where possible, using
-  // an array for the `output` option, where we can specify
-  // `file` and `format` for each target)
+  // ESM, CJS
   {
     input: 'src/main.js',
     external: ['ms'],
@@ -493,85 +433,58 @@ export default [
 
 ### Rollup vs ...
 
-- 👍 더 작고 자기 참조되는 파일(library처럼)을 개발 할 때 관리하기 더 쉽습니다.
-- 👍 다른 번들러에 비해 tree shaking을 잘 지원합니다.
-- 👍 webpack에 비해 번들링 사이즈도 작고 속도도 빠릅니다.
-- 👎 webpack과 동일하게 config 설정 등 진입 장벽이 있습니다.
+- 👍 더 작고 자기 참조되는 파일(라이브러리처럼)을 개발할 때 관리가 더 쉽습니다.
+- 👍 다른 번들러에 비해 트리 쉐이킹(tree shaking)을 잘 지원합니다.
+- 👍 웹팩에 비해 번들링 사이즈가 작고 속도가 빠릅니다.
+- 👎 웹팩과 동일하게 설정 파일을 사용해야 하는 진입 장벽이 존재합니다.
 
-최소한의 서드파티로 라이브러리를 만들고자 할 때 모듈 번들러로 rollup을 선택하는 것이 좋은 방법이 될 수 있습니다.
+최소한의 서드파티 라이브러리를 만들고자 할 때, 모듈 번들러로 롤업을 선택하는 것이 좋은 방법이 될 수 있습니다.
 
 ## Parcel
-
-![parcle-logo](https://user-images.githubusercontent.com/19409/31321658-f6aed0f2-ac3d-11e7-8100-1587e676e0ec.png)
 
 > Blazing fast, zero configuration web application bundler
 > 불꽃 튀게 빠르고 설정이 필요 없는 웹 애플리케이션 번들러
 >
 > _- [parceljs.org](https://parceljs.org/)_
 
-파셀은 webpack, rollup과 비교해서 zero config를 추구합니다.
-
-별도의 설정 파일 없이 빌드 명령어를 입력해 바로 사용할 수 있습니다.
-그 이유는 웹팩이나 롤업과 달리 자바스크립트를 진입점으로 읽는 것이 아니라 **HTML** 파일 자체를 읽기 때문입니다.
-
-HTML 파일을 순서대로 읽어나가면서 javascript, css, image 등을 직접 참조합니다.
-
-이로 인해 다른 번들러에 비해 쉽게 적용 가능합니다.
+Parcel은 빠르고 간단한 설정으로 작동하는 모듈 번들러입니다.
+기본적으로 코드 분할, HMR, 트랜스파일링 등을 지원하며, 별도의 설정 파일이 필요하지 않습니다.
+작은 프로젝트나 설정의 부담을 줄이고 싶은 경우에 좋은 선택입니다.
 
 ### parcel vs ...
 
-- 👍 설정 없는 번들링으로 쉬운 접근성을 제공합니다.
-- 👍 별다른 설정 없이 코드 스플리팅, tree shaking을 지원합니다.
-- 👎 다른 번들러에 비해 안정성이 떨어집니다.
-- 👎 커스텀 설정이 필요한 경우 더 복잡해질 수 있습니다.
-- 👎 생태계가 다른 번들러에 비해 크진 않습니다
+- 👍 설정 없이 번들링을 지원해 접근성이 좋습니다.
+- 👍 코드 스플리팅, 트리 쉐이킹 등을 별도의 설정 없이 지원합니다.
+- 👎 다른 번들러에 비해 안정성이 떨어질 수 있습니다.
+- 👎 커스텀 설정이 필요한 경우 복잡해질 수 있습니다.
+- 👎 생태계가 다른 번들러에 비해 상대적으로 작습니다.
 
 ### parcel2
 
-~~현재 parcel 다음 버전인 2 버전이 개발 진행 중에 있습니다. (https://v2.parceljs.org/)
-(2021.5.18일 기준으로 parcel2 beta 3가 release 되었습니다.)~~
+Parcel 2는 정식 릴리즈되어 현재 v2.8.0 버전까지 출시되었습니다.
+Parcel의 큰 장점인 제로 설정(zero config)을 유지하면서 다양한 기능을 높은 수준의 성능으로 번들링을 지원합니다.
+커스텀 설정을 추가 작성할 수도 있습니다. (https://parceljs.org/features/plugins/)
 
-~~parcel 2.0.0-rc 버전이 2021년 8월 기준으로 배포되었습니다.  
-https://v2.parceljs.org/~~
+Parcel 2의 컴파일러는 Rust로 재작성되었고, 이로 인해 빌드 성능이 10배 향상되었다고 합니다.
 
-드디어 parcel2가 정식 릴리즈 되었습니다.
-https://parceljs.org/
+## Vite
 
-큰 장점인 zero config를 유지하며 다양한 기능들을 높은 수준의 성능으로 번들링을 지원해줍니다.
+> Next Generation Frontend Tooling
 
-커스텀으로 config를 작성해야될 경우에도 매우 간편하게 설정이 가능합니다.
+발음은 비트(Vite) 입니다. 프랑스어로 `빠르다`는 뜻입니다.
 
-```json
-// .parcelrc
-{
-  "extends": ["@parcel/config-default"],
-  "transformers": {
-    "*.svg": ["@parcel/transformer-svg-react"]
-  },
-  "resolvers": ["@parcel/resolver-glob", "..."],
-  "namers": ["@company/parcel-namer", "..."],
-  "packagers": {
-    "*.{jpg,png}": "parcel-packager-image-sprite"
-  },
-  "optimizers": {
-    "*.js": ["parcel-optimizer-license-headers"]
-  },
-  "compressors": {
-    "*.js": ["...", "@parcel/compressor-gzip"]
-  },
-  "reporters": ["...", "parcel-reporter-manifest"]
-}
-```
+Vite는 Vue.js의 창시자 Evan You가 개발한 모듈 번들러로, 빠른 개발 서버와 경량화된 빌드 도구를 제공합니다.
+Vite는 웹 개발을 더 빠르게 만들기 위해 ES 모듈을 이용하며, 기본적으로 Vue, React, Preact 등 다양한 프레임워크와 라이브러리를 지원합니다.
 
-javascript compiler를 rust로 재 작성하였고 그로 인해 build performance가 10배 성능 향상이 있었다고 합니다.
-~~(esbuild는 go로 작성되었go...)~~
+개발 시 네이티브 ES Module을 넘어 더욱 다양한 기능을 제공합니다.
+번들링 시, Rollup 기반의 다양한 빌드 커맨드를 사용할 수 있습니다.
+이는 높은 수준으로 최적화된 정적(Static) 리소스들을 배포할 수 있게끔 하며, 미리 정의된 설정(Pre-configured)을 제공합니다.
+
+Vite에 대해서 더 알고 싶다면 [여기](https://vitejs-kr.github.io/guide/why.html)를 읽어보시면 도움이 될 것 같습니다.
 
 ## 마무리하며
 
-javascript 모듈 번들러에 대한 의미와 3대장에 대해서 간단하게 살펴보았습니다.
-
-3대장 이외에도 사랑받는 모듈 번들러들은 많습니다.
-([snowpack](https://www.snowpack.dev/), [esbuild](https://esbuild.github.io/) ...)
+JavaScrip 진영의 모듈 번들러에 대한 의미와 몇 가지 번들러에 대해서 간단하게 살펴보았습니다.
 
 모든 번들러의 목표는 동일하지만 각자 가지고 있는 특성과 장단점을 서로 조금씩 다르기 때문에 개발 시에 적절한 번들러를 선택해서 사용하면 좋을 것 같습니다.
 
@@ -579,6 +492,6 @@ javascript 모듈 번들러에 대한 의미와 3대장에 대해서 간단하�
 
 ## reference
 
-> - https://joshua1988.github.io/webpack-guide/
-> - https://ui.toast.com/fe-guide/ko_BUNDLER
-> - https://lihautan.com/what-is-module-bundler-and-how-does-it-work/
+- https://joshua1988.github.io/webpack-guide/
+- https://ui.toast.com/fe-guide/ko_BUNDLER
+- https://lihautan.com/what-is-module-bundler-and-how-does-it-work/

@@ -15,7 +15,7 @@ Vercel은 기존 og-image generator를 대신할 @vercel/og을 왜 새롭게 만
 
 ## 들어가면서
 
-트위터의 트윗 중 카드가 있는 트윗의 참여율이 [40% 더 높다고 합니다.](https://www.agorapulse.com/social-media-lab/link-tweet-with-an-image-vs-tweet-with-twitter-cards-does-it-really-matter/)
+트위터의 트윗 중 카드가 있는 트윗의 참여가 [40%가 더 높다고 합니다.](https://www.agorapulse.com/social-media-lab/link-tweet-with-an-image-vs-tweet-with-twitter-cards-does-it-really-matter/)
 
 이를 위해 정적 소셜 이미지를 만들고 공유하는 것은 어렵진 않습니다.
 그러나 즉시 계산되고 실시간으로 생성해야 하는 **동적 이미지**를 처리하는 것에는 한계가 있었습니다.
@@ -179,17 +179,13 @@ satori와 @vercel/og, edge-runtime(functions)를 사용하여 간단한 프로�
 - 자동으로 사용자와 가장 가까운 edge에서 응답하는데 x-vercel-id(icn1::...)로 확인해보았을 때 저의 경우 edge location은 인천으로 확인됩니다.
 - `tw` prop을 이용한 tailwindcss가 experimental이라곤 하지만 제가 사용해보았을 때 큰 문제는 없었습니다.
 
-|                                         첫 번째 요청                                          |                                         두 번째 요청                                          |
-| :-------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
-| ![first-image](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/first-image.png) | ![cache-image](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/cache-image.png) |
+![first-image](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/first-image.png)
 
-|                                        Headers                                        |
-| :-----------------------------------------------------------------------------------: |
-| ![headers](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/headers.png) |
+![cache-image](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/cache-image.png)
 
-|                                       Vercel Edge Locations                                       |
-| :-----------------------------------------------------------------------------------------------: |
-| ![edge-location](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/edge-location.png) |
+![headers](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/headers.png)
+
+![edge-location](/post/javascript/동적으로-image-만들기-edge-function을-곁드린/edge-location.png)
 
 코드는 https://github.com/JHSeo-git/own-your-tag 확인할 수 있고, 테스트는 https://own-your-tag.vercel.app/ 여기서 해보실 수 있습니다.
 

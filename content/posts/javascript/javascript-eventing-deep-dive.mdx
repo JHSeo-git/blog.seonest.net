@@ -1,26 +1,24 @@
 ---
-title: 'JavaScript eventing deep dive'
+title: 'JavaScript Eventing Deep dive'
 description: 'JavaScript에서 이벤트 진행방식을 확인해보면서 조금 더 이해해보았습니다.'
 date: '2021-12-03T13:49:02.946Z'
 category: 'javascript'
 tags: ['JavaScript', 'Event', 'Web']
 thumbnail: '/post/javascript/javascript-eventing-deep-dive/thumbnail.png'
+update: '2023-03-26T09:27:30Z'
 ---
 
-> https://web.dev/eventing-deepdive/  
-> 해당 포스트를 읽고 정리해본 글입니다.
+> https://web.dev/eventing-deepdive/
 
 ## 들어가면서
 
-> 이벤트란 시스템에서 일어나는 사건(action) 혹은 발생(occurrence)입니다.
-> 원하는 대로 어떠한 방식으로 응답할 수 있도록 시스템에 말해주는 것입니다.
+> 이벤트란 시스템에서 일어나는 사건(action) 혹은 발생(occurrence)입니다.  
+> 원하는 대로 어떠한 방식으로 응답할 수 있도록 시스템에 말해주는 것입니다.  
 > _- [Events_mdn](https://developer.mozilla.org/ko/docs/Learn/JavaScript/Building_blocks/Events)_
 
-자바스크립트에서 많은 이벤트가 있습니다.
-각각의 이용가능한 이벤트들은 **이벤트 핸들러**를 만들어 적용할 수 있으며, 이를 통해 우리가 원하는 동작을 이벤트가 발생했을 때 프로그래밍 할 수 있습니다.
-(_이벤트 핸들러는 이벤트 리스너라고도 불립니다._)
-
-우리는 이 행위를 **이벤트 핸들러를 등록** 했다고 말합니다.
+자바스크립트에서 이벤트는 시스템에서 발생하는 동작입니다.
+이벤트 핸들러는 웹 애플리케이션에서 발생한 이벤트에 대한 응답을 처리하는 함수로, 이벤트 리스너라고도 불립니다.
+이벤트 핸들러를 등록하면 프로그래머가 원하는 동작을 이벤트가 발생했을 때 실행할 수 있습니다.
 
 ```js
 window.addEventlistner('click', function (e) {
@@ -30,36 +28,33 @@ window.addEventlistner('click', function (e) {
 
 ![window-event](https://files.seonest.net/images/qnfqnfqnf/post/120/image.png)
 
-> 웹 이벤트(DOM 이벤트)는 코어 자바스크립트 언어의 일부가 아닙니다.
-> 브라우저에 내장된 API의 일부로서 정의됩니다.
+> 웹 이벤트(DOM 이벤트)는 코어 자바스크립트 언어의 일부가 아닙니다.  
+> 브라우저에 내장된 API의 일부로서 정의됩니다.  
 > ![browser](https://images.velog.io/images/namezin/post/a41a30f7-b788-44f3-9414-c786a39d666b/eventloop.png)
 
-## preventDefault, stopPropagation
-
-> 헷갈리기 쉬운 딱 그거
+## preventDefault와 stopPropagation
 
 단순한 HTML 구조에 이벤트 처리는 간단하게 처리할 수 있습니다.
-그러나 Element들이 층층이 쌓여 있을 때 이벤트 처리는 조금 더 복잡해집니다.
+그러나 HTML 요소가 중첩되어 있을 때 이벤트 처리는 복잡해질 수 있습니다.
+이때 `stopPropagation()`이나 `preventDefault()` 메서드를 사용하여 이벤트 전파를 제어할 수 있습니다.
 
-이 경우 일반적으로 개발자는 `stopPropagation()` 이나 `preventDefault()`를 사용하여 해결합니다.
-
-그러나 (_저도 마찬가지지만_) 정확히 이해하고 쓴다기보단 둘 중 하나를 써보고 되지 않으면 나머지 다른 하나를 쓰면서 원하는 대로 동작되면 `Gotcha!` 하고 넘어가버리는... 이런 경우에 있다면 이 글이 도움이 되지 않을까 싶습니다.
-
-우선 깊게 들어가기 전에 자바스크립트에서 두 가지 종류의 이벤트 처리에 대해 간략히 보겠습니다.
+먼저 자바스크립트에서 두 가지 종류의 이벤트 처리에 대해 간략히 보겠습니다.
 
 - 이벤트 캡쳐링(Capturing)
 - 이벤트 버블링(Bubbling)
 
-## 이벤트 스타일
+## 이벤트 캡쳐링과 이벤트 버블링
 
-> 이벤트 버블링, 이벤트 캡쳐링
+자바스크립트에서는 이벤트 캡쳐링과 이벤트 버블링이라는 두 가지 전파 스타일이 있습니다.
+이벤트 캡쳐링은 상위 요소에서 하위 요소로 이벤트를 전파하는 방식이고, 이벤트 버블링은 하위 요소에서 상위 요소로 이벤트를 전파하는 방식입니다.
 
 모든 최신 브라우저는 이벤트 캡쳐링을 지원하지만 개발자는 거의 사용하지 않습니다.
-이벤트 캡쳐링은 넷스케이프가 원래 지원한 유일한 이벤트였습니다.
 
-> 넷스케이프: 월드 와이드 웹의 태동기를 대표하는 웹 브라우저. 많은 우여곡절을 거쳐 현재는 모질라를 거쳐 파이어폭스가 넷스케이프의 웹 브라우저 기능을 모두 흡수한 상태
+이벤트 캡쳐링은 유일하게 넷스케이프가 지원한 이벤트였습니다.
 
-그에 비해 MS Internet Explore는 이벤트 캡쳐링을 전혀 지원하지 않고 이벤트 버블링만 지원했습니다. W3C가 만들어졌을 때 두 가지 이벤트 스타일에서 모두 장점을 발견했고 브라우저가 `addEventListener` 메서드에 대해 **세 번째 매개변수**를 통해 두 가지 모두를 지원해야 한다고 선언했습니다.
+그에 비해 MS Internet Explore는 이벤트 캡쳐링을 전혀 지원하지 않고 이벤트 버블링만 지원했습니다.
+
+W3C가 만들어졌을 때 두 가지 이벤트 스타일에서 모두 장점을 발견했고 브라우저가 `addEventListener` 메서드에 대해 **세 번째 매개변수**를 통해 두 가지 모두를 지원해야 한다고 정했습니다.
 
 ```js
 element.addEventListner('click', handleClick, { capture: true | false });
@@ -69,9 +64,9 @@ options에 capture 속성이 만들어졌고, 기본값은 `false` 로 이벤트
 
 캡쳐링과 버블링을 이해하기에 앞서서 브라우저에서 이벤트를 진행하는 순서(phase)에 대해서 이해 할 필요가 있습니다.
 
-## 이벤트 Propagation Phase
+## 이벤트 전파 단계
 
-> _- [Event.eventPhase_mdn](https://developer.mozilla.org/ko/docs/Web/API/Event/eventPhase)_
+> https://developer.mozilla.org/ko/docs/Web/API/Event/eventPhase
 
 ![event-phase](https://files.seonest.net/images/qnfqnfqnf/post/122/image.png)
 
@@ -79,18 +74,16 @@ options에 capture 속성이 만들어졌고, 기본값은 `false` 로 이벤트
 var phase = event.eventPhase;
 ```
 
-이벤트 Phase는 발생한 순서에 대한 지정된 정수값을 반환합니다.
-
-총 4가지의 단계가 있으며 다음과 같습니다.
+이벤트 전파는 4가지 단계로 나뉩니다:
 
 1. **Event.NONE(value: 0)**: 아무런 이벤트도 발생하지 않았을 때입니다.
 2. **Event.CAPTURING_PHASE(value: 1)**: 이벤트가 상위 개체에서 아래 개체로 전파됩니다. `window`, `document` 에서 시작하여 대상 Element의 부모에 도달할 때까지 요소들을 통과할 때 입니다. 이 단계에서 `EventTarget.addEventListener()`가 호출될 때 캡쳐 모드(`capture: true`)에 있는 `Event listeners`가 트리거 됩니다.
 3. **Event.AT_TARGET(value: 2)**: 이벤트가 `EventTarget`에 도작했을 때입니다. 이 단계에서 등록된 이벤트 리스너가 호출됩니다. `Event.bubbles`가 `false` 라면 이 단계가 완료된 다음 이벤트 Phase는 종료됩니다.
 4. **Event.BUBBLING_PHASE(value: 3)**: 이벤트가 역순으로 대상의 조상을 통해 전파될 때입니다. `EventTarget`의 부모부터 시작해서, `window`를 포함하는 단계까지 도달합니다. 이 부분이 `이벤트 버블링`으로 알려져 있으며, `Event.bubbles`가 `true`일 때만 발생합니다. 이 프로세스 중에 이 단계에 등록된 `Event listeners`가 트리거 됩니다.
 
-예시를 통해 좀 더 확실히 이해보겠습니다.
+### 예제를 통한 이해
 
-### Example
+예제를 통해 이벤트 전파가 어떻게 이루어지는지 확인할 수 있습니다. capture 속성을 변경하여 이벤트 캡쳐링과 이벤트 버블링의 동작을 관찰할 수 있습니다.
 
 ```html
 <h4>Event Propagation Chain</h4>
@@ -114,6 +107,7 @@ var clear = false,
   divInfo = null,
   divs = null,
   useCapture = false;
+
 window.onload = function () {
   divInfo = document.getElementById('divInfo');
   divs = document.getElementsByTagName('div');
@@ -182,6 +176,8 @@ function Clear() {
 eventPhase를 확인하여 Phase Chain을 확인해보면 좀 더 이해가 될 수 있을 것 같습니다.
 
 ### capture: false
+
+이 경우, 이벤트 캡쳐링 단계에서 이벤트가 발생하지 않고, 이벤트 대상에서 이벤트가 발생한 후 버블링 단계에서 이벤트가 발생합니다.
 
 ```js
 d.addEventListener('click', OnDivClick, false);
@@ -359,10 +355,7 @@ document.getElementById('A').addEventListener(
 
 > `preventDefault`와 `stopPropagation` 이 둘은 종종 헷갈리지만 실제로는 서로 별로 관련이 없습니다.
 
-`preventDefault()`를 볼 때마다 생각하세요.
-
-> 단어 앞에 `action`을 붙히자!
-> 그래서 그 뜻은 "Default Action을 막는다!" 와 같다.
+`preventDefault()` 메서드는 이벤트의 기본 동작을 취소합니다. 예를 들어, 링크를 클릭하면 기본적으로 해당 URL로 이동하는데, 이 기본 동작을 취소하려면 `preventDefault()`를 사용하면 됩니다.
 
 ```html
 <a id="link" href="https://seonest.net">Seonest</a>
@@ -379,7 +372,7 @@ document.getElementById('link').addEventListener(
   'click',
   function (e) {
     e.preventDefault();
-    console.log('막...막는다!');
+    console.log('링크 클릭이 기본 동작으로 이동되지 않습니다.');
   },
   false
 );
@@ -401,14 +394,56 @@ document.getElementById('link').addEventListener(
 - `input` + `keypress` 이벤트: 이 경우 사용자가 입력한 문자가 입력되지 않도록 방지합니다.(그러나 이렇게 하지마세요. 사용할 이유는 거의 없습니다.)
 - `document` + `contextmenu` 이벤트: 마우스 우측 클릭이나 길게 누를 때 기본 브라우저 컨텍스트 메뉴가 나타나지 않도록 방지합니다.
 
+## 이벤트 버블링: 이벤트 Delegate(위임)
+
+버튼을 동적으로 생성하고 클릭 이벤트를 부여하는 코드를 작성할 경우를 생각해봅시다.
+
+만약 100개의 버튼을 생성하고 각각에 클릭 이벤트를 부여한다면 어떻게 될까요?
+
+```js
+for (let i = 0; i < 100; i++) {
+  const button = document.createElement('button');
+  button.innerText = i;
+  document.body.appendChild(button);
+  button.addEventListener('click', function () {
+    console.log(i);
+  });
+}
+```
+
+이 코드는 잘 동작하지만 100개의 버튼에 각각 이벤트 핸들러가 등록되어 있습니다.
+이 경우 버튼이 추가될 때마다 이벤트 핸들러가 추가되기 때문에 메모리 사용량이 증가하고 성능이 저하될 수 있습니다.
+또한 이벤트 핸들러를 제거할 때도 각각의 이벤트 핸들러를 제거해야 합니다.
+
+이런 경우에 사용할 수 있는 것이 이벤트 위임입니다.
+
+```js
+document.body.addEventListener('click', function (e) {
+  if (e.target.tagName === 'BUTTON') {
+    console.log(e.target.innerText);
+  }
+});
+```
+
+이벤트 위임은 이벤트 핸들러를 하위 요소 대신 상위 요소에 등록하여 여러 요소에 대한 이벤트 처리를 한 곳에서 관리하는 기법입니다.
+`이벤트 버블링`을 활용하여 상위 요소에서 하위 요소를 통해 전파되는 이벤트를 처리합니다.
+
+이벤트 위임의 장점은 다음과 같습니다:
+
+1. 메모리 사용량 감소: 이벤트 핸들러를 개별 요소에 등록하지 않기 때문에 메모리 사용량이 감소합니다.
+2. 동적으로 추가되는 요소에 대한 처리: 런타임에 동적으로 추가되는 요소에 대한 이벤트 핸들러를 등록할 필요가 없습니다. 상위 요소에서 처리할 수 있기 때문입니다.
+3. 코드 유지보수: 이벤트 핸들러를 한 곳에서 관리하기 때문에 코드의 유지보수가 용이합니다.
+
 ## 마무리하며
 
-대~충 이렇게 동작하더라... 라고만 이해하고 있던 자바스크립트 이벤트 진행방식에 대해 이번에 제대로 알고 가는 것 같아 다행이라고 생각합니다.
+지금까지 이벤트 처리와 관련된 여러 주제를 다루었습니다.
+이벤트 처리는 웹 애플리케이션에서 사용자 인터랙션을 관리하고 다양한 기능을 구현하는 데 필수적인 기술입니다.
+이러한 지식을 활용하여 사용자에게 더 나은 웹 애플리케이션을 제공할 수 있습니다.
 
-매 번 헷갈려서 이리저리 해본 경우가 많았었는데, 그 시간을 조금은 줄일 수 있을 것 같습니다.
+이전에 이벤트 처리를 이리저리 시도하며 많은 시간을 소모한 경험이 있었지만, 이제는 그 시간을 조금이라도 줄일 수 있을 것으로 기대됩니다.
 
 ## reference
 
-> - https://web.dev/eventing-deepdive/
-> - https://www.quirksmode.org/js/events_order.html
-> - https://developer.mozilla.org/ko/docs/Web/API/Event/eventPhase
+- https://web.dev/eventing-deepdive/
+- https://www.quirksmode.org/js/events_order.html
+- https://developer.mozilla.org/ko/docs/Web/API/Event/eventPhase

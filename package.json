@@ -21,7 +21,8 @@
     "lint": "next lint",
     "post": "seonest-post-gen -d content/posts",
     "start": "next start",
-    "typecheck": "contentlayer build && tsc --noEmit"
+    "typecheck": "contentlayer build && tsc --noEmit",
+    "tz": "date -u +\"%Y-%m-%dT%H:%M:%SZ\""
   },
   "dependencies": {
     "@giscus/react": "^2.2.8",

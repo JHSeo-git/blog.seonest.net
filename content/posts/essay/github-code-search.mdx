@@ -9,105 +9,91 @@ thumbnail: '/post/essay/github-code-search/thumbnail.png'
 
 > cs.github.com
 
-Github에서 얼마 전(12월) 테크니컬 프리뷰로 [Github Code Search](https://cs.github.com) 검색엔진을 공개했습니다.
+Github에서는 최근 테크니컬 프리뷰로 [Github Code Search](https://cs.github.com) 검색엔진을 공개했습니다.
 
 ![github_code_search](https://files.seonest.net/images/qnfqnfqnf/post/148/image.png)
 
-copilot처럼 신청자에게 우선 공개하여 [피드백](https://github.com/github/feedback/discussions/categories/code-search-feedback)을 받는 중에 있습니다.
-(copliot없인 이젠 너무 힘들다고 할까나...)
+이 검색 엔진은 개발자들의 생산성 향상을 돕기 위해 만들어졌습니다.
+현재는 사용자들의 피드백을 받고 있으며, 승인을 받은 사용자들이 이 검색엔진을 이용할 수 있습니다.
 
-github code search도 신청을 했었는데 어제 승인을 받았습니다.
+새로운 검색 엔진을 만들게 된 이유는 기존 솔루션들이 코드 검색, 규모, 검색 성능 및 속도와 같은 제약사항들을 충족시키지 못했기 때문입니다.
+이를 위해 Github Code Search는 코드 검색에 최적화된 랭킹 시스템과 인덱스를 도입했습니다.
+현재 검색 인덱스는 500만 개 이상의 가장 유명한 public 레파지토리와 엑세스 가능한 private 레파지토리를 포함하고 있습니다.
 
-저는 개발 할 때 github에 있는 많은 코드들이 제 개발 생산성에 엄청난 도움을 줍니다. 그래서 이와 같은 소식은 매우 기쁜 소식입니다.
-
-Github은 코드 검색, 개발자 생산성에 대한 작업에 더 도움을 주기 위해 최적화된 검색 엔진을 만들었습니다.
-
-[이 포스트](https://github.blog/2021-12-08-improving-github-code-search/)를 읽으며 어디에 중점을 두었는지 확인해보려고 합니다.
+[이 포스트](https://github.blog/2021-12-08-improving-github-code-search/)를 읽으며 어디에 중점을 두었는지 확인해보았습니다.
 
 ## 왜 새로운 엔진을 만들었는가?
 
-> Over the years, GitHub has leveraged several off-the-shelf solutions, but as the requirements evolved over time, and the scale problem became ever more daunting, we became convinced that we had to build a bespoke search engine for code to achieve our objectives.
-> 수년동안, Github은 여러 _솔루션_ 을 사용했으나, 시간이 지남에 따라 요구사항이 진화하고 스케일 문제가 더 어려워지게 되면서 우리는 _맞춤형_ 검색 엔진을 만들어야 한다는 확신을 갖게 되었습니다.
+> 수년 동안 GitHub는 다양한 솔루션을 사용했지만, 요구 사항의 변화와 스케일 문제가 점점 더 어려워지면서 맞춤형 검색 엔진이 필요하다고 판단했습니다.
 
-모든 개발자에게 워크플로우에서 필수적인 부분이 되는 경험을 제공하기 시작했습니다.
-이것은 우리가 만드는 시스템의 기능, 성능, 확장성에 많은 제약으로 다가왔습니다. 특히 다음과 같은 제약에 있습니다.
+결국은 개발자들에게 필수적인 워크플로우 경험을 제공하기 위함입니다. 이러한 결정은 시스템의 기능, 성능, 확장성에 다음과 같은 제약을 초래했습니다:
 
-- **코드 검색은 다르다**: 많은 표준 기술들은(형태소 분석, 토큰화 같은) 우리가 지원하길 원하는 소스코드 검색들과는 상충됩니다. 특수 쿼리에는 와일드카드나 정규식이 필요할 수 있습니다. 또한 자연어와 웹페이지에 맞게 조정된 스코어된 방법(휴리스틱)은 소스 코드에서는 잘 동작하지 않습니다.
-- **규모(_레포들)_**: Github은 2억 개 이상의 레포지토리를 호스팅합니다. 작년에는 6100만 개 이상의 레포지토리가 생성되었습니다. 이 모든 것에 대해 글로벌 쿼리를 지원하는 것을 목표로 합니다.
-- **검색 성능, 속도**: 개발자는 그들의 도구가 엄청나게 빠르기를 원합니다. 그리고 우리가 모든 개발자의 워크플로우에 참여하려면 그 기대에 부응해야 합니다. 우리의 인덱스의 규모에도 불구하고 p95 쿼리 시간이 1초 미만이기를 원합니다. 대부분의 사용자 쿼리 또는 레파지토리나 organization 범위에서의 쿼리는 그 보다 훨씬 더 빨라야 합니다.
+- **코드 검색은 다르다**: 표준 기술들(형태소 분석, 토큰화 등)이 소스코드 검색과 상충되기 때문에 특수 쿼리에 와일드카드나 정규식이 필요할 수 있습니다. 자연어와 웹페이지에 적합한 스코어링 방식(휴리스틱)은 소스 코드에서는 잘 작동하지 않습니다.
+- **규모(레포지토리)**: GitHub은 2억 개 이상의 레포지토리를 호스팅하고 있으며, 작년에만 6100만 개 이상의 레포지토리가 생성되었습니다. 이를 모두 포함하여 글로벌 쿼리를 지원하는 것이 목표입니다.
+- **검색 성능과 속도**: 개발자들은 도구가 매우 빠르게 작동하기를 원하며, 이러한 기대에 부응해야 합니다. 인덱스의 규모에도 불구하고 p95 쿼리 시간을 1초 미만으로 유지하려고 합니다. 대부분의 사용자 쿼리, 레파지토리, 조직 범위에서의 쿼리는 그보다 더 빠르게 작동해야 합니다.
 
 ## 현재는
 
-> Initially, we’re creating a separate interface for the new code search as we build it out, but once we’re happy with the feedback and are ready for wider adoption, we will integrate it into the main github.com experience.
-> 초기에는 우리는 새로운 코드 검색을 위해 별도 인터페이스를 만들지만, 피드백이 만족스럽고 더 넓게 적용할 준비를 하고, 이것을 github.com 경험에 통합할 것입니다.
+> GitHub는 새로운 코드 검색 엔진을 개발 중이며, 초기에는 별도의 인터페이스를 제공합니다. 만족스러운 피드백을 받고 널리 적용할 준비가 되면, 이 기능을 github.com 경험에 통합할 예정입니다.
 
-현재, 검색 인텍스는 가장 유명한 public 레파지토리 중 500만 개 이상을 커버합니다. 게다가, 엑세스 가능한 private 레파지토리를 검색할 수 있습니다.
+현재 검색 인덱스는 500만 개 이상의 가장 인기있는 공개 레파지토리를 포함하며, 접근 가능한 비공개 레파지토리도 검색할 수 있습니다.
 
-다음은 기능에 대한 내용입니다:
+새로운 코드 검색 엔진의 주요 기능은 다음과 같습니다:
 
-- 스마트 랭킹과 코드에 최적화된 인덱스를 가지고 상위 결과 중에서 원하는 것을 쉽게 찾을 수 있습니다.
-- substring 매치와 특수문자를 지원하는 "exact string"으로 검색하세요. 또는 정규식(`/[0-9]/`와 같은)을 사용하세요.
-- 자동 완성 제안과 함께 `org:` `repo:` 한정자를 검색 범위로 지정하세요.
-- `language:` `path:` `extension:` boolean operator(`OR`, `NOT`)과 같은 필터를 사용하여 결과를 정제하세요. `symbol:` 을 사용하여 symbol에 대해 검색하세요.
-- `폴더 트리 뷰`, `검색 범위에 대한 symbol 정보`, `jump-to-definition`, `select-to-search` 등 과 같은 추가적인 기능들로 빠르게 검색 방향을 잡으세요.
+- 스마트 랭킹 및 코드 최적화 인덱스를 사용하여 상위 결과에서 원하는 항목을 쉽게 찾을 수 있습니다.
+- 정규식이나 "exact string"을 사용하여 substring 매칭과 특수 문자(ex: 정규식(`/[0-9]/`와 같은))를 지원합니다.
+- 자동 완성 제안과 함께 검색 범위를 한정할 수 있는 `org:` 및 `repo:` 한정자를 사용합니다.
+- `language:`, `path:`, `extension:`, 부울 연산자(`OR`, `NOT`) 등의 필터를 사용하여 결과를 세분화하고, `symbol:`을 사용하여 심볼 검색을 수행합니다.
+- 폴더 트리 뷰, 검색 범위에 대한 심볼 정보, jump-to-definition, select-to-search 등의 추가 기능을 통해 검색 방향을 빠르게 잡습니다.
 
 ![result](https://files.seonest.net/images/qnfqnfqnf/post/149/image.png)
 ![result2](https://files.seonest.net/images/qnfqnfqnf/post/151/image.png)
 
-syntax에 관한 정보는 [여기서](https://cs.github.com/about/syntax) 확인할 수 있습니다.
+코드 검색 엔진의 구문 정보는 [해당 링크](https://cs.github.com/about/syntax)에서 확인할 수 있습니다.
 
 ## 향후엔
 
-> We’re excited to share our work with you as a technology preview while we iterate, and to work with you to find unique, novel use cases and workflows.
-> 기술 프리뷰로 여러분들과 함께 일하게 된 것이 흥분됩니다.
-> 유니크하고 참시한 사용 사례, 워크플로우를 찾기 위해 여러분과 함께 일하게 된 것을 기쁘게 생각합니다.
+> GitHub는 기술 프리뷰 단계에서 새로운 코드 검색 엔진을 사용자와 공유하며, 독특하고 참신한 사용 사례와 워크플로우를 찾기 위해 사용자와 함께 협력하고자 합니다.
 
-다음으로 집중해야 할 것에 대해 아이디어가 부족하진 않습니다.
+GitHub는 다음과 같은 목표를 세우고 집중할 계획입니다:
 
-- Github에서 접근할 수 있는 모든 레파지토리를 포함할 때까지 인덱스를 늘릴 것입니다.
-- 어떤 것이 가장 좋은지 찾기 위해 스코어와 랭킹 방법(휴리스틱)을 실험할 것입니다.
-- 어떤 API들과 integration들이 가장 영향을 미칠지 찾을 것입니다.
-- 더 많은 언어에 대한 지원을 계속 추가할 것입니다.
+- GitHub에서 접근 가능한 모든 레파지토리를 포함할 때까지 검색 인덱스를 확장합니다.
+- 최적의 결과를 얻기 위해 스코어링 및 랭킹 방법(휴리스틱)을 실험합니다.
+- 가장 영향력 있는 API와 통합 방법을 찾습니다.
+- 지원되는 프로그래밍 언어를 지속적으로 추가합니다.
 
-무엇보다도 여러분들의 피드백을 듣기를 원합니다.
-그리고 여러분들이 필요했던 것조차 알지 못했던 툴을 만들기를 원합니다.
+GitHub는 사용자의 피드백을 듣고, 사용자가 필요로 하는 도구를 개발하는 것을 목표로 합니다.
 
-## 빅 피쳐: Github에서의 개발자 생산성
+## Github에서의 개발자 생산성 향상
 
 > As a developer, staying in a flow state is hard. Whenever you look up how to use a library, or have a test fail because your developer environment has diverged from CI, or need to know how an error message can arise, you are interrupted. The longer it takes to resolve the interruption, the more context you lose.
-> 개발자로서 flow state에 머무는 것은 어렵습니다.
+> 개발자들이 일할 때 흐름에 머무는 것은 어려운 일입니다
 >
-> - 라이브러리 사용법을 찾을 때마다
-> - 개발자 환경이 CI에서 분기되어 테스트를 실패할 때마다
-> - 에러 메시지가 어떻게 발생할 수 있는지 알아야 할 때마다
-> - 등등
+> - 라이브러리 사용법을 찾거나,
+> - 개발 환경이 CI와 분기되어 테스트가 실패하거나,
+> - 에러 메시지가 어떻게 발생하는지 알아야 할 때마다
 >
-> 이런 상황에 마주치게 되면 우리는 _interrupt_ 됩니다.
-> 이런 _interrupt_ 상황을 해결하는데 오래 걸릴수록 더 많은 _context_ 를 잃습니다.
+> 이런 상황에 마주치게 되면 우리는 중단이 발생합니다.  
+> 이러한 중단 상황을 해결하는 데 걸리는 시간이 길수록 더 많은 맥락을 잃게 됩니다.
 
-[Github copilot](https://copilot.github.com/)은 익숙하지 않은 영역에서도 자신 있게 코딩할 수 있게 도와주었습니다.
-[Github codespaces](https://github.com/features/codespaces)를 출시하고 [Github의 생산성을 향상시킨 방법](https://github.blog/2021-08-11-githubs-engineering-team-moved-codespaces/)을 공유했습니다.
-[Github Code Search](https://cs.github.com/)는 Github의 통합된 솔루션의 일부로 개발자 생산성에 관한 폭넓은 맥락에서 코드 검색, 탐색에 대한 개선을 목표로 합니다.
+[Github copilot](https://copilot.github.com/)은 개발자들이 낯선 영역에서도 자신 있게 코딩할 수 있게 도와주었습니다.  
+[Github codespaces](https://github.com/features/codespaces)를 출시하여 [Github 생산성 향상 방법](https://github.blog/2021-08-11-githubs-engineering-team-moved-codespaces/)을 공유했습니다.  
+[Github Code Search](https://cs.github.com/)는 개발자 생산성에 관한 폭넓은 맥락에서 코드 검색 및 탐색 개선을 목표로 하는 Github의 통합 솔루션의 일부입니다.
 
-코드 검색에 있어서 Github 비전은 모든 개발자가 코드를 빠르고 직관적으로 찾고, 발견하고, 항해하고, 이해할 수 있도록 도와주는 것입니다.
+Github의 코드 검색 비전은 모든 개발자가 코드를 빠르고 직관적으로 찾고, 발견하고, 탐색하고 이해할 수 있도록 돕는 것입니다.
+Github Code Search를 사용하면 전 세계의 코드를 쉽게 찾을 수 있으며, 관련성이 높은 결과를 먼저 표시하고 자동 완성을 지원하여 흐름 상태를 유지하는데 도움이 됩니다.
 
-Github Code Search을 사용하면 전 세계의 코드를 쉽게 찾을 수 있습니다. 검색만 하면 모든 것이 가능합니다. 가장 관련성이 높은 결과를 먼저 표시하고 모든 단계에서 자동 완성을 지원하여 flow state를 유지하는데 도움을 줍니다.
-
-github.com에 통합되기까지 얼마나 걸릴진 모르겠지만... 프리뷰를 사용하시고 싶다면 [여기서](https://github.com/features/code-search/signup) 신청하면 됩니다.
+Github.com에 통합되기까지 시간이 걸릴 수 있지만, 프리뷰를 사용하고 싶다면 [여기서](https://github.com/features/code-search/signup) 신청할 수 있습니다.
 
 ## 마무리하며
 
-최신 개발은 협업과 오픈 소스의 힘이 굉장히 큽니다.
+최근의 개발은 협업과 오픈 소스의 힘이 큽니다.
+그 중심에는 Github이 있으며, 수많은 오픈 소스 기여자와 메인테이너의 작업이 매우 소중한 자료, 도구 등이 됩니다.
+이를 돕기 위한 새롭고 성능이 뛰어난 검색 엔진은 반가운 소식입니다.
 
-그 중심에는 Github이 있습니다. 툴, 라이브러리, 아이디어 등 수만 명의 오픈 소스 컨트리뷰터와 메인테이너 작업은 저에게는 매우 소중한 자료, 도구, 등등입니다.
-
-이것을 도와줄 새롭고 성능이 뛰어난 검색엔진은 너무나도 반가운 소식입니다.
-
-Github Code Search를 사용해본 경험으로썬 **엄청나게** 빠릅니다.
-
-편하게 사용하기 좋은 syntax도 있지만 무엇보다 속도에 놀랐습니다.
-
-많이 써보게 될 것 같고 또 가능하다면 피드백도 남길 수 있도록 해봐야겠습니다.
+Github Code Search 사용 경험은 **놀랄 만큼** 빠릅니다.
+사용하기 편한 문법도 있지만, 속도에 크게 놀랐습니다.
+앞으로 많이 사용하게 될 것 같고, 피드백도 남길 수 있도록 노력할 것입니다.
 
 ## reference
 

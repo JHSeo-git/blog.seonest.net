@@ -5,50 +5,39 @@ date: '2022-02-26T07:35:06.566Z'
 category: 'web'
 tags: ['Rendering', 'Web']
 thumbnail: '/post/web/웹-렌더링/thumbnail.png'
+update: '2023-03-26T11:08:43Z'
 ---
 
-> https://developers.google.com/web/updates/2019/02/rendering-on-the-web 번역 및 정리
+> https://developers.google.com/web/updates/2019/02/rendering-on-the-web
 
-개발자는 아키텍처를 구상하고 선택할 때 많은 조건에 의해서 결정합니다. 그 조건이 다양하고 많은 지표에 의해 정해집니다.
+개발자는 서비스의 아키텍처를 결정할 때 다양한 조건과 지표를 고려해야 합니다. 웹 개발자는 사용자에게 더 나은 경험을 제공하기 위해 렌더링 방식을 선택하게 되는데, 아키텍처를 변경하기는 쉽지 않은 일입니다.
 
-웹 개발자는 더 나은 렌더링 방식을 사용하여 사용자에게 서비스를 제공하려고 합니다. 그리고 아키텍처는 결정을 한 번 하면 바꾸기 어렵습니다.
+최근에는 React 18 rc 버전이 출시되면서 SSR 프레임워크들이 발빠르게 업데이트 되고 있습니다. 이러한 상황에서 각 렌더링 방식에 대해 확실히 이해하고 사용할 수 있어야 합니다.
 
-늘 그렇지만 개발의 세계는 늘 빠르게 움직이고 성장하고 있습니다.
-최근에 react 18 rc 버전이 나오면서 많은 SSR 프레임워크들은 발 빠르게 준비하고 있습니다.
+렌더링 방식은 다양하며, 서버 측 렌더링(SSR), 클라이언트 측 렌더링(CSR), (Re)hydration, Prerendering 등이 있습니다. 이러한 방식들을 조합하여 사용되기도 하며, 더 세분화하면 Static SSR, SSG, SSR with hydration, CSR with prerendering, Streaming 등이 있습니다.
 
-렌더링 방식은 다양하고 각 렌더링 방식은 생각보다 어렵습니다. 각 접근법에 대해 확실히 이해하기 위해 이번에 정리할 겸 작성해보려고 합니다.
+로딩 속도는 사용자 경험에 있어 중요한 요소입니다. 사용자는 로딩 시간이 길 경우 사이트를 사용하지 않을 가능성이 높아지며, 이는 충성도와 페이지 이탈의 주요 요인입니다. 구글의 연구 결과, 페이지 로드가 완료되기 전에 사용자가 페이지를 떠날 가능성이 최소 24% 감소하는 것으로 나타났습니다. 따라서 개발자는 사용자 경험을 개선하기 위해 더 빠른 로딩 속도를 제공할 필요가 있습니다.
 
 ## 들어가면서
 
-> Rendering is a process used in web development that turns website code into the interactive pages users see when they visit a website.
->
-> 웹 개발에서 렌더링은 사용자가 웹사이트를 방문했을 때, 웹사이트 코드에서 interactive 페이지로 바꾸는 프로세스 입니다.
+> 웹 개발에서 렌더링은 사용자가 웹사이트를 방문했을 때, 웹사이트 코드에서 interactive 페이지로 바꾸는 프로세스 입니다.  
 > _- [Rendering](https://www.seobility.net/en/wiki/Rendering)_
 
-아키텍처를 더 잘 이해하고 선택하기 위해서 각 접근법에 대해 확실하게 이해하기 위해 용어를 정확하게 아는 것도 중요합니다.
+아키텍처를 더 잘 이해하고 선택하기 위해서 각 접근법에 대해 잘 이해하기 위해 용어를 정확하게 아는 것도 중요합니다.
 
-- **SSR**: Server-Side Rendering(서버 측 렌더링) - 서버에서 생성된 HTML로 렌더링 합니다.
-- **CSR**: Client-Side Rendering(클라이언트 측 렌더링) - 브라우저에서 렌더링합니다. 일반적으로 DOM을 사용합니다.
-- **(Re)hydration**: 클라이언트가 서버에서 렌더링한 HTML을 렌더링 후 DOM트리와 상태등 자바스크립트를 통한 렌더링으로 재사용하기 위해 컴포넌트 트리를 재 구성하는 것을 말합니다.
+- **SSR**: Server-Side Rendering(서버 측 렌더링) - 서버에서 HTML을 생성하여 렌더링하는 방식입니다.
+- **CSR**: Client-Side Rendering(클라이언트 측 렌더링) - 브라우저에서 JavaScript를 사용하여 렌더링하는 방식입니다.
+- **(Re)hydration**: 클라이언트에서 서버에서 생성된 HTML을 렌더링 후 자바스크립트를 사용하여 재사용하기 위해 컴포넌트 트리를 재구성하는 것을 말합니다.
 - **Prerendering**: 빌드 타임에 애플리케이션을 실행하여 초기 상태를 정적 HTML로 캡쳐합니다.
 
-조합하여 사용되기도 하며 더 세분화하면 다양한 렌더링 방식이 있습니다.
-(Static SSR, SSG, SSR with hydration, CSR with prerendering, Streaming...)
+이러한 방식들은 조합하여 사용되기도 하며, 더 세분화하면 Static SSR, SSG, SSR with hydration, CSR with prerendering, Streaming 등의 다양한 렌더링 방식이 있습니다.
 
 ## 왜 사용자 경험이 중요한가?
 
-> Slow-loading pages are frustrating for users, who can't/won't use the site, and bad for developers, who forfeit those users.
-> 로딩 속도가 느린 페이지는 사이트를 사용할 수 없고, 사용하지 않을 것입니다.
+> 로딩 속도가 느린 페이지는 사이트를 사용할 수 없고, 사용하지 않을 것입니다.  
 > _-[web.dev_performance/get-started](https://developers.google.com/web/fundamentals/performance/get-started)_
 
-로딩 시간은 페이지 이탈과 충성도의 주요 요인입니다.
-
-> 인용
->
-> - https://www.pwastats.com/
-> - https://wpostats.com/
-> - https://developer.akamai.com/blog/2016/09/14/mobile-load-time-user-abandonment
-> - https://searchengineland.com/google-speed-update-page-speed-will-become-ranking-factor-mobile-search-289904
+로딩 시간은 사용자 경험과 충성도에 큰 영향을 미치는 주요 요인입니다.
 
 - 사용자의 53%는 로드하는 데 3초 이상 걸리는 사이트는 포기한다고 보고됩니다.
 - 사용자의 46%는 페이지가 로드되기를 기다리는 것이 모바일 쇼핑에서 가장 마음에 들지 않는 일이라고 말합니다.
@@ -57,42 +46,43 @@ thumbnail: '/post/web/웹-렌더링/thumbnail.png'
 - 느린 로딩은 SEO에 좋지 않은데, 그 이유는 사이트의 순위가 낮아져 방문, 읽기, 전환율이 줄어들 수 있기 때문입니다. 2018년부터 구글은 모바일 검색에서 사이트 속도를 지표 중 하나로 사용합니다.
 - 수백만 페이지 노출에 대한 구글 연구에 따른 사이트가 core-web-vitals에 대한 권장 임계값(good 값)을 충족하면 사용자가 페이지 로드가 완료되기 전에 페이지를 떠날 가능성이 최소 24% 감소합니다.
 
+> - https://www.pwastats.com/
+> - https://wpostats.com/
+> - https://developer.akamai.com/blog/2016/09/14/mobile-load-time-user-abandonment
+> - https://searchengineland.com/google-speed-update-page-speed-will-become-ranking-factor-mobile-search-289904
+
 ## 1. SSR(Server-Side Rendering)
 
-> 서버사이드 렌더링은 사용자 요청에 대한 응답으로 페이지에 대한 전체 HTML을 생성하고 난 뒤 응답됩니다. 이렇게 하면 브라우저에서 응답을 받기 전에 다루어 지기 때문에 클라이언트에서 데이터를 위한 fetch 등 추가적인 요청을 피할 수 있습니다.
-
-JSP, ASP, thymeleaf 등의 언어를 사용해보셨다면 가장 익숙한 유형입니다.
-별도의 서버가 나눠져있지 않고 백엔드서버를 통해 모든 것이 이루어집니다.
+SSR은 사용자 요청에 대한 응답으로 페이지에 대한 전체 HTML을 생성하고 난 뒤 응답됩니다.
+이렇게 하면 브라우저에서 응답을 받기 전에 다루어 지기 때문에 클라이언트에서 초기 데이터를 위한 fetch 등 추가적인 요청을 피할 수 있습니다.
+JSP, ASP, thymeleaf 등의 언어를 사용해보셨다면 가장 익숙한 유형입니다..
 
 ![jsp-v2](https://upload.wikimedia.org/wikipedia/commons/7/72/JSP_Model_2.svg)
 
-API 서버가 분리가 따로 필요 없기 단일 서버로 구현이 가능합니다.
+별도의 서버가 나눠져있지 않고 백엔드서버를 통해 모든 것이 이루어집니다. API 서버가 분리가 따로 필요 없기 때문에 단일 서버로 구현이 가능합니다.
 
-SPA구조가 아닌 MPA 구조에 적합하고 모든 UI 요소를 미리 받아온 후, 필요한 데이터(주로 JSON)만을 요청하여(ajax) 갱신함으로써, 반응성을 빠르게 하는데에 있습니다.
-
-말그대로 MPA 구조에 사용되기 떄문에 화면 전환(url path전환)의 경우 서버에 반드시 페이지를 만들어 달라고 요청을 해야 되기 때문에 아무리 빠르게 진행되더라도 사용자 경험은 좋지 않습니다.(화면 깜빡임 등)
-
-그렇다고 SPA를 하지 못한다는 것은 아니지만 매 요청시에 모든 페이지에 해당하는 내용을 렌더링해야 되기 때문에 높은 서버 부담, 큰 초기 전송량이라는 단점을 그대로 가지고 있기 때문에 권장하지 않습니다.
+SSR은 MPA(Multi-Page Application) 구조에 적합하고 모든 UI 요소를 미리 받아온 후, 필요한 데이터(주로 JSON)만을 요청하여(ajax) 갱신함으로써, 반응성을 빠르게 하는데에 있습니다.
+매 요청시에 모든 페이지에 해당하는 내용을 렌더링해야 되기 때문에 초기 전송량이 크고, 서버 부담이 높다는 단점이 있습니다.
+또한 화면 전환(url path전환)의 경우 서버에 반드시 페이지를 만들어 달라고 요청을 해야 되기 때문에 사용자 경험이 좋지 않습니다.
 
 ### 특징
 
-SSR의 장점은 빠른 FCP(First Contentrul Paint) 입니다.
+SSR의 장점은 빠른 FCP(First Contentful Paint)과 TTI(Time To Interactive)입니다.
+또한 서버에서 페이지 렌더링에 필요한 많은 자바스크립트 코드를 클라이언트로 보내지 않아도 되므로 TTI가 빨라집니다.
 
-또한 서버에서 페이지 렌더링에 필요한 많은 자바스크립트 코드를 클라이언트로 보내지 않아도 되므로 TTI(Time To Interactive)가 빨라집니다.
-
-| ![ssr](https://files.seonest.net/images/qnfqnfqnf/post/167/image.png) |
-| :-------------------------------------------------------------------: |
-|                               _**SSR**_                               |
+![ssr](https://files.seonest.net/images/qnfqnfqnf/post/167/image.png)
 
 CSR에 비해서 페이지를 구성하는 속도는 늦어지지만(TTFB) 전체적으로 사용자에게 보여주는 콘텐츠 구성이 완료되는 시점은 빨라집니다.
 
-SEO에서도 검색엔진이 사이트를 호출 시에 완성된 메타 데이터를 크롤링할 수 있기 때문에 CSR보다 뛰어납니다.(검색 엔진 봇이 JS 사용을 허용하는지 여부와 상관없이 제공할 수 있습니다.)
+SEO에서도 검색엔진이 사이트를 호출 시에 완성된 메타 데이터를 크롤링할 수 있기 때문에 CSR보다 뛰어납니다.(검색 엔진 봇이 JS 사용을 허용하는지 여부와 상관없이 제공할 수 있기 때문에 SEO에서 CSR보다 뛰어납니다.)
 
-SSR을 사용하면 사용자는 사이트를 이용하기 전에 자바스크립트가 처리되기를 기다리지 않아도 됩니다. third-party 자바스크립트를 부득이하게 사용해야 할 경우(ex, google ad)에도 메인 자바스크립트 비용을 줄이게 되므로 결국은 더 이득이 될 수 있습니다.
+SSR을 사용하면 사용자는 사이트를 이용하기 전에 자바스크립트가 처리되기를 기다리지 않아도 됩니다.
+third-party 자바스크립트를 부득이하게 사용해야 할 경우(ex, google ad)에도 메인 자바스크립트 비용을 줄이게 되므로 결국은 더 이득이 될 수 있습니다.
 그러나 이런 경우 서버에서 페이지를 생성하는 데 시간이 더 걸릴 수 있다는 점을 알고 있어야 합니다.
 
 애플리케이션이 SSR에 크게 의존하고 있는지 아닌지 충분히 생각할 필요가 있습니다.
-SSR, CSR은 다른 곳에 서 있는 기술이 아닙니다. 일부 페이지에서는 SSR을 사용하고 다른 페이지에서는 사용하지 않아도 됨을 기억하는 것이 중요합니다.
+SSR, CSR은 다른 곳에 서 있는 기술이 아닙니다.
+일부 페이지에서는 SSR을 사용하고 다른 페이지에서는 사용하지 않아도 됩니다.
 
 Netflix는 Static 페이지를 렌더링하는 반면 interactive가 많은 페이지는 자바스크립트를 prefetch하여 클라이언트가 렌더링하기에 무거운 페이지를 더 빠르게 로드하도록 합니다.
 
@@ -104,7 +94,8 @@ Netflix는 Static 페이지를 렌더링하는 반면 interactive가 많은 페�
 >
 > ![prefetch](https://res.cloudinary.com/practicaldev/image/fetch/s--9kBsi51H--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://thepracticaldev.s3.amazonaws.com/i/sf32qj3fc4dof4dfgyuh.gif)
 
-모던 프레임워크, 라이브러리를 사용하면 클라이언트와 서버 모두에서 동일한 어플리케이션을 렌더링 할 수 있습니다. 이러한 기술은 서버사이드 렌더링에 사용할 수 있지만 서버 또는 클라이언트 모두에서 렌더링이 발생하는 아키텍처는 성능, 트레이드오프가 매우 다른게 접근하는 것이라는 점을 알아야 합니다.
+모던 프레임워크, 라이브러리를 사용하면 클라이언트와 서버 모두에서 동일한 어플리케이션을 렌더링 할 수 있습니다.
+이러한 기술은 서버사이드 렌더링에 사용할 수 있지만 서버 또는 클라이언트 모두에서 렌더링이 발생하는 아키텍처는 성능, 트레이드오프가 매우 다른게 접근하는 것이라는 점을 알아야 합니다.
 
 React는 서버사이드 렌더링을 위해 [renderToString()](https://ko.reactjs.org/docs/react-dom-server.html#rendertostring)을 사용할 수 있습니다.
 또는 [Next.js](https://nextjs.org/)와 같이 SSR 프레임워크를 사용할 수도 있습니다.
@@ -112,13 +103,9 @@ Vue 같은 경우 [서버사이드 렌더링 가이드](https://vuejs.org/guide/
 
 대부분의 유명한 솔루션들은 여러 형태로 hydration을 사용합니다. 그래서 툴을 선택하기 전에 사용 방법에 대해서 알고 있어야 합니다.
 
-- FCP, TTI가 CSR에 비해 더 빠릅니다.
-- TTFB는 HTML 파일을 모두 완성한 뒤에 받게 되기 때문에 다른 방식에 비해 느립니다.
-- SEO가 CSR 비해 검색 봇이 제약없이 크롤링이 가능하여 더 좋습니다.
-
 ### React에서
 
-> ReactDOM: 앱의 최상위에서 사용되는 DOM-specific 메소드를 표현하는 패키지
+> ReactDOM: 앱의 최상위에서 사용되는 DOM-specific 메소드를 표현하는 패키지  
 > ReactDOMServer: react component를 static markup으로 render하는 패키지(보통 Node 서버에서 사용됩니다)
 
 ReactDOM은 클라이언트에서 DOM을 표현하는 방법에 쓰이고, ReactDOMServer는 서버에서 DOM을 표현할 때 사용됩니다.
@@ -144,13 +131,9 @@ ReactDOMServer.renderToNodeStream(element);
 ReactDOMServer.renderToStaticNodeStream(element);
 ```
 
-| ![react-csr](https://d33wubrfki0l68.cloudfront.net/ae669b99cf5bbc70719de09b0aef758af7739d5e/7623d/images/useid/client_side_rendering.png) |
-| :---------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                   _CSR_                                                                   |
+![react-csr](https://d33wubrfki0l68.cloudfront.net/ae669b99cf5bbc70719de09b0aef758af7739d5e/7623d/images/useid/client_side_rendering.png)
 
-| ![react-ssr](https://d33wubrfki0l68.cloudfront.net/e6ad06d55ad27ac78bc0165b02fddb425e5d21d7/7c69b/images/useid/server_side_rendering.png) |
-| :---------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                   _SSR_                                                                   |
+![react-ssr](https://d33wubrfki0l68.cloudfront.net/e6ad06d55ad27ac78bc0165b02fddb425e5d21d7/7c69b/images/useid/server_side_rendering.png)
 
 모든 웹 어플리케이션 시작은 _**최초에 HTML이 있다**_ 입니다.
 CSR의 경우 빈 페이지(DOM 엘리먼트가 없는)가 오게 되며 react에 의해 페이지를 렌더링하게 됩니다.
@@ -162,11 +145,12 @@ SSR의 경우 어떤 것이든 일단 페이지에 무언가가 채워진 상태
 
 반면 SSR은 HTML 페이지를 생성하여 보냅니다. CSR과 달리 인터넷 속도가 느리더라도 빈 페이지를 보진 않습니다. 데이터베이스에서 데이터를 가져오고 페이지를 생성하고 클라이언트로 보내는 이 과정이 동일한 상황의 CSR과 비교했을 때 더 느리다고 할 순 없습니다.
 
-#### React Concurrent, RSC
+### React Concurrent, RSC
 
-> React 18버전에 concurrent기능과 함께 RSC 기능이 들어오면서 streaming render를 위한 createRoot + render, hydrateRoot 등 새로운 render 메소드를 제공합니다.
+> React 18버전에 concurrent기능과 함께 RSC 기능이 들어오면서 streaming render를 위한 createRoot + render, hydrateRoot 등 새로운 render 메소드를 제공합니다.  
 > https://github.com/reactwg/react-18/discussions/22
-> ReactDOMServer에서 마찬가지로 renderToPipeableStream가 추가되었습니다.
+>
+> ReactDOMServer에서 마찬가지로 renderToPipeableStream가 추가되었습니다.  
 > https://github.com/reactwg/react-18/discussions/5
 
 ```js
@@ -181,37 +165,39 @@ const root = ReactDOM.hydrateRoot(container, <App />);
 ReactDOMServer.renderToPipeableStream(element);
 ```
 
-concurrent, RSC 관련해서는 공부하며 차차 글을 올릴 생각입니다.
-
 ## 2. Static Rendering
 
-> 여기서 static rendering은 빌드 시에 HTML을 생성하는 것을 말합니다.
+> 여기서 Static rendering은 빌드 시에 HTML을 생성하는 것을 말합니다.
 
 서버 렌더링과 다르게 페이지 HTML을 미리 생성해두고 있기 때문에 일관되게 빠른 TTFB를 얻을 수 있습니다. 일반적으로 정적 렌더링은 각 url에 대해 별도의 HTML 파일을 생성하는 것을 말합니다. 이렇게 하면 CDN을 통해 엣지 캐싱을 활용할 수 있습니다.
 
-| ![ssg.png](https://files.seonest.net/images/qnfqnfqnf/post/168/ssg.png) |
-| :---------------------------------------------------------------------: |
-|                         _**Static Rendering**_                          |
+![ssg.png](https://files.seonest.net/images/qnfqnfqnf/post/168/ssg.png)
 
-정적 렌더링의 단점 중 하나는 가능한 모든 URL에 대해 개별 HTML 파일을 생성해야 한다는 것입니다. 이를 예측할 수 없거나 고유한 페이지가 많은 사이트의 경우 매우 어렵거나 실행 불가능할 수 있습니다.
+정적 렌더링의 단점 중 하나는 가능한 모든 URL에 대해 개별 HTML 파일을 생성해야 한다는 것입니다.
+이를 예측할 수 없거나 고유한 페이지가 많은 사이트의 경우 매우 어렵거나 실행 불가능할 수 있습니다.
 
-React에서는 Gatsby나 Next.js의 export 가 이에 해당합니다. 이를 이용하여 작성하는 것이 편리합니다. 그러나 정적 렌더링과 pre-rendering의 차이점을 이해하는 것은 중요합니다.
+React에서는 Gatsby나 Next.js의 export 가 이에 해당합니다. 이를 이용하여 작성하는 것이 편리합니다.
+그러나 정적 렌더링과 pre-rendering의 차이점을 이해하는 것은 중요합니다.
 
-**정적 렌더링된 페이지는 많은 client-side 자바스크립트를 실행할 필요 없이 interacitve 합니다. 반면에 pre-rendering 페이지는 client에서 boot(자바스크립트를 통해)해야만 interactive가 되는 SPA의 페이지 FCP를 향상시킵니다.**
+**정적 렌더링된 페이지는 많은 client-side 자바스크립트를 실행할 필요 없이 interacitve 합니다. 반면에 pre-rendering 페이지는 client에서 boot(자바스크립트를 통해)해야만 interactive가 됩니다.**
 
-자바스크립트를 비활성한다면 차이는 확실하게 들어납니다. 정적 렌더링 페이지의 경우 대부분 interactive 합니다. 그러나 pre-rendering 페이지는 링크나 몇 가지 default action을 제외하곤 비활성상태가 됩니다.
+자바스크립트를 비활성한다면 차이는 확실하게 들어납니다. 정적 렌더링 페이지의 경우 대부분 interactive 합니다.
+그러나 pre-rendering 페이지는 링크나 몇 가지 default action을 제외하곤 비활성상태가 됩니다.
 pre-rendering 페이지는 더 많은 자바스크립트를 필요로 하며 정적 렌더링 접근방식보다 더 복잡합니다.
 
 ## 3. SSR vs Static Rendering
 
 > 서버 렌더링은 만병통치약이 아닙니다.
 
-SSR의 동적인 특성은 [상당한 컴퓨팅 오버헤드](https://medium.com/airbnb-engineering/operationalizing-node-js-for-server-side-rendering-c5ba718acfc9)가 발생할 수 있습니다. 많은 SSR 솔루션은 early flush 되지 않습니다. 그래서 TTFB를 지연시키거나 전송되는 데이터가 두 배가 될 수 있습니다.(예: 클라이언트에서 자바스크립트에서 사용되는 inlined 상태)
+SSR의 동적인 특성은 [상당한 컴퓨팅 오버헤드](https://medium.com/airbnb-engineering/operationalizing-node-js-for-server-side-rendering-c5ba718acfc9)가 발생할 수 있습니다.
+많은 SSR 솔루션은 early flush 되지 않습니다. 그래서 TTFB를 지연시키거나 전송되는 데이터가 두 배가 될 수 있습니다.
+(예: 클라이언트에서 자바스크립트에서 사용되는 inlined 상태)
 
-React에서 renderToString()은 동기실행이고 단일 스레드이기 때문에 더 느려질 수 있습니다.
+React에서 `renderToString()`은 동기실행이고 단일 스레드이기 때문에 더 느려질 수 있습니다.
 _올바른_ SSR을 위해서는 [component caching](https://medium.com/@reactcomponentcaching/speedier-server-side-rendering-in-react-16-with-component-caching-e8aa677929b1), 메모리 소모 관리, [memoization](https://speakerdeck.com/maxnajim/hastening-react-ssr-with-component-memoization-and-templatization) 등 여러 문제를 위한 솔루션을 찾거나 만들어야 합니다.
 
-일반적으로 같은 어플리케이션은 여러번 처리되거나 재빌드합니다. 한 번은 클라이언트, 또 한번은 서버에서. SSR이 더 빨리 보여질 수 있다는 것이, 여러분이 해야 할 일이 갑자기 더 작아진다는 뜻은 아닙니다.
+일반적으로 같은 어플리케이션은 여러번 처리되거나 재빌드합니다. 한 번은 클라이언트, 또 한번은 서버에서.
+SSR이 더 빨리 보여질 수 있다는 것이, 여러분이 해야 할 일이 갑자기 더 작아진다는 뜻은 아닙니다.
 
 SSR은 각 URL에 대해 on-demand HTML을 생성하지만 정적 렌더링 콘텐츠를 제공하는 것보다 느릴 수 있습니다.
 그러나 SSR + [HTML캐싱](https://freecontent.manning.com/caching-in-react/) 으로 시간을 대폭 단축할 수 있습니다.
@@ -223,12 +209,10 @@ SSR의 장점은 정적 렌더링 보다 더 많은 "라이브" 데이터를 가
 
 > CSR은 자바스크립트를 사용하여 브라우저에서 직접 페이지를 렌더링하는 것을 의미합니다. 모든 로직, fetch, templating, routing을 서버가 아닌 클라이언트에서 처리합니다.
 
-| ![csr.png](https://files.seonest.net/images/qnfqnfqnf/post/169/csr.png) |
-| :---------------------------------------------------------------------: |
-|                                  _CSR_                                  |
+![csr.png](https://files.seonest.net/images/qnfqnfqnf/post/169/csr.png)
 
 CSR은 모바일 환경에서 빠르게 실행되기 어려울 수 있습니다.
-만약 자바스크립트 번들사이즈를 작게 유지하고 최소한의 RTT로 delivery하는 것을 유지한다면 pure SSR 성능에 근접할 수 있습니다.
+만약 자바스크립트 번들사이즈를 작게 유지하고 최소한의 RTT로 delivery하는 것을 유지한다면 Pure SSR 성능에 근접할 수 있습니다.
 
 동작에 반드시 필요한 scripts, 데이터가 `<link rel=preload>` 등을 사용한다면 더 빠르게 전달되어 더 빠르게 parser가 동작할 수있습니다.
 
@@ -244,8 +228,7 @@ CSR의 주요 단점은 어플리케이션이 커짐에 따라 자바스크립�
 
 Universal Rendering 또는 간단하게 SSR 이라고 하는 이 접근 방식은 CSR과 SSR을 모두 수행하여 균형을 맞추려고 시도합니다.
 
-전체 페이지 load나 re-load와 같은 네비게이션 요청은 서버에 의해서 처리하고,
-렌더링에 필요한 자바스크립트, 데이터를 클라이언트에서 처리하도록 합니다.
+전체 페이지 load나 re-load와 같은 네비게이션 요청은 서버에 의해서 처리하고, 렌더링에 필요한 자바스크립트, 데이터를 클라이언트에서 처리하도록 합니다.
 
 잘 수행하게 된다면, SSR의 빠른 FCP를 달성하고 hydration을 이용해 클라이언트에서 다시 렌더링함으로써 균형을 달성합니다. 이것이 새로운 솔루션이지만 몇 가지 상당한 성능적으로 단점이 있을 수 있습니다.
 
@@ -256,22 +239,20 @@ SSR 페이지는 보통 잘 로드되고 잘 동작하는 것처럼 보이지만
 
 #### (Re)hydration problem: One App for the Price of Two
 
-> 혹 떼려다가 혹 붙이기
-
-hydration 문제는 자바스크립트로 인한 지연된 interactivity보다 더 안좋을 수 있습니다.
+Hydration 문제는 자바스크립트로 인한 지연된 interactivity보다 더 안좋을 수 있습니다.
 
 클라이언트 자바스크립트가 서버가 HTML을 렌더링하는데 사용한 모든 데이터를 다시 요청할 필요 없이 서버가 중단한 부분을 정확하게 "선택"할 수 있도록 현재 SSR 솔루션은 일반적으로 **UI 응답을 직렬화** 합니다.(스크립트 태그로 감싸진 부분)
 
-| ![hydration-problem.png](https://files.seonest.net/images/qnfqnfqnf/post/171/hydration-problem.png) |
-| :-------------------------------------------------------------------------------------------------: |
-| ![ssr+csr+hydration.png](https://files.seonest.net/images/qnfqnfqnf/post/170/ssr+csr+hydration.png) |
-|                                       _SSR + CSR + hydration_                                       |
+![hydration-problem.png](https://files.seonest.net/images/qnfqnfqnf/post/171/hydration-problem.png)
+
+![ssr+csr+hydration.png](https://files.seonest.net/images/qnfqnfqnf/post/170/ssr+csr+hydration.png)
 
 엘리먼트들과 데이터 내용이 중복이 들어가 있는 것을 볼 수 있습니다. 또한 `bundle.js` 가 로드, 실행이 완료한 후에야 UI가 interactive되어 사용할 수 있습니다.
 
-SSR rehydration을 사용하는 실제 웹사이트로부터 수집된 성능 지표는 이렇게 사용하는 것이 안좋다라고 표현합니다. 궁극적으로 사용자 경험에 그대로 영향을 미치며 "불쾌한 골짜기"에 빠뜨리기 쉽다는 것입니다.
+SSR rehydration을 사용하는 실제 웹사이트로부터 수집된 성능 지표는 이렇게 사용하는 것이 안좋다라고 표현합니다.
+궁극적으로 사용자 경험에 그대로 영향을 미치며 "불쾌한 골짜기"에 빠뜨리기 쉽다는 것입니다.
 
-그러나 희망은 있습니다. 단기적으로는 캐시 가능성이 높은 콘텐츠에만 SSR을 사용하면 TTFB 지연을 줄여 pre-rendering과 유사한 결과를 얻을 수 있습니다.
+그러나 단기적으로는 캐시 가능성이 높은 콘텐츠에만 SSR을 사용하면 TTFB 지연을 줄여 pre-rendering과 유사한 결과를 얻을 수 있습니다.
 
 점진적으로 또는 부분적으로 hydration을 하는 것이 미래에 이 기술을 더 실용적으로 만드는 열쇠가 될 수 있습니다.
 
@@ -285,9 +266,10 @@ SSR rehydration을 사용하는 실제 웹사이트로부터 수집된 성능 �
 
 React에서는 [renderToNodeStream()](https://reactjs.org/docs/react-dom-server.html#rendertonodestream)을 이용합니다.
 
-> [react 18에선 renderToNodeStream이 depreacted되고 renderToPipeableStream 사용을 권장합니다.](https://github.com/reactwg/react-18/discussions/22) > ![renderToPipeableStream](https://files.seonest.net/images/qnfqnfqnf/post/172/image.png)
+> [react 18에선 renderToNodeStream이 depreacted되고 renderToPipeableStream 사용을 권장합니다.](https://github.com/reactwg/react-18/discussions/22)  
+> ![renderToPipeableStream](https://files.seonest.net/images/qnfqnfqnf/post/172/image.png)
 
-점진적 hydration도 눈여겨볼 가치가 있으며 React가 [연구](https://github.com/facebook/react/pull/14717) 해왔습니다. concurrent 모드가 곧 릴리즈 될 것으로 예상되며 `<Suspense fallback={...}>` API를 이용하여 점진적 hydration을 처리하도록 합니다.
+점진적 hydration도 눈여겨볼 가치가 있으며 React가 [연구](https://github.com/facebook/react/pull/14717) 해왔습니다. Concurrent 모드가 곧 릴리즈 될 것으로 예상되며 `<Suspense fallback={...}>` API를 이용하여 점진적 hydration을 처리합니다.
 
 이 접근 방식은 전체 어플리케이션을 한 번에 초기화하는 현재의 일반적인 접근 방식이 아니라 서버에서 렌더링된 어플리케이션의 개별 부분이 시간이 지남에 따라 "부팅" 됩니다.
 
@@ -318,21 +300,15 @@ React에서는 [renderToNodeStream()](https://reactjs.org/docs/react-dom-server.
 
 > No Silver Bullet
 
-|  ![rendering](https://developers.google.com/web/updates/images/2019/02/rendering-on-the-web/infographic.png)   |
-| :------------------------------------------------------------------------------------------------------------: |
-| _[이미지 출처](https://developers.google.com/web/updates/images/2019/02/rendering-on-the-web/infographic.png)_ |
+![rendering](https://developers.google.com/web/updates/images/2019/02/rendering-on-the-web/infographic.png)
 
-최근엔 SPA가 고민없이 사용하게 되고, 사용하지 않으면 큰일이 나는 것처럼 인식하는 경우도 많이 있었습니다.
+이번 글에서는 CSR, SSR, 정적 렌더링에 대해 설명하고, React에서 이를 구현하는 방법과 최근에 추가된 Concurrent 모드와 RSC에 대해 간략히 다뤘습니다.
 
-SSR 솔루션을 사용하면 모든 문제가 풀릴 것이라고 생각했던 경우도 많았던 것 같습니다.
+기존에는 SPA가 고민 없이 사용되고, SSR이 모든 문제를 해결할 수 있는 것으로 인식되는 경우가 많았습니다. 그러나 이 글을 작성하며 다양한 렌더링 방식이 존재하며, 모든 문제가 해결되는 것이 아니라는 점을 깨닫게 되었습니다.
 
-이 글을 작성하며 느꼈던 점은 렌더링에 관한 다양한 방법이나 솔루션이 모든 걸 해결해주리라는 은총알처럼 인식하고 있지 않은지 반성하게 됩니다. 또한 A가 B보다 반드시 좋다라는 편협한 시각을 가지고 있었던 건 아닐지 반성하게 됩니다.
+렌더링 아키텍쳐를 선택할 때도, 100% 만족하는 경우는 드물며, 대부분의 경우 90% 정도 만족하는 것으로 충분할 수 있습니다.
 
-대부분의 경우도 마찬가지지만 결정할 때 100% 만족하는 경우는 많이 없다는 것입니다.
-렌더링 아키텍쳐를 선택할 때도 마찬가지인 것 같습니다. 정적 렌더링이나 서버 렌더링을 사용하여 90% 만족을 달성할 수 있다면 그게 정답이 될 수 있습니다.
-
-이 글이 모든 걸 다 이해하고 쓰지도 않았지만, 조금은 이해를 해보려고 노력했던 것 같습니다.
-앞으로도 이 주제와 관련한 글을 써야겠다는 생각이 듭니다.
+앞으로도 이 주제와 관련된 글을 더 써보고자 합니다.
 
 ## reference
 
