@@ -20,7 +20,12 @@ export const getMetadata = ({
   );
 
   return {
-    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+    // 'width=device-width, initial-scale=1, shrink-to-fit=no',
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 1,
+    },
     title: metadataTitle,
     description: description || appConfig.description,
     openGraph: {
@@ -36,9 +41,22 @@ export const getMetadata = ({
       card: 'summary_large_image',
       title: metadataTitle || appConfig.title,
       description: description || appConfig.description,
-      site: `@${appConfig.social.twitter}`,
       creator: `@${appConfig.social.twitter}`,
       images,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    verification: {
+      google: 'RjVCFQ8Ye2KJxwjzcLX82cGsxOLxH1mhaUvLx5SC6I4',
     },
   };
 };
