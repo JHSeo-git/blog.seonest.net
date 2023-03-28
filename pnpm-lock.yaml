@@ -44,8 +44,8 @@ dependencies:
     specifier: ^0.2.1
     version: 0.2.1(next@13.2.5-canary.20)(react-dom@18.2.0)(react@18.2.0)
   next-tweet:
-    specifier: ^0.7.2
-    version: 0.7.2(next@13.2.5-canary.20)(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^0.8.0
+    version: 0.8.0(next@13.2.5-canary.20)(react-dom@18.2.0)(react@18.2.0)
   plaiceholder:
     specifier: ^2.5.0
     version: 2.5.0(sharp@0.31.3)
@@ -5497,8 +5497,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /next-tweet@0.7.2(next@13.2.5-canary.20)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-q+IKrIC6or5Jfr4fJqahN2IrCwQPjDEsaecjIlDQME3x76p0l840AVbVf0xwOHc31EW4VvZq3/0lM9isPKPlUg==}
+  /next-tweet@0.8.0(next@13.2.5-canary.20)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-AlA4mERNemxJcbAKTLdxc3JLmWNaUuNmna2Jqt2OaMLXtQrzdt+ajH1s65LW8x95EFX8CKVlYRkGdxivl1mUeA==}
     peerDependencies:
       next: '>= 13.2.1'
       react: '>= 18.0.0'
