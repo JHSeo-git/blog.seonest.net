@@ -11,7 +11,7 @@ import { Admonition } from '../Admonition';
 import { Callout } from '../Callout';
 import CopyToClipboard from '../CopyToClipboard';
 
-const mdxImageStyle = cva('my-4 mx-auto h-full w-full object-contain');
+const mdxImageStyle = cva('my-4 mx-auto h-full object-contain');
 
 const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) {
