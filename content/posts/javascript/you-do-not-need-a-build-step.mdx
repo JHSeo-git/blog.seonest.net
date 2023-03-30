@@ -1,0 +1,482 @@
+---
+date: '2023-03-28T12:53:01.873Z'
+category: javascript
+title: You don't need a build step
+description: 자바스크립트 진영에서 빌드가 표준이 된 이유와 Deno는 어떻게 이를 해결했는지에 대한 글입니다.
+thumbnail: '/post/javascript/you-do-not-need-a-build-step/thumbnail.png'
+---
+
+Deno 블로그에 올라온 [You don't need a build step](https://deno.com/blog/you-dont-need-a-build-step)라는 글을 읽고 정리한 글입니다.
+
+[Deno](https://deno.land/)는 V8을 사용하고 Rust로 만들어진 자바스크립트 런타임입니다.
+Node.js 창립자 Ryan Dahl이 만들었습니다. Deno라는 이름이 Node의 아나그램인것도 이 이유에 있습니다.
+
+Ryan Dahl이 [Node.js에서 후회한 10가지를 고백하며 Deno를 소개한 발표](https://www.youtube.com/watch?v=M3BM9TB-8yA)를 통해 Deno의 목표를 설명했습니다.
+
+그 중 하나가 "빌드 단계가 필요없다"는 것입니다.
+
+이 글에서는 빌드 단계가 왜 필요없는지에 대한 Deno의 블로그 글을 보며, 자바스크립트 진영에서 빌드 단계가 왜 필요한지에 대해 알아보고 Deno는 어떻게 이를 해결했는지 알아보겠습니다.
+
+## 들어가면서
+
+XKCD 만화 [#303](https://xkcd.com/303/):
+
+![compiling](/post/javascript/you-do-not-need-a-build-step/compiling.png)
+
+최근의 웹 개발자 버전은 "내 사이트는 빌드 중" 이라고 외치며 VR에서 칼 싸움을 하고 있을 것입니다.
+
+요즘은 사이트를 빌드하는데 시간이 꽤 걸립니다. Next.js 11버전의 대규모 사이트는 빌드하는데 몇 분이 걸립니다.
+[Vite](https://vitejs.dev/)나 [Turbopack](https://turbo.build/pack)과 같은 빌드 도구는 이 시간을 줄이는 기능을 강조합니다.
+
+그러나 더 깊은 질문에 대해서는 생각하지 않았습니다:
+
+_빌드가 왜 필요할까?_
+
+## 빌드가 표준이 되었던 이유
+
+예전에는 index.html에 `<script src="my_jquery_script.js"></script>` 태그 몇 개만 추가하면 되었습니다.
+
+그러던 중 서버와 백엔드 코드를 자바스크립트로 작성할 수 있는 Node가 등장했습니다.
+개발자는 확장가능하고 출시 가능한 앱을 만들기 위해 더 이상 여러 언어를 알 필요가 없었습니다.
+오직 JavaScript만 알면 되었습니다.
+
+<ImageCaption
+  src="/post/javascript/you-do-not-need-a-build-step/node-trends-over-time-google.png"
+  alt="node-trends-over-time-google"
+>
+  <span>Node.js에 대한 관심은 출시 이후로 쭉 증가했습니다.</span>
+</ImageCaption>
+
+그냥 그대로 두었다면, 모든 것이 괜찮았을 것입니다. 하지만 어느 순간, 누군가가 위험한 질문을 던졌습니다:
+
+_서버 사이드 자바스크립트를 브라우저에서 사용할 수 있다면 어떨까?_
+
+Node의 서버 사이드 자바스크립트는 브라우저 자바스크립트와 호환되지 않습니다.
+그 이유는 각 구현이 완전히 다른 2개의 시스템에 맞춰져 있기 때문입니다.
+
+- **Node는 파일시스템을 기반으로 만들어졌습니다.**  
+  서버에는 HTTP 기반 IO가 있지만, 내부적으로는 파일시스템 내에서 적합한 파일을 찾는 것입니다.
+- **자바스크립트는 브라우저를 위해 만들어졌습니다.**  
+  URL을 통해서 비동기로 scripts나 자원들을 가져오는 브라우저를 위해 만들어졌습니다.
+
+빌드 단계가 필요한 또 다른 이유가 있습니다:
+
+1. 브라우저에는 "패키지 매니저"가 없었고 npm는 Node와 자바스크립트 전반에 걸쳐 빠르게 패키지 매니저로 자리 잡았습니다.
+   프론트엔드 개발자는 브라우저에서 자바스크립트 종속성을 쉽게 관리할 수 있는 방법이 필요했습니다.
+2. npm 모듈과 이를 import하는 방법(CommonJS)은 브라우저에서 지원하지 않습니다.
+3. 브라우저 자바스크립트는 계속 발전하고 있지만(2009년 이후 Promises, `async`/`await`, top-level `await`, ES Modules, class 등)
+   Node 자바스크립트는 몇 사이클 뒤쳐져 있습니다.
+4. 서버에서 사용되는 자바스크립트에는 다양한 종류가 있습니다. 파이썬, 루비와 비슷한 문법을 언어에 도입한 CoffeScript,
+   HTML 마크업 작성을 허용한 JSX, 타입 안정성을 가능하게한 타입스크립트 등이 있습니다.
+   그러나 이 모든 것은 브라우저에서 지원하지 않았기에 브라우저를 위해 일반적인 자바스크립트로 변환해야 합니다.
+5. Node는 모듈화되어 있습니다.
+   그래서 클라이언트로 전송될 코드 양을 줄이기 위해 서로 다른 npm 모듈을 번들로 모우고 축소해야 합니다.
+6. 원본 코드에 사용된 몇 가지 기능들은 오래된 브라우저에서 동작하지 않을 수 있으므로 [폴리필](https://developer.mozilla.org/en-US/docs/Glossary/Polyfill)을 추가하여 이를 해결해야 합니다.
+7. CSS을 작성하기 편하게 만들어진 CSS 프레임워크와 전처리기(예: LESS, SASS)를 브라우저에서 읽을 수 있도록 트랜스파일해야 합니다.
+8. 정적 사이트 생성기를 통해 HTML과 함께 동적 데이터를 렌더링하려면 HTML을 호스팅 제공업체에 배포하기 전에 일반적으로 별도의 작업이 필요합니다.
+
+점점 시간이 지날수록 프레임워크과 메타프레임워크는 복잡한 앱을 더 쉽게 작성하고 관리할 수 있게 함으로써 개발자 환경을 개선하였습니다. 하지만 개발자 환경 개선의 대가로 빌드 단계는 더 복잡해졌습니다.
+예를 들어, HTML을 작성하여 블로그를 빌드 없이 만들 수 있습니다.
+또는, Markdown을 작성하여 HTML로 렌더링되게 블로그를 만들 수 있지만 빌드 단계가 필요합니다.
+
+![dx-vs-build-complexity](/post/javascript/you-do-not-need-a-build-step/dx-vs-build-complexity.png)
+
+그러나 모든 빌드 단계가 좋은 개발자 경험을 위한 것만은 아닙니다.
+일부는 최종 사용자를 위한 성능 향상을 위한 것이기도 합니다.(예: 여러 이미지 크기를 만들어 최적의 포맷으로 변환하는 것)
+
+결국, 브라우저에서 코드가 실행되기 위해서는 코드 변환이 필요하며, 이 과정이 여러분들도 알다시피 **빌드 단계**입니다.
+
+## 자바스크립트 빌도 도구의 성장
+
+브라우저에서 서버 사이드 자바스크립트를 동작시키는 것에 관심이 높아지면서 여러 오픈 소스 빌드 도구가 출시되었고,
+이는 자바스크립트 "빌드 도구 생태계"의 시작을 알렸습니다.
+
+2011년 브라우저용 Node/npm을 번들하는 [Browserify](https://browserify.org/)가 출시되었습니다.
+그러고 2013년에는 개발자가 브라우저용 Node를 작성하는데 필요한 다양한 빌드 작업을 관리하기 위한 [Gulp](https://gulpjs.com/)와 다른 빌드 도구, 태스크 러너 등이 등장했습니다.
+점점 더 많은 빌드 도구가 등장했습니다.
+
+다음은 시간에 따른 주요 빌드 도구에 대한 목록입니다:
+
+- [Browserify](https://browserify.org/) - 2011
+- [Grunt](https://gruntjs.com/) - 2012
+- [Bower](https://bower.io/) - 2012
+- [Gulp](https://gulpjs.com/) - 2013
+- [Babel](https://babeljs.io/) - 2014
+- [Webpack](https://webpack.js.org/) - 2014
+- [Rollup](https://rollupjs.org/) - 2015
+- [Parcel](https://parceljs.org/) - 2017
+- [SWC](https://swc.rs/) - 2019
+- [Vite](https://vitejs.dev/) - 2020
+- [ESBuild](https://esbuild.github.io/) - 2020
+- [Turbopack](https://turbo.build/pack) - 2022
+
+2020년 대에 접어들면서 빌드 도구는 자체 자바스크립트 라이브러리/프레임워크 카테고리가 되었습니다.
+이러한 도구 중 상당수는 개발자가 좋아하는 기술을 사용할 수 있도록 플러그인, 로더 등과 같은 자체 에코시스템을 가지고 있습니다.
+
+예를 들어, Webpack은 SASS, Babel, SVG, Bootstrap 등을 위한 다양한 로더를 제공합니다.
+따라서 개발자는 모듈 번들러로 Webpack을, TS 트랜스파일러로 Babel을, Tailwind를 위한 postcss 로더를 사용하여 자시만의 빌드 스택을 선택할 수 있습니다.
+
+빌드는 현대 웹 개발에서 피할 수 없는 부분입니다.
+하지만 그 전에 어떤 빌드 도구가 필요한지 물어보기 전에, 먼저 물어봐야 할 질문이 있습니다:
+
+_서버 사이드 자바스크립트가 브라우저에서 실행되려면 정확히 어떤 일이 일어나야 하나요?_
+
+## Next.js에서 4가지 빌드 단계
+
+Next.js를 사용하여 실제 예시를 살펴보겠습니다.
+Next.js에서 제공하는 블로그 스타터를 사용합니다:
+
+```bash
+npx create-next-app --example blog-starter blog-starter-app
+```
+
+아무것도 변경하지 않고 실행해 보겠습니다:
+
+```bash
+npm run build
+```
+
+그러면 브라우저에서 Next.js를 실행하기 위해 4가지 프로세스가 시작됩니다:
+
+1. [Compiling](#1-compiling)
+2. [Minifying](#2-minifying)
+3. [Bundling](#3-bundling)
+4. [Code splitting](#4-code-splitting)
+
+빌드 프로세스의 각 단계는 코드 작성 시 개발자 경험을 지원하거나
+최종 사용자를 위한 성능을 향상시키기 위해 수행됩니다.
+
+자세히 살펴보겠습니다.
+
+### 1. Compiling
+
+웹 앱을 빌드할 때 가장 중요한 것은 생산성과 개발자 경험입니다.
+그래서 Next.js와 같은 프레임워크를 사용하게 됩니다.
+이는 또한 대부분 React, ESM 모듈, JSX, `async`/`await`, TypeScript 등을 사용할 것이라는 것을 의미합니다.
+하지만 그 말은 이 코드는 컴파일 단계에서 브라우저용 바닐라 자바스크립트로 변환해야 한다는 것을 의미합니다:
+
+- 먼저, 코드를 파싱하고 [AST(Abstract Syntax Tree)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)로 불리는 추상 표현으로 변환합니다.
+- 그런 다음, 이 AST를 타겟 언어에서 지원되는 형태로 변환합니다.
+- 마지막으로, 이를 가지고 새로운 코드를 생성합니다.
+
+컴파일러 내부를 더 자세히 알고 싶다면
+[The Super Tiny Compiler](https://github.com/jamiebuilds/the-super-tiny-compiler)가 어떻게 동작하는지 보는 것을 추천합니다.
+
+Next.js의 첫 번째 단계는 모든 코드를 일반 자바스크립트로 컴파일하는 것입니다.
+`[slug].tsx`내 Post 함수 코드를 통해 자세히 보겠습니다:
+
+```tsx
+export default function Post({ post, morePosts, preview }: Props) {
+  const router = useRouter();
+  if (!router.isFallback && !post?.slug) {
+    return <ErrorPage statusCode={404} />;
+  }
+  return (
+    <Layout preview={preview}>
+      <Container>
+        <Header />
+        {router.isFallback ? (
+          <PostTitle>Loading…</PostTitle>
+        ) : (
+          <>
+            <article className="mb-32">
+              <Head>
+                <title>
+                  {post.title} | Next.js Blog Example with {CMS_NAME}
+                </title>
+                <meta property="og:image" content={post.ogImage.url} />
+              </Head>
+              <PostHeader
+                title={post.title}
+                coverImage={post.coverImage}
+                date={post.date}
+                author={post.author}
+              />
+              <PostBody content={post.content} />
+            </article>
+          </>
+        )}
+      </Container>
+    </Layout>
+  );
+}
+```
+
+컴파일러는 이 코드를 파싱하여 AST로 변환합니다.
+그리고 해당 AST를 브라우저 자바스크립트에 적합한 형식으로 조작한 후 새로운 코드를 생성합니다.
+
+위 코드를 컴파일한 결과입니다:
+
+```js
+function y(e) {
+  let { post: t, morePosts: n, preview: l } = e,
+    c = (0, r.useRouter)();
+  return c.isFallback || (null == t ? void 0 : t.slug)
+    ? (0, s.jsx)(v.Z, {
+        preview: l,
+        children: (0, s.jsxs)(a.Z, {
+          children: [
+            (0, s.jsx)(h, {}),
+            c.isFallback
+              ? (0, s.jsx)(j, {
+                  children: 'Loading…',
+                })
+              : (0, s.jsx)(s.Fragment, {
+                  children: (0, s.jsxs)('article', {
+                    className: 'mb-32',
+                    children: [
+                      (0, s.jsxs)(N(), {
+                        children: [
+                          (0, s.jsxs)('title', {
+                            children: [t.title, ' | Next.js Blog Example with ', w.yf],
+                          }),
+                          (0, s.jsx)('meta', {
+                            property: 'og:image',
+                            content: t.ogImage.url,
+                          }),
+                        ],
+                      }),
+                      (0, s.jsx)(p, {
+                        title: t.title,
+                        coverImage: t.coverImage,
+                        date: t.date,
+                        author: t.author,
+                      }),
+                      (0, s.jsx)(x, {
+                        content: t.content,
+                      }),
+                    ],
+                  }),
+                }),
+          ],
+        }),
+      })
+    : (0, s.jsx)(i(), {
+        statusCode: 404,
+      });
+}
+```
+
+### 2. Minifying
+
+물론 이 코드가 사람이 읽을 수 있다는 것을 의미하지 않습니다. 단지 브라우저가 이해하면 됩니다.
+Minifying단계는 함수, 컴포넌트 이름을 단일 문자로 대체하여 브라우저에 더 적은 양의 코드를 전달하여 최종 사용자의 성능을 향상시킵니다.
+
+위에서 코드는 'prettified' 버전입니다. 실제로는 다음과 같습니다:
+
+```js
+// prettier-ignore
+function y(e) {
+  let { post: t, morePosts: n, preview: l } = e, c = (0, r.useRouter)();
+  return c.isFallback || (null == t ? void 0 : t.slug)
+    ? (0, s.jsx)(v.Z, {
+      preview: l,
+      children: (0, s.jsxs)(a.Z, {
+        children: [
+          (0, s.jsx)(h, {}),
+          c.isFallback
+            ? (0, s.jsx)(j, { children: "Loading…" })
+            : (0, s.jsx)(s.Fragment, {
+              children: (0, s.jsxs)("article", {
+                className: "mb-32",
+                children: [
+                  (0, s.jsxs)(N(), {
+                    children: [
+                      (0, s.jsxs)("title", {
+                        children: [
+                          t.title,
+                          " | Next.js Blog Example with ",
+                          w.yf,
+                        ],
+                      }),
+                      (0, s.jsx)("meta", {
+                        property: "og:image",
+                        content: t.ogImage.url,
+                      }),
+                    ],
+                  }),
+                  (0, s.jsx)(p, {
+                    title: t.title,
+                    coverImage: t.coverImage,
+                    date: t.date,
+                    author: t.author,
+                  }),
+                  (0, s.jsx)(x, { content: t.content }),
+                ],
+              }),
+            }),
+        ],
+      }),
+    })
+    : (0, s.jsx)(i(), { statusCode: 404 });
+}
+```
+
+### 3. Bundling
+
+위 모든 코드는 (이 빌드의 경우) `[slug]-af0d50a2e56018ac.js`라는 파일에 포함되어 있습니다.
+이 코드를 prettified하면 파일 길이가 447줄입니다.
+원본 `[slug].tsx`의 훨씬 짧은 56줄 코드와 비교해 보세요.
+
+왜 10배나 더 큰 파일이 생성되었을까요?
+
+빌드 프로세스의 또 다른 중요한 부분인 번들링 때문입니다.
+
+`[slug].tsx`가 56줄에 불과하지만 많은 종속성과 컴포넌트에 의존하고 있으며,
+이는 다시 더 많은 종속성과 컴포넌트에 의존합니다.
+`[slug].tsx`가 제대로 동작하려면 이러한 모든 모듈을 로드해야 합니다.
+
+이를 [dependency cruiser](https://github.com/sverweij/dependency-cruiser)를 사용하여 시각화하면 다음과 같습니다:
+
+```bash
+npx depcruise --exclude "^node_modules" --output-type dot pages | dot -T svg > dependencygraph.svg
+```
+
+![dependency-graph](/post/javascript/you-do-not-need-a-build-step/dependency-graph.png)
+
+나쁘지 않습니다. 하지만 이들 각각에는 노드 모듈 종속성이 존재합니다.
+모든 종속성을 보기 위해 `node_modules`를 제외하지 않고 다시 시도해 보겠습니다:
+
+```bash
+npx depcruise --output-type dot pages | dot -T svg > dependencygraph.svg
+```
+
+그래프가 엄청나게 커집니다.
+
+![map-of-nextjs-dependencies](/post/javascript/you-do-not-need-a-build-step/map-of-nextjs-dependencies.svg)
+
+([`date-fns`](https://www.npmjs.com/package/date-fns)에 이렇게 많은 것이 들어갈 줄 누가 알았을까요?)
+
+번들러는 코드 entry point(일반적으로 `index.js`)에 대한 종속성 그래프를 생성한 다음,
+`index.js`가 의존하는 모든 것을 찾고, `index.js`가 의존하는 모든 것을 찾고, ... 식으로 거꾸로 찾아가는 방식으로 반복합니다.
+그런 다음 이 모든 것을 브라우저로 전송될 수 있도록 하나의 파일로 번들링합니다.
+
+대규모 프로젝트의 경우, 종속성 그래프를 탐색하고 생성한 다음 클라이언트에 전송하기 위해
+필요한 것을 단일 번들 파일에 추가하는 등 빌드 시간 대부분을 이 단계에서 소비합니다.
+
+### 4. Code splitting
+
+코드 스플리팅이 있는 경우와 없는 경우.
+
+코드 스플리팅이 없으면, 사용자가 사이트에 처음 들어올 때 자바스크립트 전체가 필요한지 여부와 관계없이 번들된 JS 파일이 클라이언트에 전송됩니다.
+
+성능 최적화 단계인 코드 스플리팅이 있다면,
+entry point(예: 페이지별로 또는 UI 컴포넌트별로)에 따라 또는
+dynamic import에 따라 자바스크립트가 청크로 분할되어 한 번에 자바스크립트 일부만 전송됩니다.
+코드 스플리팅은 사용자에게 필요한 것만 로드하고 사용하지 않은 코드는 피함으로써 현재 필요한 것을 "lazy load"하는데 도움이 됩니다.
+React의 경우, [코드 스플리팅을 사용할 때 메인 번들 크기를 최대 30%까지 줄일 수 있습니다.](https://www.iamtk.co/web-performance-code-splitting-strategies-and-react-applications)
+
+여기 예시에서 `[slug]-af0d50a2e56018ac.js`는 특정 게시물 페이지를 로드하는데 필요한 코드이며,
+홈페이지나 사이트의 다른 컴포넌트에 대한 코드는 포함되지 않습니다.
+
+이 생태계에서 빌드 시스템과 도구들이 성장하는 이유롤 볼 수 있습니다: ~~this shit is complicated.~~
+CSS를 구성하고 컴파일하는데 필요한 모든 옵션에 대해 설명하지도 않습니다.
+유투브의 Webpack 튜토리얼은 [말그대로 몇 시간이 걸립니다.](https://www.youtube.com/watch?v=MpGLUVbqoYQ)
+빌드 시간이 오래 걸리는 것은 일반적인 불만 사항이며, [최근 Next.js 13 업데이트의 주요 테마가 더 빠른 빌드였을 정도입니다.](https://nextjs.org/blog/next-13#introducing-turbopack-alpha)
+
+자바스크립트 커뮤니티는 메타프레임워크 CSS 전처리기, JSX 등 앱을 빌드하는 개발자 경험을 개선하기 위해 노력하면서
+빌드 단계를 덜 고통스럽게 만들기 위해 더 나은 도구와 태스크 러너를 만드는 작업도 같이 해야 했습니다.
+
+만약 다른 접근법이 있다면 어떨까요?
+
+## 번들링없는 Deno와 Fresh
+
+위 모든 빌드 단계는 간단한 문제(Node의 자바스크립트와 브라우저의 자바스크립트가 서로 다르다는 문제)에서 비롯되었습니다.
+하지만 처음부터 fetch, native ESM import 등과 같은 web API를 사용하는 브라우저 호환용 자바스크립트를 작성할 수 있다면 어떨까요?
+
+그 출발점으로 시작하여 만들어진게 Deno입니다.
+Deno는 자바스크립트가 최근 몇 년 동안 크게 개선되어 현재 매우 강력한 스크립트 언어라는 접근 방식을 가집니다.
+이를 이용해야 합니다.
+
+위 예시와 같이 [블로그를 만드는 방법](https://deno.com/blog/build-a-blog-with-fresh)은 같지만, Deno와 [Fresh](https://fresh.deno.dev/)를 사용합니다.
+
+Fresh는 번들링이나 트랜스파일링 등 빌드 단계가 없는 Deno 기반 웹 프레임워크 입니다.
+서버에 요청이 들어오면 Fresh는 각 페이지를 즉시 렌더링하고 HTML만 전송합니다. (Island가 포함되지 않는다면 필요한 자바스크립트만 전송됩니다)
+
+### Just-in-time 빌드
+
+Fresh로 페이지를 렌더링하는 것은 일반 웹 페이지를 로드하는 것과 같습니다.
+모든 import는 URL이므로 로드하는 페이지는 URL을 호출하여 필요한 코드를 로드합니다.
+(또는 이전에 사용했다면 캐시에서)
+
+Fresh에서 사용자가 포스트 페이지를 클릭했을 때 `/routes/[slug].tsx`가 로드됩니다.
+페이지는 다음과 같은 모듈을 import하고 있습니다:
+
+```tsx
+import { Handlers, PageProps } from '$fresh/server.ts';
+import { Head } from '$fresh/runtime.ts';
+import { getPost, Post } from '@/utils/posts.ts';
+import { CSS, render } from '$gfm';
+```
+
+이는 Node에서 import하는 것과 비슷해 보일 수 있습니다.
+[import map](https://github.com/denoland/fresh-blog-example/blob/main/import_map.json)에서 specifier를 사용하고 있기 때문입니다.
+resolve되면 다음과 같습니다.
+
+```tsx
+import { Handlers, PageProps } from 'https://deno.land/x/fresh@1.1.0/server.ts';
+import { Head } from 'https://deno.land/x/fresh@1.1.0/runtime.ts';
+import { getPost, Post } from '../utils/posts.ts';
+import { CSS, render } from 'https://deno.land/x/gfm@0.1.26/mod.ts';
+```
+
+[posts.ts](https://github.com/denoland/fresh-blog-example/blob/main/utils/posts.ts)에서 `getPost`와 `Post`를 import합니다.
+이 컴포넌트에서는 [또 다른 URL에서 모듈을 가져오고 있습니다.](https://deno.land/manual@v1.32.1/basics/modules#remote-import)
+
+```tsx
+import { extract } from 'https://deno.land/std@0.160.0/encoding/front_matter.ts';
+import { join } from 'https://deno.land/std@0.160.0/path/posix.ts';
+```
+
+종속성 그래프의 특정 지점에서 다른 URL에서 코드를 호출하고 있습니다. 모든 URL입니다.
+
+### Just-in-time 트랜스파일링
+
+Fresh는 요청에 따라 just-in-time 트랜스파일링이 이루어지므로 별도의 트랜스파일링 단계가 필요하지 않습니다:
+
+- 브라우저에서 TypeScript, TSX 동작: Deno 런타임은 요청 받는 즉시 TypeScript, TSX를 트랜스파일합니다.
+- 서버 사이드 렌더링: 템플릿과 함께 동적 데이터를 전달하여 HTML을 생성하는 작업도 요청할 때 수행됩니다.
+- Island를 통한 클라이언트 사이드 TypeScript 작성: 브라우저는 TypeScript를 이해하지 못하기 때문에
+  클라이언트 사이드 TypeScript는 필요에 따라 JavaScript로 트랜스파일됩니다.
+
+Fresh 앱 성능을 높이기 위해 모든 클라이언트 사이드 JavaScript/TypeScript는 첫 번째 요청 후에
+캐시되어 이후 빠른 로드를 제공합니다.
+
+## 더 나은 코드, 더 빠르게
+
+개발자가 raw HTML, JS, CSS를 작성하지 않고 최종 사용자의 성능을 위해 에셋을 최적화해야 하는 한, "빌드"와 같은 프로세스는 필연적으로 존재합니다.
+이 프로세스가 몇 분씩 걸리는 별도 단계로 CI/CD에서 발생하는지 아니면 요청이 들어왔을 때 just-in-time으로 수행되는지는 선택한 프레임워크 또는 스택에 다라 다릅니다.
+
+하지만 빌드를 제거하면 더 빠르고 더 높은 생산성을 가질 수 있습니다.
+처음 그림처럼 더 이상 칼 싸움을 하지 않아도 됩니다. 더 이상 코드가 중단되거나 컨텍스트가 전환되지 않습니다.
+
+배포 속도 또한 빨라집니다. 특히 [Deno Deploy의 v8 isolate cloud](https://deno.com/blog/anatomy-isolate-cloud)을 사용하면
+빌드 단계가 없으므로 몇 kb의 JavaScript를 업로드하기만 하면 전 세계에 배포하는데 몇 초밖에 걸리지 않습니다.
+
+또한 더 나은 개발자 경험으로 더 나은 코드를 작성할 수 있습니다.
+번들러들을 통해 Node, ESM, 브라우저 호환 자바스크립트 등을 연결하기 위해 Node나 벤더에 특화된 API를 배우는 대신에
+웹 표준 자바스크립트를 작성하여 어떠한 클라우드 primitive에서도 재사용 할 수 있는 API를 배울 수 있습니다.
+
+빌드를 건너뛰어 [Fresh](https://fresh.deno.dev/)와 [Deno Deploy](https://deno.com/deploy)로 무언가를 만들어보세요.
+
+## 마무리하며
+
+웹 애플리케이션을 개발 할 때 상당히 많은 시간을 번들러, 빌드 도구, 컴파일러 등에 소비하게 되는데
+이러한 시간을 더 나은 코드를 작성하는데 사용할 수 있도록 해주는 Deno가 매력적으로 보입니다.
+
+종속성 관리도 URL 기반 모듈 시스템을 사용하기에 `node_modules` 디렉토리도 필요하지 않고,
+종속성 구조가 단순해지고 쉬워지기 때문에 더 쉽게 이해할 수 있습니다.
+
+다만, 생태계가 Node에 비해 미비한 상태이기 때문에 Node로 작성된 라이브러리를 사용하고 싶은 경우에는 Deno에서 사용하기 위해
+별도의 래퍼 또는 포팅이 필요할 수 있습니다. 이 부분으로 인해 호환되지 않은 라이브러리가 많이 존재하고,
+기존 프로젝트를 Deno로 마이그레이션하기에는 어려움이 있을 수 있습니다.
+
+이 글을 통해 역설적으로 빌드 과정을 깊게 들여다 본 것 같아서 좋았습니다.
+번들러나 빌드 도구가 반드시 필요하다는 생각을 가지고 있었는데, Deno를 통해 빌드 과정을 생략할 수 있다는 것이
+매우 흥미로웠습니다.
+
+만약 새롭게 프로젝트를 시작한다면 Deno를 사용해보는 것도 고려해볼 것 같습니다.
+
+## refernece
+
+- https://deno.com/blog/you-dont-need-a-build-step
