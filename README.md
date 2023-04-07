@@ -1,6 +1,6 @@
 # blog.seonest.net
 
-![seonest](./public/og.png)
+![seonest](./src/app/opengraph-image.png)
 
 ## About this project
 
@@ -28,12 +28,10 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
   - [tailwindcss](https://tailwindcss.com/)
 - MDX
   - [contentlayer](https://www.contentlayer.dev/)
-  - [rehype-autolink-headings](https://github.com/rehypejs/rehype-autolink-headings)
   - [remark-gfm](https://github.com/remarkjs/remark-gfm)
+  - [rehype-autolink-headings](https://github.com/rehypejs/rehype-autolink-headings)
   - [rehype-pretty-code](https://github.com/atomiks/rehype-pretty-code)
   - [rehype-slug](https://github.com/rehypejs/rehype-slug)
-- SITEMAP
-  - [next-sitemap](https://github.com/iamvishnusankar/next-sitemap)
 - [pnpm](https://pnpm.io/)
 
 ## Running Locally
