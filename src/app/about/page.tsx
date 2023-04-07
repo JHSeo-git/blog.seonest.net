@@ -2,9 +2,10 @@ import { allPosts } from 'contentlayer/generated';
 import Link from 'next/link';
 
 import { postSorter } from '@/utils/contentlayer-utils';
-import { getMetadata } from '@/utils/metadata-utils';
 
-export const metadata = getMetadata({ title: 'About' });
+export const metadata = {
+  title: 'About',
+};
 
 async function AbountPage() {
   const latestPosts = allPosts.sort(postSorter).slice(0, 5);
