@@ -6,10 +6,54 @@ import { Footer } from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { Header } from '@/components/Header';
 import Providers from '@/components/Providers';
-import { getMetadata } from '@/utils/metadata-utils';
 import { cn } from '@/utils/style-utils';
 
-export const metadata = getMetadata();
+export const metadata = {
+  metadataBase: new URL('https://seonest.net'),
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  title: {
+    default: 'Seonest',
+    template: '%s | Seonest',
+  },
+  description: 'JHSeo 개발 블로그',
+  openGraph: {
+    title: {
+      default: 'Seonest',
+      template: '%s | Seonest',
+    },
+    description: 'JHSeo 개발 블로그',
+    images: [{ url: '/opengraph-image.png', alt: 'Seonest' }],
+    type: 'website',
+    url: 'https://seonest.net',
+    locale: 'ko_KR',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: {
+      default: 'Seonest',
+      template: '%s | Seonest',
+    },
+    description: 'JHSeo 개발 블로그',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'RjVCFQ8Ye2KJxwjzcLX82cGsxOLxH1mhaUvLx5SC6I4',
+  },
+};
 
 const inter = Inter({
   subsets: ['latin'],

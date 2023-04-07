@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 
 import { Card } from '@/components/Card';
 import { postSorter } from '@/utils/contentlayer-utils';
-import { getMetadata } from '@/utils/metadata-utils';
 
 type PageParams = {
   slug: string;
@@ -29,17 +28,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const decodedCategory = decodeURIComponent(category);
 
-  if (!decodedCategory) {
-    return getMetadata();
-  }
-
   const capitalized = decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1);
 
   const title = `${capitalized} Posts`;
   const description = `${capitalized} Posts`;
   const url = `categories/${decodedCategory}`;
 
-  return getMetadata({ title, description, url });
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+    },
+  };
 }
 
 async function CategoryPage({ params }: PageProps) {

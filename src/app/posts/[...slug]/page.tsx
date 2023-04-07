@@ -15,7 +15,6 @@ import PostNav from '@/components/PostNav';
 import { PostViews } from '@/components/PostViews';
 import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
 import { getDistanceToNow } from '@/utils/date-utils';
-import { generateFullUrl, getMetadata } from '@/utils/metadata-utils';
 import { cn } from '@/utils/style-utils';
 
 type PageParams = {
@@ -39,17 +38,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const post = allPosts.find((post) => post.slugAsParams === decodedSlug);
 
-  if (!post) {
-    return getMetadata();
-  }
+  const title = post?.title;
+  const description = post?.description;
+  const url = post?.slug && `https://seonest.net${cleanUrl(post.slug)}`;
+  const ogImage = post?.thumbnail ? cleanUrl(post.thumbnail) : '/opengraph-image.png';
 
-  const title = `${post.title || 'Post'}`;
-  const description = post.description || post.title;
-  const ogImage = post.thumbnail ? generateFullUrl(post.thumbnail) : undefined;
-  const url = post.slug;
-
-  return getMetadata({ title, description, ogImage, url });
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      images: [{ url: ogImage, alt: post?.title }],
+    },
+  };
 }
+
+const cleanUrl = (url: string) => (url.startsWith('/') ? url : `/${url}`);
 
 async function PostPage({ params }: PageProps) {
   const slug = params?.slug?.join('/') || '';
