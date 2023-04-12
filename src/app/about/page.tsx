@@ -40,7 +40,7 @@ async function AbountPage() {
           <li>
             <Link href="https://seonest.net" target="_blank" rel="noopener noreferrer">
               <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
-                seonest
+                Blog seonest.net
               </span>
             </Link>
           </li>
@@ -51,21 +51,32 @@ async function AbountPage() {
               rel="noopener noreferrer"
             >
               <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
-                seonest-post-gen
+                Post generate cli for seonest.net
               </span>
             </Link>
           </li>
           <li>
             <Link href="https://blogmark.seonest.net" target="_blank" rel="noopener noreferrer">
               <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
-                blogmark
+                Blogmark
               </span>
             </Link>
           </li>
           <li>
             <Link href="https://own-your-tag.vercel.app/" target="_blank" rel="noopener noreferrer">
               <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
-                own your tag
+                Own your tag
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="https://github.com/JHSeo-git/fastify-esm-for-starter"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
+                Fastify ESM for starter template
               </span>
             </Link>
           </li>
@@ -74,6 +85,17 @@ async function AbountPage() {
       <article className="py-6">
         <h2 className="text-xl font-semibold">Practices</h2>
         <ul className="py-4">
+          <li>
+            <Link
+              href="https://please-notification.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
+                Practice email with react-email.
+              </span>
+            </Link>
+          </li>
           <li>
             <Link
               href="https://practice-complex-context.vercel.app/"
