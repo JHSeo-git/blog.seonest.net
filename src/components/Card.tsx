@@ -32,7 +32,7 @@ export function Card({ post }: CardProps) {
           {title}
         </h3>
         {description && (
-          <p className="sm:line-clamp-3 md:line-clamp-4 mt-1 leading-7 text-gray-900 dark:text-gray-200">
+          <p className="mt-1 leading-7 text-gray-900 dark:text-gray-200 sm:line-clamp-3 md:line-clamp-4">
             {description}
           </p>
         )}

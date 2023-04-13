@@ -15,7 +15,7 @@ export function Bio() {
       />
       <div className="ml-4">
         <p className="font-bold">
-          <span className="rounded-md bg-indigo-700 py-1 px-2 text-sm text-white dark:bg-indigo-500 dark:text-gray-300">
+          <span className="rounded-md bg-indigo-700 px-2 py-1 text-sm text-white dark:bg-indigo-500 dark:text-gray-300">
             {appConfig.author}
           </span>
         </p>

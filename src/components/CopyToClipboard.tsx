@@ -35,7 +35,7 @@ function CopyToClipboard({ children, ...props }: CopyToClipboardProps) {
       </div>
       <button
         className={cn(
-          'absolute top-4 right-4 z-20 inline-flex h-8 items-center justify-center rounded-md border-none p-2 text-sm font-medium text-slate-300 opacity-50 outline-none transition-all hover:bg-transparent hover:opacity-100 dark:text-slate-100 dark:hover:bg-slate-800'
+          'absolute right-4 top-4 z-20 inline-flex h-8 items-center justify-center rounded-md border-none p-2 text-sm font-medium text-slate-300 opacity-50 outline-none transition-all hover:bg-transparent hover:opacity-100 dark:text-slate-100 dark:hover:bg-slate-800'
         )}
         onClick={onCopy}
       >
