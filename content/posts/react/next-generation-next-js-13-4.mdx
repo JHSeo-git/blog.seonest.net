@@ -1,0 +1,588 @@
+---
+date: '2023-05-05T10:15:40.952Z'
+category: react
+title: Next generation(Next.js 13.4)
+description: 'Next.js 13.4 버전 릴리즈와 함께 드디어 App Router가 Stable로 전환되었습니다. Nex.js 13.4 업데이트 기능을 살펴보았습니다.'
+published: true
+thumbnail: /post/react/next-generation-next-js-13-4/thumbnail.png
+---
+
+Next.js 13.4 버전이 릴리즈 되었습니다.
+이번 버전에서 드이어 `App Router`가 Stable로 전환되었습니다.
+그로 인해 많은 부분이 개선되었습니다.
+
+특히 Next.js document beta 버전 사이트가 정식 사이트로로 [전환](https://nextjs.org/docs)되었습니다.
+문서 내용도 정말 알차게 잘 되어있고, 더욱더 개선된 부분들이 많이 보입니다.
+앞선 버전에서 공개되었지만 `create-next-app`도 업데이트되었습니다.
+
+Next.js의 과정들을 보면서 beta버전에서 stable로 넘어가는 과정이 매우 힘든 과정이구나 라는 생각을 해보게 됩니다.
+
+vercel은 [Layout RFC](https://nextjs.org/blog/layouts-rfc)에서 시작하여 app router stable 릴리즈를 거의 1년만에 해냈습니다.
+엄청난 속도로 진행되었다는 것을 새삼 느끼게 됩니다.
+
+이러한 전환점과 함께 이번 포스트에서는 Next.js 13.4 업데이트 기능을 살펴보겠습니다.
+
+- App Router (Stable):
+  - React Server Components
+  - Nested Routes & Layouts
+  - Simplified Data Fetching
+  - Streaming & Suspense
+  - Built-in SEO Suppoprt
+- Turbopack (Beta): 개선된 안정성과 함께 로컬 개발 서버에서 더 빠르게 개발할 수 있습니다.
+- Server Actions (Alpha): 클라이언트 JavaScript 없이 서버에 데이터 변경요청.
+
+> 6개월 전 [Next.js 13](https://nextjs.org/blog/next-13)을 출시한 이후 불필요한 변경 없이 점진적으로 도입할 수 있는 방법으로
+> Next.js의 미래인 **App Router** 기반을 구측하는데 집중했습니다. 오늘, 13.4 릴리즈와 함께 프로덕션에서 App Router 적용을 시작할 수 있습니다.
+
+## Next.js App Router
+
+Next.js는 보다 동적이고 개인화된 글로벌 웹을 만드는 것을 목표로 서버 렌더링
+리액트 애플리케이션을 쉬운 방법으로 제공하기 위해 2016년에 만들어졌습니다.
+
+[최초 발표 포스트](https://vercel.com/blog/next)에서 Next.js의 디자인 철학을 공유했습니다:
+
+- **Zero Setup. 파일시스템을 사용**
+- **오직 JavaScript. 모든 것이 함수**
+- **자동 서버 렌더링 및 코드 스플리팅**
+- **Data Fetching은 개발자가 선택**
+
+Next.js는 6년이 되었습니다. 원래의 설계 원칙은 그대로 유지되고 있으며,
+더 많은 개발자와 회사에서 Next.js를 채택함에 따라 이러한 원칙을 더 잘 달성하기 위해
+프레임워크의 기본 업그레이드를 진행해왔습니다.
+현재 `13.4`버전이 릴리즈되어 stable로 도입할 준비가 되었습니다.
+
+이 포스팅에서는 앱 라우터에 대한 설계 결정과 선택에 대해 자세히 설명합니다.
+
+### Zero Step. 파일시스템을 사용
+
+[파일시스템 기반 라우팅](https://nextjs.org/docs/app/building-your-application/routing)은 Next.js의 핵심 기능입니다.
+최초 발표 포스트에서 이를 소개했으며, React 컴포넌트에서 라우트를 생성하는 예시를 보였습니다:
+
+```jsx
+// Pages Router
+// pages/about.js
+
+import React from 'react';
+export default () => <h1>About us</h1>;
+```
+
+추가적으로 구성할 것이 없었습니다. 단지 `pages/` 폴더 아래에 파일을 만들기면 하면
+Next.js 라우터가 알아서 처리했습니다.
+그러나 프레임워크 사용이 증가함에 따라 개발자가 원하는 인터페이스 유형도 증가하였습니다.
+
+개발자들은 레이아웃 정의, 레이아웃을 UI 한 부분으로 중첩하기, 로딩과 에러 상태 정의에
+대한 더 많은 유연성을 개선해 달라고 요청했습니다.
+기존 Next.js 라우터에 이러한 기능을 추가하는 것은 쉬운 일이 아니었습니다.
+
+프레임워크의 모든 부분을 라우터를 중심으로 설계해야 했기 때문입니다.
+페이지 전환, data fetching, caching, mutating, revalidating, streaming, styling 등등.
+
+스트리밍과 호환되는 라우터를 만들기 위해, 그리고 레이아웃 대한 지원을 강화하기 위한 이러한 요청들을
+해결하기 위해 새로운 버전의 라우터를 만들기 시작했습니다.
+
+이것이 [Layout RFC](https://nextjs.org/blog/layouts-rfc) 첫 릴리즈 이후에 도달한 결과입니다.
+
+```jsx
+// New: App Router ✨
+// app/layout.js
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+
+// app/page.js
+export default function Page() {
+  return <h1>Hello, Next.js!</h1>;
+}
+```
+
+여기서 보이는 것보다 더 중요한 것은 _보이지 않는 어떤 것_ 입니다.  
+이 새로운 라우터(`app/` 폴더를 통해 점진적 적용이 될 수 있는)는
+[React Server Component](https://nextjs.org/docs/getting-started/react-essentials)와
+[Suspense](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) 기반으로 만들어진 완전히 다른 아키텍쳐입니다.
+
+이러한 토대 덕분에 처음에 React Primitive를 확장하기 위해 개발되었던 Next.js
+특정 API를 제거할 수 있었습니다.
+예를 들어, 전역 레이아웃을 커스텀하기 위해 사용했던 `_app` 파일과 같은 것들입니다:
+
+```jsx
+// 기존 Pages Router
+// pages/_app.js
+
+// 이 "전역 레이아웃"은 모든 라우터를 감쌉니다.
+// 다른 레이아웃 컴포넌트를 조합할 수 있는 방법이 없으며, 이 파일에서
+// 전역 데이터를 가져올 수 없습니다.
+export default function MyApp({ Component, pageProps }) {
+  return <Component {...pageProps} />;
+}
+```
+
+Pages Router는 레이아웃을 조합할 수 없었습니다. 그리고 data fetching을 컴포넌트에 colocate할 수도 없었습니다.
+새로운 App Router는 이러한 제약을 모두 해결합니다.
+
+```jsx
+// New: App Router ✨
+// app/layout.js
+//
+// root layout는 전체 애플리케이션에 공유됩니다.
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+
+// app/dashboard/layout.js
+//
+// 레이아웃은 중첩되고 조합될 수 있습니다.
+export default function DashboardLayout({ children }) {
+  return (
+    <section>
+      <h1>Dashboard</h1>
+      {children}
+    </section>
+  );
+}
+```
+
+Pages Router는 서버에서 초기 페이로드를 커스텀하기 위해 `_document`파일이 사용되었습니다.
+
+```jsx
+// 기존 Pages Router
+// pages/_document.js
+
+// 이 파일은 서버 요청에 대한 <html>과 <body> 태그를 커스텀하기 위해 사용됩니다.
+// 그러나 HTML 요소를 작성하는 거라기보단 프레임워크-전용 기능을 추가하는 것입니다.
+import { Html, Head, Main, NextScript } from 'next/document';
+
+export default function Document() {
+  return (
+    <Html>
+      <Head />
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+App Router는 더 이상 Nex.jt에서 `<Html>`. `<Head>`, `<Body>`를 import할 필요가 없습니다.
+대신에 그냥 React를 사용하면 됩니다.
+
+```jsx
+// New: App Router ✨
+// app/layout.js
+//
+// root layout는 전체 애플리케이션에 공유됩니다.
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+새로운 파일시스템 라우터를 만들 수 있는 기회이자 다른 많은 요청을 해결하기에 적절한 시기이기도 했습니다.
+예를 들어:
+
+- 이전에는, 컴포넌트 라이브러리와 같은 외부 npm 패키지에서 `_app.js`에서만 전역 스타일시트를
+  import할 수 있었습니다. 이는 이상적인 개발자 경험이 아니었습니다. App Router를 사용하면
+  어떤 컴포넌트든 상관없이 어떤 CSS든 상관없이 import(또는 colocate)할 수 있습니다.
+- 이전에는, Next.js에서 서버 사이드 렌더링을 할 때(`getServerSideProps`를 통해) 전체 페이지가
+  hydration될 때까지 애플리케이션과 상호작용이 불가능했습니다.
+  React Suspense와 긴밀하게 통합된 App Router를 사용하면, UI의 다른 컴포넌트가 상호작용하는 것을
+  차단하지 않고 페이지의 일부만 선택적으로 hydrate할 수 있게 되었습니다. 콘텐츠를 서버에서 즉시 스트리밍하여
+  페이지의 체감 로딩 성능을 개선할 수 있습니다.
+
+Next.js 핵심은 [라우터](https://nextjs.org/docs/app/building-your-application/routing)입니다.
+그러나 라우터 자체가 중요한 것이 아니라, 라우터가 [data fetching](https://nextjs.org/docs/app/building-your-application/data-fetching) 등 프레임워크의 나머지 부분과 어떻게 통합하는지가 중요합니다.
+
+### 오직 JavaScript. 모든 것이 함수
+
+Next.js와 React 개발자들은 JavaScript와 TypeScript 코드로 작성하고 애플리케이션 컴포넌트를
+함께 구성하고 싶어 합니다. 처음에는:
+
+```jsx
+import React from 'react';
+import Head from 'next/head';
+
+export default () => (
+  <div>
+    <Head>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </Head>
+    <h1>Hi. I'm mobile-ready!</h1>
+  </div>
+);
+```
+
+이 컴포넌트는 애플리케이션 어느 곳에서나 재사용하고 구성할 수 있는 로직을 캡슐화 합니다.
+파일 시스템 라우팅과 함께 사용하면 JavaScript와 HTML을 작성하는 것처럼 느껴지는 React
+애플리케이션을 쉽게 구축할 수 있습니다.
+
+예를 들어, 데이터를 fetch하고 싶을 때 원래 버전의 Next.js는 다음과 같았습니다:
+
+```jsx
+import React from 'react';
+import 'isomorphic-fetch';
+
+export default class extends React.Component {
+  static async getInitialProps() {
+    const res = await fetch('https://api.company.com/user/123');
+    const data = await res.json();
+    return { username: data.profile.username };
+  }
+}
+```
+
+프레임워크가 성장함에 따라 data fetching에 대한 새로운 패턴들을 탐색했습니다.
+
+`getInitialProps`는 _서버_ 와 _클라이언트_ 에서 모두 실행되는 함수입니다.
+이 API는 React 컴포넌트를 확장하여 Promise를 만들고 그 결과를 컴포넌트의 props로 전달할 수 있게 해줍니다.
+
+`getInitialProps`는 지금도 여전히 작동하지만, 피드백을 바탕으로 다음 세대의 data fetching API인
+`getStaticProps`와 `getServerSideProps`를 만들었습니다.
+
+```jsx
+// 라우트의 정적 버전을 생성합니다.
+export async function getStaticProps(context) {
+  return { props: {} };
+}
+// 또는 동적으로 서버에서 렌더링합니다.
+export async function getServerSideProps(context) {
+  return { props: {} };
+}
+```
+
+이 APIs는 클라이언트 또는 서버 중 어디서 실행되고 있는지 보다 명확하게 파악할 수 있게 되었고,
+Next.js 애플리케이션이 [자동으로 정적으로 최적화](https://nextjs.org/docs/pages/building-your-application/rendering/automatic-static-optimization)될 수 있었습니다.
+게다가 [static exports](https://nextjs.org/docs/app/building-your-application/deploying/static-exports)를 통해 Next.js를 서버를 지원하지 않는 곳(예: AWS S3 버킷)에 Next.js를 배포할 수 있게 되었습니다.
+
+그러나 이는 "단순한 JavaScript"가 아니었고, 원래의 설계 원칙에 더 충실하고 싶었습니다.
+
+Next.js가 만들어진 후, 메타의 React 코어 팀과 긴밀히 협력하여 React Primitive 위에 프레임워크 기능을 만들었습니다.
+이러한 파트너십과 React 코어 팀의 수년간의 연구 및 개발이 결합되어 [Server Component](https://nextjs.org/docs/getting-started/react-essentials)를 포함한
+최신 버전의 React 아키텍처를 통해 Next.js가 목표를 달성할 수 있는 기회를 얻게 되었습니다.
+
+App Router를 사용하면 친숙한 `async`, `await`를 사용하여 [데이터를 fetch](https://nextjs.org/docs/app/building-your-application/data-fetching)할 수 있습니다.
+새로 배워야 할 API가 없습니다.
+기본적으로 모든 컴포넌트는 React Server Component이므로 data fetch는 서버에서 안전하게 이루어집니다.
+예를 들어:
+
+```js
+// app/page.js
+
+export default async function Page() {
+  const res = await fetch('https://api.example.com/...');
+  // 해당 return값은 serialize되어 있지 않습니다.
+  // Date, Map, Set, 등등으로 사용할 수 있습니다.
+  const data = res.json();
+
+  return '...';
+}
+```
+
+결정적으로, "data fetching는 개발자가 선택"이라는 원칙이 실현됩니다.
+데이터를 불러와서 어떤 컴포넌트든 구성할 수 있습니다.
+first-party 컴포넌트 뿐만아니라 Server Component와 통합되게 디자인되고 완전히 서버에서 동작는
+Server Component 에코시스템([Twitter embed](https://github.com/vercel-labs/react-tweet) `react-tweet` 같은)의
+_어떠한_ 컴포넌트라도 가능합니다.
+
+```jsx
+// app/page.js
+
+import { Tweet } from 'react-tweet';
+
+export default async function Page() {
+  return <Tweet id="790942692909916160" />;
+}
+```
+
+라우터는 [React Suspense](https://react.dev/reference/react/Suspense)와 통합되어 있으므로
+콘텐츠 일부를 로딩하는 동안 fallback 콘텐트를 더 유동적으로 보여주고 콘텐츠를 점진적으로 표시할 수 있습니다.
+
+```jsx
+// app/page.js
+
+import { Suspense } from 'react';
+import { PostFeed, Weather } from './components';
+
+export default function Page() {
+  return (
+    <section>
+      <Suspense fallback={<p>Loading feed...</p>}>
+        <PostFeed />
+      </Suspense>
+      <Suspense fallback={<p>Loading weather...</p>}>
+        <Weather />
+      </Suspense>
+    </section>
+  );
+}
+```
+
+게다가 라우터는 페이지 탐색을 [트랜지션](https://react.dev/reference/react/useTransition)으로 표시하여 라우트 트랜지션을 중단없이 진행할 수 있습니다.
+
+### 자동 서버 렌더링 및 코드 스플리팅
+
+Next.js를 만들 당시만 해도 개발자가 webpack, babel, 기타 툴을 수동으로 구성하여
+React 애플리케이션을 실행하는 것이 일반적이었습니다.
+서버 렌더링이나 코드 스프리팅과 같은 기능을 추가하는 것은 커스텀 솔루션에 만들어지지 않은 경우가 많았습니다.
+Next.js와 다른 React 프레임워크는 이러한 베스트 프랙티스를 구현하고 강제하기 위해 추상화 계층을 만들었습니다.
+
+> 현재도 많은 곳이 이렇게 진행하고 있고, 많은 부분 시간을 소비하는 영역입니다.  
+> 부족한 부분이 있을 수는 있지만 Next.js의 장점 중 하나라고 생각합니다.
+
+라우트 기반 코드 스프리팅은 `pages/`폴더에 각 파일을 JavaScript 번들로 코드 스필리팅하여
+파일 시스템을 줄이고 초기 페이지 로드 성능을 개선하는데 도움을 줄 수 있습니다.
+
+이는 Next.js를 사용하는 서버 렌더링 애플리케이션과 SPA 애플리케이션 모두에 유용했는데,
+후자의 경우 애플리케이션 시작 시 하나의 큰 JavaScript 번들을 로드하는 경우가 많았기 때문입니다.
+그러나 컴포넌트 수준의 코드 스플리팅을 구현하려면 개발자는 `next/dynamic`을 사용하여
+컴포넌트를 동적으로 가져와야 했습니다.
+
+```jsx
+// app/page.tsx
+
+import dynamic from 'next/dynamic';
+
+const DynamicHeader = dynamic(() => import('../components/header'), {
+  loading: () => <p>Loading...</p>,
+});
+
+export default function Home() {
+  return <DynamicHeader />;
+}
+```
+
+App Router를 사용하면 Server Component는 브라우저 용 JavaScript 번들이 포함되지 않습니다.
+[클라이언트 컴포넌트](https://nextjs.org/docs/getting-started/react-essentials#client-components)
+는 기본적으로 자동으로 코드 스플리팅 됩니다.(webpack 또는 Turbopack 둘 중 하나인 경우)
+게다가 전체 라우터 아키텍처가 스트리밍과 Suspense를 사용하기 때문에
+UI를 서버에서 클라이언트로 점진적으로 보낼 수 있습니다.
+
+예를 들어, 조건부 로직으로 전체 코드 경로를 나눌 수 있습니다.
+다음 예시는 로그아웃 사용자인 경우 대시보드(클라이언트 사이드 JavaScript) 컴포넌트를 로드할 필요가 없습니다.
+
+```jsx
+// app/layout.tsx
+
+import { getUser } from './auth';
+import { Dashboard, Landing } from './components';
+
+export default async function Layout() {
+  const isLoggedIn = await getUser();
+  return isLoggedIn ? <Dashboard /> : <Landing />;
+}
+```
+
+## Turbopack (Beta)
+
+[Turbopack](https://turbo.build/pack)(Next.js를 통해 테스트, 안정화 중인 새로운 번들러)은
+Next.js 애플리케이션(`next dev --turbo`) 및 곧 프로덕션 빌드(`next build --turbo`)에서
+작업하는 동안 로컬 반복 속도를 높이는데 도움을 줍니다.
+
+Next.js 13의 Alpha 릴리즈 이후, 버그를 수정하고 누락된 기능을 추가하기 위해 노력하면서 꾸준히 성장함을 확인할 수 있었습니다.
+
+6개월이 지난 지금, 이제 beta 단계로 넘어갈 준비가 되었습니다.
+
+Turbopack은 webpack + Next.js의 완전한 기능을 갖추지는 못했습니다.
+[이 이슈](https://github.com/vercel/next.js/issues/49174)에서 이러한 기능을 추가하고 있습니다. 곧 대부분의 기능들이 지원될 것입니다.
+
+Turbopack의 incremental 엔진과 caching 레이어를 개선하기 위한 투자를 통해
+로컬 개발 속도를 높일 뿐만 아니라 프로덕션 빌드에도 적용될 예정입니다.
+빠른 빌드를 위한 `next build --turbo`를 사용할 수 있는 미래의 Next.js 버전을 기대하세요.
+
+## Server Action (Alpha)
+
+> 이 기능이 나옴으로써, data fetch에 대한 서버 지원 뿐만 아니라 data mutate에 대한
+> 서버 지원이 가능해졌습니다.  
+> 여기서 서버 지원이라는 것은 React Server Component의 기능을 유지한 채,
+> 스트리밍과 Suspense를 이용한 Next.js 프레임워크 지원 아래에서 사용할 수 있다는 것을 의미합니다.  
+> 사실 너무 편해질 것 같아서 무섭기도 합니다. Next.js 프레임워크에 몽땅 다 넣고 있을 것 같아서요.
+
+React 생태계는 form, 상태 관리, caching, revalidating과 관련해 많은 혁신과 아이디어를
+연구해왔습니다.
+시간이 지남에 따라 React는 이러한 패턴 중 일부에 대해 의견을 내었습니다.
+예를 들어 form 상태에 대해 [uncontrolled components](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components)를 권장했습니다.
+
+현재 form 솔루션 생태계는 재사용 가능한 클라이언트 사이드 솔루션이거나 프레임워크 내장된 Primitive 였습니다.
+지금까지는 서버 mutation과 데이터 primitive를 구성할 수 있는 방법이 없었습니다.
+React 팀은 mutate를 위한 muatate를 위한 first-party 솔루션을 [개발해 왔습니다](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023).
+
+서버에서 데이터를 변경하고 중간 API 계층을 만들 필요 없이 함수를 직접 호출할 수 있는 실험적인
+**Next.js Server Action**을 발표합니다.
+
+```jsx
+// app/post/[id]/page.tsx
+
+import kv from './kv';
+
+export default function Page({ params }) {
+  async function increment() {
+    'use server';
+    await kv.incr(`post:id:${params.id}`);
+  }
+
+  return (
+    <form action={increment}>
+      <button type="submit">Like</button>
+    </form>
+  );
+}
+```
+
+Server Action을 사용하면 강력한 server-first 데이터 mutate, 클라이언트 사이드 JavaScript 감소,
+점진적 향상된 form을 사용할 수 있습니다.
+
+```jsx
+// app/dashboard/posts/page.tsx
+
+import db from './db';
+import { redirect } from 'next/navigation';
+
+async function create(formData: FormData) {
+  'use server';
+  const post = await db.post.insert({
+    title: formData.get('title'),
+    content: formData.get('content'),
+  });
+  redirect(`/blog/${post.slug}`);
+}
+
+export default function Page() {
+  return (
+    <form action={create}>
+      <input type="text" name="title" />
+      <textarea name="content" />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+Next.js의 Server Action은 Next.js Cache, ISR(Incremental Static Regeneration),
+클라이언트 라우터 등 데이터 라이프사이클과 긴밀하게 통합되도록 설계되었습니다.
+
+새로운 API인 `revalidatePath`과 `revalidateTag`를 통해 데이터를 revalidating하면
+**한 번의 네트워크 왕복**으로 mutate, page re-rendering, 또는 redirect를 수행할 수 있으므로
+업스트림 provider가 느리더라도 클라이언트에 올바른 데이터가 표시되도록 보장할 수 있습니다.
+
+```jsx
+// app/dashboard/posts/page.tsx
+
+import db from './db';
+import { revalidateTag } from 'next/server';
+
+async function update(formData: FormData) {
+  'use server';
+  await db.post.update({
+    title: formData.get('title'),
+  });
+  revalidateTag('posts');
+}
+
+export default async function Page() {
+  const res = await fetch('https://...', { next: { tags: ['posts'] } });
+  const data = await res.json();
+  // ...
+}
+```
+
+Server Action은 composable하게 디자인되었습니다. React 커뮤니티의 누구나 Server Action을
+만들어 에코시스템에 배포할 수 있습니다. Server Component와 마찬가지로 클라이언트와 서버 모두에서
+composable primitive의 새로운 시대가 열리게 되어 기대가 됩니다.
+
+[Server Action](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions)은
+Next.js 13.4에서 alpha로 사용할 수 있습니다.
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverActions: true,
+  },
+};
+
+module.exports = nextConfig;
+```
+
+## 기타 개선
+
+- [Draft Mode](https://nextjs.org/docs/app/building-your-application/configuring/draft-mode): headless CMS에서 draft 콘텐츠를
+  fetch하고 렌더링합니다. Draft Mode는 `pages`와 `app` 모두 동작합니다.
+  `pages`에서 동작하는 기존 Preview Mode API를 개선하고 단순화했습니다.
+  `app`에서는 Preview Mode가 _동작하지 않으므로_ Draft Mode를 사용하세요.
+
+## FAQ
+
+### App Router stability가 무엇을 의미하나요?
+
+오늘 App Router가 stable이라고 표시되었다고 해서 작업이 완료된 것은 아닙니다.
+Stability란 App Router의 코어가 ready for production 이라는 것을 의미하며,
+자체 내부 테스트와 많은 Next.js 얼리 어답터에 의해 검증되었음을 의미합니다.
+
+Server Action이 완전한 Stability에 도달하는 등 앞으로 추가로 최적화해야 할 부분이
+남아있습니다. 커뮤니티가 지금 애플리케이션을 학습하고 구축하는데 있어서 어디서 부터 시작해야
+하는지 명확히 알 수 있도록 코어 Stability를 확보하는 것이 중요했습니다.
+
+App Router는 React `canary` 채널 위에 개발됩니다.
+React `canary` 채널은 Server Component와 같은 기능의 프레임워크 채택을 위해 준비되었습니다.
+
+[여기서](https://react.dev/blog/2023/05/03/react-canaries) 더 많은 정보를 확인할 수 있습니다.
+
+### Next.js beta docs는 무엇을 의미하나요?
+
+오늘부터는 App Router로 새 애플리케이션을 만드는 것이 좋습니다.
+App Router를 설명하기 위해 다시 작성된 Next.js beta docs는 이제 [stable Next.js docs](https://nextjs.org/docs)에
+머지됩니다. 이제 App Router와 Pages Router 사이를 쉽게 토글할 수 있습니다.
+
+App Router를 적용하는 방법을 배우기 위해 [App Router 점진적 적용 가이드](https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration)를 읽는 것을 권장합니다.
+
+### pages 폴더는 사라지나요?
+
+아닙니다. pages 폴더는 사라지지 않습니다.
+앞으로도 여러 메이저 버전에 대한 버그 수정, 개선, 보안 패치를 포함한 `pages/` 개발 지원에 최선을 다할 것입니다.
+개발자가 준비되는 대로 점진적으로 App Router를 도입할 수 있도록 충분한 시간을 확보하고자 합니다.
+
+프로덕션에서는 `pages/`와 `app/` 둘 다 사용하는 것을 지원하고 권장합니다.
+App Router는 라우터 별로 도입할 수 있습니다.
+
+### Server Component가 "완료"되었다는 의미인가요?
+
+Next.js는 Server Component를 포함하여 React 아키텍처 기반의 빌드를 선택하는 하나의 프레임워크입니다.
+App Router에서 제공된 경험을 통해 다른 프레임워크(또는 새로운 프레임워크)에서도 이 아키텍처 사용을 고려하게 되기를 바랍니다.
+
+이 생태계는 인피니트 스크롤 처리와 같이 아직 정의되지 않은 패턴이 남아있습니다.
+현재로서는 생태계가 성장하고 라이브러리가 생성, 업데이트 되는 동안
+이러한 패턴을 위한 클라이언트 솔루션을 사용하는 것을 추천합니다.
+
+## 마무리하며
+
+드디어 App Router가 Stable로 릴리즈 되었습니다.
+
+서두에서 말했지만 Layout RFC가 나온지 거의 1년이 되는 시점입니다.
+
+저 또한 사용해보면서 느낀 점은 있었지만, 이제야 정말로 완성된 것 같습니다.
+아직 추가적인 기능이 보완되어야 할 부분이 있지만, 코어는 완성된 것 같습니다.
+
+Server Action 또한 릴리즈 된 것을 보고 data fetch 와 mutate
+둘 다 colocate 함으로써 개발자 경험에서도 좋은 점이 있을 것이라고 기대됩니다.
+(트위터에서는 이를 두고 농담 반, 진담 반 으로 PHP 얘기를 많이 하는 것을 보았습니다.)
+
+다만 `use server`와 같은 컨벤션이 좋은지는 아직은 잘 모르겠습니다만
+사용해보면서 좀 더 느껴봐야 될 것 같습니다.
+
+최근에 Vercel에서 다양한 edge 서비스를 출시하고 있습니다.
+cloudflare r2기반의 storage 서비스라던지, posgresql기반 db 서비스라던지, serverless Redis 서비스인 KV 등
+다양한 서비스를 출시하고 있습니다.(쫌 비싸다는 얘기가 많긴 하지만...)
+
+시대가 바뀌고 있는 지점인지 아닌지는 모르겠지만,
+관심있게 지켜봐야 될 부분이 아닌가 싶습니다.
