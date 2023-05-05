@@ -1,11 +1,10 @@
 import '@/styles/globals.css';
 
-import { Inter } from 'next/font/google';
-
 import { Footer } from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { Header } from '@/components/Header';
 import Providers from '@/components/Providers';
+import { fontSans } from '@/lib/fonts';
 import { cn } from '@/utils/style-utils';
 
 export const metadata = {
@@ -55,11 +54,6 @@ export const metadata = {
   },
 };
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
 interface RootLayoutProps {
   children: React.ReactNode;
 }
@@ -75,7 +69,7 @@ function RootLayout({ children }: RootLayoutProps) {
       <body
         className={cn(
           'min-h-screen bg-white font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-50',
-          inter.variable
+          fontSans.variable
         )}
       >
         <Providers>
