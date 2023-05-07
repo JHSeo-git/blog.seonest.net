@@ -53,7 +53,7 @@ Next.js는 6년이 되었습니다. 원래의 설계 원칙은 그대로 유지�
 
 이 포스팅에서는 앱 라우터에 대한 설계 결정과 선택에 대해 자세히 설명합니다.
 
-### Zero Step. 파일시스템을 사용
+### Zero Setup. 파일시스템을 사용
 
 [파일시스템 기반 라우팅](https://nextjs.org/docs/app/building-your-application/routing)은 Next.js의 핵심 기능입니다.
 최초 발표 포스트에서 이를 소개했으며, React 컴포넌트에서 라우트를 생성하는 예시를 보였습니다:
@@ -172,7 +172,7 @@ export default function Document() {
 }
 ```
 
-App Router는 더 이상 Nex.jt에서 `<Html>`. `<Head>`, `<Body>`를 import할 필요가 없습니다.
+App Router는 더 이상 Next.js에서 `<Html>`. `<Head>`, `<Body>`를 import할 필요가 없습니다.
 대신에 그냥 React를 사용하면 됩니다.
 
 ```jsx
