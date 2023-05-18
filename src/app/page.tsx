@@ -9,9 +9,9 @@ async function IndexPage() {
 
   return (
     <main className="mx-auto max-w-4xl py-10">
-      <h1 className="text-2xl font-bold leading-normal text-slate-700 dark:text-slate-200">
+      <h2 className="text-2xl font-bold leading-normal text-slate-700 dark:text-slate-200">
         모든 글
-      </h1>
+      </h2>
       <div className="h-14" />
       {posts.map((post) => (
         <Link
