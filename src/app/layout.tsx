@@ -1,5 +1,7 @@
 import '@/styles/globals.css';
 
+import { Analytics } from '@vercel/analytics/react';
+
 import { Footer } from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { Header } from '@/components/Header';
@@ -80,6 +82,7 @@ function RootLayout({ children }: RootLayoutProps) {
           </div>
         </Providers>
         {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
+        <Analytics />
       </body>
     </html>
   );
