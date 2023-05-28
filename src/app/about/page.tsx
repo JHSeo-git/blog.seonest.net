@@ -22,7 +22,7 @@ async function AbountPage() {
       </article>
       <article className="py-6">
         <h2 className="text-xl font-semibold">Recent Posts</h2>
-        <ul className="py-4">
+        <ul className="list-disc space-y-1 py-4 pl-6">
           {latestPosts.map((post) => (
             <li key={post._id}>
               <Link href={post.slug}>
@@ -36,7 +36,7 @@ async function AbountPage() {
       </article>
       <article className="py-6">
         <h2 className="text-xl font-semibold">Projects</h2>
-        <ul className="py-4">
+        <ul className="list-disc space-y-1 py-4 pl-6">
           <li>
             <Link href="https://seonest.net" target="_blank" rel="noopener noreferrer">
               <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
@@ -84,7 +84,7 @@ async function AbountPage() {
       </article>
       <article className="py-6">
         <h2 className="text-xl font-semibold">Practices</h2>
-        <ul className="py-4">
+        <ul className="list-disc space-y-1 py-4 pl-6">
           <li>
             <Link
               href="https://please-notification.vercel.app/"
@@ -144,7 +144,7 @@ async function AbountPage() {
       </article>
       <article className="py-6">
         <h2 className="text-xl font-semibold">Links</h2>
-        <ul className="py-4">
+        <ul className="list-disc space-y-1 py-4 pl-6">
           <li>
             <Link href="https://github.com/jhseo-git" target="_blank" rel="noopener noreferrer">
               <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
