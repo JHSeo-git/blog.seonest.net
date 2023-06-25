@@ -72,12 +72,6 @@ const rehypePrettyCodeOptions: Partial<PrettyCodeOptions> = {
       node.children = [{ type: 'text', value: ' ' }];
     }
   },
-  onVisitHighlightedLine(node) {
-    node.properties.className.push('line--highlighted');
-  },
-  onVisitHighlightedWord(node) {
-    node.properties.className = ['word--highlighted'];
-  },
 };
 
 const rehypeAutolinkHeadingsOptions: Partial<AutolinkHeadingsOptions> = {
