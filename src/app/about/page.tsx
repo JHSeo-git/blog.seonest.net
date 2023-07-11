@@ -16,7 +16,7 @@ async function AbountPage() {
         <h1 className="mb-4 text-3xl font-bold leading-normal">
           Hi, I&apos;m JHSeo,
           <br />
-          I&apos;m a developer.
+          I&apos;m a software engineer.
         </h1>
         <p>I wanna make a better world.</p>
       </article>
