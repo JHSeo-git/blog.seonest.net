@@ -1,3 +1,5 @@
+'use client';
+
 import { cva } from 'class-variance-authority';
 import type { MDXComponents } from 'mdx/types';
 import NextImage from 'next/image';
@@ -10,6 +12,7 @@ import { cn } from '@/utils/style-utils';
 import { Admonition } from '../Admonition';
 import { Callout } from '../Callout';
 import CopyToClipboard from '../CopyToClipboard';
+import { SandPack } from '../SandPack/SandPack';
 
 const mdxImageStyle = cva('mx-auto my-4 h-full object-contain');
 
@@ -174,6 +177,7 @@ const components: MDXComponents = {
   Admonition,
   Callout,
   Video,
+  SandPack,
   ImageCaption: ({
     src,
     alt,
