@@ -48,6 +48,10 @@ const Video = ({ className, ...props }: React.VideoHTMLAttributes<HTMLVideoEleme
   />
 );
 
+const IFrame = ({ className, ...props }: React.IframeHTMLAttributes<HTMLIFrameElement>) => (
+  <iframe className={cn('my-4 h-[500px] w-full', className)} {...props} />
+);
+
 const components: MDXComponents = {
   h1: ({ className, children, ...props }) => (
     <h1 className={cn('mt-2 scroll-m-20 text-4xl font-bold tracking-tight', className)} {...props}>
@@ -173,6 +177,7 @@ const components: MDXComponents = {
   // custom
   Admonition,
   Callout,
+  IFrame,
   Video,
   ImageCaption: ({
     src,
