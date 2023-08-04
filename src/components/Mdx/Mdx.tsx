@@ -1,5 +1,3 @@
-'use client';
-
 import { cva } from 'class-variance-authority';
 import type { MDXComponents } from 'mdx/types';
 import NextImage from 'next/image';
@@ -12,7 +10,6 @@ import { cn } from '@/utils/style-utils';
 import { Admonition } from '../Admonition';
 import { Callout } from '../Callout';
 import CopyToClipboard from '../CopyToClipboard';
-import { SandPack } from '../SandPack/SandPack';
 
 const mdxImageStyle = cva('mx-auto my-4 h-full object-contain');
 
@@ -49,6 +46,10 @@ const Video = ({ className, ...props }: React.VideoHTMLAttributes<HTMLVideoEleme
     className={cn('my-2', className)}
     {...props}
   />
+);
+
+const IFrame = ({ className, ...props }: React.IframeHTMLAttributes<HTMLIFrameElement>) => (
+  <iframe className={cn('my-4 h-[500px] w-full', className)} {...props} />
 );
 
 const components: MDXComponents = {
@@ -176,8 +177,8 @@ const components: MDXComponents = {
   // custom
   Admonition,
   Callout,
+  IFrame,
   Video,
-  SandPack,
   ImageCaption: ({
     src,
     alt,

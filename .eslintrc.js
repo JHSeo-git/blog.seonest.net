@@ -31,6 +31,7 @@ module.exports = {
     ],
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-empty-interface': 'warn',
+    '@typescript-eslint/no-unused-vars': 'warn',
     'simple-import-sort/exports': 'off',
     'simple-import-sort/imports': 'error',
     'tailwindcss/no-custom-classname': 'off',
