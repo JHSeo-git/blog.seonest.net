@@ -187,7 +187,9 @@ const components: MDXComponents = {
   }: React.ImgHTMLAttributes<HTMLImageElement> & { children?: string }) => (
     <figure className="my-4 w-full">
       <Image {...props} src={src} alt={alt} className="my-0" />
-      <figcaption className="mt-2 truncate text-center text-sm opacity-50">{children}</figcaption>
+      <figcaption className="mt-2 whitespace-pre-wrap text-center text-sm opacity-50">
+        {children}
+      </figcaption>
     </figure>
   ),
   Tweet: ({ id }: { id: string }) => (
