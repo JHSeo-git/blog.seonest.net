@@ -1,3 +1,5 @@
+'use client';
+
 import { cva } from 'class-variance-authority';
 import type { MDXComponents } from 'mdx/types';
 import NextImage from 'next/image';
@@ -10,8 +12,9 @@ import { cn } from '@/utils/style-utils';
 import { Admonition } from '../Admonition';
 import { Callout } from '../Callout';
 import CopyToClipboard from '../CopyToClipboard';
+import { Zoom } from '../Zoom';
 
-const mdxImageStyle = cva('mx-auto my-4 h-full object-contain');
+const mdxImageStyle = cva('mx-auto my-4 h-auto w-full object-contain');
 
 const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) {
@@ -19,20 +22,27 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
   }
 
   if (src.startsWith('http')) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img className={cn(mdxImageStyle(), className)} src={src} alt={alt} {...props} />;
+    return (
+      <Zoom>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className={cn(mdxImageStyle(), className)} src={src} alt={alt} {...props} />
+      </Zoom>
+    );
   }
 
   return (
-    <NextImage
-      className={cn(mdxImageStyle(), className)}
-      src={src}
-      alt={alt ?? ''}
-      {...props}
-      width={700}
-      height={400}
-      placeholder="empty"
-    />
+    <Zoom>
+      <NextImage
+        className={cn(mdxImageStyle(), className)}
+        src={src}
+        alt={alt ?? ''}
+        {...props}
+        width={0}
+        height={0}
+        sizes="100vw"
+        placeholder="empty"
+      />
+    </Zoom>
   );
 };
 

@@ -17,6 +17,9 @@ import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
 import { getDistanceToNow } from '@/utils/date-utils';
 import { cn } from '@/utils/style-utils';
 
+// @see https://github.com/rpearce/react-medium-image-zoom/issues/429#issuecomment-1663119432
+export const runtime = 'nodejs';
+
 type PageParams = {
   slug: string[];
 };
