@@ -4,8 +4,8 @@ import { cva } from 'class-variance-authority';
 import type { MDXComponents } from 'mdx/types';
 import NextImage from 'next/image';
 import { useMDXComponent } from 'next-contentlayer/hooks';
-import { NextTweet } from 'next-tweet';
 import * as React from 'react';
+import { Tweet as ReactTweet } from 'react-tweet';
 
 import { cn } from '@/utils/style-utils';
 
@@ -197,15 +197,12 @@ const components: MDXComponents = {
   }: React.ImgHTMLAttributes<HTMLImageElement> & { children?: string }) => (
     <figure className="my-4 w-full">
       <Image {...props} src={src} alt={alt} className="my-0" />
-      <figcaption className="mt-2 whitespace-pre-wrap text-center text-sm opacity-50">
-        {children}
-      </figcaption>
+      <figcaption className="mt-2 text-center text-sm opacity-50">{children}</figcaption>
     </figure>
   ),
   Tweet: ({ id }: { id: string }) => (
     <div className="mb-6 flex justify-center">
-      {/* @ts-ignore: Async components are valid in the app directory */}
-      <NextTweet id={id} />
+      <ReactTweet id={id} />
     </div>
   ),
 };
