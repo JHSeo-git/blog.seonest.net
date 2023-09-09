@@ -88,7 +88,7 @@ export default makeSource({
     remarkPlugins: [remarkGfm],
     rehypePlugins: [
       rehypeSlug,
-      [rehypePrettyCode, rehypePrettyCodeOptions],
+      [rehypePrettyCode as (options: unknown) => void, rehypePrettyCodeOptions],
       [rehypeAutolinkHeadings, rehypeAutolinkHeadingsOptions],
     ],
   },
