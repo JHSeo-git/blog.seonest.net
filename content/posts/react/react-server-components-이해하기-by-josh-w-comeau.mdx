@@ -1,0 +1,712 @@
+---
+date: '2023-09-10T06:09:08.413Z'
+category: react
+title: React Server Components 이해하기(by Josh.W.Comeau)
+description: Josh W Comeau가 설명해주는 React Server Components
+published: true
+thumbnail: '/post/react/react-server-components-이해하기-by-josh-w-comeau/thumbnail.png'
+---
+
+## 들어가면서
+
+React Server Components에 대한 글을 최근에 자주 옮기고 있습니다.
+특히 Next.js를 자주 애용하는 저이기에 좀 더 잘 써보고자 관련 글을 많이 보게 되는데요.
+
+이번에는 제가 자주 찾아보는 블로그 중 하나인 [Josh W Comeau 블로그 글이](https://www.joshwcomeau.com/react/server-components/) 업데이트가 되었습니다.
+마침 React Server Components에 대한 글이라서 읽어보면서 정리해보려고 합니다.
+
+## React Server Components 이해하기(by Josh.W.Comeau)
+
+벌써 React가 올해 10주년을 맞이했습니다.
+
+React가 처음 소개된 이후 10년 동안, React는 많은 변화를 겪었습니다. React 팀은 변화를 주저하지 않았으며, 문제에 대한 더 나은 해결책을 발견하면
+바로 실행했습니다.
+
+얼마전, React 팀은 최신 패러다임인 React Server Components를 공개했습니다. 처음으로 React 컴포넌트가 서버에서만 실행할 수 있게 되었습니다.
+
+커뮤니티에서는 이에 대해 많은 혼란이 있었습니다. 많은 사람들이 이것이 무엇인지, 어떻게 작동하는지, 어떤 이점이 있는지, 서버 사이드 렌더링과 같은 것들과
+어떻게 조화를 이루는지에 대해 궁금해했습니다.
+
+React Server Components로 많은 실험을 했고, 저(_저자_) 스스로도 많은 질문에 답해왔습니다. 예상했던 것보다 훨씬 더 흥미진진하다는 것을 인정했습니다.
+정말 멋집니다.
+
+그래서 오늘 목표는 이 내용을 이해하도록 돕고, React Server Components에 대한 많은 질문에 답하는 것입니다.
+
+<Callout>
+  이 내용은 주로 React를 이미 사용하고 있고 React Server Components에 대해 궁금한 개발자를 위해
+  작성되었습니다. React 전문가가 아니어도 되지만, React를 이제 막 시작한다면 꽤 어려울 수 있습니다.
+</Callout>
+
+## 서버 사이드 렌더링에 대한 간단한 소개
+
+React Server Components 맥락을 이해하려면 서버 사이드 렌더링(SSR)이 어떻게 작동하는지 이해하는게 도움이 됩니다.
+이미 SSR에 익숙하다면 다음 섹션으로 건너뛰어도 됩니다.
+
+React 초기에는 대부분 "클라이언트 사이드 렌더링"을 사용했습니다. 사용자는 다음과 같은 HTML 파일을 받게 됩니다:
+
+```html
+<!doctype html>
+<html>
+  <body>
+    <div id="root"></div>
+    <script src="/static/js/bundle.js"></script>
+  </body>
+</html>
+```
+
+`bundle.js` 스크립트에는 React, 서드파티 의존성, 작성된 모든 코드를 포함해 애플리케이션을 마운트하고 실행하는데 필요한 모든 것이 포함되어 있습니다.
+
+JS가 다운로드되고 구문 분석이 완료되면 React가 작동하여 전체 애플리케이션에 대한 모든 DOM노드를 불러와서 비어있는 `<div id="root">`안에 넣습니다.
+
+여기서 문제는 이 모든 작업을 수행하는데 시간이 걸린다는 것입니다. **그리고 이 모든 작업이 진행되는 동안 사용자는 텅 빈 흰색 화면을 바라보게 됩니다.**
+이 문제는 시간이 지날수록 더욱 악화되는 경향이 있습니다: 새로운 기능이 추가되고 JavaScript 번들에 더 많은 코드가 추가되어 더 많은 시간이 걸리게 됩니다.
+(모듈을 lazy-loading 하거나 route 기반 코드 스플리팅 등의 최적화가 도움이 될 수 있지만, 일반적으로 JS 번들은 점점 커지는 경향이 있습니다.)
+
+서버 사이드 렌더링은 이러한 경험을 개선하기 위해 설계되었습니다. 빈 HTML 파일을 전송하는 대신 서버가 애플리케이션을 렌더링하여 실제 HTML을 생성합니다.
+사용자는 완전한 형식의 HTML 문서를 받게 됩니다.
+
+상호작용을 처리하기 위해 클라이언트에서 React를 실행해야 하므로 이 HTML파일에는 여전히 `<script>`태그가 포함됩니다. (대부분의 애플리케이션에는 보통 상호작용이 포함되기에)
+하지만 브라우저 내에서 작동하는 방식은 CSR과는 조금 다릅니다. CSR처럼 모든 DOM노드를 처음부터 새로 만드는 대신 기존 HTML에 추가 작업을 진행합니다.
+이 과정을 hydration이라고 합니다.
+
+React 코어 팀원인 Dan Abramov가 이를 설명하는 방식이 있습니다:
+
+> Hydration은 "Dry"한 HTML에 상호작용과 이벤트 핸들러 "물"을 주는 것과 같습니다.  
+> (Hydration is like watering the “dry” HTML with the “water” of interactivity and event handlers.)
+>
+> TMI: Dan Abramov는 React 코어 팀에서 나와 블루스카이로 최근에 이직했습니다.
+
+JS 번들을 다운로드하면 React는 전체 애플리케이션을 빠르게 실행하여 UI 의 가상 스케치를 만들고, 이를 실제 DOM에 "맞추고", 이벤트 핸들러를 연결하고,
+이펙트를 실행하는 등의 작업을 수행합니다.
+
+이것이 바로 SSR입니다. 서버는 초기 HTML을 사용하여 JS 번들을 다운로드하고 파싱하는 동안 사용자가 텅 빈 흰색 화면을 보지 않도록 합니다.
+그런 다음 클라이언트 사이드 React가 서버 사이드 React가 못다한 부분을 이어받아 DOM에 이벤트 핸들러를 연결하고 상호작용을 추가합니다.
+
+<Callout>
+  <p>일반적으로 동작되는 모습입니다:</p>
+  1. 사용자가 <em>myWebsite.com</em>을 방문합니다. <br />
+  2. Node.js 서버가 요청을 수신하고 바로 React 애플리케이션을 렌더링하여 HTML을 생성합니다. <br />
+  3. 갓 만들어진 HTML이 클라이언트로 전송됩니다.
+  <>
+    이는 서버 사이드 렌더링을 구현하는 <em>하나의</em> 가능한 방법이지만 유일한 방법은 아닙니다. 또
+    다른 옵션은 애플리케이션을 빌드할 때 HTML을 생성하는 것입니다.
+  </>
+  <>
+    일반적으로 React 애플리케이션은 컴파일을 통해 JSX를 일반 JavaScript로 변환하고 모든 모듈을
+    번들링해야 합니다. 모든 route에 대한 모든 HTML을 "pre-rendered"한다면 어떨까요?
+  </>
+  <>
+    이를 일반적으로 <strong>Static Site Generation(SSG)</strong>라고 합니다. 이는 서버 사이드
+    렌더링의 하위 개념입니다.
+  </>
+  <>
+    제가 보기에는 "서버 사이드 렌더링"은 여러 가지 렌더링 전략을 포함하는 **포괄적인 용어**입니다.
+  </>
+  <>
+    이 모든 것은 한 가지 공통점이 있는데, 초기 렌더링이 Node.js와 같은 서버 런타임에서
+    `ReactDOMServer` API를 사용하여 이루어진다는 점입니다. on-demand에 일어나든 컴파일타임에
+    일어나든 언제 발생하는지는 실제로 중요하지 않습니다. 어느 쪽이든 서버 사이드에서 렌더링이
+    이루어지기 때문입니다.
+  </>
+</Callout>
+
+## 클라이언트와 서버를 왔다갔다 하는 데이터 fetch
+
+React에서 데이터 fetch에 대해 생각해 보겠습니다. 일반적으로 두 개 애플리케이션을 만들어서 사용합니다:
+
+1. 클라이언트 사이드 React 애플리케이션
+2. 서버 사이드 REST API
+
+클라이언트는 React Query나 SWR, Apollo와 같은 것을 사용하여 백엔드에 요청을 하고, 백엔드는 데이터베이스에서 데이터를 가져와 응답합니다.
+
+이 흐름을 그래프로 표현하면 다음과 같습니다:
+
+![A graph for data fetch flow in CSR](/post/react/react-server-components-이해하기-by-josh-w-comeau/data-fetch-flow-csr.png)
+
+<Admonition type="note">
+  이 그래프는 여러가지 렌더링 전략에 따라 데이터가 클라이언트(브라우저)와 서버(백엔드 API)간에
+  어떻게 이동하는지 시각화한 것입니다.
+  <br />
+  X축의 숫자는 가상의 시간을 나타냅니다. 분이나 초가 아닙니다. 실제로는 다양한 요인에 따라 수치가
+  크게 달라집니다. 이 그래프는 개념에 대한 개략적인 이해를 돕기 위한 것으로, 실제 데이터를 모델링한
+  것이 아닙니다.
+</Admonition>
+
+위 그래프는 CSR(클라이언트 사이드 렌더링) 전략을 사용한 흐름을 보여줍니다.
+클라이언트가 HTML 파일을 받는 것으로 부터 시작됩니다. 이 파일에는 콘텐츠가 없지만 하나 이상의 `<script>` 태그가 포함되어 있습니다.
+
+JavaScript가 다운로드되고 파싱이 완료되면 React 앱이 부팅되어 여러 개의 DOM 노드를 생성하고 UI를 채웁니다. 하지만 처음에는 실제 데이터가 없으므로
+로딩 상태의 UI(헤더, 푸터, 일반 레이아웃)만 렌더링할 수 있습니다.
+
+이런 패턴은 주변에서 많이 볼 수 있습니다. 예를 들어 우버잇츠는 실제 데이터(레스토랑 정보)를 채우는데 필요한 데이터를 가져오는 동안 로딩 상태의 UI를
+렌더링하는 것으로 시작합니다:
+
+<Video src="https://www.joshwcomeau.com/images/server-components/ubereats-loading.mp4?v=2" />
+
+사용자는 네트워크 요청이 완료될 때까지 이 로딩 상태를 보게 되고 React는 리렌더링하여 로딩 UI를 실제 콘텐츠로 대체합니다.
+
+**이를 설계할 수 있는 다른 방법을 살펴보겠습니다.** 다음 그래프는 동일한 일반적인 데이터 fetch 패턴을 유지하지만 클라이언트 사이드 렌더링 대신에
+서버 사이드 렌더링을 사용합니다:
+
+![A graph for data fetch flow in SSR](/post/react/react-server-components-이해하기-by-josh-w-comeau/data-fetch-flow-ssr.png)
+
+위 flow에서는 서버에서 첫 번째 렌더링을 수행합니다. 즉, 사용자는 내용이 채워져 있는 HTML 파일을 받게 됩니다.
+
+로딩 상태의 UI가 빈 흰색 페이지보다 낫지만 궁극적으로 큰 변화를 가져오지는 못합니다. 사용자는 로딩 화면을 보기 위해 앱을 방문하는 것이 아니라 콘텐츠(레스토랑,
+호텔 목록, 검색 결과, 메시지 등)를 보기 위해 방문합니다.
+
+사용자 경험의 차이를 실제로 파악하기 위해 그래프에 몇 가지 웹 성능 지표를 표시하면 다음과 같습니다:
+
+![A graph for data fetch flow in CSR with metrics](/post/react/react-server-components-이해하기-by-josh-w-comeau/csr-metrics.png)
+
+![A graph for data fetch flow in SSR with metrics](/post/react/react-server-components-이해하기-by-josh-w-comeau/ssr-metrics.png)
+
+각 플래그는 일반적으로 사용되는 웹 성능 지표를 나타냅니다. 자세한 내용은 다음과 같습니다:
+
+1. First Paint: 사용자가 더 이상 빈 흰색 화면을 보지 않습니다. 일반적인 레이아웃이 렌더링되었지만 콘텐츠가 여전히 누락되어 있습니다.
+   이를 FCP(First Contentful Paint)라고 부르기도 합니다.
+2. Page Interactive: React가 다운로드되었고 애플리케이션이 렌더링/Hydration 되었습니다. 이제 상호작용이 가능합니다.
+   이를 TTI(Time To Interactive)라고 부르기도 합니다.
+3. Content PaintL 이제 페이지에 사용자가 관심 있는 내용이 포함됩니다. 데이터베이스에서 데이터를 가져와 UI를 렌더링했습니다.
+   이를 LCP(Largest Contentful Paint)라고 부르기도 합니다.
+
+서버에서 초기 렌더링을 수행하면 기본 UI를 더 빠르게 그릴 수 있습니다. 이렇게 하면 로딩 환경이 조금 더 빠르게 느껴질 수 있는데, 이는 진행 상황,
+즉 무언가가 일어나고 있다는 느낌을 주기 떄문입니다.
+
+그리고 몇몇 상황에서는 이것이 의미 있는 개선이 될 수 있습니다. 예를 들어, 사용자가 네비게이션 링크를 클릭하기 위해 헤더가 로드될 때가지만 기다리는
+경우가 나의 예가 될 수 있습니다.
+
+**하지만 이 flow가 조금 이상하게 느껴지지 않나요?** 서버로 두 번 요청을 하는 대신 첫 번째 요청 중에 데이터베이스 작업을 수행하면 어떨까요?
+
+다시 말해서, **다음과 같이 하면 어떨까요?**
+
+![A graph for data fetch flow in SSR which process all when first requests](/post/react/react-server-components-이해하기-by-josh-w-comeau/ssr-all-once.png)
+
+클라이언트와 서버를 오가는 대신 초기 요청에서 데이터베이스 쿼리를 수행하도록 하여 완전히 만들어진 UI를 사용자에게 바로 전송하는 것입니다.
+
+하지만 정확히 어떻게 할 수 있을까요?
+
+이 작업을 하려면 데이터베이스 쿼리를 수행하기 위해 서버에서만 실행되는 코드 청크를 React에게 줄 수 있어야 합니다. 서버 사이드 렌더링을 사용하더라도
+모든 컴포넌트가 서버와 클라이언트 양쪽에서 렌더링되기 때문입니다.
+
+생태계에서는 이 문제에 대한 많은 해결책을 제시했습니다. Next.js나 Gatsby와 같은 메타 프레임워크는 서버에서만 코드를 실행하는 자체적인 방법을 만들었습니다.
+
+예를 들어, 다음은 Next.js(이젠 레거시가 된 "Pages" Router 사용)를 사용하는 모습입니다:
+
+```jsx
+import db from 'imaginary-db';
+// 이 코드는 서버에서만 실행됩니다:
+export async function getServerSideProps() {
+  const link = db.connect('localhost', 'root', 'passw0rd');
+  const data = await db.query(link, 'SELECT * FROM products');
+  return {
+    props: { data },
+  };
+}
+// 이 코드는 서버와 클라이언트 모두에서 실행됩니다:
+export default function Homepage({ data }) {
+  return (
+    <>
+      <h1>Trending Products</h1>
+      {data.map((item) => (
+        <article key={item.id}>
+          <h2>{item.title}</h2>
+          <p>{item.description}</p>
+        </article>
+      ))}
+    </>
+  );
+}
+```
+
+서버가 요청을 받으면 `getServerSideProps` 함수가 호출됩니다. 이 함수는 `props` 객체를 반환합니다. 그런 다음 해당 `props`는
+컴포넌트로 전달되어 서버에서 먼저 렌더링된 다음 클라이언트에서 hydrate됩니다.
+
+여기서 중요한 점은 `getServerSideProps`가 클라이언트에서 다시 실행되지 않는다는 것입니다. 사실 이 함수는 JavaScript 번들에도 포함되어 있지 않습니다!
+
+이 접근 방식은 시대를 _한참_ 앞선 것이었습니다. 솔직히 정말 대단한 접근법입니다. 하지만 여기에는 _몇 가지_ 단점이 있습니다:
+
+1. 이 전략은 라우트 레벨(트리의 맨 위에 있는 컴포넌트)에서만 동작합니다. 개별 컴포넌트에서는 이 전략을 사용할 수 없습니다.
+2. 각 메타 프레임워크는 자신들만의 접근 방식을 만들었습니다. Next.js에서 사용하는 방식이 있고, Gatsby에도, Remix에도 각각 다른 방식이 있습니다.
+   표준화되지 않았습니다.
+3. 모든 React 컴포넌트는 클라이언트에서 hydrate할 필요가 없을 때에도 항상 hydrate합니다.
+
+수년 동안 React 팀은 이 문제를 해결하기 위한 공식적인 방법을 찾기 위해 조용히 이 문제를 해결하려고 노력해 왔습니다.
+그리고 그 해결책이 바로 **React Server Components**입니다.
+
+## React Server Components
+
+React Server Components는 완전히 새로운 패러다임의 이름입니다. 이 새로운 세계에서는 서버에서만 실행되는 컴포넌트를 만들 수 있습니다.
+이를 통해 React 컴포넌트 내에서 바로 데이터베이스 쿼리를 작성하는 것과 같은 작업을 할 수 있습니다.
+
+다음 "Server Component"의 간단한 예시입니다:
+
+```jsx
+import db from 'imaginary-db';
+
+async function Homepage() {
+  const link = db.connect('localhost', 'root', 'passw0rd');
+  const data = await db.query(link, 'SELECT * FROM products');
+
+  return (
+    <>
+      <h1>Trending Products</h1>
+      {data.map((item) => (
+        <article key={item.id}>
+          <h2>{item.title}</h2>
+          <p>{item.description}</p>
+        </article>
+      ))}
+    </>
+  );
+}
+
+export default Homepage;
+```
+
+수년 간 React를 사용해 온 사람(저자)으로서, 이 코드는 처음에는 **완전히 엉망**으로 보였습니다. 😅
+
+**여기서 이해해야 할 핵심은 바로 이것입니다:** Server Components는 절대 다시 렌더링하지 않습니다.
+Server Components는 UI를 생성하기 위해 서버에서 한 번만 실행됩니다. 렌더링된 값은 클라이언트로 전송되어 그 자리에 고정됩니다.
+React에 관한 한, 이 출력은 불변이며 절대 변경되지 않습니다.(적어도 라우트 레벨에서 새로운 페이지 이동과 같은 일이 일어나지 않는다면)
+
+이는 React API의 **큰 부분이** Server Components와 호환되지 않는다는 것을 의미합니다.
+예를 들어 Server Components에서는 state를 사용할 수 없습니다. state가 변경될 수 있기 때문입니다.
+또한 Server Components는 effect를 사용할 수 없습니다. effect는 클라이언트에서 렌더링 _이후_ 에만 실행되고 Server Components는 클라이언트에 도달하지 않기 때문입니다.
+
+또한 룰에 있어서 조금 더 유연성이 있다는 것을 의미하기도 합니다. 예를 들어, 기존 React에서는 사이드 이펙트가 매 렌더링마다 반복되지 않도록
+`useEffect` 콜백 이나 이벤트 핸들러 등에 넣어야 했습니다. 하지만 컴포넌트가 한 번만 실행되면 그런 걱정을 할 필요가 없습니다!
+
+Server Components 자체는 의외로 간단하지만, "React Server Components" 패러다임은 훨씬 더 복잡합니다. 왜냐하면 우리는 여전히 일반적인 컴포넌트를
+가지고 있고, 그것들을 서로 맞추는 방식이 꽤나 혼란스러울 수 있기 때문입니다.
+
+이 새로운 패러다임에서는 우리에게 익숙한 "전통적인" React 컴포넌트를 **Client Components**라고 부릅니다.
+저(저자)는 사실 썩 이름이 마음에 들지는 않습니다. 😅
+
+"Client Components"라는 이름은 이 컴포넌트가 클라이언트에서만 렌더링된다는 것을 암시하지만 실제로는 그렇지 않습니다.
+**Client Components는 클라이언트와 서버 모두에서 렌더링됩니다.**
+
+![A table for rendering on server or on client for server components and client components](/post/react/react-server-components-이해하기-by-josh-w-comeau/rendering-on-server-or-on-client.png)
+
+이 모든 용어가 꽤 혼란스럽기 때문에 다음과 같이 요약해 보겠습니다:
+
+- React Server Components는 새로운 패러다임의 이름입니다.
+- 이 새로운 패러다임에서는 우리가 잘 알고 사랑하는 "표준" React 컴포넌트가 Client Components로 리브랜딩되었습니다.
+- 이 새로운 패러다임은 새로운 유형의 컴포넌트인 Server Components를 도입합니다. 이 컴포넌트는 서버에서만 렌더링됩니다. Server Components의 코드는
+  JavaScript 번들에 포함되지 않으므로 hydrate하거나 리렌더링하지 않습니다.
+
+<Callout>
+  <>
+    <strong>React Server Components vs. 서버 사이드 렌더링(SSR)</strong>
+  </>
+  <>
+    또 다른 혼란스러운 점을 정리해 보겠습니다: React Server Components는 서버 사이드 렌더링을
+    대체하지 않습니다. React Server Components를 "SSR 버전 2.0"으로 생각해서는 안됩니다.
+  </>
+  <>그보다는 서로를 보완하는 두 개의 퍼즐 조각이 완벽하게 맞아떨어지는 것으로 생각하시면 됩니다.</>
+  <>
+    우리는 여전히 초기 HTML을 생성하기 위해 서버 사이드 렌더링에 의존합니다. React Server
+    Components는 그 위에 빌드되어 클라이언트 사이드 JavaScript 번들에서 특정 컴포넌트를 생략하고
+    서버에서만 실행되도록 할 수 있습니다.
+  </>
+  <>
+    사실 서버 사이드 렌더링 없이 React Server Components를 사용하는 것도 가능하지만, 실제로는 함께
+    사용하면 더 나은 결과를 얻을 수 있습니다. 예시를 보고 싶으시다면 React 팀에서 SSR이 없는 [작은
+    사이즈의 RSC 데모](https://github.com/reactjs/server-components-demo)를 만들었습니다.
+  </>
+</Callout>
+
+### 호환가능한 환경
+
+일반적으로 새로운 React 기능이 나오면 기존 프로젝트에서 React 종속성을 최신 버전으로 업데이트하여 사용할 수 있습니다. `react@latest`를 설치하기만 하면
+바로 사용할 수 있습니다.
+
+하지만 안타깝게도 React Server Components는 그렇게 작동하지 않습니다.
+
+제가 알기로는 React Server Components는 번들러, 서버, 라우터와 같은 React 외부의 여러 가지 요소와 긴밀하게 통합되어야 합니다.
+
+이 글을 쓰는 현재로서는 React Server Components를 사용할 수 있는 유일한 방법은 Next.js 13.4 이상에서 새롭게 설계된 "App Router"를 사용하는 것
+뿐입니다.
+
+앞으로 더 많은 React 기반 프레임워크가 React Server Components를 통합하기 시작하길 바랍니다. React의 핵심 기능을 특정 도구에서만 사용할 수
+있다는 것은 어색한 일입니다. React 공식문에서는 ["최신 프레임워크" 섹션](https://react.dev/learn/start-a-new-react-project#bleeding-edge-react-frameworks)이 있는데, 이 섹션에는 React Server Components를 지원하는 프레임워크가
+나열되어 있습니다. 이 페이지를 수시로 확인하면서 새로운 옵션이 추가되는지 살펴볼 계획입니다.
+
+### Client Components 지정하기
+
+> `use client`
+
+React Server Components 패러다임에서는 **모든 컴포넌트가 기본적으로 Server Components 인 것으로 간주됩니다.** Client Components를 만들려면
+별도 처리를 해야 합니다.
+
+이를 위해 새로운 **지시어**가 도입되었습니다:
+
+```jsx {1}
+'use client';
+import React from 'react';
+
+function Counter() {
+  const [count, setCount] = React.useState(0);
+  return <button onClick={() => setCount(count + 1)}>Current value: {count}</button>;
+}
+
+export default Counter;
+```
+
+제일 윗 줄에 독립형 문자열인 `'use client'`는 이 파일의 컴포넌트가 Client Components이며, 클라이언트에서 리렌더링될 수 있도록 JavaScript 번들에
+포함되어야 한다는 신호를 React에게 보내는 방법입니다.
+
+이는 생성하는 컴포넌트의 유형을 지정하는 매우 이상한 방법처럼 보일 수 있지만, 이런 종류의 선례가 있습니다: JavaScript에서 "Strict Mode"를 선택하는
+["use strict"](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) 지시어입니다.
+
+Server Components에서는 `'use server'` 지시어를 지정하지 않았습니다. React Server Components 패러다임에서는 컴포넌트가 기본적으로
+Server Components로 취급되기 때문입입니다. 사실 'use server'는 이 블로그 포스트의 범위를 벗어나는 완전히 다른 기능인 Server Actions에 사용됩니다.
+
+<Callout>
+  <>
+    <strong>어떤 컴포넌트가 Client Components여야 하나요?</strong>
+  </>
+  <>
+    특정 컴포넌트가 Server Components인지 Client Components인지 어떻게 결졍해야 하는지 궁금할 수
+    있습니다.
+  </>
+  <>
+    일반적으로 Server Components가 될 수 있는 컴포넌트라면 Server Components가 되어야 합니다. Server
+    Components는 더 간단하고 추론하기 쉬운 경향이 있습니다. Server Components는 클라이언트에서
+    실행되지 않기 때문에 JavaScript 번들에 코드가 포함되지 않는다는 성능상의 이점도 있습니다. React
+    Server Components 패러다임의 장점중 하나는 Page Interactive(TTI) 지표를 개선할 수 있는 잠재력이
+    있다는 것입니다.
+  </>
+  <>
+    그렇다고 해서 가능한 한 많은 Client Components를 없애는 것을 목표로 삼아서는 안 됩니다! 최소한의
+    Client Components수로 최적화를 시도해서는 안됩니다. 지금까지의 모든 React 앱의 모든 컴포넌트는
+    Client Components였다는 것을 기억할 필요가 있습니다.
+  </>
+  <>
+    React Server Components을 사용하면 매우 직관적이라는 것을 알게 될 것입니다. 일부 컴포넌트는
+    state나 effect를 사용하기 때문에 클라이언트에서 실행해야 합니다. 이러한 컴포넌트에 'use client'
+    지시어를 붙이면 됩니다. 그렇지 않으면 Server Components로 남겨둘 수 있습니다.
+  </>
+</Callout>
+
+## Boundary
+
+React Server Components에 익숙해졌을 때 맨 처음 가졌던 질문 중 하나는 **props가 바뀌면 어떻게 되는가? 였습니다.**
+
+예를 들어, 다음과 같은 Server Components가 있다고 가정해 봅시다:
+
+```jsx
+function HitCounter({ hits }) {
+  return <div>Number of hits: {hits}</div>;
+}
+```
+
+초기 서버 사이드 렌더링에서 `hits`가 `0`이라고 가정해 봅시다. 그러면 이 컴포넌트는 다음과 같은 마크업을 생성할 것입니다:
+
+```html
+<div>Number of hits: 0</div>
+```
+
+하지만 `hits`가 변경되면 어떻게 될까요? `hits`가 상태 변수이고 `0`에서 `1`로 변경된다고 가정해 보겠습니다. `HitCounter`는 리렌더링해야 되지만
+Server Components이기 때문에 리렌더링할 수 없습니다!
+
+**문제는 Server Components는 별도로 독립적으로 보면 의미가 없다는 것입니다.** 좀 더 전체적인 관점에서 애플리케이션의 구조를 고려하기 위해 좀 더 멀리서
+바라봐야 합니다.
+
+다음과 같은 컴포넌트 트리가 있다고 가정해 봅시다:
+
+![A tree for components](/post/react/react-server-components-이해하기-by-josh-w-comeau/initial-component-tree.png)
+
+위 컴포넌트 모두 Server Components라고 해도 말이 됩니다. 컴포넌트 중 어떤 것도 리렌더링되지 않으므로 props 중 어떤 것도 변경되지 않습니다.
+
+하지만 `Article` 컴포넌트가 `hits` 상태 변수를 가지고 있다고 가정해 봅시다. 상태를 사용하려면 이를 Client Components로 바꾸어야 합니다:
+
+![A tree for components including a client component](/post/react/react-server-components-이해하기-by-josh-w-comeau/component-tree-with-client-component.png)
+
+여기서 문제가 보이시나요? `Article`가 리렌더링되면 `HitCounter`와 `Discussion`을 포함한 모든 하위 컴포넌트도 리렌더링됩니다. 하지만 이러한 컴포넌트가
+서버 컴포넌트인 경우 리렌더링할 수 없습니다.
+
+이런 문제를 방지하기 위해 React 팀은 룰을 추가했습니다: **Client Components는 또 다른 Client Components만 `import`할 수 있습니다.**
+`Article`의 `use client` 지시어는 `HitCounter`와 `Discussion`의 인스턴스가 Client Components가 되어야한다는 것을 의미합니다.
+
+React Server Components를 사용하면서 가장 큰 "ah-ha" 모멘트 중 하나는 이 새로운 패러다임이 클라이언트 경계를 만드는 것에 관한 것이라고
+깨달았을 때였습니다. 실제로 어떤 일이 벌어지는지는 다음과 같습니다:
+
+![A tree for components drawed with client boundary](/post/react/react-server-components-이해하기-by-josh-w-comeau/client-boundary.png)
+
+`Article` 컴포넌트에 `'use client'` 지시어를 추가하면 "클라이언트 경계"가 만들어집니다. 이 경계 안에 있는 모든 컴포넌트는 암묵적으로
+Client Components로 변환됩니다. `HitCounter`와 같은 컴포넌트에는 `'use client'` 지시어가 없더라도 특정한 상황에서는 클라이언트에서
+hydrate/렌더링 됩니다. (`HitCounter`가 또 다른 Server Components에 의해 `import`된다면 Server Components로 동작할 것입니다.)
+
+즉, 클라이언트에서 실행해야 하는 모든 파일에 `'use client'`를 추가할 필요가 없습니다. 실제로는 새로운 클라이언트 경계를 생성할 때만 추가하면 됩니다.
+
+### Workaround
+
+Client Components가 Server Components를 렌더링할 수 없다는 사실을 알게 되었을 때 상당히 제한적으로 느껴졌습니다. 더 상위에서 상태 변수를 사용해야
+한다면 어떻게 해야 할까요? **모든 하위 컴포넌트**가 Client Components여야 한다는 뜻인가요?
+
+대부분의 경우 해당 컴포넌트의 **소유자**가 변경되도록 애플리케이션을 재구성하여 이 문제를 해결할 수 있습니다.
+
+예시와 함께 좀 더 살펴보겠습니다:
+
+```jsx
+'use client';
+
+import { DARK_COLORS, LIGHT_COLORS } from '@/constants.js';
+import Header from './Header';
+import MainContent from './MainContent';
+
+function Homepage() {
+  const [colorTheme, setColorTheme] = React.useState('light');
+  const colorVariables = colorTheme === 'light' ? LIGHT_COLORS : DARK_COLORS;
+
+  return (
+    <body style={colorVariables}>
+      <Header />
+      <MainContent />
+    </body>
+  );
+}
+```
+
+사용자가 다크 모드/라이트 모드 사이를 변경할 수 있도록 React 상태를 사용해야 합니다. 이 작업은 애플리케이션 트리의 상위에서 이루어져야
+`<body>` 태그에 CSS 변수 토큰을 적용할 수 있습니다.
+
+상태를 사용하려면 `Homepage`를 Client Components로 만들어야 합니다. 그리고 이 컴포넌트가 애플리케이션 최상위에 있기 때문에 다른 모든 하위 컴포넌트인
+`Header`와 `MainContent`도 암묵적으로 Client Components가 됩니다.
+
+이를 문제를 해결하기 위해 색깔 관리 부분을 별도 컴포넌트로 분리합니다:
+
+```jsx
+// /components/ColorProvider.js
+
+'use client';
+
+import { DARK_COLORS, LIGHT_COLORS } from '@/constants.js';
+
+function ColorProvider({ children }) {
+  const [colorTheme, setColorTheme] = React.useState('light');
+  const colorVariables = colorTheme === 'light' ? LIGHT_COLORS : DARK_COLORS;
+
+  return <body style={colorVariables}>{children}</body>;
+}
+```
+
+`Homepage` 컴포넌트로 돌아와서 방금 만든 컴포넌트를 사용합니다:
+
+```jsx
+// /components/Homepage.js
+
+import Header from './Header';
+import MainContent from './MainContent';
+import ColorProvider from './ColorProvider';
+
+function Homepage() {
+  return (
+    <ColorProvider>
+      <Header />
+      <MainContent />
+    </ColorProvider>
+  );
+}
+```
+
+더 이상 상태 변수나 클라이언트 사이드 React 기능을 사용하지 않기 때문에 `'use client'` 지시어를 제거할 수 있습니다.
+즉 `Header`와 `MainContent`가 더 이상 Client Components로 암묵적으로 변환되지 않는다는 뜻입니다!
+
+Client Components인 `ColorProvider`는 여전히 `Header`와 `MainContent`의 부모 컴포넌트입니다. 어느 쪽이든 여전히 트리에서
+더 상위에 위치에 있습니다.
+
+하지만 클라이언트 경계에 있어서는 부모/자식 관계가 중요하지 않습니다. `Header`와 `MainContent`를 가져오고 렌더링하는 것은 `Homepage`입니다.
+즉 이 컴포넌트들에 대한 props가 뭔지 결정하는 것은 `Homepage`입니다.
+
+우리가 해결하려는 문제는 Server Components가 리렌더링할 수 없으므로 해당 props에 새로운 값을 부여할 수 없다는 것입니다. 위 방식대로 하면
+`Homepage`가 `Header`와 `MainContent`에 대한 props를 결정하며, `Homepage`가 Server Components이기 때문에 문제가 없습니다.
+
+수년간의 React 경험에도 불구하고 저(저자)는 여전히 이 부분이 매우 혼란스럽습니다 😅. 이에 대한 직관력을 키우기 위해 많은 연습이 필요했습니다.
+
+더 정확히 말하자면, `'use client'` 지시어는 파일/모듈 레벨에서 작동합니다. Client Components 파일에서 가져온 모든 모듈도 Client Components가
+되어야 합니다. 번들러가 코드를 번들링할 때 결국 이러한 `import`를 따릅니다!
+
+> 위 예시는 `setColorTheme`가 호출되는 코드가 없기 때문에 Color를 변경할 방법이 없다는 것을 눈치챘을 것입니다.  
+> 가능한 한 최소한으로 만들려고 했기 때문에 몇 가지를 생략했습니다. 전체 예제는 React context를 사용해 모든 하위 컴포넌트에서 `setter`함수를
+> 사용할 수 있도록 합니다. context를 사용하는 컴포넌트가 Client Components이기만 하면 모든 것이 잘 동작합니다.
+
+## 좀 더 자세하게 보기
+
+조금 더 로우 레벨에서 살펴봅시다. Server Components를 사용하면 출력은 어떻게 될까요? 실제로 무엇이 생성될까요?
+
+아주 간단한 React 애플리케이션부터 시작해 보겠습니다:
+
+```jsx
+function Homepage() {
+  return <p>Hello world!</p>;
+}
+```
+
+React Server Components에서 모든 컴포넌트는 기본적으로 Server Components입니다. 이 컴포넌트를 명시적으로 Client Components로 표시하지
+않았기 때문에 (또는 클라이언트 경계 안에서 렌더링하지 않았기 때문에) 서버에서만 렌더링됩니다.
+
+브라우저에서 이 앱을 방문하면 다음과 같은 HTML이 표시됩니다:
+
+```html
+<!doctype html>
+<html>
+  <body>
+    <p>Hello world!</p>
+    <script src="/static/js/bundle.js"></script>
+    <script>
+      self.__next['$Homepage-1'] = {
+        type: 'p',
+        props: null,
+        children: 'Hello world!',
+      };
+    </script>
+  </body>
+</html>
+```
+
+<Admonition type="note">
+  더 쉽게 이해할 수 있도록 여기서는 자유롭게 재구성했습니다. 예를 들어, RSC context에서 생성된 실제
+  JavaScript는 이 HTML의 파일 크기를 줄이기 위한 최적화된 문자로 구성된 JSON 배열을 사용합니다. 또한
+  HTML에서 중요하지 않은 부분(예: head 태그)를 모두 제거했습니다.
+</Admonition>
+
+HTML 문서에는 React 애플리케이션이 생성한 UI인 "Hello world!"가 포함되어 있습니다. 이는 서버 사이드 렌더링 덕분이며, React Server Components에
+의한 것은 아닙니다.
+
+그 아래 코드에는 JavaScript 번들을 로드하는 `<script>` 태그가 있습니다. 이 JavaScript 번들에는 React와 같은 종속성과 애플리케이션에 사용되는
+모든 Client Components가 포함됩니다. 그리고 `Homepage` 컴포넌트는 Server Components이므로 이 번들에 포함되지 않습니다.
+
+마지막으로 인라인 JavaScript가 포함된 두 번째 `<script>` 태그가 있습니다:
+
+```js
+self.__next['$Homepage-1'] = {
+  type: 'p',
+  props: null,
+  children: 'Hello world!',
+};
+```
+
+이 부분이 정말로 흥미로운 부분입니다. 기본적으로 우리가 여기서 하고 있는 일은 React에게 "`Homapage` 컴포넌트 코드가 없지만 걱정하지 마세요.
+렌더링된 내용은 다음과 같습니다."라고 말하는 것입니다.
+
+일반적으로 React는 클라이언트에서 hydrate할 때 모든 컴포넌트를 빠르게 렌더링하여 애플리케이션을 만듭니다. Server Components의 경우 코드가
+JavaScript 번들에 포함되지 않기 때문에 그렇게 할 수 없습니다.
+
+따라서 서버에서 생성된 컴포넌트의 렌더링된 값을 함께 전송합니다. React가 클라이언트에서 로드될 때 해당 컴포넌트를 재생성하는 대신 해당 값을 재사용합니다.
+
+이것이 위의 `ColorProvider` 예제가 동작할 수 있는 이유입니다. `Header`와 `MainContent`의 출력은 children props를 통해 `ColorProvider`
+컴포넌트로 전달됩니다. `ColorProvider`는 원하는 만큼 리렌더링할 수 있지만 이 children은 서버에 의해 고정된 정적 데이터입니다.
+
+Server Components가 어떻게 직렬화되고 네트워크를 통해 전달되는지 실제 값이 궁금하다면 개발자 Alvar Lagerlöf의 [RSC Devtools](https://www.alvar.dev/blog/creating-devtools-for-react-server-components)를
+확인해 보세요.
+
+<Callout>
+  <>
+    <strong>React가 더 이상 필요없나요?</strong>
+  </>
+  <>
+    이러한 궁금증이 나올 수 있습니다: 만약 애플리케이션에 Client Components가 하나도 없을 경우,
+    React를 다운로드할 필요가 있을까요? React Server Components를 사용하여 JavaScript가 없는
+    **순수한** 정적 웹사이트를 만들 수 있을까요?
+  </>
+  <>
+    중요한 것은 React Server Components는 현재 Next.js 프레임워크 내에서만 사용할 수 있으며 해당
+    프레임워크에는 라우팅과 같은 작업을 관리 하기 위해 클라이언트에서 실행해야할 것이 많습니다.
+  </>
+  <>
+    그럼에도 불구하고 실제로는 **더 나은** 사용자 경험을 만듭니다. 예를 들어 Next의 라우터는 완전히
+    새로운 HTML 문서를 로드할 필요가 없기 때문에 일반적인 "a" 태그보다 더 빠르게 링크를 클릭할 수
+    있어서 더 빠르게 페이지를 전환할 수 있습니다.
+  </>
+</Callout>
+
+## 장점
+
+React Server Components는 React에서 서버 전용 코드를 실행하는 첫번째 "공식적인" 방법입니다. 하지만 앞서 언급했듯이, 2016년부터
+Next.js에서 서버 전용 코드를 실행할 수 있었기 때문에 React 생태계에서는 새로운 것은 아닙니다!
+
+가장 큰 차이점은 **컴포넌트 내부**에서 서버 전용 코드를 실행할 수 있는 방법이 이전에는 없었다는 것입니다.
+
+가장 확실한 이점은 성능입니다. Server Components는 JavaScript 번들에 포함되지 않으므로 다운로드해야 되는 JavaScript 양과 hydrate해야 하는
+컴포넌트의 수가 줄어듭니다:
+
+![A graph for legacy Next.js painting flow](/post/react/react-server-components-이해하기-by-josh-w-comeau/legacy-next-js-pre-rsc.png)
+
+![A graph for modern Next.js painting flow](/post/react/react-server-components-이해하기-by-josh-w-comeau/modern-next-js-with-rsc.png)
+
+하지만 이 점이 가장 마음에 들지 않는 부분일 수도 있습니다. 솔직히 대부분의 Next.js 앱은 '페이지 상호작용'에 관해서는 **이미** 충분히 빠릅니다.
+
+시맨틱 HTML 원칙을 따른다면, 대부분의 앱은 React가 hydrate하기 전에도 동작할 것입니다. 링크를 클릭하면 새로운 페이지가 로드되고, form을 submit
+할 수 있으며, arcodion을 열고 닫을 수(`<details>`, `<summary>` 사용) 있습니다. 대부분의 프로젝트에서 React가 hydrate하는데 시간이 조금
+걸리더라도 괜찮습니다.
+
+하지만 정말 멋진 점은 더 이상 "기능 vs. 번들 크기" 측면과 같은 타협을 할 필요가 없다는 것입니다!
+
+예를 들어, 대부분의 기술 블로그에는 일종의 syntax 하이라이팅 라이브러리가 필요합니다. 이 블로그(Josh W Comeau 블로그)에서는 Prism을 사용합니다.
+(저의 이 기술 블로그에는 [rehype-pretty-code](https://rehype-pretty-code.netlify.app/) + [shiki](https://shiki.matsu.io/)를 사용합니다.)
+코드 스니펫은 다음과 같이 보입니다:
+
+```js
+function exampleJavaScriptFunction(param) {
+  return 'Hello world!';
+}
+```
+
+모든 프로그래밍 언어를 지원하는 적절한 syntax 하이라이팅 라이브러리는 수 MB에 달해 JavaScript 번들에 넣기에 너무 큽니다. 따라서 업무에 필수적이지 않은
+언어와 기능을 제거하면서 타협을 해야합니다.
+
+하지만 Server Components에서 syntax 하이라이팅을 한다고 가정해 봅시다. 라이브러리 코드가 실제로 JavaScript 번들에 포함되지 않습니다. 결과적으로
+타협할 필요 없이 모든 기능을 사용할 수 있습니다.
+
+이것이 React Server Components와 함께 동작하도록 설계된 최신 syntax 하이라이팅 패키지인 [Bright](https://bright.codehike.org/)의 아이디어입니다.
+
+![Bright library](/post/react/react-server-components-이해하기-by-josh-w-comeau/bright.png)
+
+바로 이런 점이 React Server Components에 흥미를 갖게 하는 부분입니다. JavaScript 번들에 포함하기에는 비용이 너무 많이 드는 것들을 이제 서버에서
+자유롭게 실행할 수 있으며, 번들에 추가하지 않고도 더 나은 사용자 경험을 제공할 수 있습니다.
+
+성능과 UX뿐만이 아닙니다. RSC를 사용해본 결과, Server Components가 얼마나 간편한지 느끼게 되었습니다. 종속성 배열, 클로져, memoization,
+또는 변경 사항으로 인해 발생하는 기타 복잡한 문제에 대해 걱정할 필요가 없습니다.
+
+궁극적으로 아직은 초기 단계입니다. React Server Components는 불과 몇 달전에 베타 버전이 나왔을 뿐입니다. 커뮤니티가 이 새로운 패러다임을 활용하여
+Bright와 같은 새로운 솔루션을 계속 혁신하면서 앞으로 몇 년 동안 어떻게 발전해 나갈지 정말 기대됩니다. React 개발자로서 정말 흥미로운 시기입니다.
+
+## The full picture
+
+React Server Components는 흥미로운 개발이지만, 사실 "모던 리액트" 퍼즐의 한 조각일 뿐입니다.
+
+React Server Components와 Suspense, 스트리밍 SSR 아키텍처를 결합하면 **정말** 흥미로워집니다. 이 아키텍처를 사용하면 다음과 같은
+**아주 멋진 작업**을 할 수 있습니다:
+
+![A graph for a rsc example flow](/post/react/react-server-components-이해하기-by-josh-w-comeau/rsc-graph.png)
+
+튜토리얼 범위를 벗어나지만 이 아키텍처에 대한 자세한 내용은 [Github](https://github.com/reactwg/react-18/discussions/37)에서 확인할 수 있습니다.
+또한 곧 출시될 강좌인 [The Joy of React](https://joyofreact.com/)에서 모든 최신 기능을 살펴볼 수 있습니다.
+
+> Josh W Comeau의 블로그를 좋아하는 한 개발자로서 이번에 오픈되는 강좌들이 얼마나 뛰어날지 무척이나 기대가 됩니다.  
+> 8년 넘도록 React를 사용해본 경험을 바탕으로 2년간 전념해서 만들었다고 합니다.  
+> React에 대해서 배우기 좋은 강좌일거라고 감히 상상해봅니다. (9월 13일 오픈된다고 하니, 현재 기준으로는 이미 오픈되었겠네요.)
+>
+> [The Joy of React](https://joyofreact.com/)
+
+## 저자 마무리
+
+React Server Components는 중요한 패러다임의 전환입니다. 개인적으로는 앞으로 몇 년간 생태계가 Server Components를 활용하는 Bright와 같은 툴을
+더 많이 만들어지면서 상황이 어떻게 발전할지 매우 기대됩니다.
+
+React로 만들어지는 것이 훨씬 더 멋져질 것 같은 느낌이 듭니다. 😄
+
+## 마무리하며
+
+이 글은 Josh W Comeau의 블로그 글인 [Making Sense of React Server Components](https://www.joshwcomeau.com/react/server-components)를 옮긴 글입니다.
+
+RSC를 설명하거나 이해하기에 찝찝한 부분이 많았었는데 이 글을 읽고나서 많은 부분이 해소되었습니다.
+
+이 분 글을 읽을 때마다 상당히 재밌고 이해하기 쉽게 쓰여진 글이라서 놀랍습니다. 그래서 더 많이 이해되고 배우고 있는 것 같습니다.
+React Server Components 글을 몇 번에 걸쳐서 옮기거나 생각을 정리하고 있는데 저에게 많은 도움되었듯이 다른 분들에게도 도움이 되었으면 좋겠습니다.
+
+## reference
+
+- https://www.joshwcomeau.com/react/server-components
