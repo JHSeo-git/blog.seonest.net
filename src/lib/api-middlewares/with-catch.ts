@@ -16,7 +16,7 @@ export function withCatch(handler: NextApiHandler) {
   };
 }
 
-export declare type Handler = (request: Request, context?: unknown) => unknown | Promise<unknown>;
+export declare type Handler = (request: Request, context?: unknown) => Promise<Response>;
 export function withRouteCatch(handler: Handler) {
   return async function catchMiddleware(request: Request, context?: unknown) {
     try {
