@@ -1,0 +1,668 @@
+---
+date: '2023-10-09T02:54:54.974Z'
+category: javascript
+title: 모노레포에 관하여
+description: 모노레포가 무엇인지? 모노레포를 왜 사용하는지에 대해 알아보았습니다.
+published: true
+thumbnail: '/post/javascript/모노레포-monorepo/thumbnail.png'
+---
+
+## 들어가면서
+
+소프트웨어 개발에서 코드의 관리와 조직은 프로젝트의 성공에 중요한 역할을 합니다. 대규모 프로젝트에서 여러 개의 레포지토리를 관리하는 것은 복잡하고 어려운 작업
+일 수 있습니다. 이러한 복잡성을 줄이고 생산성을 높이기 위해 _모노레포_ 라는 개념이 등장했습니다.
+
+모노레포는 단일 레포지토리에서 여러 개의 프로젝트를 관리하는 방식을 의미합니다. 이 글에서는 모노레포가 무엇인지, 모노레포를 왜 사용하는지, 모노레포가 가져다
+주는 이점이 무엇인지, 모노레포 개발에 사용할 수 있는 도구는 무엇인지 등에 대해 [monorepo.tools](https://monorepo.tools/)를 참고하여 알아보았습니다.
+
+여기서 다룰 모노레포 도구는 다음과 같습니다:
+
+- [Bazel (by Google)](https://bazel.build/?utm_source=monorepo.tools)
+- [Gradle Build Tool(by Gradle, Inc)](https://gradle.org/?utm_source=monorepo.tools)
+- [Lage (by Microsoft)](https://microsoft.github.io/lage/?utm_source=monorepo.tools)
+- [Lerna](https://lerna.js.org/?utm_source=monorepo.tools)
+- [moon (by moonrepo)](https://moonrepo.dev/moon/?utm_source=monorepo.tools)
+- [Nx (by Nrwl)](https://nx.dev/?utm_source=monorepo.tools)
+- [Pants (by the Pants Build Community)](https://pantsbuild.org/?utm_source=monorepo.tools)
+- [Rush (by Microsoft)](https://rushstack.io/?utm_source=monorepo.tools)
+- [Turborepo (by Vercel)](https://turborepo.org/?utm_source=monorepo.tools)
+
+## 모노레포란?
+
+> monorepos에 대해 이야기할 때 일반적으로 의미하는 바를 정의하기는 어려운 일입니다.  
+> monorepo.tools에서는 monorepo를 다음과 같이 정의합니다.
+
+![A graph of monorepo and polyrepo](/post/javascript/모노레포-monorepo/monorepo-polyrepo.svg)
+
+모노레포는 잘 정의된 관계를 가진 여러 개의 개별 프로젝트를 포함하는 단일 레포지토리입니다.
+
+**단순히 "code colocation"이 아닙니다.**  
+여러 프로젝트가 있는 레포지토리를 생각해 보세요. 분명히 "code colocation"을 가지고 있지만, 그들 사이에 잘 정의된 관계가 없다면 모노레포라고
+부르지 않습니다.
+
+마찬가지로, 레포지토리에 분할, 캡슐화 없이 대규모 애플리케이션인 레포지토리라면 그냥 큰 레포지토리에 불과합니다. "거대 레포지토리(garganturepo)"와 같은
+멋진 이름을 붙일 수는 있지만 모노레포는 아닙니다.  
+이러한 레포지토리는 모노레포라고 하면 가장 먼저 떠올리는 형태입니다. 사실 이는 모놀리틱입니다. 좋은 모노레포는 모놀리틱과는 정반대라는 것을 알 수
+있을 것입니다.
+
+<Admonition type="note">
+  <>
+    <strong>모노레포 ≠ 모놀리틱</strong>
+  </>
+  <>
+    잘 만들어진 모노레포는 모놀리틱과 정반대입니다! 모노레포에 대한 오해에 대해 알아보려면
+    [Misconceptions about Monorepos: Monorepo !=
+    Monolith](https://blog.nrwl.io/misconceptions-about-monorepos-monorepo-monolith-df1250d4b03c)를
+    읽어보세요.
+  </>
+</Admonition>
+
+왜 그럴까요?
+
+## 모노레포를 왜 사용할까요?
+
+### Polyrepo
+
+이 논의를 위해 모노레포의 반대말이 "폴리레포"라고 가정해 보겠습니다. 폴리레포는 현재 애플리케이션 개발의 표준 방식으로서 각 팀, 애플리케이션 또는 프로젝트에
+대한 레포지토리를 의미합니다. 그리고 각 레포지토리에 하나의 빌드 아티팩트와 간단한 빌드 파이프라인이 있는 것이 일반적입니다.
+
+![A graph of polyrepo](/post/javascript/모노레포-monorepo/polyrepo-practice.svg)
+
+업계에서 폴리레포 방식으로 일하는 가장 큰 이유는 팀 자율성입니다. 팀은 어떤 라이브러리를 사용할지, 언제 애플리케이션
+또는 라이브러리를 배포할지, 누가 코드에 기여하거나 코드를 사용할 수 있는지에 대한 결정을 내릴 수 있습니다.
+
+![A graph of sepctrum of real world](/post/javascript/모노레포-monorepo/spectrum-real-world.svg)
+
+이 모든 좋은 점들이 많은데 왜 팀은 다른 방식으로 일을 해야 할까요? 왜냐하면 이 자율성은 격리에 의해 제공되고,
+격리는 협업에 안좋은 영향을 끼칩니다. 구체적으로 설명하자면 폴리레포 환경의 일반적인 단점은 다음과 같습니다:
+
+- **번거로운 코드 공유**:
+  레포지토리 간에 코드를 공유하려면 공통 코드에 대한 레포지토리를 추가로 만들어아 합니다. 툴링, CI환경을 설정하고, 레포지토리에 커미터를 추가하고, 다른
+  레포지토리가 의존할 수 있도록 패키지를 퍼블리시 설정을 해야 합니다. 그리고 레포지토리 간에 호환되지 않는 서드파티 라이브러리 버전을 조정하는 작업은...
+- **많은 중복 코드**:  
+  아무도 공통 레포지토리를 설정하는 번거로움을 겪고 싶지 않기 때문에 각 팀은 자신들의 레포지토리에 공통 서비스, 컴포넌트 등 자체적으로 구현합니다. 이렇게 하면
+  시간이 낭비될 뿐만 아니라 컴포넌트와 서비스가 변경될 때 유지관리, 보안, 품질 관리의 부담이 증가합니다.
+- **공통 라이브러리, 공통 컨슈머 관점에서 레포지토리 변경 시 비용 발생**:  
+  공통 라이브러리에서 중요한 버그나 중요한 기능 변경이 발생하면 개발자는 리비전 히스토리에 연결되지 않은 여러 레포지토리에 변경점을 적용할 수 있도록 환경을
+  설정해야 합니다. 패키지를 버전 관리하고 배포하는데 드는 작업은 말할 것도 없습니다.
+- **일관되지 않은 도구**:  
+  각 프로젝트는 테스트, 빌드, 서비스, 린팅, 배포 등을 위해 고유한 커맨드 셋을 사용합니다. 일관성이 없을 경우 프로젝트마다 어떤 커맨드를 사용할지 기억해야 하는
+  정신적 부담이 생깁니다.
+
+### Monorepo
+
+폴리레포에서 작업할 때 위와 같은 꽤 까다로운 상황에 처할 수 있습니다. 그렇다고 해서 모노레포가 이 모든 문제를 해결하는데 도움이 될까요?
+
+- **새로운 프로젝트를 생성하는데 드는 오버헤드가 없음**:  
+  기존 CI설정을 사용하며 모든 컨슈머가 동일한 레포지토리에 있는 경우 버전이 변경되는 패키지를 퍼블리시할 필요가 없습니다.
+- **프로젝트 전반의 원자적 커밋**:  
+  모든 커밋은 모든 프로젝트와 _함께_ 동작합니다. 어떤 부분을 수정할 경우 해당 커밋에서는 변경 사항이 깨지는 일이 발생하지 않습니다.
+- **하나의 버전**:  
+  서드파티 라이브러리 버전이 달라지는 문제로 인한 호환성에 대해 걱정할 필요가 없습니다.
+- **개발자 이동성**:  
+  다양한 도구와 기술을 사용하여 작성된 애플리케이션을 일관된 방식으로 빌드하고 테스트할 수 있습니다. 개발자는 다른 팀의 애플리케이션에 자신 있게 기여하고
+  변경 사항이 안전한지 확인할 수 있습니다.
+
+## 모노레포의 기능
+
+> 모노레포 작동에 필요한 모든 것
+
+모노레포는 많은 장점을 가지고 있지만, 모노레포를 잘 사용하기 위해서는 적절한 도구가 필요합니다. 작업 공간이 커질수록 도구는 빠르고, 이해하기 쉽고, 관리하기
+쉬운 상태를 유지할 수 있도록 도와야 합니다.
+
+**Fast**
+
+- [Local computation caching](#local-computation-caching): 로컬 컴퓨팅 캐싱
+- [Local task orchestration](#local-task-orchestration): 로컬 작업 오케스트레이션
+- [Distributed computation caching](#distributed-computation-caching): 분산 컴퓨팅 캐싱
+- [Distributed task execution](#distributed-task-execution): 분산 작업 실행
+- [Transparent remote execution](#transparent-remote-execution): 투명한 원격 실행
+- [Detecting affected projects/packages](#detecting-affected-projectspackages): 영향을 받는 프로젝트/패키지 감지
+
+**Understandable**
+
+- [Workspace analysis](#workspace-analysis): 워크스페이스 분석
+- [Dependency graph visualization](#dependency-graph-visualization): 의존성 그래프 시각화
+
+**Manageable**
+
+- [Source code sharing](#source-code-sharing): 소스 코드 공유
+- [Consistent tooling](#consistent-tooling): 일관된 도구
+- [Code generation](#code-generation): 코드 생성
+- [Project constraints and visibility](#project-constraints-and-visibility): 프로젝트 제약 조건 및 가시성
+
+<Callout>
+  <>
+    <strong>기능만이 중요한 것은 아닙니다.</strong>
+  </>
+  <>
+    기능은 중요합니다! 분산 작업 실행 지원과 같은 기능은 특히 대규모 모노레포에서 판도를 바꿀 만한
+    기능입니다. 하지만 개발자 인체공학적, 성숙도, 문서화, 에디터 지원 등 다른 매우 중요한 요소들도
+    있습니다. 이러한 요소는 주관적이기 때문에 여기서는 다루지 않습니다.
+  </>
+  <>
+    예를 들어, 어떤 면에서는 기능이 떨어지더라도 Lage나 Nx가 Bazel 보다 사용하기에 더 즐겁다고 느낄
+    수도 있습니다.
+  </>
+</Callout>
+
+### 모노레포 도구
+
+> 어떻게 도구들을 비교할까요? 각 기능에 대한 도구들의 지원 정도를 살펴보겠습니다.
+
+- [Bazel](https://github.com/bazelbuild/bazel?utm_source=monorepo.tools)
+- [Gradle](https://github.com/gradle/gradle?utm_source=monorepo.tools)
+- [Lage](https://github.com/microsoft/lage?utm_source=monorepo.tools)
+- [Lerna](https://github.com/lerna/lerna?utm_source=monorepo.tools)
+- [moon](https://github.com/moonrepo/moon?utm_source=monorepo.tools)
+- [Nx](https://github.com/nrwl/nx?utm_source=monorepo.tools)
+- [Pants](https://github.com/pantsbuild/pants?utm_source=monorepo.tools)
+- [Rush](https://github.com/microsoft/rushstack?utm_source=monorepo.tools)
+- [Turborepo](https://github.com/vercel/turborepo?utm_source=monorepo.tools)
+
+### Local computation caching
+
+> 로컬 컴퓨팅 캐싱
+
+![A graph of local computation caching](/post/javascript/모노레포-monorepo/local-computation-caching.svg)
+
+동일한 머신에서 동일한 작업을 두 번 빌드하거나 테스트하지 않도록 파일, 프로세스 결과물을 저장하고 재생하는 기능입니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Local computation caching                                                                             |
+| :--------------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ 지원함                                                                                             |
+| **GRADLE BUILD TOOL**                    | ✅ 기본으로 로컬 빌드 캐시를 제공. Gradle Enterprise는 복제와 관리에 대한 기능을 제공                 |
+| **LAGE**                                 | ✅ 지원함                                                                                             |
+| **LERNA**                                | ✅ v6에는 Nx로 구동되는 로컬 컴퓨팅 캐싱이 내장                                                       |
+| **MOON**                                 | ✅ 압축을 풀 때 tarball과 파일 트리 비교를 통해 이를 지원                                             |
+| **NX**                                   | ✅ 리액트와 비슷하게 Nx는 캐시에서 결과를 복원할 때 트리 비교를 해서 평균적으로 다른 도구보다 더 빠름 |
+| **PANTS**                                | ✅ 지원함                                                                                             |
+| **RUSH**                                 | ✅ Rush는 system tar 커맨드를 활용하여 파일을 더 빠르게 복원                                          |
+| **TURBOREPO**                            | ✅ 지원함                                                                                             |
+
+### Local task orchestration
+
+> 로컬 작업 오케스트레이션
+
+![A graph of local task orchestration](/post/javascript/모노레포-monorepo/local-task-orchestration.svg)
+
+정확한 순서와 병렬 처리로 작업을 실행하는 기능입니다. 모든 도구는 대부분 동일한 방식으로 작업을 수행하지만,
+Lerna는 더 제한적입니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Local task orchestration                                                                   |
+| :--------------------------------------- | :----------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ 지원함                                                                                  |
+| **GRADLE BUILD TOOL**                    | ✅ 설정을 통해 병렬 작업을 지원하고 Groovy 나 Kotlin DSL을 통해 작업 오케스트레이션을 지원 |
+| **LAGE**                                 | ✅ 지원함                                                                                  |
+| **LERNA**                                | ✅ v6은 Nx를 활용하여 작업을 효율적으로 조정하고 병렬화를 지원                             |
+| **MOON**                                 | ✅ 지원함                                                                                  |
+| **NX**                                   | ✅ 지원함                                                                                  |
+| **PANTS**                                | ✅ 지원함                                                                                  |
+| **RUSH**                                 | ✅ 간단한 스크립트나 build, test와 같은 "단계"로 모델링 할 수 있도록 지원                  |
+| **TURBOREPO**                            | ✅ 지원함                                                                                  |
+
+### Distributed computation caching
+
+> 분산 컴퓨팅 캐싱
+
+![A graph of distributed computation caching](/post/javascript/모노레포-monorepo/distributed-computation-caching.svg)
+
+서로 다른 환경에서 캐시를 공유하는 기능입니다. 즉, CI를 포함한 조직 전체에서 두 번 빌드하거나 테스트하지 않게
+도와줍니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Distributed computation caching                                                                         |
+| :--------------------------------------- | :------------------------------------------------------------------------------------------------------ |
+| **BAZEL**                                | ✅ 지원함                                                                                               |
+| **GRADLE BUILD TOOL**                    | ✅ 원격 분산 캐시를 제공. Gradle Enterprise는 복제와 관리에 대한 기능을 제공                            |
+| **LAGE**                                 | ✅ 지원함                                                                                               |
+| **LERNA**                                | ✅ v6은 Nx Cloud에 연결하여 분산 캐싱을 활성화 할 수 있음                                               |
+| **MOON**                                 | ✅ moonbase를 통해 지원함                                                                               |
+| **NX**                                   | ✅ 지원함                                                                                               |
+| **PANTS**                                | ✅ 지원함                                                                                               |
+| **RUSH**                                 | ✅ 커스텀 캐시 프로바이더를 허용하는 플러그인 API를 통해서 Azure와 AWS 스토리지를 대한 내장 기능을 제공 |
+| **TURBOREPO**                            | ✅ 지원함                                                                                               |
+
+### Distributed task execution
+
+> 분산 작업 실행
+
+![A graph of distributed task execution](/post/javascript/모노레포-monorepo/distributed-tasks-execution.svg)
+
+하나의 커맨드를 여러 머신에 분산 실행할 수 있는 기능으로, 단일 머신에서 실행할 때 편의성을 유지하게 해줍니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Distributed task execution                                                                                            |
+| :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ 가장 정교하게 만들어졌습니다. 수십억 라인의 코드까지 무리없이 확장할 수 있습니다. 그러나 설정하는 것이 어렵습니다. |
+| **GRADLE BUILD TOOL**                    | 🔸 Gradle Enterprise에서 테스트 작업은 사용할 수 있습니다.                                                            |
+| **LAGE**                                 | ❌ 지원안함                                                                                                           |
+| **LERNA**                                | ✅ v6은 Nx Cloud에 연결하여 분산 작업 실행을 활성화 할 수 있음                                                        |
+| **MOON**                                 | ❌ 지원안함                                                                                                           |
+| **NX**                                   | ✅ Bazel 만큼 정교하지는 않지만 약간의 설정으로 활성화 할 수 있습니다.                                                |
+| **PANTS**                                | ✅ Bazel 구현과 유사하며 동일한 원격 실행 API를 사용합니다.                                                           |
+| **RUSH**                                 | 🔸 선택적으로 Microsoft의 BuildXL 엑셀레이터와 통합하여 이 기능을 제공합니다.                                         |
+| **TURBOREPO**                            | ❌ 지원안함                                                                                                           |
+
+### Transparent remote execution
+
+> 투명한 원격 실행
+
+로컬에서 개발하면서 여러 머신의 모든 커맨드를 실행할 수 있는 기능입니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Transparent remote execution                                |
+| :--------------------------------------- | :---------------------------------------------------------- |
+| **BAZEL**                                | ✅ 이것이 Bazel의 가장 큰 차별점입니다.                     |
+| **GRADLE BUILD TOOL**                    | ❌ 지원안함                                                 |
+| **LAGE**                                 | ❌ 지원안함                                                 |
+| **LERNA**                                | ❌ 지원안함                                                 |
+| **MOON**                                 | ❌ 지원안함                                                 |
+| **NX**                                   | ❌ 지원안함                                                 |
+| **PANTS**                                | ✅ Bazel 구현과 유사하며 동일한 원격 실행 API를 사용합니다. |
+| **RUSH**                                 | ❌ 지원안함                                                 |
+| **TURBOREPO**                            | ❌ 지원안함                                                 |
+
+### Detecting affected projects/packages
+
+> 영향을 받는 프로젝트/패키지 감지
+
+![A graph of dependency graph](/post/javascript/모노레포-monorepo/dependency-graph.svg)
+
+변경 사항의 영향을 받을 수 있는 항목을 파악하여 영향을 받는 프로젝트만 빌드/테스트하도록 실행할 수 있습니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Detecting affected projects/packages                                                                                                                                                                                  |
+| :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | 🔸 기본 기능은 없지만 Bazel 쿼리 언어를 사용하는 [target-determinator](https://github.com/bazel-contrib/target-determinator?utm_source=monorepo.tools) 와 같은 서드파티 도구를 사용하여 이 기능을 사용할 수 있습니다. |
+| **GRADLE BUILD TOOL**                    | ✅ 기본적으로 증분 빌드와 up-to-date 감지 기능을 제공합니다.                                                                                                                                                          |
+| **LAGE**                                 | ✅ 지원함                                                                                                                                                                                                             |
+| **LERNA**                                | ✅ 지원함                                                                                                                                                                                                             |
+| **MOON**                                 | ✅ VCS(git) 쿼리와 파일 시스템 검사를 결합하여 이를 지원합니다.                                                                                                                                                       |
+| **NX**                                   | ✅ 어떤 파일이 변경됐는지 뿐만아니라 변경 유형도 파악합니다.                                                                                                                                                          |
+| **PANTS**                                | ✅ 지원함                                                                                                                                                                                                             |
+| **RUSH**                                 | ✅ 프로젝트 선택에서 커맨트 파라미터를 이용해 Git diff에 영향을 받는 프로젝트를 감지할 수 있습니다. `PackageChangeAnalyzer` API도 제공합니다.                                                                         |
+| **TURBO**                                | ✅ 지원함                                                                                                                                                                                                             |
+
+### Workspace analysis
+
+> 워크스페이스 분석
+
+![A graph of workspace analysis](/post/javascript/모노레포-monorepo/workspace-analysis.svg)
+
+| <div style={{width: "144px"}}>Tool</div> | Workspace analysis                                                                                                                                                                                                      |
+| :--------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | 🔸 개발자가 BUILD파일을 작성할 수 있게 허용합니다. 몇몇 회사들은 워크스페이스 소스 코드를 분석하도록 BUILD파일을 만들어서 사용합니다.                                                                                   |
+| **GRADLE BUILD TOOL**                    | ✅ build.gradle나 build.gradle.kts를 사용하여 빌드 스크립트를 직접 작성할 수 있습니다.                                                                                                                                  |
+| **LAGE**                                 | ✅ package.json 파일을 분석합니다.                                                                                                                                                                                      |
+| **LERNA**                                | ✅ package.json 파일을 분석합니다.                                                                                                                                                                                      |
+| **MOON**                                 | ✅ 모든 [Tier 2 언어](https://moonrepo.dev/docs#supported-languages)의 매니페스트 파일(package.json)을 분석합니다. 앞으로 WASM 플러그인을 통해 더 많은 언어를 지원할 예정입니다.                                        |
+| **NX**                                   | ✅ 기본적으로 package.json, JavaScript, TypeScript 파일을 분석합니다. 또한 다른 플랫폼(예: Go, Java, Rust)를 지원하는데 필요한 추가적인 설정을 제공합니다.                                                              |
+| **PANTS**                                | ✅ 이것이 PANTS의 가장 큰 차별점입니다. 정적 분석을 사용하여 지원하는 모든 언어, 프레임워크에 대해 파일 수준의 종속성을 자동으로 추론합니다.                                                                            |
+| **RUSH**                                 | ✅ 단일 레포지토리 프로젝트와 동일하게 package.json 파일과 빌드 스크립트가 있습니다. 툴링/설정은 선택적으로 [rig packages](https://www.npmjs.com/package/@rushstack/rig-package)를 생성하여 모노레포 전체에 공유됩니다. |
+| **TURBOREPO**                            | ✅ package.json 파일을 분석합니다.                                                                                                                                                                                      |
+
+### Dependency graph visualization
+
+> 의존성 그래프 시각화
+
+<Video src="https://youtu.be/v87Y8NgAYLo" />
+
+프로젝트 간 또는 작업 간의 종속성 관계를 시각화합니다. 이 시각화는 인터렉티브하므로 그래프에서 노드를 검색, 필터링,
+숨기기, 포커스/하이라이트 및 쿼리할 수 있습니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Dependency graph visualization                                                                                                       |
+| :--------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ 노드에 필터링할 수 있는 커스텀 쿼리 언어를 지원합니다.                                                                            |
+| **GRADLE BUILD TOOL**                    | 🔸 Gradle Build Scan은 많은 종속성 정보를 제공하고 프로젝트/작업 그래프에 서드파티 도구를 사용할 수 있습니다.                        |
+| **LAGE**                                 | 🔸 시각화 도구가 제공되지는 않지만 직접 작성할 수 있습니다.                                                                          |
+| **LERNA**                                | 🔸 시각화 도구가 제공되지는 않지만 직접 작성할 수 있습니다.                                                                          |
+| **MOON**                                 | ✅ 인터렉티브하지만 필터링은 할 수 없는 시각화 도구가 제공됩니다. 종속성과 프로젝트 그래프 둘 다 지원합니다.                         |
+| **NX**                                   | ✅ 대규모 워크스페이스를 필터링하고 탐색할 수 있는 인터렉티브한 시각화 도구가 제공됩니다.                                            |
+| **PANTS**                                | 🔸 시각화 도구가 제공되지는 않지만 코드베이스의 세분화된 그래프 구조가 포함된 JSON 파일을 생성할 수 있습니다.                        |
+| **RUSH**                                 | 🔸 시각화 도구가 제공되지는 않지만 직접 작성할 수 있습니다.                                                                          |
+| **TURBOREPO**                            | ✅ [Graphviz](https://graphviz.org/)를 사용하여 실행 계획의 정적 이미지와 HTML 파일을 생성할 수 있습니다. 인터렉티브하지는 않습니다. |
+
+### Source code sharing
+
+> 소드 코드 공유
+
+![A graph of source code sharing](/post/javascript/모노레포-monorepo/source-code-sharing.svg)
+
+개별 소스 코드 공유를 쉽게 할 수 있습니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Source code sharing                                                                                                                                                                                                                    |
+| :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ 모든 파일이 공유될 수 있습니다. 빌드 룰도 손상되지 않고 공유할 수 있습니다.                                                                                                                                                         |
+| **GRADLE BUILD TOOL**                    | ✅ 공유 가능한 아티팩트를 게시하고 이를 여러 레포지토리에서 사용할 수 있습니다.                                                                                                                                                        |
+| **LAGE**                                 | ✅ npm 패키지만 공유될 수 있습니다.                                                                                                                                                                                                    |
+| **LERNA**                                | ✅ npm 패키지만 공유될 수 있습니다.                                                                                                                                                                                                    |
+| **MOON**                                 | ✅ 지원되는 언어의 패키지만 공유될 수 있습니다.                                                                                                                                                                                        |
+| **NX**                                   | ✅ 모든 파일이 공유될 수 있습니다. Nx 플러그인은 Webpack, Rollup, TypeScript와 다른 도구를 공유할 수 있도록 지원합니다.                                                                                                                |
+| **PANTS**                                | ✅ 언어와 프레임워크의 표준 idiom을 사용하여 저장소 전체에서 패키징, 퍼블리싱, 컨슈밍을 지원합니다.                                                                                                                                    |
+| **RUSH**                                 | ✅ 선언된 npm 종속성이 아닌 폴더에서 코드를 가져오는 것은 권장하지 않습니다. 패키지를 만드는데 너무 많은 오버헤드가 발생하는 경우 [packlets](https://www.npmjs.com/package/@rushstack/eslint-plugin-packlets)이 도움이 될 수 있습니다. |
+| **TURBOREPO**                            | ✅ npm 패키지만 공유될 수 있습니다.                                                                                                                                                                                                    |
+
+### Consistent tooling
+
+> 일관된 도구
+
+![A graph of consistent tooling](/post/javascript/모노레포-monorepo/consistent-tooling.svg)
+
+JavaScript, Go, Rust, Java 등 프로젝트 개발에 사용하는 도구에 관계없이 일관된 경험을 얻을 수 있도록 도와줍니다.
+즉, 서로 다른 기술을 동일한 방식으로 처리합니다.
+
+예를 들어, package.json 파일이나 JavaScript/TypeScript 파일을 분석하여 JavaScript 프로젝트 종속성과 빌드, 테스트 방법을 파악할 수 있습니다.
+Cargo.toml 파일을 분석하여 Rust에 대해 동일한 작업을 수행하거나 Gradle 파일을 분석하여 Java에 대해 동일한 작업도 수행하도록 합니다.
+이를 위해서는 플러그인 가능한 도구여야 합니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Consistent tooling                                                                                                                                                                                 |
+| :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ 빌드 룰은 다양한 기술과 프레임워크에 대한 플러그인처럼 동작합니다.                                                                                                                              |
+| **GRADLE BUILD TOOL**                    | ✅ 플러그인 생태계를 통해 확장가능합니다. CMake나 네이티브 빌드를 하거나 Webpack으로 패키징할 수 있습니다.                                                                                         |
+| **LAGE**                                 | ❌ npm 스크립트만 동작합니다.                                                                                                                                                                      |
+| **LERNA**                                | ❌ npm 스크립트만 동작합니다.                                                                                                                                                                      |
+| **MOON**                                 | ✅ 현재 머신에 존재하는 모든 바이너리/커맨드를 실행할 수 있습니다. 통합 툴체인으로 필요한 도구를 설치할 수 있습니다.                                                                               |
+| **NX**                                   | ✅ 기본적으로 npm 스크립트를 호출하지만 다른 도구(예: Gradle)를 호출하도록 확장할 수 있습니다.                                                                                                     |
+| **PANTS**                                | ✅ 강력한 플러그인 API가 있습니다. Python, Java, Scala, Go, Shell, Docker를 포함하여 바로 사용할 수 있는 여러 플러그인이 있습니다. 동일한 API를 사용하여 커스텀 룰을 작성할 수도 있습니다.         |
+| **RUSH**                                 | ❌ TypeScript/JavaScript 프로젝트만 빌드하므로 기본 툴체인이나 BuildXL을 사용하여 별도로 빌드되는 접근방식을 권장합니다. 이상적으로는 모노레포 개발자에게는 Node.js가 유일한 필수 전제 조건입니다. |
+| **TURBOREPO**                            | ❌ npm 스크립트만 동작합니다. 다만 Node.js를 설치할 필요는 없습니다.                                                                                                                               |
+
+### Code generation
+
+> 코드 생성
+
+![A graph of code generation](/post/javascript/모노레포-monorepo/code-generation.svg)
+
+코드 생성을 위한 네이티브 지원
+
+| <div style={{width: "144px"}}>Tool</div> | Code generation                                                                                                                                                                                                                                 |
+| :--------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | 🔸 외부 제네레이터를 사용할 수 있습니다.                                                                                                                                                                                                        |
+| **GRADLE BUILD TOOL**                    | 🔸 외부 제네레이터를 사용할 수 있습니다.                                                                                                                                                                                                        |
+| **LAGE**                                 | 🔸 외부 제네레이터를 사용할 수 있습니다.                                                                                                                                                                                                        |
+| **LERNA**                                | 🔸 외부 제네레이터를 사용할 수 있습니다.                                                                                                                                                                                                        |
+| **MOON**                                 | ✅ 파일 시스템/템플릿 기반의 코드 생성 레이어를 제공합니다.                                                                                                                                                                                     |
+| **NX**                                   | ✅ 강력한 코드 생성 기능을 제공합니다. 가상 파일 시스템을 사용하며 에디터 통합 기능을 제공합니다.                                                                                                                                               |
+| **PANTS**                                | ✅ Protobuf/gRPC, Thrift, Scrooge, Avro, SOAP 등 많이 알려진 코드 제네레이터 플러그인이 함께 제공됩니다. 새로운 코드 제네레이터를 쉽게 추가할 수 있는 플러그인 API도 지원됩니다. 단일 코드 생성 소스에서 여러 언어로 코드를 생성할 수 있습니다. |
+| **RUSH**                                 | 🔸 TypeScript/JavaScript 프로젝트만 빌드하므로 기본 툴체인이나 BuildXL을 사용하여 별도로 빌드되는 접근방식을 권장합니다. 이상적으로는 모노레포 개발자에게는 Node.js가 유일한 필수 전제 조건입니다.                                              |
+| **TURBOREPO**                            | 🔸 npm 스크립트만 동작합니다. 다만 Node.js를 설치할 필요는 없습니다.                                                                                                                                                                            |
+
+### Project constraints and visibility
+
+> 프로젝트 제약 조건 및 가시성
+
+![A graph of project constrains and visibility](/post/javascript/모노레포-monorepo/project-constrains-and-visibility.svg)
+
+레포지토리 내에서 종속성 관계를 정하는 규칙을 지원합니다. 예를 들어, 개발자는 일부 프로젝트를 팀에 비공개로 표시하여 다른 사람이 해당 프로젝트에 의존하지
+않도록 할 수 있습니다. 또한 개발자는 사용된 기술(예: React 또는 Nest.js)에 따라 프로젝트를 표시하고 백엔드 프로젝트가 프론트엔드 프로젝트를 import
+하지 않도록 할 수 있습니다.
+
+| <div style={{width: "144px"}}>Tool</div> | Code generation                                                                                                                                              |
+| :--------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BAZEL**                                | ✅ private 항목과 public 항목, 공유가능한 항목 등을 구분할 수 있도록 규칙을 지원합니다.                                                                      |
+| **GRADLE BUILD TOOL**                    | 🔸 기본적으로 지원하진 않지만 풍부한 플러그인을 통해 이와 동일한 규칙을 개발할 수 있습니다.                                                                  |
+| **LAGE**                                 | 🔸 커스텀 규칙과 추가 구성이 포함된 린터를 사용하여 일부 제약 조건이 유지되는지 확인할 수 있습니다.                                                          |
+| **LERNA**                                | 🔸 커스텀 규칙과 추가 구성이 포함된 린터를 사용하여 일부 제약 조건이 유지되는지 확인할 수 있습니다.                                                          |
+| **MOON**                                 | ✅ 해당 기능이 내장되어 있습니다. 외부 도구나 커맨드가 필요하지 않습니다. 워크스페이스의 프로젝트에 태그를 지정하고 주석을 달기만 하면 됩니다.               |
+| **NX**                                   | ✅ 프로젝트에 주석을 달고 불변성을 설정할 수 있으며 Nx는 이를 유지하는지 확인합니다.                                                                         |
+| **PANTS**                                | 🔸 기본적으로 지원하지는 않지만 이러한 규칙을 적용하기 위해 커스텀 플러그인을 작성할 수 있습니다.                                                            |
+| **RUSH**                                 | ✅ 프로젝트 타입에 따라 새로운 npm 종속성(내부 또는 외부)을 도입할 때 선택적으로 승인을 요구할 수 있습니다. 또한 npm 퍼블리싱을 위한 버전 정책도 지원합니다. |
+| **TURBOREPO**                            | 🔸 커스텀 규칙과 추가 구성이 포함된 린터를 사용하여 일부 제약 조건이 유지되는지 확인할 수 있습니다.                                                          |
+
+## 인식의 전환
+
+> 이 모든 것이 복잡하다는 것은 알고 있습니다. 하지만 여러분은 이 여정을 혼자하는 것이 아닙니다.
+
+**모노레포는 조직을 변화시킵니다.**  
+모노레포는 코드와 도구 그 이상입니다. 모노레포는 조직과 코드에 대한 사고 방식을 변화시킵니다. 일관성을 추가하고, 새 프로젝트를 만들고 대규모 리팩토링을
+수행할 때 발생하는 마찰을 줄이고, 코드 공유, 팀 간 협업을 촉진하여 조직이 더 효율적으로 작업을 할 수 있도록 지원합니다.
+
+## 다양한 목표를 위한 다양한 솔루션
+
+> 각 도구는 특정 요구 사항에 적합하며 적절한 기능을 제공합니다.
+> 요구 사항과 제약 조건에 따라 어떤 도구가 가장 적합한지 결정하세요.
+
+### Bazel (by Google)
+
+> 빠르고, 확장성이 뛰어나며, 여러 언어를 지원하는 빌드 시스템
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ✅  |
+| Transparent remote execution    | ✅  |
+| Detecting affected projects     | 🔸  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | 🔸  |
+| Dependency graph visualization | ✅  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ✅  |
+| Code generation                    | 🔸  |
+| Project constraints and visibility | ✅  |
+
+### Gradle (by Gradle, Inc)
+
+> 멀티 프로젝트 빌드를 위해 설계된 빠르고 유연한 여러 언어를 지원하는 빌드 시스템
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | 🔸  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | 🔸  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ✅  |
+| Code generation                    | 🔸  |
+| Project constraints and visibility | 🔸  |
+
+### Lage (by Microsoft)
+
+> JavaScript 모노레포의 태스크 러너
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ➖  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | 🔸  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ➖  |
+| Code generation                    | 🔸  |
+| Project constraints and visibility | 🔸  |
+
+### Lerna (maintained by Nrwl)
+
+> 여러 패키지가 있는 JavaScript 프로젝트를 관리하기 위한 도구
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ✅  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | ✅  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ➖  |
+| Code generation                    | 🔸  |
+| Project constraints and visibility | 🔸  |
+
+### moon (by moonrepo)
+
+> 웹 생태계를 위한 태스크 러너 및 모노레포 관리 도구
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ➖  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | ✅  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ✅  |
+| Code generation                    | ✅  |
+| Project constraints and visibility | ✅  |
+
+### Nx (by Nrwl)
+
+> 최고 수준의 모노레포 지원과 강력한 통합 기능을 갖춘 차세대 빌드 시스템
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ✅  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | ✅  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ✅  |
+| Code generation                    | ✅  |
+| Project constraints and visibility | ✅  |
+
+### Pants (by Pants build)
+
+> 모든 규모의 코드베이스를 위한 빠르고 확장 가능하며 사용자 친화적인 빌드 시스템
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ✅  |
+| Transparent remote execution    | ✅  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | 🔸  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ✅  |
+| Code generation                    | ✅  |
+| Project constraints and visibility | 🔸  |
+
+### Rush (by Microsoft)
+
+> 많은 팀과 프로젝트가 있는 대규모 모노레포에 적합합니다. Rush Stack 제품군의 일부입니다.
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | 🔸  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | 🔸  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ➖  |
+| Code generation                    | 🔸  |
+| Project constraints and visibility | ✅  |
+
+### Turborepo (by Vercel)
+
+> JavaScript, TypeScript 코드베이스를 위한 고성능 빌드 시스템
+
+| **Fast**                        |     |
+| :------------------------------ | :-- |
+| Local computation caching       | ✅  |
+| Local task orchestration        | ✅  |
+| Distributed computation caching | ✅  |
+| Distributed task execution      | ➖  |
+| Transparent remote execution    | ➖  |
+| Detecting affected projects     | ✅  |
+
+| **Understandable**             |     |
+| :----------------------------- | :-- |
+| Workspace analysis             | ✅  |
+| Dependency graph visualization | ✅  |
+
+| **Manageable**                     |     |
+| :--------------------------------- | :-- |
+| Source code sharing                | ✅  |
+| Consistent tooling                 | ➖  |
+| Code generation                    | 🔸  |
+| Project constraints and visibility | 🔸  |
+
+## 마무리하며
+
+> 더 자세히 알아보거나 유용한 정보를 얻으려면 [resources](https://monorepo.tools/#monorepo-resources)를 참고하세요.
+
+모노레포는 대규모 코드베이스와 여러 프로젝트를 효과적으로 관리하는 데 유용한 방식입니다. 이 구조는 코드의 일관성을 유지하고, 의존성을 관리하며,
+빌드와 테스트 프로세스를 최적화할 수 있게 해줍니다. 물론 모노레포 구조가 모든 상황에 적합하지는 않으며, 팀의 요구사항과 프로젝트의 복잡성에 따라
+적절한 선택이 될 수도, 아닐 수도 있습니다.
+
+모노레포에 대한 이해는 소프트웨어 개발의 현대적인 트렌드와 방식을 이해하는 데 중요한 단계입니다. 이 방식을 활용하면, 대규모의 코드베이스와 프로젝트를
+더 효과적으로 조직하고 관리할 수 있습니다.
+
+이번 글에서는 모노레포를 구성하고 관리하기 위한 다양한 도구와 전략을 알아보았습니다. 각 프로젝트마다 다른 요구사항과 제약 조건이 있으므로,
+이 글을 통해 여러분이 어떤 도구를 사용할지 결정하는 데 도움이 되었으면 좋겠습니다.
+
+마지막으로, 모노레포는 단순히 코드를 조직하는 방식을 넘어, 팀과 프로젝트의 생산성과 협업을 향상시키는 방향으로도 긍정적인 영향을 미칠 수 있습니다.
+오픈소스에서도 모노레포 구조를 사용하는 프로젝트가 많이 있습니다. 이러한 프로젝트를 살펴보는 것 또한 좋은 방법이 될 수 있습니다.
+
+앞으로의 프로젝트에서 모노레포 구조를 고려해보고, 이 구조가 여러분의 팀과 프로젝트에 어떻게 도움이 될 수 있는지 고민하는 것도 좋은 방법이 될 것 같습니다.
+
+## reference
+
+- https://monorepo.tools/
