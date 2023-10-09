@@ -183,6 +183,35 @@ const components: MDXComponents = {
   ),
   img: ({ alt, ...props }) => <Image alt={alt} {...props} />,
   video: (props) => <Video {...props} />,
+  table: ({ className, children, ...props }) => (
+    <div className={cn('my-4 overflow-x-auto', className)} {...props}>
+      <table className="w-full table-auto">{children}</table>
+    </div>
+  ),
+  th: ({ className, children, ...props }) => (
+    <th
+      className={cn(
+        'bg-slate-100 px-4 py-2 text-left text-sm font-medium text-slate-900',
+        'dark:bg-slate-800 dark:text-slate-400',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </th>
+  ),
+  td: ({ className, children, ...props }) => (
+    <td
+      className={cn(
+        'border-t border-slate-200 px-4 py-2 text-sm text-slate-900',
+        'dark:border-slate-700 dark:text-slate-400',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </td>
+  ),
 
   // custom
   Admonition,
