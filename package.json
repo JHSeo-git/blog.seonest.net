@@ -55,8 +55,8 @@
     "tailwind-merge": "^1.14.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.7.1",
-    "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
     "@next/bundle-analyzer": "^13.4.19",
     "@types/glob": "^8.1.0",
     "@types/mdx": "^2.0.7",
