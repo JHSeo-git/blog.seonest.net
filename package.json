@@ -87,21 +87,12 @@
     "tailwindcss-radix": "^2.8.0",
     "typescript": "^5.2.2"
   },
-  "overrides": {
-    "remark-mdx": "3.0.0",
-    "remark-parse": "11.0.0",
-    "remark-stringify": "11.0.0",
-    "unified": "11.0.4"
-  },
   "pnpm": {
     "overrides": {
-      "@opentelemetry/api": "1.4.1",
-      "@opentelemetry/core": "1.13.0",
-      "@opentelemetry/exporter-trace-otlp-grpc": "0.39.1",
-      "@opentelemetry/resources": "1.13.0",
-      "@opentelemetry/sdk-trace-base": "1.13.0",
-      "@opentelemetry/sdk-trace-node": "1.13.0",
-      "@opentelemetry/semantic-conventions": "1.13.0"
+      "remark-mdx": "3.0.0",
+      "remark-parse": "11.0.0",
+      "remark-stringify": "11.0.0",
+      "unified": "11.0.4"
     }
   },
   "prisma": {
