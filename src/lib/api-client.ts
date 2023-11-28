@@ -7,7 +7,7 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  static async request<TResponse>(url: string, config: RequestInit): Promise<TResponse> {
+  static async request<TResponse>(url: string, config?: RequestInit): Promise<TResponse> {
     const response = await fetch(url, config);
 
     if (response.status === 204) {
