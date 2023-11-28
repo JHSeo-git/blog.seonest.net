@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
+import type { Viewport } from 'next';
 
 import { Footer } from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
@@ -11,11 +12,6 @@ import { cn } from '@/utils/style-utils';
 
 export const metadata = {
   metadataBase: new URL('https://seonest.net'),
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
   title: {
     default: 'Seonest',
     template: '%s | Seonest',
@@ -54,6 +50,12 @@ export const metadata = {
   verification: {
     google: 'RjVCFQ8Ye2KJxwjzcLX82cGsxOLxH1mhaUvLx5SC6I4',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 interface RootLayoutProps {
