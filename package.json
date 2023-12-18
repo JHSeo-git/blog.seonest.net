@@ -33,7 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "contentlayer": "^0.3.4",
-    "date-fns": "^2.30.0",
+    "date-fns": "^3.0.0",
     "framer-motion": "^10.16.5",
     "github-slugger": "^2.0.0",
     "lucide-react": "^0.298.0",

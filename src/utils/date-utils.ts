@@ -1,5 +1,5 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import ko from 'date-fns/locale/ko';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
+import { ko } from 'date-fns/locale/ko';
 
 export type GetDistanceToNowOptions = {
   humanize?: boolean;
