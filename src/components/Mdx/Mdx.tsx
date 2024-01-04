@@ -18,12 +18,12 @@ const mdxImageStyle = cva('mx-auto my-4 h-auto w-full object-contain');
 
 const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   if (!src) {
-    return <div className={cn(mdxImageStyle(), className)} />;
+    return <span className={cn(mdxImageStyle(), className)} />;
   }
 
   if (src.startsWith('http')) {
     return (
-      <Zoom>
+      <Zoom wrapElement="span">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={cn(mdxImageStyle(), className)} src={src} alt={alt} {...props} />
       </Zoom>
@@ -31,7 +31,7 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
   }
 
   return (
-    <Zoom>
+    <Zoom wrapElement="span">
       <NextImage
         className={cn(mdxImageStyle(), className)}
         src={src}
