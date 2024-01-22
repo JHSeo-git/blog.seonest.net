@@ -40,7 +40,7 @@ function CopyToClipboard({ children, ...props }: CopyToClipboardProps) {
         onClick={onCopy}
       >
         <span className="sr-only">Copy</span>
-        {hasCopied ? <Icons.Check className="h-4 w-4" /> : <Icons.Copy className="h-4 w-4" />}
+        {hasCopied ? <Icons.Check className="size-4" /> : <Icons.Copy className="size-4" />}
       </button>
     </>
   );

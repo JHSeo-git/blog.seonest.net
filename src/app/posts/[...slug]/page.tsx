@@ -83,7 +83,7 @@ async function PostPage({ params }: PageProps) {
         {post.thumbnail && (
           <div className="relative overflow-hidden rounded-xl md:rounded-[20px]">
             <Image
-              className="h-full w-full object-cover"
+              className="size-full object-cover"
               src={post.thumbnail}
               alt="Thumbnail"
               width={750}

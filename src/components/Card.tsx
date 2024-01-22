@@ -16,7 +16,7 @@ export function Card({ post }: CardProps) {
       <div className="relative shrink-0  sm:h-[150px] sm:w-[250px] md:h-[210px] md:w-[350px]">
         {post.thumbnail ? (
           <Image
-            className="h-full w-full rounded-md object-cover transition-all group-hover:-translate-y-2 group-hover:shadow-md"
+            className="size-full rounded-md object-cover transition-all group-hover:-translate-y-2 group-hover:shadow-md"
             src={post.thumbnail}
             alt={post.title}
             width={250}
@@ -24,7 +24,7 @@ export function Card({ post }: CardProps) {
             placeholder="empty"
           />
         ) : (
-          <div className="h-full w-full rounded-md bg-slate-200 transition-all group-hover:-translate-y-2 group-hover:shadow-md" />
+          <div className="size-full rounded-md bg-slate-200 transition-all group-hover:-translate-y-2 group-hover:shadow-md" />
         )}
       </div>
       <div className="flex flex-1 flex-col">
