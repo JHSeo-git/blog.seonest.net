@@ -11,6 +11,7 @@
     "email": "qnfqnfqnf@gmail.com"
   },
   "sideEffects": false,
+  "type": "module",
   "scripts": {
     "analyze": "ANALYZE=true pnpm build",
     "build": "next build",
