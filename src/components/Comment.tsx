@@ -1,10 +1,12 @@
 'use client';
 
-import Giscus from '@giscus/react';
+// import Giscus from '@giscus/react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
 import appConfig from '@/app.config';
+
+import { MyGiscus } from './MyGiscus';
 
 export function Comment() {
   const pathname = usePathname();
@@ -16,7 +18,7 @@ export function Comment() {
 
   return (
     <div className="mt-10">
-      <Giscus
+      <MyGiscus
         key={`${pathname}_${theme}`}
         id="comments"
         repo="JHSeo-git/seonest-comments"
