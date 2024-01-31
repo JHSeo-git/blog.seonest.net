@@ -1,5 +1,5 @@
-const bundleAnalyzer = require('@next/bundle-analyzer');
-const { withContentlayer } = require('next-contentlayer');
+import bundleAnalyzer from '@next/bundle-analyzer';
+import { createContentlayerPlugin } from 'next-contentlayer';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -18,4 +18,8 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(withContentlayer(nextConfig));
+const withContentlayer = createContentlayerPlugin({
+  // Additional Contentlayer config options
+});
+
+export default withBundleAnalyzer(withContentlayer(nextConfig));
