@@ -42,6 +42,9 @@ dependencies:
   framer-motion:
     specifier: ^11.0.0
     version: 11.0.0(react-dom@18.2.0)(react@18.2.0)
+  giscus:
+    specifier: ^1.4.0
+    version: 1.4.0
   github-slugger:
     specifier: ^2.0.0
     version: 2.0.0
