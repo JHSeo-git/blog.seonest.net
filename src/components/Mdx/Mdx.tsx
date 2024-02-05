@@ -13,6 +13,9 @@ import { Admonition } from '../Admonition';
 import { Callout } from '../Callout';
 import CopyToClipboard from '../CopyToClipboard';
 import { Zoom } from '../Zoom';
+import { Counter } from './examples/counter';
+import { PostList } from './examples/post-list';
+import { PostPreview } from './examples/post-preview';
 
 const mdxImageStyle = cva('mx-auto my-4 h-auto w-full object-contain');
 
@@ -234,6 +237,11 @@ const components: MDXComponents = {
       <ReactTweet id={id} />
     </div>
   ),
+
+  // exampels
+  Counter: () => <Counter />,
+  PostPreview: ({ slug }: { slug: string }) => <PostPreview slug={slug} />,
+  PostList: () => <PostList />,
 };
 
 interface MdxProps {
