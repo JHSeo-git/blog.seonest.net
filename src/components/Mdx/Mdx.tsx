@@ -238,7 +238,7 @@ const components: MDXComponents = {
     </div>
   ),
 
-  // exampels
+  // examples
   Counter: () => <Counter />,
   PostPreview: ({ slug }: { slug: string }) => <PostPreview slug={slug} />,
   PostList: () => <PostList />,
