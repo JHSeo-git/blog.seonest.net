@@ -36,7 +36,7 @@ export function Card({ post }: CardProps) {
             {description}
           </p>
         )}
-        <div className="min-h-[1rem] flex-1 sm:min-h-0" />
+        <div className="min-h-4 flex-1 sm:min-h-0" />
         <div className="flex items-center justify-between gap-4">
           <PostViews
             slug={post.slugAsParams}
