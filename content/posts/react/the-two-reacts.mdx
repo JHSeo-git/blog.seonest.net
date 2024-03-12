@@ -1,8 +1,8 @@
 ---
-date: '2024-02-05T12:15:28.879Z'
+date: "2024-02-05T12:15:28.879Z"
 category: react
 title: The Two Reacts
-description: 'RSC - 2개의 React: 서버에서 리액트, 클라이언트에서 리액트 (by Dan Abramov)'
+description: "RSC - 2개의 React: 서버에서 리액트, 클라이언트에서 리액트 (by Dan Abramov)"
 published: true
 thumbnail: /post/react/the-two-reacts/thumbnail.png
 ---
@@ -61,10 +61,10 @@ Dan Abramov가 작성한 [The Two Reacts](https://overreacted.io/the-two-reacts/
 이 컴포넌트 코드가 여러분의 컴퓨터에서 실행되었기 때문입니다.
 
 ```tsx
-import { useState } from 'react';
+import { useState } from "react"
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <button
@@ -73,10 +73,10 @@ function Counter() {
     >
       당신은 {count}번 클릭했습니다.
     </button>
-  );
+  )
 }
 
-export { Counter };
+export { Counter }
 ```
 
 `count`는 클라이언트 상태의 일부입니다. 버튼을 누를 때마다 업데이트되는 컴퓨터 메모리에 올라가는 정보입니다.
@@ -136,32 +136,32 @@ _그렇지만, 이것이 반드시 맞는 것일까요?_
 그래서 이 컴포넌트는 어떻게 동작하는 걸까요?
 
 ```tsx
-import { allPosts } from 'contentlayer/generated';
+import { allPosts } from "contentlayer/generated"
 
 interface PostPreviewProps {
-  slug: string;
+  slug: string
 }
 
 function PostPreview({ slug }: PostPreviewProps) {
-  const post = allPosts.find((post) => post.slugAsParams === slug);
+  const post = allPosts.find((post) => post.slugAsParams === slug)
   if (!post) {
-    return null;
+    return null
   }
-  const wordCount = post.body.raw.split(/\s+/).filter(Boolean).length;
+  const wordCount = post.body.raw.split(/\s+/).filter(Boolean).length
 
   return (
     <section className="rounded-md bg-black/10 p-2">
       <h5 className="font-bold">
-        <a href={'/posts/' + slug} target="_blank" className="text-indigo-700 dark:text-indigo-500">
+        <a href={"/posts/" + slug} target="_blank" className="text-indigo-700 dark:text-indigo-500">
           {post.title}
         </a>
       </h5>
       <i>{wordCount} words</i>
     </section>
-  );
+  )
 }
 
-export { PostPreview };
+export { PostPreview }
 ```
 
 해당 `<PostPreview />` 컴포넌트는 제 컴퓨터에서 실행됩니다. 파일을 읽기 위해서 `contentlayer`에서 미리
@@ -180,9 +180,9 @@ export { PostPreview };
 간단하게 처리할 수 있습니다. 모든 게시물을 가져와서 `<PostPreview />`를 사용하여 렌더링합니다.
 
 ```tsx
-import { allPosts } from 'contentlayer/generated';
+import { allPosts } from "contentlayer/generated"
 
-import { PostPreview } from './post-preview';
+import { PostPreview } from "./post-preview"
 
 function PostList() {
   return (
@@ -191,10 +191,10 @@ function PostList() {
         <PostPreview key={post._id} slug={post.slugAsParams} />
       ))}
     </div>
-  );
+  )
 }
 
-export { PostList };
+export { PostList }
 ```
 
 이 컴포넌트 코드는 여러분의 컴퓨터에서 실행될 필요가 없습니다. 실제로 여러분 컴퓨터에 제 파일이 존재하지 않기 때문에

@@ -1,5 +1,5 @@
 ---
-date: '2023-03-11T09:43:21.623Z'
+date: "2023-03-11T09:43:21.623Z"
 category: react
 title: Complex Context APIs
 description: 중첩된 다중 Context API를 사용할 경우의 문제와 해결방법을 알아보았습니다.
@@ -20,21 +20,21 @@ thumbnail: /post/react/complex-context-apis/thumbnail.png
 
 ```tsx
 interface OpenerContextValue {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 // Opener Context
-const OpenerContext = React.createContext<OpenerContextValue | null>(null);
+const OpenerContext = React.createContext<OpenerContextValue | null>(null)
 
 // Opener
 function Opener({ children }: OpenerProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <OpenerContext.Provider value={{ open, setOpen }}>
       <div>{children}</div>
     </OpenerContext.Provider>
-  );
+  )
 }
 ```
 
@@ -44,19 +44,19 @@ Compound 컴포넌트 형태로 `<OpenerTrigger />`와 `<OpenerContent />` 컴�
 
 ```tsx
 function OpenerTrigger({ children }: OpenerProps) {
-  const { setOpen } = React.useContext(OpenerContext);
+  const { setOpen } = React.useContext(OpenerContext)
 
-  return <button onClick={() => setOpen((prev) => !prev)}>{children}</button>;
+  return <button onClick={() => setOpen((prev) => !prev)}>{children}</button>
 }
 
 function OpenerContent({ children }: OpenerContentProps) {
-  const { open } = React.useContext(OpenerContext);
+  const { open } = React.useContext(OpenerContext)
 
   if (!open) {
-    return null;
+    return null
   }
 
-  return <div>{children}</div>;
+  return <div>{children}</div>
 }
 ```
 
@@ -69,7 +69,7 @@ function App() {
       <OpenerTrigger>Open</OpenerTrigger>
       <OpenerContent>Content</OpenerContent>
     </Opener>
-  );
+  )
 }
 ```
 
@@ -84,17 +84,17 @@ function App() {
 ```tsx
 interface AlertOpenerProps extends React.ComponentProps<typeof Opener.Root> {}
 function AlertOpener(props: AlertOpenerProps) {
-  return <Opener.Root {...props} />;
+  return <Opener.Root {...props} />
 }
 
 interface AlertOpenerTriggerProps extends React.ComponentProps<typeof Opener.Trigger> {}
 function AlertOpenerTrigger({ className, ...props }: AlertOpenerTriggerProps) {
-  return <Opener.Trigger {...props} className={cn('bg-red-900', className)} />;
+  return <Opener.Trigger {...props} className={cn("bg-red-900", className)} />
 }
 
 interface AlertOpenerContentProps extends React.ComponentProps<typeof Opener.Content> {}
 function AlertOpenerContent({ className, ...props }: AlertOpenerContentProps) {
-  return <Opener.Content {...props} className={cn('bg-red-500 text-white', className)} />;
+  return <Opener.Content {...props} className={cn("bg-red-500 text-white", className)} />
 }
 ```
 
@@ -107,7 +107,7 @@ function App() {
       <AlertOpenerTrigger>Open</AlertOpenerTrigger>
       <AlertOpenerContent>Content</AlertOpenerContent>
     </AlertOpener>
-  );
+  )
 }
 ```
 
@@ -126,7 +126,7 @@ function App() {
         </OpenerContent>
       </Opener>
     </AlertOpener>
-  );
+  )
 }
 ```
 
@@ -163,7 +163,7 @@ function App() {
         </OpenerContext.Provider>
       </div>
     </OpenerContext.Provider>
-  );
+  )
 }
 ```
 
@@ -185,20 +185,20 @@ function App() {
 
 ```tsx
 interface OpenerContextValue {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const createOpenerContext = () => React.createContext<OpenerContextValue | null>(null);
+const createOpenerContext = () => React.createContext<OpenerContextValue | null>(null)
 
 function Opener({ className, DefaultContext = createOpenerContext() }: OpenerProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <DefaultContext.Provider value={{ open, setOpen }}>
       <div>{children}</div>
     </DefaultContext.Provider>
-  );
+  )
 }
 ```
 
@@ -213,24 +213,24 @@ function Opener({ className, DefaultContext = createOpenerContext() }: OpenerPro
 위 issue 예시를 해결하기 위해서 `<AlertOpener />`는 다음과 같은 코드가 나올 것입니다.
 
 ```tsx
-const AlertOpenerContext = Opener.createOpenerContext();
+const AlertOpenerContext = Opener.createOpenerContext()
 
 interface AlertOpenerProps extends React.ComponentProps<typeof Opener.Root> {}
 
 function AlertOpener(props: AlertOpenerProps) {
-  return <Opener.Root {...props} DefaultContext={AlertOpenerContext} />;
+  return <Opener.Root {...props} DefaultContext={AlertOpenerContext} />
 }
 
 interface AlertOpenerTriggerProps extends React.ComponentProps<typeof Opener.Trigger> {}
 
 function AlertOpenerTrigger(props: AlertOpenerTriggerProps) {
-  return <Opener.Trigger {...props} DefaultContext={AlertOpenerContext} />;
+  return <Opener.Trigger {...props} DefaultContext={AlertOpenerContext} />
 }
 
 interface AlertOpenerContentProps extends React.ComponentProps<typeof Opener.Content> {}
 
 function AlertOpenerContent(props: AlertOpenerContentProps) {
-  return <Opener.Content {...props} DefaultContext={AlertOpenerContext} />;
+  return <Opener.Content {...props} DefaultContext={AlertOpenerContext} />
 }
 ```
 
@@ -276,46 +276,46 @@ const scope: Scope<ContextValue> = {
 
 ```tsx
 function createContextScope(scopeName, createContextScopeDeps = []) {
-  let defaultContexts = [];
+  let defaultContexts = []
 
   function createContext(rootComponentName: string, defaultContext?: ContextValueType) {
-    const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext);
+    const BaseContext = React.createContext<ContextValueType | undefined>(defaultContext)
 
-    const index = defaultContexts.length;
-    defaultContexts = [...defaultContexts, defaultContext];
+    const index = defaultContexts.length
+    defaultContexts = [...defaultContexts, defaultContext]
 
     function Provider({ scope, children, ...props }) {
-      const Context = scope[scopeName][index] || BaseContext;
-      const value = React.useMemo(() => context, Object.values(context));
+      const Context = scope[scopeName][index] || BaseContext
+      const value = React.useMemo(() => context, Object.values(context))
 
-      return <Context.Provider value={value}>{children}</Context.Provider>;
+      return <Context.Provider value={value}>{children}</Context.Provider>
     }
 
     function useContext(consumerName: string, scope) {
-      const Context = scope[scopeName][index] || BaseContext;
-      const context = React.useContext(Context);
+      const Context = scope[scopeName][index] || BaseContext
+      const context = React.useContext(Context)
 
-      if (context) return context;
-      if (defaultContext !== undefined) return defaultContext;
+      if (context) return context
+      if (defaultContext !== undefined) return defaultContext
     }
 
-    return [Provider, useContext];
+    return [Provider, useContext]
   }
 
   function createScope() {
     const scopeContexts = defaultContexts.map((defaultContext) =>
       React.createContext(defaultContext)
-    );
+    )
     return function useScope(scope) {
-      const contexts = scope[scopeName] || scopeContexts;
+      const contexts = scope[scopeName] || scopeContexts
       return React.useMemo(
         () => ({ [`__scope${scopeName}`]: { ...scope, [scopeName]: contexts } }),
         [scope, contexts]
-      );
-    };
+      )
+    }
   }
 
-  return [createContext, composeContextScopes(createScope, ...createContextScopeDeps)];
+  return [createContext, composeContextScopes(createScope, ...createContextScopeDeps)]
 }
 ```
 
@@ -391,21 +391,21 @@ function createContextScope(...) {
 처음 보면 코드 자체로 이해하기 쉽지 않아서 위 예시 `<Opener />`, `<AlertOpener />` 컴포넌트를 이용해서 확인해보겠습니다.
 
 ```tsx
-const OPENER_NAME = 'Opener';
+const OPENER_NAME = "Opener"
 
-const [createOpenerContext, createOpenerScope] = createContextScope(OPENER_NAME);
+const [createOpenerContext, createOpenerScope] = createContextScope(OPENER_NAME)
 
 interface OpenerContextValue {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
-const [OpenerProvider, useOpenerContext] = createOpenerContext<OpenerContextValue>(OPENER_NAME);
+const [OpenerProvider, useOpenerContext] = createOpenerContext<OpenerContextValue>(OPENER_NAME)
 ```
 
 `defaultContext`를 인자로 주지 않았기 때문에 `defaultContexts`는 비어있는 배열 상태입니다.
 
 ```ts
-defaultContexts = [];
+defaultContexts = []
 ```
 
 `<Opener />`는 `__scopeOpener` scope를 인자로 받아 `OpenerProvider`에게 전달합니다.
@@ -415,7 +415,7 @@ defaultContexts = [];
 ```ts
 __scopeOpener = {
   Opener: [BaseContext],
-};
+}
 ```
 
 ```tsx
@@ -424,14 +424,14 @@ const Opener: React.FC<OpenerProps> = ({
   className,
   children,
 }: ScopedProps<OpenerProps>) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <OpenerProvider scope={__scopeOpener} open={open} setOpen={setOpen}>
       <div>{children}</div>
     </OpenerProvider>
-  );
-};
+  )
+}
 ```
 
 만약 `__scopeOpener`가 들어온다면 `OpenerProvider`는 해당 scope에서 scopeName(`OPENER_NAME`) Context를 찾아서 Provider를 생성합니다.
@@ -441,8 +441,8 @@ const Opener: React.FC<OpenerProps> = ({
 `defaultContexts`에는 아직 아무것도 없기 때문에 신규 Context(BaseContext)를 사용합니다.
 
 ```ts
-const { scope } = props;
-const Context = scope?.[scopeName][index] || BaseContext;
+const { scope } = props
+const Context = scope?.[scopeName][index] || BaseContext
 ```
 
 `<OpenerTrigger />`는 `__scopeOpener` scope를 인자로 받아 `useOpenerContext`를 사용해 context를 가져옵니다.
@@ -453,10 +453,10 @@ const OpenerTrigger: React.FC<OpenerProps> = ({
   className,
   children,
 }: ScopedProps<OpenerProps>) => {
-  const { setOpen } = useOpenerContext(TRIGGER_NAME, __scopeOpener);
+  const { setOpen } = useOpenerContext(TRIGGER_NAME, __scopeOpener)
 
-  return <button onClick={() => setOpen((prev) => !prev)}>{children}</button>;
-};
+  return <button onClick={() => setOpen((prev) => !prev)}>{children}</button>
+}
 ```
 
 만약 `__scopeOpener`가 들어온다면 `useOpenerContext`는 해당 scope에서 scopeName(`OPENER_NAME`) Context를 찾아서 useContext를 호출하여 context를 반환합니다.
@@ -466,8 +466,8 @@ const OpenerTrigger: React.FC<OpenerProps> = ({
 `defaultContexts`에는 아직 아무것도 없기 때문에 신규 Context(BaseContext)를 사용합니다.
 
 ```ts
-const Context = scope?.[scopeName][index] || BaseContext;
-const context = React.useContext(Context);
+const Context = scope?.[scopeName][index] || BaseContext
+const context = React.useContext(Context)
 ```
 
 `<AlertOpener />`를 `<Opener />`를 확장하여 만들어보겠습니다.
@@ -476,9 +476,9 @@ const context = React.useContext(Context);
 
 ```ts
 // Opener.tsx
-const [createOpenerContext, createOpenerScope] = createContextScope(OPENER_NAME);
+const [createOpenerContext, createOpenerScope] = createContextScope(OPENER_NAME)
 
-export { createOpenerScope };
+export { createOpenerScope }
 ```
 
 `<AlertOpener />`에서는 `createOpenerScope`를 인자로 넣어 `createContextScope`를 호출합니다.
@@ -521,9 +521,9 @@ const AlertOpenerTrigger: React.FC<AlertOpenerTriggerProps> = ({
   __scopeAlertOpener,
   ...props
 }: ScopedProps<AlertOpenerTriggerProps>) => {
-  const openerScope = useOpenerScope(__scopeAlertOpener);
-  return <Opener.Trigger {...openerScope} {...props} />;
-};
+  const openerScope = useOpenerScope(__scopeAlertOpener)
+  return <Opener.Trigger {...openerScope} {...props} />
+}
 ```
 
 `<AlertOpenerTrigger />`에서 `useOpenerScope`를 사용하여 scope를 `<Opener.Trigger />` prop으로 전달합니다.

@@ -1,14 +1,14 @@
-import { allPosts } from 'contentlayer/generated';
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import type { Metadata } from "next"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { postSorter } from "@/utils/contentlayer-utils"
+import { allPosts } from "contentlayer/generated"
 
-import { Card } from '@/components/Card';
-import { postSorter } from '@/utils/contentlayer-utils';
+import { Card } from "@/components/Card"
 
 type PageParams = {
-  slug: string;
-};
+  slug: string
+}
 
 export async function generateStaticParams(): Promise<PageParams[]> {
   return allPosts
@@ -16,23 +16,23 @@ export async function generateStaticParams(): Promise<PageParams[]> {
     .filter((category, index, self) => self.indexOf(category) === index)
     .map((category) => ({
       slug: category,
-    }));
+    }))
 }
 
 type PageProps = {
-  params: PageParams;
-};
+  params: PageParams
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const category = params?.slug;
+  const category = params?.slug
 
-  const decodedCategory = decodeURIComponent(category);
+  const decodedCategory = decodeURIComponent(category)
 
-  const capitalized = decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1);
+  const capitalized = decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1)
 
-  const title = `${capitalized} Posts`;
-  const description = `${capitalized} Posts`;
-  const url = `categories/${decodedCategory}`;
+  const title = `${capitalized} Posts`
+  const description = `${capitalized} Posts`
+  const url = `categories/${decodedCategory}`
 
   return {
     title,
@@ -42,25 +42,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url,
     },
-  };
+  }
 }
 
 async function CategoryPage({ params }: PageProps) {
-  const category = params?.slug;
+  const category = params?.slug
 
-  if (typeof category !== 'string') {
-    notFound();
+  if (typeof category !== "string") {
+    notFound()
   }
 
-  const decodedCategory = decodeURIComponent(category);
-  const posts = allPosts.filter((post) => post.category === decodedCategory).sort(postSorter);
+  const decodedCategory = decodeURIComponent(category)
+  const posts = allPosts.filter((post) => post.category === decodedCategory).sort(postSorter)
 
   return (
     <main className="mx-auto max-w-4xl py-10">
       <div className="flex items-baseline justify-between px-6">
         <h1 className="text-5xl font-bold capitalize">{category}</h1>
-        <p className="hidden text-lg text-gray-700 dark:text-gray-300 sm:block">
-          {posts.length} Post{posts.length > 0 ? 's' : ''}
+        <p className="hidden text-lg text-gray-700 sm:block dark:text-gray-300">
+          {posts.length} Post{posts.length > 0 ? "s" : ""}
         </p>
       </div>
       <div className="h-14" />
@@ -74,7 +74,7 @@ async function CategoryPage({ params }: PageProps) {
         </Link>
       ))}
     </main>
-  );
+  )
 }
 
-export default CategoryPage;
+export default CategoryPage

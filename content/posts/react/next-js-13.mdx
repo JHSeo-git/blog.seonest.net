@@ -1,5 +1,5 @@
 ---
-date: '2022-10-27T04:03:29.269Z'
+date: "2022-10-27T04:03:29.269Z"
 category: react
 title: Next.js 13
 description: Next.js 13버전이 공개되었습니다. 새로운 Routing System을 포함하여 React 18 기능과 함께 동작하는 흥미로운 기능이 많이 추가되었습니다. 어떤 기능들이 추가되었는지 확인해보았습니다.
@@ -62,7 +62,7 @@ Next.js 13으로 업그레이드 할 때 **`app/` 폴더를 사용할 필요는 
 // app/page.js
 // 이 파일은 index route(/)와 매핑됩니다.
 export default function Page() {
-  return <h1>Hello, Next.js!</h1>;
+  return <h1>Hello, Next.js!</h1>
 }
 ```
 
@@ -72,7 +72,7 @@ route navigation 시에 layout은 상태를 유지하고 상호작용할 수 있
 ```js
 // app/blog/layout.js
 export default function BlogLayout({ children }) {
-  return <section>{children}</section>;
+  return <section>{children}</section>
 }
 ```
 
@@ -148,15 +148,15 @@ React의 `use` hook과 Web `fetch` API 확장을 통해 사용할 수 있다는 
 // 이 요청은 수동으로 invalidate될 때까지 캐쉬됩니다.
 // `getStaticProps`와 유사합니다.
 // `force-cache`는 기본값이며 생략할 수 있습니다.
-fetch(URL, { cache: 'force-cache' });
+fetch(URL, { cache: "force-cache" })
 
 // 이 요청은 모든 요청마다 refetch됩니다.
 // `getServerSideProps`와 유사합니다.
-fetch(URL, { cache: 'no-store' });
+fetch(URL, { cache: "no-store" })
 
 // 이 요청은 10초 동안 캐시됩니다.
 // `getStaticProps`의 `revalidate` 옵션과 유사합니다.
-fetch(URL, { next: { revalidate: 10 } });
+fetch(URL, { next: { revalidate: 10 } })
 ```
 
 `app` 폴더에서 서버의 [Streaming 응답 지원](#streaming)을 포함하여 layouts, pages, components 내부의 데이터를 fetch 할 수 있습니다.
@@ -224,13 +224,14 @@ Next.js 13에서 더 나은 `next/image`를 더욱 발전시켰습니다.
 - native lazy loading은 hydration가 필요로 하지 않기 때문에 더 빠릅니다.
 
 ```js
-import Image from 'next/image';
-import avatar from './lee.png';
+import Image from "next/image"
+
+import avatar from "./lee.png"
 
 function Home() {
   // 접근성 향상을 위해 "alt"가 필수로 되었습니다.
   // optional: 이미지 파일은 app/ 폴더 안에 같이 위치할 수 있습니다.
-  return <Image alt="leeerob" src={avatar} placeholder="blur" />;
+  return <Image alt="leeerob" src={avatar} placeholder="blur" />
 }
 ```
 
@@ -326,13 +327,12 @@ Next.js 12에서 Next.js Router의 완전한 유연성을 위해 Middleware를 �
 
 ```ts
 // middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from "next/server"
 
 export function middleware(request: NextRequest) {
   // 요청 Headers 복제하고 request header에 설정합니다.
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-version', '13');
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set("x-version", "13")
 
   // NextREsponse.rewrite 에서도 header를 설정할 수 있습니다.
   const response = NextResponse.next({
@@ -340,11 +340,11 @@ export function middleware(request: NextRequest) {
       // 신규 request headers
       headers: requestHeaders,
     },
-  });
+  })
 
   // response에서도 header를 설정할 수 있습니다.
-  response.headers.set('x-version', '13');
-  return response;
+  response.headers.set("x-version", "13")
+  return response
 }
 ```
 
@@ -352,13 +352,13 @@ export function middleware(request: NextRequest) {
 
 ```ts
 // middleware.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { isAuthenticated } from '@lib/auth';
+import { NextRequest, NextResponse } from "next/server"
+import { isAuthenticated } from "@lib/auth"
 
 // Limit the middleware to paths starting with `/api/`
 export const config = {
-  matcher: '/api/:function*',
-};
+  matcher: "/api/:function*",
+}
 
 export function middleware(request: NextRequest) {
   // request를 체크하기 위해 인증 함수를 호출합니다.
@@ -367,12 +367,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: 'Auth failed',
+        message: "Auth failed",
       },
       {
         status: 401,
       }
-    );
+    )
   }
 }
 ```

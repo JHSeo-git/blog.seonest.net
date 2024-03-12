@@ -1,7 +1,7 @@
-'use client';
+"use client"
 
-import type { GiscusProps } from '@giscus/react';
-import * as React from 'react';
+import * as React from "react"
+import type { GiscusProps } from "@giscus/react"
 
 // TODO:
 // remove this component when the issue is resolved.
@@ -23,16 +23,16 @@ export function MyGiscus({
   lang,
   loading,
 }: GiscusProps) {
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
-    if (mounted) return;
-    import('giscus');
-    setMounted(true);
+    if (mounted) return
+    import("giscus")
+    setMounted(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
-  if (!mounted) return null;
+  if (!mounted) return null
 
   return (
     <giscus-widget
@@ -52,5 +52,5 @@ export function MyGiscus({
       lang={lang}
       loading={loading}
     />
-  );
+  )
 }

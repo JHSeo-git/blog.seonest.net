@@ -1,7 +1,7 @@
-'use client';
+"use client"
 
-import 'react-medium-image-zoom/dist/styles.css';
+import "react-medium-image-zoom/dist/styles.css"
 
-import ImageZoom from 'react-medium-image-zoom';
+import ImageZoom from "react-medium-image-zoom"
 
-export const Zoom = ImageZoom;
+export const Zoom = ImageZoom

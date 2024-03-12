@@ -1,10 +1,10 @@
 ---
-title: 'Why React Re-Renders'
-description: '왜 리액트는 리렌더링 될까요? Josh.W.Comeau 블로그에서 좋은 글이 있어 옮겨보면서 이해하고 정리해보았습니다.'
-date: '2022-08-17T12:12:54.449Z'
-category: 'react'
-tags: ['React', 'Web']
-thumbnail: '/post/react/why-react-re-renders/thumbnail.png'
+title: "Why React Re-Renders"
+description: "왜 리액트는 리렌더링 될까요? Josh.W.Comeau 블로그에서 좋은 글이 있어 옮겨보면서 이해하고 정리해보았습니다."
+date: "2022-08-17T12:12:54.449Z"
+category: "react"
+tags: ["React", "Web"]
+thumbnail: "/post/react/why-react-re-renders/thumbnail.png"
 ---
 
 > joshwcomeau 블로그에서 [Why React Re-Renders](https://www.joshwcomeau.com/react/why-react-re-renders/) 를 옮긴 글입니다.
@@ -36,18 +36,18 @@ thumbnail: '/post/react/why-react-re-renders/thumbnail.png'
 
 ```jsx
 function App() {
-  return <Counter />;
+  return <Counter />
 }
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <main>
       <BigCountNumber count={count} />
       <button onClick={() => setCount(count + 1)}>Increment</button>
     </main>
-  );
+  )
 }
 
 function BigCountNumber({ count }) {
@@ -56,10 +56,10 @@ function BigCountNumber({ count }) {
       <span className="prefix">Count:</span>
       {count}
     </p>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 여기 3개 컴포넌트가 있습니다: `App`, `Counter`, `BigCountNumber`
@@ -129,11 +129,11 @@ export default App;
 
 ```jsx
 function App() {
-  return <Counter />;
+  return <Counter />
 }
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <main>
@@ -143,7 +143,7 @@ function Counter() {
       {/* 👇 기존 예시에서 추가된 부분 👇 */}
       <Decoration />
     </main>
-  );
+  )
 }
 
 function BigCountNumber({ count }) {
@@ -152,17 +152,17 @@ function BigCountNumber({ count }) {
       <span className="prefix">Count:</span>
       {count}
     </p>
-  );
+  )
 }
 
 {
   /* 👇 기존 예시에서 추가된 부분 👇 */
 }
 function Decoration() {
-  return <div className="decoration">⛵️</div>;
+  return <div className="decoration">⛵️</div>
 }
 
-export default App;
+export default App
 ```
 
 (`Decoration`을 제외한 부분은 기존 예시와 동일합니다.)
@@ -196,8 +196,8 @@ props에 `count`를 전달하지 않았는데 왜 `<Decoration />` 을 리렌더
 
 ```jsx
 function CurrentTime() {
-  const now = new Date();
-  return <p>It is currently {now.toString()}</p>;
+  const now = new Date()
+  return <p>It is currently {now.toString()}</p>
 }
 ```
 
@@ -224,9 +224,9 @@ function CurrentTime() {
 
 ```jsx
 function Decoration() {
-  return <div className="decoration">⛵️</div>;
+  return <div className="decoration">⛵️</div>
 }
-export default React.memo(Decoration);
+export default React.memo(Decoration)
 ```
 
 `Decoration` 컴포넌트를 `React.memo`로 감싸서, 리액트에게 말합니다: **"저기..., 저는 이 컴포넌트가 순수(Pure)하다는 것을 _알고 있어요._ 그래서 props가 변경되지 않는 한 리랜더링 하지 않아도 돼요."**
@@ -272,12 +272,12 @@ _pure_ 컴포넌트의 경우에 context는 "보이지 않는 props" 또는 "내
 
 ```jsx
 const GreetUser = React.memo(() => {
-  const user = React.useContext(UserContext);
+  const user = React.useContext(UserContext)
   if (!user) {
-    return 'Hi there!';
+    return "Hi there!"
   }
-  return `Hello ${user.name}!`;
-});
+  return `Hello ${user.name}!`
+})
 ```
 
 위 예시에서 `GreetUser`는 props을 가지지는 않지만 "보이지 않는" 또는 "내부" 디펜던시(리액트 상태에 저장된, 그리고 context를 통해 전달된 `user`)\_를 가지는 pure 컴포넌트 입니다.
@@ -289,10 +289,10 @@ const GreetUser = React.memo(() => {
 ```jsx
 const GreetUser = React.memo(({ user }) => {
   if (!user) {
-    return 'Hi there!';
+    return "Hi there!"
   }
-  return `Hello ${user.name}!`;
-});
+  return `Hello ${user.name}!`
+})
 ```
 
 pure 컴포넌트가 `React.useContext` hook으로 만든 **_context를 소비하는 경우에만_** 발생한다는 것을 기억하세요. context를 소비하지 않는 pure 컴포넌트들에 대해서 걱정할 필요는 없습니다.
@@ -310,10 +310,10 @@ React에 대해 쉽게 잊어버리는 것 중 하나는 컴포넌트가 JavaScr
 ```jsx
 function App() {
   const dog = {
-    name: 'Spot',
-    breed: 'Jack Russell Terrier',
-  };
-  return <DogProfile dog={dog} />;
+    name: "Spot",
+    breed: "Jack Russell Terrier",
+  }
+  return <DogProfile dog={dog} />
 }
 ```
 

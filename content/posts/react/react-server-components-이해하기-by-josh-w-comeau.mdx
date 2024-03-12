@@ -1,10 +1,10 @@
 ---
-date: '2023-09-10T06:09:08.413Z'
+date: "2023-09-10T06:09:08.413Z"
 category: react
 title: React Server Components 이해하기(by Josh.W.Comeau)
 description: Josh W Comeau가 설명해주는 React Server Components
 published: true
-thumbnail: '/post/react/react-server-components-이해하기-by-josh-w-comeau/thumbnail.png'
+thumbnail: "/post/react/react-server-components-이해하기-by-josh-w-comeau/thumbnail.png"
 ---
 
 ## 들어가면서
@@ -194,14 +194,15 @@ JavaScript가 다운로드되고 파싱이 완료되면 React 앱이 부팅되�
 예를 들어, 다음은 Next.js(이젠 레거시가 된 "Pages" Router 사용)를 사용하는 모습입니다:
 
 ```jsx
-import db from 'imaginary-db';
+import db from "imaginary-db"
+
 // 이 코드는 서버에서만 실행됩니다:
 export async function getServerSideProps() {
-  const link = db.connect('localhost', 'root', 'passw0rd');
-  const data = await db.query(link, 'SELECT * FROM products');
+  const link = db.connect("localhost", "root", "passw0rd")
+  const data = await db.query(link, "SELECT * FROM products")
   return {
     props: { data },
-  };
+  }
 }
 // 이 코드는 서버와 클라이언트 모두에서 실행됩니다:
 export default function Homepage({ data }) {
@@ -215,7 +216,7 @@ export default function Homepage({ data }) {
         </article>
       ))}
     </>
-  );
+  )
 }
 ```
 
@@ -242,11 +243,11 @@ React Server Components는 완전히 새로운 패러다임의 이름입니다. 
 다음 "Server Component"의 간단한 예시입니다:
 
 ```jsx
-import db from 'imaginary-db';
+import db from "imaginary-db"
 
 async function Homepage() {
-  const link = db.connect('localhost', 'root', 'passw0rd');
-  const data = await db.query(link, 'SELECT * FROM products');
+  const link = db.connect("localhost", "root", "passw0rd")
+  const data = await db.query(link, "SELECT * FROM products")
 
   return (
     <>
@@ -258,10 +259,10 @@ async function Homepage() {
         </article>
       ))}
     </>
-  );
+  )
 }
 
-export default Homepage;
+export default Homepage
 ```
 
 수년 간 React를 사용해 온 사람(저자)으로서, 이 코드는 처음에는 **완전히 엉망**으로 보였습니다. 😅
@@ -342,15 +343,16 @@ React Server Components 패러다임에서는 **모든 컴포넌트가 기본적
 이를 위해 새로운 **지시어**가 도입되었습니다:
 
 ```jsx {1}
-'use client';
-import React from 'react';
+"use client"
+
+import React from "react"
 
 function Counter() {
-  const [count, setCount] = React.useState(0);
-  return <button onClick={() => setCount(count + 1)}>Current value: {count}</button>;
+  const [count, setCount] = React.useState(0)
+  return <button onClick={() => setCount(count + 1)}>Current value: {count}</button>
 }
 
-export default Counter;
+export default Counter
 ```
 
 제일 윗 줄에 독립형 문자열인 `'use client'`는 이 파일의 컴포넌트가 Client Components이며, 클라이언트에서 리렌더링될 수 있도록 JavaScript 번들에
@@ -397,7 +399,7 @@ React Server Components에 익숙해졌을 때 맨 처음 가졌던 질문 중 �
 
 ```jsx
 function HitCounter({ hits }) {
-  return <div>Number of hits: {hits}</div>;
+  return <div>Number of hits: {hits}</div>
 }
 ```
 
@@ -450,22 +452,23 @@ Client Components가 Server Components를 렌더링할 수 없다는 사실을 �
 예시와 함께 좀 더 살펴보겠습니다:
 
 ```jsx
-'use client';
+"use client"
 
-import { DARK_COLORS, LIGHT_COLORS } from '@/constants.js';
-import Header from './Header';
-import MainContent from './MainContent';
+import { DARK_COLORS, LIGHT_COLORS } from "@/constants.js"
+
+import Header from "./Header"
+import MainContent from "./MainContent"
 
 function Homepage() {
-  const [colorTheme, setColorTheme] = React.useState('light');
-  const colorVariables = colorTheme === 'light' ? LIGHT_COLORS : DARK_COLORS;
+  const [colorTheme, setColorTheme] = React.useState("light")
+  const colorVariables = colorTheme === "light" ? LIGHT_COLORS : DARK_COLORS
 
   return (
     <body style={colorVariables}>
       <Header />
       <MainContent />
     </body>
-  );
+  )
 }
 ```
 
@@ -480,15 +483,15 @@ function Homepage() {
 ```jsx
 // /components/ColorProvider.js
 
-'use client';
+"use client"
 
-import { DARK_COLORS, LIGHT_COLORS } from '@/constants.js';
+import { DARK_COLORS, LIGHT_COLORS } from "@/constants.js"
 
 function ColorProvider({ children }) {
-  const [colorTheme, setColorTheme] = React.useState('light');
-  const colorVariables = colorTheme === 'light' ? LIGHT_COLORS : DARK_COLORS;
+  const [colorTheme, setColorTheme] = React.useState("light")
+  const colorVariables = colorTheme === "light" ? LIGHT_COLORS : DARK_COLORS
 
-  return <body style={colorVariables}>{children}</body>;
+  return <body style={colorVariables}>{children}</body>
 }
 ```
 
@@ -497,9 +500,9 @@ function ColorProvider({ children }) {
 ```jsx
 // /components/Homepage.js
 
-import Header from './Header';
-import MainContent from './MainContent';
-import ColorProvider from './ColorProvider';
+import ColorProvider from "./ColorProvider"
+import Header from "./Header"
+import MainContent from "./MainContent"
 
 function Homepage() {
   return (
@@ -507,7 +510,7 @@ function Homepage() {
       <Header />
       <MainContent />
     </ColorProvider>
-  );
+  )
 }
 ```
 
@@ -540,7 +543,7 @@ Client Components인 `ColorProvider`는 여전히 `Header`와 `MainContent`의 �
 
 ```jsx
 function Homepage() {
-  return <p>Hello world!</p>;
+  return <p>Hello world!</p>
 }
 ```
 
@@ -556,11 +559,11 @@ React Server Components에서 모든 컴포넌트는 기본적으로 Server Comp
     <p>Hello world!</p>
     <script src="/static/js/bundle.js"></script>
     <script>
-      self.__next['$Homepage-1'] = {
-        type: 'p',
+      self.__next["$Homepage-1"] = {
+        type: "p",
         props: null,
-        children: 'Hello world!',
-      };
+        children: "Hello world!",
+      }
     </script>
   </body>
 </html>
@@ -581,11 +584,11 @@ HTML 문서에는 React 애플리케이션이 생성한 UI인 "Hello world!"가 
 마지막으로 인라인 JavaScript가 포함된 두 번째 `<script>` 태그가 있습니다:
 
 ```js
-self.__next['$Homepage-1'] = {
-  type: 'p',
+self.__next["$Homepage-1"] = {
+  type: "p",
   props: null,
-  children: 'Hello world!',
-};
+  children: "Hello world!",
+}
 ```
 
 이 부분이 정말로 흥미로운 부분입니다. 기본적으로 우리가 여기서 하고 있는 일은 React에게 "`Homapage` 컴포넌트 코드가 없지만 걱정하지 마세요.
@@ -650,7 +653,7 @@ Next.js에서 서버 전용 코드를 실행할 수 있었기 때문에 React �
 
 ```js
 function exampleJavaScriptFunction(param) {
-  return 'Hello world!';
+  return "Hello world!"
 }
 ```
 

@@ -1,10 +1,10 @@
 ---
-title: 'Nextjs Layouts RFC Update'
-description: 'Next.js의 새로운 Route와 Layouts에 대한 RFC 내용이 업데이트 되었습니다. 그 내용을 옮겨보았습니다.'
-date: '2022-09-13T13:46:53.679Z'
-category: 'react'
-tags: ['Next.js', 'React', 'Web']
-thumbnail: '/post/react/nextjs-layout-rfc-update/thumbnail.png'
+title: "Nextjs Layouts RFC Update"
+description: "Next.js의 새로운 Route와 Layouts에 대한 RFC 내용이 업데이트 되었습니다. 그 내용을 옮겨보았습니다."
+date: "2022-09-13T13:46:53.679Z"
+category: "react"
+tags: ["Next.js", "React", "Web"]
+thumbnail: "/post/react/nextjs-layout-rfc-update/thumbnail.png"
 ---
 
 ## 들어가면서
@@ -270,7 +270,7 @@ React 컴포넌트를 default export하는 `template.js` 파일을 추가하여 
 ```jsx
 // template.js
 export default function Template({ children }) {
-  return <Container>{children}</Container>;
+  return <Container>{children}</Container>
 }
 ```
 
@@ -404,7 +404,7 @@ prop을 이름을 가진 "slot"(`@` prefix를 가진 폴더)을 만들고 내부
 ```jsx
 // analytics/layout.js
 export default function Layout({ customProp }) {
-  return <>{customProp}</>;
+  return <>{customProp}</>
 }
 ```
 
@@ -429,7 +429,7 @@ export default function Layout({ views, audience }) {
         {audience}
       </div>
     </>
-  );
+  )
 }
 ```
 
@@ -478,7 +478,7 @@ intercepting route와 parallel route를 결합하여 특정한 라우팅 동작�
 ```jsx
 // /@modal/(..)photo/[id]/page.js
 export default function PhotoPage() {
-  const router = useRouter();
+  const router = useRouter()
 
   return (
     <Modal
@@ -489,7 +489,7 @@ export default function PhotoPage() {
     >
       {/* Page Content */}
     </Modal>
-  );
+  )
 }
 ```
 
@@ -510,12 +510,12 @@ route를 결정하기 위해 data나 context처럼 동적인 정보가 필요할
 ```jsx
 // profile/layout.js
 export async function getServerSideProps({ params }) {
-  const { accountType } = await fetchAccount(params.slug);
-  return { props: { isUser: accountType === 'user' } };
+  const { accountType } = await fetchAccount(params.slug)
+  return { props: { isUser: accountType === "user" } }
 }
 
 export default function UserOrTeamLayout({ isUser, user, team }) {
-  return <>{isUser ? user : team}</>;
+  return <>{isUser ? user : team}</>
 }
 ```
 

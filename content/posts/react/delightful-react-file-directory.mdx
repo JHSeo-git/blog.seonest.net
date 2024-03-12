@@ -1,10 +1,10 @@
 ---
-title: 'Delightful React File/Directory Structure'
-description: '리액트 프로젝트 파일, 디렉토리 구조를 어떻게 구성해야 될까요? 여기서 그 중 하나의 방법을 소개합니다.'
-date: '2022-03-17T14:16:29.568Z'
-category: 'react'
-tags: ['React', 'Web']
-thumbnail: '/post/react/delightful-react-file-directory/thumbnail.png'
+title: "Delightful React File/Directory Structure"
+description: "리액트 프로젝트 파일, 디렉토리 구조를 어떻게 구성해야 될까요? 여기서 그 중 하나의 방법을 소개합니다."
+date: "2022-03-17T14:16:29.568Z"
+category: "react"
+tags: ["React", "Web"]
+thumbnail: "/post/react/delightful-react-file-directory/thumbnail.png"
 ---
 
 > https://www.joshwcomeau.com/react/file-structure/
@@ -141,8 +141,8 @@ src
 `index.tsx`를 열어보겠습니다.
 
 ```tsx
-export * from './FileViewer';
-export { default } from './FileViewer';
+export * from "./FileViewer"
+export { default } from "./FileViewer"
 ```
 
 기본적으로 redirection 입니다. 우리가 이 파일을 import할 때 같은 폴더 내 `FileViewer.tsx`를 가르키도록 합니다. `FileViewer.tsx`는 _actual_ 코드를 가지고 있습니다.
@@ -156,13 +156,13 @@ export { default } from './FileViewer';
 import를 단순화하기 위해섭니다. 그렇지 않다면 component 폴더 안으로 drill 해야만 합니다.
 
 ```tsx
-import FileViewer from '../FileViewer/FileViewer';
+import FileViewer from "../FileViewer/FileViewer"
 ```
 
 `index.js`를 통한다면,
 
 ```tsx
-import FileViewer from '../FileViewer';
+import FileViewer from "../FileViewer"
 ```
 
 #### 왜 이렇게 사용합니까?

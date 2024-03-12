@@ -1,14 +1,13 @@
-import { allPosts } from 'contentlayer/generated';
-import Link from 'next/link';
-
-import { postSorter } from '@/utils/contentlayer-utils';
+import Link from "next/link"
+import { postSorter } from "@/utils/contentlayer-utils"
+import { allPosts } from "contentlayer/generated"
 
 export const metadata = {
-  title: 'About',
-};
+  title: "About",
+}
 
 async function AbountPage() {
-  const latestPosts = allPosts.sort(postSorter).slice(0, 5);
+  const latestPosts = allPosts.sort(postSorter).slice(0, 5)
 
   return (
     <main className="mx-auto max-w-4xl divide-y-2 py-5">
@@ -162,7 +161,7 @@ async function AbountPage() {
         </ul>
       </article>
     </main>
-  );
+  )
 }
 
-export default AbountPage;
+export default AbountPage

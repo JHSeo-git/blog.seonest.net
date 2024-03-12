@@ -1,10 +1,10 @@
 ---
-title: 'Remix 맛보기 (1)'
-description: 'Remix에 대해 한 번 살펴보기 위해서 공식 예제를 따라가며 Remix에 대해서 살펴보았습니다. 2개 포스트로 나눠서 작성해보았고 이 글은 첫 번째 글입니다.'
-date: '2022-06-26T12:57:16.955Z'
-category: 'react'
-tags: ['React', 'Remix', 'Web']
-thumbnail: '/post/react/remix-맛보기-1/thumbnail.png'
+title: "Remix 맛보기 (1)"
+description: "Remix에 대해 한 번 살펴보기 위해서 공식 예제를 따라가며 Remix에 대해서 살펴보았습니다. 2개 포스트로 나눠서 작성해보았고 이 글은 첫 번째 글입니다."
+date: "2022-06-26T12:57:16.955Z"
+category: "react"
+tags: ["React", "Remix", "Web"]
+thumbnail: "/post/react/remix-맛보기-1/thumbnail.png"
 ---
 
 React 18이 업데이트 되면서 다양한 SSR 프레임워크에서 발 빠르게 움직이고 있습니다.
@@ -205,7 +205,7 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
-  );
+  )
 }
 ```
 
@@ -310,7 +310,7 @@ module.exports = {
 ```tsx
 // app/routes/jokes.tsx
 
-import { Outlet } from '@remix-run/react';
+import { Outlet } from "@remix-run/react"
 
 export default function JokesRoute() {
   return (
@@ -320,7 +320,7 @@ export default function JokesRoute() {
         <Outlet />
       </main>
     </div>
-  );
+  )
 }
 ```
 
@@ -371,19 +371,19 @@ Remix에는 **dynamic segment**에 대한 컨벤션이 있습니다.
 - `params.jokesId`: 파일명과 동일한 param명을 가집니다.
 
 ```tsx
-import { useParams } from '@remix-run/react';
+import { useParams } from "@remix-run/react"
 
 export function loader({ params }) {
-  const id = params.jokesId;
+  const id = params.jokesId
 }
 
 export function action({ params }) {
-  const id = params.jokesId;
+  const id = params.jokesId
 }
 
 export default function JokesIdRoute() {
-  const params = useParams();
-  const id = params.jokesId;
+  const params = useParams()
+  const id = params.jokesId
 }
 ```
 
@@ -418,7 +418,7 @@ app
 // app/routes/files/$.jsx
 
 export function loader({ params }) {
-  params['*']; // "images/work/flyer.jpg"
+  params["*"] // "images/work/flyer.jpg"
 }
 ```
 
@@ -448,7 +448,7 @@ export default function JokesIndexRoute() {
       <p>Here's a random joke:</p>
       <p>I was wondering why the frisbee was getting bigger, then it hit me.</p>
     </div>
-  );
+  )
 }
 ```
 
@@ -673,8 +673,9 @@ npx prisma db push
 ![prisma-client2](https://files.seonest.net/images/qnfqnfqnf/post/278/image.png)
 
 ```ts
-import { PrismaClient } from '@prisma/client';
-const db = new PrismaClient();
+import { PrismaClient } from "@prisma/client"
+
+const db = new PrismaClient()
 ```
 
 > 만약 DB가 엉망(?)이 되었다면, `prisma/dev.db`를 삭제하고 다시 `npx prisma db push`를 실행하면 초기 DB를 다시 생성할 수 있습니다.
@@ -744,8 +745,9 @@ package.json에 prisma.seed 항목에 해당 커맨드를 등록해두면 Databa
 ### Connect to the Database
 
 ```ts
-import { PrismaClient } from '@prisma/client';
-const db = new PrismaClient();
+import { PrismaClient } from "@prisma/client"
+
+const db = new PrismaClient()
 ```
 
 PrismaClient 객체를 생성하면 Database에 연결하는 것은 끝입니다.(참 간편합니다!)
@@ -763,27 +765,27 @@ db 객체 생성을 재 생성하지 않도록 하기 위해 `app/utils/db.serve
 ```ts
 // app/utils/db.server.ts
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client"
 
-let db: PrismaClient;
+let db: PrismaClient
 
 declare global {
-  var __db: PrismaClient | undefined;
+  var __db: PrismaClient | undefined
 }
 
 // this is needed because in development we don't want to restart
 // the server with every change, but we want to make sure we don't
 // create a new connection to the DB with every change either.
-if (process.env.NODE_ENV === 'production') {
-  db = new PrismaClient();
+if (process.env.NODE_ENV === "production") {
+  db = new PrismaClient()
 } else {
   if (!global.__db) {
-    global.__db = new PrismaClient();
+    global.__db = new PrismaClient()
   }
-  db = global.__db;
+  db = global.__db
 }
 
-export { db };
+export { db }
 ```
 
 파일명 컨벤션을 `.server`를 붙여서 생성했습니다.
@@ -806,31 +808,29 @@ Remix에서는 데이터를 _load_ 하기 위해 [loader](https://remix.run/docs
 그리고 [useLoaderData](https://remix.run/docs/en/v1/api/remix#useloaderdata) hook을 통해 React function에서 사용됩니다.
 
 ```tsx
-import type { LoaderFunction } from '@remix-run/node';
-import { json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
-import type { User } from '@prisma/client';
+import type { User } from "@prisma/client"
+import { json, type LoaderFunction } from "@remix-run/node"
+import { useLoaderData } from "@remix-run/react"
+import { db } from "~/utils/db.server"
 
-import { db } from '~/utils/db.server';
-
-type LoaderData = { users: Array<User> };
+type LoaderData = { users: Array<User> }
 
 export const loader: LoaderFunction = async () => {
   const data: LoaderData = {
     users: await db.user.findMany(),
-  };
-  return json(data);
-};
+  }
+  return json(data)
+}
 
 export default function Users() {
-  const data = useLoaderData<LoaderData>();
+  const data = useLoaderData<LoaderData>()
   return (
     <ul>
       {data.users.map((user) => (
         <li key={user.id}>{user.name}</li>
       ))}
     </ul>
-  );
+  )
 }
 ```
 
@@ -866,19 +866,19 @@ route module에서 원하는 데이터를 정확히 매칭할 수 있기 때문�
 
 ```ts
 type LoaderData = {
-  jokeListItems: Array<{ id: string; name: string }>;
-};
+  jokeListItems: Array<{ id: string; name: string }>
+}
 
 export const loader: LoaderFunction = async () => {
   const data: LoaderData = {
     jokeListItems: await db.joke.findMany({
       take: 5,
       select: { id: true, name: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     }),
-  };
-  return json(data);
-};
+  }
+  return json(data)
+}
 ```
 
 > GraphQL을 백엔드에서 사용하고 있나요?
@@ -894,9 +894,9 @@ export const loader: LoaderFunction = async () => {
 우리는 `useLoaderData`에서 제네릭 유형을 사용합니다.
 
 ```ts
-type LoaderData = { users: Array<User> };
+type LoaderData = { users: Array<User> }
 
-const data = useLoaderData<LoaderData>();
+const data = useLoaderData<LoaderData>()
 ```
 
 이를 통해 타입 완전한 data를 사용할 수 있습니다. 그러나 `loader`와 `useLoaderData`가 완전히 다른 환경(서버/클라이언트)에서 실행되기 때문에 실제로 Type Safety를 보장하지 못합니다.

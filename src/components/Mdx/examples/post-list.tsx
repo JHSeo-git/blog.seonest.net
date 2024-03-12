@@ -1,8 +1,8 @@
-'use client';
+"use client"
 
-import { allPosts } from 'contentlayer/generated';
+import { allPosts } from "contentlayer/generated"
 
-import { PostPreview } from './post-preview';
+import { PostPreview } from "./post-preview"
 
 function PostList() {
   return (
@@ -11,7 +11,7 @@ function PostList() {
         <PostPreview key={post._id} slug={post.slugAsParams} />
       ))}
     </div>
-  );
+  )
 }
 
-export { PostList };
+export { PostList }

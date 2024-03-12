@@ -1,10 +1,10 @@
 ---
-title: 'React RFC: useEvent()'
-description: 'React 팀에서 새로운 Hook인 useEvent()에 대한 RFC를 공개했습니다. 어떤 문제점에서 출발했는지 살펴보았습니다.'
-date: '2022-05-14T15:01:34.471Z'
-category: 'react'
-tags: ['React', 'Web']
-thumbnail: '/post/react/react-rfc-useevent/thumbnail.png'
+title: "React RFC: useEvent()"
+description: "React 팀에서 새로운 Hook인 useEvent()에 대한 RFC를 공개했습니다. 어떤 문제점에서 출발했는지 살펴보았습니다."
+date: "2022-05-14T15:01:34.471Z"
+category: "react"
+tags: ["React", "Web"]
+thumbnail: "/post/react/react-rfc-useevent/thumbnail.png"
 ---
 
 > A Hook to define an event handler with an always-stable function identity
@@ -27,28 +27,28 @@ thumbnail: '/post/react/react-rfc-useevent/thumbnail.png'
 
 ```tsx
 function _SendButton({ onClick }: { onClick: () => void }) {
-  console.log('render SendButton');
-  return <button onClick={onClick}>send</button>;
+  console.log("render SendButton")
+  return <button onClick={onClick}>send</button>
 }
 
-const SendButton = React.memo(_SendButton);
+const SendButton = React.memo(_SendButton)
 
 export default function App() {
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState("")
   const onInput = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.currentTarget.value);
-  }, []);
+    setText(e.currentTarget.value)
+  }, [])
 
   const send = () => {
-    console.log('send:', text);
-  };
+    console.log("send:", text)
+  }
 
   return (
     <div>
       <input value={text} onChange={onInput} />
       <SendButton onClick={send} />
     </div>
-  );
+  )
 }
 ```
 
@@ -58,8 +58,8 @@ export default function App() {
 
 ```jsx
 const send = React.useCallback(() => {
-  console.log('send:', text);
-}, []);
+  console.log("send:", text)
+}, [])
 ```
 
 `useCallback`으로 `send`함수를 감싼다면 리렌더링 시에 함수가 재생성되지 않습니다. 그러나 이 예시에는 문제가 있습니다. deps 의존성 배열이 비어있기때문에 한 번만 생성되므로 최초 `text` 상태인 빈 값 만 보여지게 됩니다.
@@ -70,8 +70,8 @@ hook은 fiber 트리에서 _실제 갈고리처럼_ 의존성 data를 가져오�
 
 ```jsx
 const send = React.useCallback(() => {
-  console.log('send:', text);
-}, [text]);
+  console.log("send:", text)
+}, [text])
 ```
 
 그러나... `text` 의존성이 있는 한 리렌더링 문제를 피할 수는 없습니다.
@@ -86,24 +86,24 @@ room에 들어가거나 메시지를 받을 때 선택된 `theme`을 가진 toas
 
 ```jsx
 function Chat({ selectedRoom }) {
-  const [muted, setMuted] = useState(false);
-  const theme = useContext(ThemeContext);
+  const [muted, setMuted] = useState(false)
+  const theme = useContext(ThemeContext)
 
   useEffect(() => {
-    const socket = createSocket('/chat/' + selectedRoom);
-    socket.on('connected', async () => {
-      await checkConnection(selectedRoom);
-      showToast(theme, 'Connected to ' + selectedRoom);
-    });
-    socket.on('message', (message) => {
-      showToast(theme, 'New message: ' + message);
+    const socket = createSocket("/chat/" + selectedRoom)
+    socket.on("connected", async () => {
+      await checkConnection(selectedRoom)
+      showToast(theme, "Connected to " + selectedRoom)
+    })
+    socket.on("message", (message) => {
+      showToast(theme, "New message: " + message)
       if (!muted) {
-        playSound();
+        playSound()
       }
-    });
-    socket.connect();
-    return () => socket.dispose();
-  }, [selectedRoom, theme, muted]); // 🟡 의존성 중 하나라도 변경되면 재 실행됩니다.
+    })
+    socket.connect()
+    return () => socket.dispose()
+  }, [selectedRoom, theme, muted]) // 🟡 의존성 중 하나라도 변경되면 재 실행됩니다.
   // ...
 }
 ```
@@ -142,7 +142,7 @@ function Chat({ selectedRoom }) {
 > RFC단계이며 정식 버전에 곧 릴리즈 될 것으로...
 
 ```jsx
-useEvent(handler);
+useEvent(handler)
 ```
 
 위 문제들로 인해 `useEvent()` 등장하게 됩니다.
@@ -153,18 +153,18 @@ memoize된 callback(`useCallback`)을 반환하는 hook입니다.
 
 ```jsx
 function useEvent(handler) {
-  const handlerRef = useRef(null);
+  const handlerRef = useRef(null)
 
   // layout effect 전에 실행 합니다.
   useLayoutEffect(() => {
-    handlerRef.current = handler;
-  });
+    handlerRef.current = handler
+  })
 
   return useCallback((...args) => {
     // 렌더리 중에 호출되면 에러를 throw 합니다.
-    const fn = handlerRef.current;
-    return fn(...args);
-  }, []);
+    const fn = handlerRef.current
+    return fn(...args)
+  }, [])
 }
 ```
 
@@ -194,8 +194,8 @@ function useEvent(handler) {
 
 ```tsx
 const send = useEvent(() => {
-  console.log('send:', text);
-});
+  console.log("send:", text)
+})
 ```
 
 `send`함수를 `useEvent()`로 감싸서 처리하는 것으로 간단하게 가능합니다.
@@ -245,15 +245,15 @@ text가 바뀌어도 함수가 재생성되지 않습니다.
 
 ```jsx
 function ThemedGrid() {
-  const theme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext)
   const renderItem = useCallback(
     (item) => {
       // 렌더링 시 호출되기에 이벤트가 아닙니다.
-      return <Row {...item} theme={theme} />;
+      return <Row {...item} theme={theme} />
     },
     [theme]
-  );
-  return <Grid renderItem={renderItem} />;
+  )
+  return <Grid renderItem={renderItem} />
 }
 ```
 
@@ -281,16 +281,16 @@ function ThemedGrid() {
 ref를 이용하여 대체할 수 있는 hook을 만들어보면서 더 이해해보려 합니다.
 
 ```tsx
-const [text, setText] = React.useState('');
-const textRef = React.useRef(text);
+const [text, setText] = React.useState("")
+const textRef = React.useRef(text)
 
 React.useLayoutEffect(() => {
-  textRef.current = text;
-}, [text]);
+  textRef.current = text
+}, [text])
 
 const send = React.useCallback(() => {
-  console.log('send:', textRef.current);
-}, []);
+  console.log("send:", textRef.current)
+}, [])
 ```
 
 > concurrent mode에서 ref를 셋팅하는 것은 안전하지 않기 때문에 useEffect보다 더 이른시기에 동작하는 useLayoutEffect에서 사용합니다.
@@ -302,21 +302,21 @@ const send = React.useCallback(() => {
 
 ```jsx
 function useRefData(data) {
-  const ref = React.useRef(data);
+  const ref = React.useRef(data)
   React.useLayoutEffect(() => {
-    ref.current = data;
-  }, [data]);
-  return ref;
+    ref.current = data
+  }, [data])
+  return ref
 }
 ```
 
 ```jsx
-const textRef1 = useRefData(text1);
-const textRef2 = useRefData(text2);
+const textRef1 = useRefData(text1)
+const textRef2 = useRefData(text2)
 
 const send = React.useCallback(() => {
-  console.log('send:', textRef1.current, textRef2.current);
-}, []);
+  console.log("send:", textRef1.current, textRef2.current)
+}, [])
 ```
 
 `useRefData`라는 hook을 만들어 조금 더 보기 좋아보이게 바꾸어 보았습니다.
@@ -324,34 +324,34 @@ const send = React.useCallback(() => {
 
 ```jsx
 function useRefData(...args) {
-  const refs = args.map(React.useRef);
+  const refs = args.map(React.useRef)
   React.useLayoutEffect(() => {
     for (let i = 0; i < args.length; i++) {
-      refs[i].current = args[i];
+      refs[i].current = args[i]
     }
-  }, args);
+  }, args)
 
-  return React.useCallback(() => refs.map((ref) => ref.current), []);
+  return React.useCallback(() => refs.map((ref) => ref.current), [])
 }
 ```
 
 ```jsx
-const getData = useRefData(text1, text2);
+const getData = useRefData(text1, text2)
 
 const send = React.useCallback(() => {
-  const [text1, text2] = getData();
-  console.log('send:', text1, text2);
-}, [getData]);
+  const [text1, text2] = getData()
+  console.log("send:", text1, text2)
+}, [getData])
 ```
 
 `useEvent`와 매우 흡사한 느낌입니다. `useEvent`와 비교해서 거의 동일한 개념적 구현을 가집니다.
 
 ```jsx
 const rawCallback = () => {
-  console.log('send:', text1, text2);
-};
+  console.log("send:", text1, text2)
+}
 
-const callback = useRefData(rawCallback)()[0];
+const callback = useRefData(rawCallback)()[0]
 ```
 
 1. `useRefData`: 입력 데이터를 안정화

@@ -1,11 +1,11 @@
 ---
-title: 'ECMAScript 2022'
-description: '얼마 전 2022년 6월 22일에 ECMA International TC39는 ECMAScript 2022(EMCA-262 13판)를 승인했습니다. ES2022에 대한 내용을 살펴보았습니다.'
-date: '2022-07-10T13:06:28.223Z'
-category: 'web'
-tags: ['ECMAScript', 'JavaScript', 'Web']
-thumbnail: '/post/web/ecmascript-2022/thumbnail.png'
-update: '2023-03-26T13:37:49Z'
+title: "ECMAScript 2022"
+description: "얼마 전 2022년 6월 22일에 ECMA International TC39는 ECMAScript 2022(EMCA-262 13판)를 승인했습니다. ES2022에 대한 내용을 살펴보았습니다."
+date: "2022-07-10T13:06:28.223Z"
+category: "web"
+tags: ["ECMAScript", "JavaScript", "Web"]
+thumbnail: "/post/web/ecmascript-2022/thumbnail.png"
+update: "2023-03-26T13:37:49Z"
 ---
 
 얼마 전 2022년 6월 22일에 ECMA International TC39는 ECMAScript 2022(EMCA-262 13판)를 승인했습니다.
@@ -96,11 +96,11 @@ stage 3에 있는 제안들은 대부분의 경우 좋은 제안들이고 명세
 ```js
 class Counter {
   clicked() {
-    this.x++;
+    this.x++
   }
 
   constructor() {
-    this.x = 0;
+    this.x = 0
   }
 }
 ```
@@ -109,10 +109,10 @@ class Counter {
 
 ```js
 class Counter {
-  x = 0;
+  x = 0
 
   clicked() {
-    this.x++;
+    this.x++
   }
 
   constructor() {}
@@ -125,11 +125,11 @@ class Counter {
 
 ```js
 class Counter {
-  x = 0;
-  #privateField = 'private Field';
+  x = 0
+  #privateField = "private Field"
 
   clicked() {
-    this.x++;
+    this.x++
   }
 
   constructor() {}
@@ -142,36 +142,36 @@ ES5에서 static 필드, 메소드를 사용하기 위해서는 prototype 방식
 
 ```js
 class Counter {
-  x = 0;
-  #privateField = 'private Field';
+  x = 0
+  #privateField = "private Field"
 
   clicked() {
-    this.x++;
+    this.x++
   }
 
   constructor() {}
 }
 
-Counter.staticField = 'static field';
+Counter.staticField = "static field"
 Counter.staticMethod = function () {
-  console.log('static method');
-};
+  console.log("static method")
+}
 ```
 
 ES2022에서는 `static` 을 붙이면 정적으로 생성되어 사용할 수 있습니다.
 
 ```js
 class Counter {
-  x = 0;
-  #privateField = 'private Field';
+  x = 0
+  #privateField = "private Field"
 
-  static staticField = 'static field';
+  static staticField = "static field"
   static staticMethod() {
-    console.log('static method');
+    console.log("static method")
   }
 
   clicked() {
-    this.x++;
+    this.x++
   }
 
   constructor() {}
@@ -182,16 +182,16 @@ class Counter {
 
 ```js
 class Counter {
-  x = 0;
-  #privateField = 'private Field';
+  x = 0
+  #privateField = "private Field"
 
-  static #staticField = 'static field';
+  static #staticField = "static field"
   static #staticMethod() {
-    console.log('static method');
+    console.log("static method")
   }
 
   clicked() {
-    this.x++;
+    this.x++
   }
 
   constructor() {}
@@ -208,21 +208,21 @@ private 필드와 관련이 있는 기능입니다. Class내에 필드가 privat
 
 ```js
 class C {
-  #data = null; // populated later
+  #data = null // populated later
 
   get #getter() {
     if (!this.#data) {
-      throw new Error('no data yet!');
+      throw new Error("no data yet!")
     }
-    return this.#data;
+    return this.#data
   }
 
   static isC(obj) {
     try {
-      obj.#getter;
-      return true;
+      obj.#getter
+      return true
     } catch {
-      return false; // oops! might have gotten here because `#getter` threw :-(
+      return false // oops! might have gotten here because `#getter` threw :-(
     }
   }
 }
@@ -232,14 +232,14 @@ class C {
 
 ```js
 class C {
-  #brand;
+  #brand
 
   #method() {}
 
   get #getter() {}
 
   static isC(obj) {
-    return #brand in obj && #method in obj && #getter in obj;
+    return #brand in obj && #method in obj && #getter in obj
   }
 }
 ```
@@ -311,27 +311,27 @@ class C {
 플래그 `d` 를 regex에 작성하면 `exec`, `match` 등을 사용하면 매칭되는 부분의 시작과 끝의 인덱스 정보를 얻을 수 있습니다.
 
 ```js
-const re1 = /a+(?<Z>z)?/d;
+const re1 = /a+(?<Z>z)?/d
 
 // indices are relative to start of the input string:
-const s1 = 'xaaaz';
-const m1 = re1.exec(s1);
-m1.indices[0][0] === 1;
-m1.indices[0][1] === 5;
-s1.slice(...m1.indices[0]) === 'aaaz';
+const s1 = "xaaaz"
+const m1 = re1.exec(s1)
+m1.indices[0][0] === 1
+m1.indices[0][1] === 5
+s1.slice(...m1.indices[0]) === "aaaz"
 
-m1.indices[1][0] === 4;
-m1.indices[1][1] === 5;
-s1.slice(...m1.indices[1]) === 'z';
+m1.indices[1][0] === 4
+m1.indices[1][1] === 5
+s1.slice(...m1.indices[1]) === "z"
 
-m1.indices.groups['Z'][0] === 4;
-m1.indices.groups['Z'][1] === 5;
-s1.slice(...m1.indices.groups['Z']) === 'z';
+m1.indices.groups["Z"][0] === 4
+m1.indices.groups["Z"][1] === 5
+s1.slice(...m1.indices.groups["Z"]) === "z"
 
 // capture groups that are not matched return `undefined`:
-const m2 = re1.exec('xaaay');
-m2.indices[1] === undefined;
-m2.indices.groups['Z'] === undefined;
+const m2 = re1.exec("xaaay")
+m2.indices[1] === undefined
+m2.indices.groups["Z"] === undefined
 ```
 
 ![regexp-d](https://files.seonest.net/images/qnfqnfqnf/post/298/image.png)
@@ -343,8 +343,8 @@ m2.indices.groups['Z'] === undefined;
 이젠 모듈 파일 내에서 `await` 함수를 사용하기 위해 IIFE 패턴 등을 사용하지 않고도 함수 그대로 사용할 수 있습니다.
 
 ```js
-const response = await fetch('http://example.com/foo.json');
-export const result = await response.json();
+const response = await fetch("http://example.com/foo.json")
+export const result = await response.json()
 ```
 
 ![top-level-await](https://files.seonest.net/images/qnfqnfqnf/post/300/image.png)
@@ -366,8 +366,8 @@ JavaScript는 거의 모든 것이 객체이기에 Python 처럼 처리하기는
 그래서 메소드 형태로 표준이 채택되었습니다.
 
 ```js
-const numbers = [1, 2, 3, 4, 5];
-numbers.at(-1); // 5
+const numbers = [1, 2, 3, 4, 5]
+numbers.at(-1) // 5
 ```
 
 ![at](https://files.seonest.net/images/qnfqnfqnf/post/302/image.png)

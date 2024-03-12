@@ -1,17 +1,10 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+  "files.associations": {
+    "*.css": "tailwindcss"
   },
-  "editor.formatOnSave": true,
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "json"],
-  // @see https://github.com/tailwindlabs/tailwindcss/discussions/5258#discussioncomment-1979394
-  "css.lint.unknownAtRules": "ignore",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "tailwindCSS.experimental.classRegex": [["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]]
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ]
 }

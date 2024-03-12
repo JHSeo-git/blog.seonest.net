@@ -1,5 +1,5 @@
 ---
-date: '2023-02-25T01:49:27.231Z'
+date: "2023-02-25T01:49:27.231Z"
 category: react
 title: Next.js 13.2
 description: Next.js App Router(/app) Major 업데이트
@@ -49,12 +49,12 @@ App Router(`app`)을 통해 검색 엔진을 최적화하는 방법을 재설계
 ```tsx
 // app/layout.tsx
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: 'Home',
-  description: 'Welcome to Next.js',
-};
+  title: "Home",
+  description: "Welcome to Next.js",
+}
 ```
 
 이 API는 간단하게 사용가능하며 streaming server rendering과 호환되도록 설계되었습니다.
@@ -63,13 +63,13 @@ export const metadata: Metadata = {
 ```ts
 // Static metadata
 export const metadata = {
-  title: '...',
-};
+  title: "...",
+}
 
 // Dynamic metadata
 export async function generateMetadata({ params, searchParams }) {
-  const product = await getProduct(params.id);
-  return { title: product.title };
+  const product = await getProduct(params.id)
+  return { title: product.title }
 }
 ```
 
@@ -81,21 +81,21 @@ export async function generateMetadata({ params, searchParams }) {
 ```ts
 export const metadata = {
   openGraph: {
-    title: 'Next.js',
-    description: 'The React Framework for the Web',
-    url: 'https://nextjs.org',
-    siteName: 'Next.js',
+    title: "Next.js",
+    description: "The React Framework for the Web",
+    url: "https://nextjs.org",
+    siteName: "Next.js",
     images: [
       {
-        url: 'https://nextjs.org/og.png',
+        url: "https://nextjs.org/og.png",
         width: 800,
         height: 600,
       },
     ],
-    locale: 'en-US',
-    type: 'website',
+    locale: "en-US",
+    type: "website",
   },
-};
+}
 ```
 
 Metadata API는 13.2 버전부터 App Router(`app`)에서 사용할 수 있습니다.
@@ -138,16 +138,16 @@ Route handler는 page와 layout과 같은 [route segment 구성](https://beta.ne
 이는 Server Component와 Route handler 간에 코드를 공유할 수 있게 해줍니다.
 
 ```ts
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers"
 
 export async function GET(request: Request) {
-  const cookieStore = cookies();
-  const token = cookieStore.get('token');
+  const cookieStore = cookies()
+  const token = cookieStore.get("token")
 
-  return new Response('Hello, Next.js!', {
+  return new Response("Hello, Next.js!", {
     status: 200,
-    headers: { 'Set-Cookie': `token=${token}` },
-  });
+    headers: { "Set-Cookie": `token=${token}` },
+  })
 }
 ```
 
@@ -193,7 +193,7 @@ function H2({ children }) {
 }
 
 export function useMDXComponents(components) {
-  return { h1: H1, h2: H2, ...components };
+  return { h1: H1, h2: H2, ...components }
 }
 ```
 
@@ -215,10 +215,10 @@ const nextConfig = {
     appDir: true,
     mdxRs: true,
   },
-};
+}
 
-const withMDX = require('@next/mdx')();
-module.exports = withMDX(nextConfig);
+const withMDX = require("@next/mdx")()
+module.exports = withMDX(nextConfig)
 ```
 
 <Callout>
@@ -263,9 +263,9 @@ const nextConfig = {
     appDir: true,
     typedRoutes: true,
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
 ```
 
 아직 이 기능은 베타 버전으로 이용가능합니다. `rewrites`와 `redirects`는 아직 지원하지 않습니다.
@@ -315,20 +315,20 @@ module.exports = {
   experimental: {
     turbo: {
       loaders: {
-        '.md': [
+        ".md": [
           {
             // Option format
-            loader: '@mdx-js/loader',
+            loader: "@mdx-js/loader",
             options: {
-              format: 'md',
+              format: "md",
             },
           },
         ],
-        '.svg': ['@svgr/webpack'],
+        ".svg": ["@svgr/webpack"],
       },
     },
   },
-};
+}
 ```
 
 [Turbopack 예제](https://github.com/vercel/next.js/tree/canary/examples/with-turbopack-loaders)를 확인해보세요.
@@ -343,12 +343,12 @@ module.exports = {
   experimental: {
     turbo: {
       resolveAlias: {
-        underscore: 'lodash',
-        mocha: { browser: 'mocha/browser-entry.js' },
+        underscore: "lodash",
+        mocha: { browser: "mocha/browser-entry.js" },
       },
     },
   },
-};
+}
 ```
 
 ## Next.js Cache (Beta)
@@ -372,13 +372,13 @@ export default async function Page() {
     // 수동으로 invalidated될 때까지 캐시됩니다.
     fetch(`https://...`),
     // 매 요청마다 refetch 합니다.
-    fetch(`https://...`, { cache: 'no-store' }),
+    fetch(`https://...`, { cache: "no-store" }),
     // Cached with a lifetime of 10 seconds
     // 10초 라이프사이클을 가지고 캐시됩니다.
     fetch(`https://...`, { next: { revalidate: 10 } }),
-  ]);
+  ])
 
-  return <div>...</div>;
+  return <div>...</div>
 }
 ```
 

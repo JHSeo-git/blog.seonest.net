@@ -1,1 +1,1 @@
-export { default } from './GoogleAnalytics';
+export { default } from "./GoogleAnalytics"

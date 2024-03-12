@@ -1,7 +1,7 @@
-import ApiClient from '../api-client';
+import ApiClient from "../api-client"
 
-const baseUrl = '';
+const baseUrl = ""
 
-const client = new ApiClient(baseUrl);
+const client = new ApiClient(baseUrl)
 
-export default client;
+export default client

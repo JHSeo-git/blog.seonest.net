@@ -1,11 +1,11 @@
 ---
-title: 'ESM + TypeScript'
+title: "ESM + TypeScript"
 description: JavaScript의 모듈 시스템에 대해 간단히 이해해보고 Node.js와 TypeScript에서 ES Module를 지원하고 사용하는 방법에 대해 알아보겠습니다.
-date: '2022-09-25T12:16:25.741Z'
-category: 'javascript'
-tags: ['JavaScript', 'TypeScript', 'ESM', 'CJS', 'Web']
-thumbnail: '/post/javascript/esm-typescript/thumbnail.png'
-update: '2023-03-26T08:18:58Z'
+date: "2022-09-25T12:16:25.741Z"
+category: "javascript"
+tags: ["JavaScript", "TypeScript", "ESM", "CJS", "Web"]
+thumbnail: "/post/javascript/esm-typescript/thumbnail.png"
+update: "2023-03-26T08:18:58Z"
 ---
 
 ## 들어가면서
@@ -59,11 +59,12 @@ Error [ERR_REQUIRE_ESM]: Must use import to load ES Module: /Users/.../index.js
 ESM에서는 CJS 모듈을 **호출할 수 있습니다.**
 
 ```js
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
+import { createRequire } from "node:module"
+
+const require = createRequire(import.meta.url)
 
 // sibling-module.js은 CJS 모듈입니다.
-const siblingModule = require('./sibling-module');
+const siblingModule = require("./sibling-module")
 ```
 
 ## TypeScript에서 ESM 사용하기
@@ -108,19 +109,22 @@ ESM 사용 시 고려해야 할 몇 가지 사항이 있습니다:
 - 상대 경로로 import할 경우에 `.js` 확장자를 명시해야 합니다. TypeScript 파일도 마찬가지로 `.js` 확장자로 명시해야 합니다. (이러한 컨벤션이 조금 더 복잡하게 만드는게 아닌가 싶기도 합니다만...)
 
 ```ts {6}
+// ./bar.ts
+import { helper } from "./foo" // only works in CJS
+
 // ./foo.ts
 export function helper() {
   // ...
 }
-// ./bar.ts
-import { helper } from './foo'; // only works in CJS
-helper();
+
+helper()
 ```
 
 ```ts {2}
 // ./bar.ts
-import { helper } from './foo.js'; // works in ESM & CJS
-helper();
+import { helper } from "./foo.js" // works in ESM & CJS
+
+helper()
 ```
 
 - CJS 모듈 시스템에서만 사용가능했던 `require` 구문은 ESM에서는 사용할 수 없습니다. 또한 `__dirname`과 `__filename`도 사용할 수 없습니다. 대신 [`node:url`과 `node:path`를 이용](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c#what-do-i-use-instead-of-__dirname-and-__filename)해 사용할 수 있습니다.
@@ -311,15 +315,15 @@ Rollup을 사용하여 CJS파일과 ESM파일을 생성하기 위해 빌드를 �
 
 ```js
 // rollup.config.js
-import esbuild from 'rollup-plugin-esbuild';
+import esbuild from "rollup-plugin-esbuild"
 
-const packageJson = require('./package.json');
+const packageJson = require("./package.json")
 
 const bundle = (config) => ({
   ...config,
-  input: 'src/index.ts',
+  input: "src/index.ts",
   external: (id) => !/^[./]/.test(id),
-});
+})
 
 export default [
   bundle({
@@ -327,17 +331,17 @@ export default [
     output: [
       {
         file: packageJson.main,
-        format: 'cjs',
+        format: "cjs",
         sourcemap: true,
       },
       {
         file: packageJson.module,
-        format: 'es',
+        format: "es",
         sourcemap: true,
       },
     ],
   }),
-];
+]
 ```
 
 declaration 파일은 번들러를 통하지 않고 `tsc` 사용하여 생성합니다.
@@ -358,19 +362,19 @@ declaration 파일은 번들러를 통하지 않고 `tsc` 사용하여 생성합
 
 ```ts
 // src/index.ts
-export { getSlug } from './utils.js';
+export { getSlug } from "./utils.js"
 
 // src/utils.ts
 const slugify = (str: string) =>
   str
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "")
 
 export const getSlug = (str: string) => {
-  const slug = slugify(str);
-  return slug === '-' ? '' : slug;
-};
+  const slug = slugify(str)
+  return slug === "-" ? "" : slug
+}
 ```
 
 ```bash
@@ -448,23 +452,23 @@ CJS 프로젝트와 ESM 프로젝트를 각각 생성하고 라이브러리를 �
 
 ```ts
 // practice-node-cjs/src/index.ts
-import { getSlug } from '@seo-practice/practice-library';
+import { getSlug } from "@seo-practice/practice-library"
 
-const title = 'Hello World';
-const slug = getSlug(title);
-console.log(slug);
+const title = "Hello World"
+const slug = getSlug(title)
+console.log(slug)
 ```
 
 여기서는 따로 번들러를 쓰지 않고 `tsc`로 빌드합니다.
 
 ```js
 // practice-node-cjs/dist/index.js
-'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
-const practice_library_1 = require('@seo-practice/practice-library');
-const title = 'Hello World';
-const slug = (0, practice_library_1.getSlug)(title);
-console.log(slug);
+"use strict"
+Object.defineProperty(exports, "__esModule", { value: true })
+const practice_library_1 = require("@seo-practice/practice-library")
+const title = "Hello World"
+const slug = (0, practice_library_1.getSlug)(title)
+console.log(slug)
 ```
 
 ```bash
@@ -519,10 +523,11 @@ hello-world
 
 ```js
 // practice-node-esm/dist/index.js
-import { getSlug } from '@seo-practice/practice-library';
-const title = 'Hello World';
-const slug = getSlug(title);
-console.log(slug);
+import { getSlug } from "@seo-practice/practice-library"
+
+const title = "Hello World"
+const slug = getSlug(title)
+console.log(slug)
 ```
 
 빌드 결과물을 확인해보면 `import`를 이용해 import하는 ESM으로 빌드된 라이브러리를 사용하는 것을 확인할 수 있습니다.

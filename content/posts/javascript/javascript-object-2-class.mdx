@@ -1,11 +1,11 @@
 ---
-title: 'JavaScript Object(2) - Class'
-description: 'JavaScript에서 Class Syntax와 사용법, 특징에 대해서 살펴보았습니다.'
-date: '2021-09-21T15:36:13.806Z'
-category: 'javascript'
-tags: ['JavaScript', 'Class', 'Web']
-thumbnail: '/post/javascript/javascript-object-2-class/thumbnail.png'
-update: '2023-03-26T10:17:38Z'
+title: "JavaScript Object(2) - Class"
+description: "JavaScript에서 Class Syntax와 사용법, 특징에 대해서 살펴보았습니다."
+date: "2021-09-21T15:36:13.806Z"
+category: "javascript"
+tags: ["JavaScript", "Class", "Web"]
+thumbnail: "/post/javascript/javascript-object-2-class/thumbnail.png"
+update: "2023-03-26T10:17:38Z"
 ---
 
 JavaScript에서 Class 문법은 ES6부터 공식적으로 도입되었습니다.
@@ -24,8 +24,8 @@ Class는 사실 "특별한 함수"입니다. 함수를 함수 표현식과 함�
 ```js
 class Rectangle {
   constructor(height, width) {
-    this.height = height;
-    this.width = width;
+    this.height = height
+    this.width = width
   }
 }
 ```
@@ -68,10 +68,10 @@ console.log(Rectangle.name);
 ```js
 class Animal {
   speak() {
-    return this;
+    return this
   }
   static eat() {
-    return this;
+    return this
   }
 }
 ```
@@ -82,14 +82,14 @@ class Animal {
 다음 예시를 보겠습니다.
 
 ```js
-let obj = new Animal();
-obj.speak(); // the Animal object
-let speak = obj.speak;
-speak(); // undefined
+let obj = new Animal()
+obj.speak() // the Animal object
+let speak = obj.speak
+speak() // undefined
 
-Animal.eat(); // class Animal
-let eat = Animal.eat;
-eat(); // undefined
+Animal.eat() // class Animal
+let eat = Animal.eat
+eat() // undefined
 ```
 
 위에서도 설명했지만 Class 내부는 항상 strict mode로 동작합니다.
@@ -104,15 +104,15 @@ non-strict mode라면 this는 기본적으로 전역 객체인 초기 this 값�
 ```js
 class Rectangle {
   constructor(height, width) {
-    this.height = height;
-    this.width = width;
+    this.height = height
+    this.width = width
   }
 }
 ```
 
 ```js
-Rectangle.staticWidth = 20;
-Rectangle.prototype.prototypeWidth = 25;
+Rectangle.staticWidth = 20
+Rectangle.prototype.prototypeWidth = 25
 ```
 
 인스턴스 속성은 인스터스화가 되면서 사용될 수 있도록 해야하며, 정적 속성이나 프로토타입 속성은 인스턴스화가 이루어지지 않아도 사용될 수 있어야 하기 때문에 그렇습니다.
@@ -123,11 +123,11 @@ Rectangle.prototype.prototypeWidth = 25;
 
 ```js
 class Rectangle {
-  #height = 0;
-  #width;
+  #height = 0
+  #width
   constructor(height, width) {
-    this.#height = height;
-    this.#width = width;
+    this.#height = height
+    this.#width = width
   }
 }
 ```
@@ -144,11 +144,11 @@ JavaScript에서 Class 상속을 구현할 때에는 extends 키워드를 사용
 ```js
 class Animal {
   constructor(name) {
-    this.name = name;
+    this.name = name
   }
 
   speak() {
-    console.log(`${this.name} makes a noise.`);
+    console.log(`${this.name} makes a noise.`)
   }
 }
 ```
@@ -156,11 +156,11 @@ class Animal {
 ```js
 class Dog extends Animal {
   constructor(name) {
-    super(name); // super class 생성자를 호출하여 name 매개변수 전달
+    super(name) // super class 생성자를 호출하여 name 매개변수 전달
   }
 
   speak() {
-    console.log(`${this.name} barks.`);
+    console.log(`${this.name} barks.`)
   }
 }
 ```
@@ -191,26 +191,26 @@ class Dog extends Animal {
 #### 1. this(스코프) 제한
 
 ```js
-this.x = 9;
+this.x = 9
 var module = {
   x: 81,
   getX: function () {
-    return this.x;
+    return this.x
   },
-};
+}
 
-module.getX(); // 81
+module.getX() // 81
 
-var retrieveX = module.getX;
-retrieveX();
+var retrieveX = module.getX
+retrieveX()
 // 9 반환 - 함수가 전역 스코프에서 호출됐음
 ```
 
 만약 마지막 줄에서 retrieveX를 호출하였을 때 this를 module 내부로 한정하고 싶다면 어떻게 해야할까요?
 
 ```js
-var boundGetX = retrieveX.bind(module);
-boundGetX(); // 81
+var boundGetX = retrieveX.bind(module)
+boundGetX() // 81
 ```
 
 retriveX가 bind함수를 호출하면서 첫 번째 인자로 this값인 module을 호출하였습니다. 그리하여 this값이 module이 되어 스코프가 module 내로 한정되며 되는 것입니다.
@@ -219,9 +219,9 @@ retriveX가 bind함수를 호출하면서 첫 번째 인자로 this값인 module
 
 ```js
 function addArguments(arg1, arg2) {
-  return arg1 + arg2;
+  return arg1 + arg2
 }
-var result1 = addArguments(1, 2); // 3
+var result1 = addArguments(1, 2) // 3
 ```
 
 위와 같은 add함수를 만들었다고 생각해봅시다.
@@ -229,16 +229,16 @@ var result1 = addArguments(1, 2); // 3
 
 ```js
 // 첫 번째 인수를 지정하여 함수를 생성합니다.
-var addTen = addArguments.bind(null, 10);
+var addTen = addArguments.bind(null, 10)
 ```
 
 this 는 무시하고, 두 번째 인자부터는 함수에 대한 매개변수를 뜻하므로 arg1에 항상 10이 들어가는 함수를 만들게 되었습니다.
 
 ```js
-var result2 = addTen(5); // 10 + 5 = 15
+var result2 = addTen(5) // 10 + 5 = 15
 
 // 두 번째 인수는 무시됩니다.
-var result3 = addTen(5, 10); // 10 + 5 = 15
+var result3 = addTen(5, 10) // 10 + 5 = 15
 ```
 
 ### call
@@ -252,26 +252,26 @@ var result3 = addTen(5, 10); // 10 + 5 = 15
 
 ```js
 function Product(name, price) {
-  this.name = name;
-  this.price = price;
+  this.name = name
+  this.price = price
 
   if (price < 0) {
-    throw RangeError('Cannot create product ' + this.name + ' with a negative price');
+    throw RangeError("Cannot create product " + this.name + " with a negative price")
   }
 }
 
 function Food(name, price) {
-  Product.call(this, name, price);
-  this.category = 'food';
+  Product.call(this, name, price)
+  this.category = "food"
 }
 
 function Toy(name, price) {
-  Product.call(this, name, price);
-  this.category = 'toy';
+  Product.call(this, name, price)
+  this.category = "toy"
 }
 
-var cheese = new Food('feta', 5);
-var fun = new Toy('robot', 40);
+var cheese = new Food("feta", 5)
+var fun = new Toy("robot", 40)
 ```
 
 ![call.png](https://files.seonest.net/images/qnfqnfqnf/post/63/image.png)
@@ -286,16 +286,16 @@ var fun = new Toy('robot', 40);
 `apply()`는 `call()`과 거의 유사합니다. 근본적인 차이점은 `call()`은 함수에 전달될 인수 리스트를 받는데 비해, `apply()`는 인수들의 단일 배열을 받습니다.
 
 ```js
-const numbers = [5, 6, 2, 3, 7];
+const numbers = [5, 6, 2, 3, 7]
 
-const max = Math.max.apply(null, numbers);
+const max = Math.max.apply(null, numbers)
 
-console.log(max);
+console.log(max)
 // expected output: 7
 
-const min = Math.min.apply(null, numbers);
+const min = Math.min.apply(null, numbers)
 
-console.log(min);
+console.log(min)
 // expected output: 2
 ```
 

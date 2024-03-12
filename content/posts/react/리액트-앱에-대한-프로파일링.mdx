@@ -1,10 +1,10 @@
 ---
-date: '2022-11-27T03:42:04.102Z'
+date: "2022-11-27T03:42:04.102Z"
 category: react
 title: 리액트 앱에 대한 프로파일링
 description: 성능 문제로 인해 리액트 앱을 분석하려면 어떻게 해야될까요? 어떤 점을 주의해야 될까요? Kent C.Dodds가 작성한 Profile a React App for Performance를 옮기며 확인해보았습니다.
-tags: ['React', 'JavaScript', 'Web']
-thumbnail: '/post/react/리액트-앱에-대한-프로파일링/thumbnail.png'
+tags: ["React", "JavaScript", "Web"]
+thumbnail: "/post/react/리액트-앱에-대한-프로파일링/thumbnail.png"
 ---
 
 최근 웹 애플리케이션은 리액트로 만들지 않은 앱이 없을 정도로 리액트가 많이 사용됩니다.
@@ -126,14 +126,14 @@ production 빌드 시에는 terser작업과 같이 compress시에 이름을 mang
 
 ```js
 function AwesomeAppComponent() {
-  return <div>Awesome</div>;
+  return <div>Awesome</div>
 }
-console.log(AwesomeAppComponent.name); // <-- logs "AwesomeAppComponent"
+console.log(AwesomeAppComponent.name) // <-- logs "AwesomeAppComponent"
 
 function a() {
-  return <div>Awesome</div>;
+  return <div>Awesome</div>
 }
-console.log(a.name); // <-- logs "a"
+console.log(a.name) // <-- logs "a"
 ```
 
 `terser`의 경우 다음과 같이 mangling을 disable 할 수 있습니다. (https://terser.org/docs/api-reference.html#mangle-options)
@@ -151,7 +151,7 @@ new TerserPlugin({
     // ... some more config ...
   },
   // ... even more config ...
-});
+})
 ```
 
 `swc` minification을 사용할 경우 다음과 같이 disable 할 수 있습니다.(https://swc.rs/docs/configuration/minification)

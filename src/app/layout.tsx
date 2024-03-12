@@ -1,40 +1,40 @@
-import '@/styles/globals.css';
+import "@/styles/globals.css"
 
-import { Analytics } from '@vercel/analytics/react';
-import type { Viewport } from 'next';
+import type { Viewport } from "next"
+import { cn } from "@/utils/style-utils"
+import { Analytics } from "@vercel/analytics/react"
 
-import { Footer } from '@/components/Footer';
-import GoogleAnalytics from '@/components/GoogleAnalytics';
-import { Header } from '@/components/Header';
-import Providers from '@/components/Providers';
-import { fontSans } from '@/lib/fonts';
-import { cn } from '@/utils/style-utils';
+import { fontSans } from "@/lib/fonts"
+import { Footer } from "@/components/Footer"
+import GoogleAnalytics from "@/components/GoogleAnalytics"
+import { Header } from "@/components/Header"
+import Providers from "@/components/Providers"
 
 export const metadata = {
-  metadataBase: new URL('https://seonest.net'),
+  metadataBase: new URL("https://seonest.net"),
   title: {
-    default: 'Seonest',
-    template: '%s | Seonest',
+    default: "Seonest",
+    template: "%s | Seonest",
   },
-  description: 'JHSeo 개발 블로그',
+  description: "JHSeo 개발 블로그",
   openGraph: {
     title: {
-      default: 'Seonest',
-      template: '%s | Seonest',
+      default: "Seonest",
+      template: "%s | Seonest",
     },
-    description: 'JHSeo 개발 블로그',
-    images: [{ url: '/opengraph-image.png', alt: 'Seonest' }],
-    type: 'website',
-    url: 'https://seonest.net',
-    locale: 'ko_KR',
+    description: "JHSeo 개발 블로그",
+    images: [{ url: "/opengraph-image.png", alt: "Seonest" }],
+    type: "website",
+    url: "https://seonest.net",
+    locale: "ko_KR",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: {
-      default: 'Seonest',
-      template: '%s | Seonest',
+      default: "Seonest",
+      template: "%s | Seonest",
     },
-    description: 'JHSeo 개발 블로그',
+    description: "JHSeo 개발 블로그",
   },
   robots: {
     index: true,
@@ -42,24 +42,24 @@ export const metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   verification: {
-    google: 'RjVCFQ8Ye2KJxwjzcLX82cGsxOLxH1mhaUvLx5SC6I4',
+    google: "RjVCFQ8Ye2KJxwjzcLX82cGsxOLxH1mhaUvLx5SC6I4",
   },
-};
+}
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-};
+}
 
 interface RootLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 function RootLayout({ children }: RootLayoutProps) {
@@ -72,7 +72,7 @@ function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body
         className={cn(
-          'min-h-screen bg-white font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-50',
+          "min-h-screen bg-white font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-50",
           fontSans.variable
         )}
       >
@@ -83,11 +83,11 @@ function RootLayout({ children }: RootLayoutProps) {
             <Footer />
           </div>
         </Providers>
-        {process.env.NODE_ENV === 'production' && <GoogleAnalytics />}
+        {process.env.NODE_ENV === "production" && <GoogleAnalytics />}
         <Analytics />
       </body>
     </html>
-  );
+  )
 }
 
-export default RootLayout;
+export default RootLayout

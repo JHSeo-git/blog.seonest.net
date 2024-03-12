@@ -1,10 +1,10 @@
 ---
-title: 'Remix 맛보기 (2)'
-description: 'Remix에 대해 한 번 살펴보기 위해서 공식 예제를 따라가며 Remix에 대해서 살펴보았습니다. 2개 포스트로 나눠서 작성해보았고 이 글은 두 번째 글입니다.'
-date: '2022-07-02T14:00:58.272Z'
-category: 'react'
-tags: ['React', 'Remix', 'Web']
-thumbnail: '/post/react/remix-맛보기-2/thumbnail.png'
+title: "Remix 맛보기 (2)"
+description: "Remix에 대해 한 번 살펴보기 위해서 공식 예제를 따라가며 Remix에 대해서 살펴보았습니다. 2개 포스트로 나눠서 작성해보았고 이 글은 두 번째 글입니다."
+date: "2022-07-02T14:00:58.272Z"
+category: "react"
+tags: ["React", "Remix", "Web"]
+thumbnail: "/post/react/remix-맛보기-2/thumbnail.png"
 ---
 
 > [저번 글](https://www.seonest.net/posts/Remix-%EB%A7%9B%EB%B3%B4%EA%B8%B0-1)에 이어서...
@@ -33,28 +33,28 @@ Route Module은 3가지 기본 export가 있습니다: `loader`, `action`, `defa
 // Loader는 서버에서 동작합니다.
 // GET request에 component에 data를 제공합니다.
 export async function loader() {
-  return json(await db.projects.findAll());
+  return json(await db.projects.findAll())
 }
 
 // Actions는 서버에서 동작합니다.
 // POST, PUT, PATCH, DELETE를 다룹니다.
 // 마찬가지로 component에 data를 제공할 수 있습니다.
 export async function action({ request }) {
-  const form = await request.formData();
-  const errors = validate(form);
+  const form = await request.formData()
+  const errors = validate(form)
   if (errors) {
-    return json({ errors });
+    return json({ errors })
   }
-  await createProject({ title: form.get('title') });
-  return json({ ok: true });
+  await createProject({ title: form.get("title") })
+  return json({ ok: true })
 }
 
 // default export는 route가 URL에 매칭될 때
 // rendering되는 component입니다.
 // 이것은 서버와 클라이언트 2곳에서 모두 동작합니다.
 export default function Projects() {
-  const projects = useLoaderData();
-  const actionData = useActionData();
+  const projects = useLoaderData()
+  const actionData = useActionData()
 
   return (
     <div>
@@ -72,7 +72,7 @@ export default function Projects() {
 
       <Outlet />
     </div>
-  );
+  )
 }
 ```
 
@@ -106,17 +106,17 @@ Route Module을 사용하여 브라우저에서 JavaScript로만 수행할 수 �
 
 ```jsx
 export default function Projects() {
-  const projects = useLoaderData();
-  const actionData = useActionData();
-  const { state } = useTransition();
-  const busy = state === 'submitting';
-  const inputRef = React.useRef();
+  const projects = useLoaderData()
+  const actionData = useActionData()
+  const { state } = useTransition()
+  const busy = state === "submitting"
+  const inputRef = React.useRef()
 
   React.useEffect(() => {
     if (actionData.errors) {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [actionData]);
+  }, [actionData])
 
   return (
     <div>
@@ -129,7 +129,7 @@ export default function Projects() {
       <Form method="post">
         <input ref={inputRef} name="title" />
         <button type="submit" disabled={busy}>
-          {busy ? 'Creating...' : 'Create New Project'}
+          {busy ? "Creating..." : "Create New Project"}
         </button>
       </Form>
 
@@ -141,7 +141,7 @@ export default function Projects() {
 
       <Outlet />
     </div>
-  );
+  )
 }
 ```
 
@@ -239,7 +239,7 @@ export default function NewJokeRoute() {
         </div>
       </form>
     </div>
-  );
+  )
 }
 ```
 
@@ -250,20 +250,20 @@ export default function NewJokeRoute() {
 
 ```tsx
 export const action: ActionFunction = async ({ request }) => {
-  const form = await request.formData();
-  const name = form.get('name');
-  const content = form.get('content');
+  const form = await request.formData()
+  const name = form.get("name")
+  const content = form.get("content")
   // we do this type check to be extra sure and to make TypeScript happy
   // we'll explore validation next!
-  if (typeof name !== 'string' || typeof content !== 'string') {
-    throw new Error(`Form not submitted correctly.`);
+  if (typeof name !== "string" || typeof content !== "string") {
+    throw new Error(`Form not submitted correctly.`)
   }
 
-  const fields = { name, content };
+  const fields = { name, content }
 
-  const joke = await db.joke.create({ data: fields });
-  return redirect(`/jokes/${joke.id}`);
-};
+  const joke = await db.joke.create({ data: fields })
+  return redirect(`/jokes/${joke.id}`)
+}
 ```
 
 > 데이터를 가져오기 위해서는 저번 글에 설명했듯이 loader 함수를 export해야 합니다.
@@ -384,16 +384,16 @@ export default function NewJokeRoute() {
 
 ```ts
 type ActionData = {
-  formError?: string;
+  formError?: string
   fieldErrors?: {
-    name: string | undefined;
-    content: string | undefined;
-  };
+    name: string | undefined
+    content: string | undefined
+  }
   fields?: {
-    name: string;
-    content: string;
-  };
-};
+    name: string
+    content: string
+  }
+}
 ```
 
 action이 아직 호출되지 않은 경우 `useActionData`는 `undefined`가 return 될 수 있다는 것을 유의하세요. 그래서 여기에 약간 방어적인 프로그래밍을 가져야 합니다.
@@ -433,29 +433,29 @@ Remix에는 일반적인 시나리오를 위한 몇 가지 사전 빌드된 sess
 ```tsx
 // app/sessions.js
 
-import { createCookieSessionStorage } from '@remix-run/node'; // or "@remix-run/cloudflare"
+import { createCookieSessionStorage } from "@remix-run/node" // or "@remix-run/cloudflare"
 
 const { getSession, commitSession, destroySession } = createCookieSessionStorage({
   // a Cookie from `createCookie` or the CookieOptions to create one
   cookie: {
-    name: '__session',
+    name: "__session",
 
     // all of these are optional
-    domain: 'remix.run',
+    domain: "remix.run",
     // Expires can also be set (although maxAge overrides it when used in combination).
     // Note that this method is NOT recommended as `new Date` creates only one date on each server deployment, not a dynamic date in the future!
     //
     // expires: new Date(Date.now() + 60_000),
     httpOnly: true,
     maxAge: 60,
-    path: '/',
-    sameSite: 'lax',
-    secrets: ['s3cret1'],
+    path: "/",
+    sameSite: "lax",
+    secrets: ["s3cret1"],
     secure: true,
   },
-});
+})
 
-export { getSession, commitSession, destroySession };
+export { getSession, commitSession, destroySession }
 ```
 
 `app/sessions.js` 처럼 세션 데이터에 접근해야 하는 모든 경로가 동일한 곳에서 가져올 수 있도록 세션 저장소 객체를 설정하는 것이 좋습니다.([Route Module 제약사항](https://remix.run/docs/en/v1/guides/constraints)을 확인하세요)
@@ -475,49 +475,49 @@ export { getSession, commitSession, destroySession };
 // app/routes/login.js
 
 export async function loader({ request }) {
-  const session = await getSession(request.headers.get('Cookie'));
+  const session = await getSession(request.headers.get("Cookie"))
 
-  if (session.has('userId')) {
+  if (session.has("userId")) {
     // Redirect to the home page if they are already signed in.
-    return redirect('/');
+    return redirect("/")
   }
 
-  const data = { error: session.get('error') };
+  const data = { error: session.get("error") }
 
   return json(data, {
     headers: {
-      'Set-Cookie': await commitSession(session),
+      "Set-Cookie": await commitSession(session),
     },
-  });
+  })
 }
 
 export async function action({ request }) {
-  const session = await getSession(request.headers.get('Cookie'));
-  const form = await request.formData();
-  const username = form.get('username');
-  const password = form.get('password');
+  const session = await getSession(request.headers.get("Cookie"))
+  const form = await request.formData()
+  const username = form.get("username")
+  const password = form.get("password")
 
-  const userId = await validateCredentials(username, password);
+  const userId = await validateCredentials(username, password)
 
   if (userId == null) {
-    session.flash('error', 'Invalid username/password');
+    session.flash("error", "Invalid username/password")
 
     // Redirect back to the login page with errors.
-    return redirect('/login', {
+    return redirect("/login", {
       headers: {
-        'Set-Cookie': await commitSession(session),
+        "Set-Cookie": await commitSession(session),
       },
-    });
+    })
   }
 
-  session.set('userId', userId);
+  session.set("userId", userId)
 
   // Login succeeded, send them to the home page.
-  return redirect('/', {
+  return redirect("/", {
     headers: {
-      'Set-Cookie': await commitSession(session),
+      "Set-Cookie": await commitSession(session),
     },
-  });
+  })
 }
 ```
 
@@ -582,7 +582,7 @@ export function ErrorBoundary() {
     <div className="bg-error rounded-lg p-4 text-white">
       Something unexpected went wrong. Sorry about that.
     </div>
-  );
+  )
 }
 ```
 
@@ -602,15 +602,15 @@ Remix는 예상된 오류를 ErrorBoundary와 비슷한 [CatchBoundary component
 
 ```tsx
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
+  const userId = await getUserId(request)
   if (!userId) {
-    throw new Response('Unauthorized', { status: 401 });
+    throw new Response("Unauthorized", { status: 401 })
   }
-  return json({});
-};
+  return json({})
+}
 
 export function CatchBoundary() {
-  const caught = useCatch();
+  const caught = useCatch()
 
   if (caught.status === 401) {
     return (
@@ -620,7 +620,7 @@ export function CatchBoundary() {
           Login
         </Link>
       </div>
-    );
+    )
   }
 }
 ```
@@ -640,15 +640,15 @@ react-router를 써보셨다면 `<Link>` component를 사용해보셨을 것 같
 마찬가지로 Remix에도 동일한 component를 제공합니다.
 
 ```jsx
-import { Link } from '@remix-run/react';
+import { Link } from "@remix-run/react"
 
 export default function GlobalNav() {
   return (
     <nav>
-      <Link to="/dashboard">Dashboard</Link> <Link to="/account">Account</Link>{' '}
+      <Link to="/dashboard">Dashboard</Link> <Link to="/account">Account</Link>{" "}
       <Link to="/support">Dashboard</Link>
     </nav>
-  );
+  )
 }
 ```
 
@@ -678,14 +678,14 @@ Meta 태그는 SEO, Social 미디어에 유용합니다. 까다로운 부분은 
 이것이 Remix에 [meta](https://remix.run/docs/en/v1/api/conventions#meta) export를 가지는 이유입니다.
 
 ```tsx
-import type { MetaFunction } from '@remix-run/node'; // or "@remix-run/cloudflare"
+import type { MetaFunction } from "@remix-run/node" // or "@remix-run/cloudflare"
 
 export const meta: MetaFunction = () => {
   return {
-    title: 'Something cool',
-    description: 'This becomes the nice preview on search results.',
-  };
-};
+    title: "Something cool",
+    description: "This becomes the nice preview on search results.",
+  }
+}
 ```
 
 > `meta` 함수는 서버(예: 초기 페이지 로드) 또는 클라이언트(예: 클라이언트 navigation)에서 실행될 수 있으므로 `process.env.NODE_ENV`와 같은 서버에서만 접근가능한 데이터에 에 직접 접근할 수 없습니다. 만약 `meta`에 서버사이드 데이터가 필요하다면 `loader`를 통해서 데이터를 가져올 수 있고, `meta` 함수의 `data` 파라미터로 접근가능합니다.

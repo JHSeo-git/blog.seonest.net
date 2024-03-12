@@ -1,15 +1,15 @@
-import type { Post } from 'contentlayer/generated';
-import Image from 'next/image';
+import Image from "next/image"
+import type { Post } from "contentlayer/generated"
 
-import { DateDistance } from './DateDistance';
-import { PostViews } from './PostViews';
+import { DateDistance } from "./DateDistance"
+import { PostViews } from "./PostViews"
 
 interface CardProps {
-  post: Post;
+  post: Post
 }
 
 export function Card({ post }: CardProps) {
-  const { title, description, date } = post;
+  const { title, description, date } = post
 
   return (
     <div className="group flex flex-col gap-5 sm:flex-row md:gap-10">
@@ -32,7 +32,7 @@ export function Card({ post }: CardProps) {
           {title}
         </h3>
         {description && (
-          <p className="mt-1 leading-7 text-gray-900 dark:text-gray-200 sm:line-clamp-3 md:line-clamp-4">
+          <p className="mt-1 leading-7 text-gray-900 sm:line-clamp-3 md:line-clamp-4 dark:text-gray-200">
             {description}
           </p>
         )}
@@ -51,5 +51,5 @@ export function Card({ post }: CardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

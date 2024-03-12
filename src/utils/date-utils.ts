@@ -1,34 +1,34 @@
-import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
-import { ko } from 'date-fns/locale/ko';
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow"
+import { ko } from "date-fns/locale/ko"
 
 export type GetDistanceToNowOptions = {
-  humanize?: boolean;
-};
+  humanize?: boolean
+}
 export const getDistanceToNow = (
   date?: Date | string | null,
   options: GetDistanceToNowOptions = {
     humanize: true,
   }
 ) => {
-  if (!date) return '';
+  if (!date) return ""
 
-  let d: Date;
-  if (typeof date === 'string') {
-    d = new Date(date);
+  let d: Date
+  if (typeof date === "string") {
+    d = new Date(date)
   } else {
-    d = date;
+    d = date
   }
 
   if (!options.humanize) {
-    return d.toLocaleDateString();
+    return d.toLocaleDateString()
   }
 
-  const now = Date.now();
-  const diff = now - d.getTime();
+  const now = Date.now()
+  const diff = now - d.getTime()
 
   // 1분 이내
   if (diff < 1000 * 60) {
-    return '방금 전';
+    return "방금 전"
   }
 
   // 1달 이내
@@ -36,8 +36,8 @@ export const getDistanceToNow = (
     return formatDistanceToNow(d, {
       locale: ko,
       addSuffix: true,
-    });
+    })
   }
 
-  return d.toLocaleDateString();
-};
+  return d.toLocaleDateString()
+}

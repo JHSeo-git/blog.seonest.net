@@ -1,10 +1,10 @@
 ---
-title: 'Remix@1.6.5'
-description: 'Remix 버전이 꾸준하게 릴리즈되고 있으며 다양한 개발자 경험을 제공하고 성능 향상을 위해 업데이트 되고 있습니다. 1.6.5 버전은 loader, action 타입에 대한 편의기능이 업데이트되었습니다.'
-date: '2022-07-24T11:48:58.667Z'
-category: 'react'
-tags: ['React', 'Remix', 'Web']
-thumbnail: '/post/react/remix@1.6.5/thumbnail.png'
+title: "Remix@1.6.5"
+description: "Remix 버전이 꾸준하게 릴리즈되고 있으며 다양한 개발자 경험을 제공하고 성능 향상을 위해 업데이트 되고 있습니다. 1.6.5 버전은 loader, action 타입에 대한 편의기능이 업데이트되었습니다."
+date: "2022-07-24T11:48:58.667Z"
+category: "react"
+tags: ["React", "Remix", "Web"]
+thumbnail: "/post/react/remix@1.6.5/thumbnail.png"
 ---
 
 > 오늘은 간단한 글이 될 것 같아요.
@@ -34,15 +34,15 @@ Remix 또한 그렇습니다.
 Remix는 화면에 사용될 데이터를 위한 `loader`를 사용하고, 화면에서 서버에게 요청하기 위한 `action`을 route module에서 export하여 사용합니다.
 
 ```tsx
-import type { ActionFunction, LoaderFunction } from '@remix-run/[rnutime]';
+import type { ActionFunction, LoaderFunction } from "@remix-run/[rnutime]"
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   // ...
-};
+}
 
 export const action: ActionFunction = async ({ request }) => {
   // ...
-};
+}
 ```
 
 위 코드에서 보면 함수 type을 지정하여 사용합니다. 현재 모든 튜토리얼에도 이 방식으로 안내하고 있습니다.

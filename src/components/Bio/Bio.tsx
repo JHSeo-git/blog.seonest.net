@@ -1,6 +1,5 @@
-import Image from 'next/image';
-
-import appConfig from '@/app.config';
+import Image from "next/image"
+import appConfig from "@/app.config"
 
 export function Bio() {
   return (
@@ -40,5 +39,5 @@ export function Bio() {
         </div>
       </div>
     </div>
-  );
+  )
 }

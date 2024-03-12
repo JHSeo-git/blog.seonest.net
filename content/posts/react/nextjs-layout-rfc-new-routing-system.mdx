@@ -1,10 +1,10 @@
 ---
-title: 'Nextjs Layout RFC: New Routing System'
-description: 'Next.js에서 새로운 라우팅 시스템에 대한 RFC를 공개했습니다. 새로운 라우팅 시스템과 React 18에 맞춰서 어떻게 동작하는지에 대해 설명합니다.'
-date: '2022-05-28T09:50:13.861Z'
-category: 'react'
-tags: ['Next.js', 'React', 'Web']
-thumbnail: '/post/react/nextjs-layout-rfc-new-routing-system/thumbnail.png'
+title: "Nextjs Layout RFC: New Routing System"
+description: "Next.js에서 새로운 라우팅 시스템에 대한 RFC를 공개했습니다. 새로운 라우팅 시스템과 React 18에 맞춰서 어떻게 동작하는지에 대해 설명합니다."
+date: "2022-05-28T09:50:13.861Z"
+category: "react"
+tags: ["Next.js", "React", "Web"]
+thumbnail: "/post/react/nextjs-layout-rfc-new-routing-system/thumbnail.png"
 ---
 
 > https://nextjs.org/blog/layouts-rfc
@@ -299,14 +299,14 @@ React에서 클라이언트 컴포넌트 내부에서 서버 컴포넌트를 imp
 예를 들어 다음 패턴은 동작하지 않습니다.
 
 ```jsx
-import ServerComponent from './ServerComponent.js';
+import ServerComponent from "./ServerComponent.js"
 
 export default function ClientComponent() {
   return (
     <>
       <ServerComponent />
     </>
-  );
+  )
 }
 ```
 
@@ -400,11 +400,11 @@ export default function ServerPage() {
 ```jsx
 // app/blog/layout.js
 export async function getStaticProps() {
-  const categories = await getCategoriesFromCMS();
+  const categories = await getCategoriesFromCMS()
 
   return {
     props: { categories },
-  };
+  }
 }
 
 export default function BlogLayout({ categories, children }) {
@@ -413,7 +413,7 @@ export default function BlogLayout({ categories, children }) {
       <BlogSidebar categories={categories} />
       {children}
     </>
-  );
+  )
 }
 ```
 
@@ -435,25 +435,25 @@ export default function BlogLayout({ categories, children }) {
 ```jsx
 // app/blog/[slug]/page.js
 export async function getStaticPaths() {
-  const posts = await getPostSlugsFromCMS();
+  const posts = await getPostSlugsFromCMS()
 
   return {
     paths: posts.map((post) => ({
       params: { slug: post.slug },
     })),
-  };
+  }
 }
 
 export async function getStaticProps({ params }) {
-  const post = await getPostFromCMS(params.slug);
+  const post = await getPostFromCMS(params.slug)
 
   return {
     props: { post },
-  };
+  }
 }
 
 export default function BlogPostPage({ post }) {
-  return <Post post={post} />;
+  return <Post post={post} />
 }
 ```
 

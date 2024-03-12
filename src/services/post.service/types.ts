@@ -1,7 +1,7 @@
 interface PostParams {
-  slug: string;
+  slug: string
 }
 
-export type GetPostParams = PostParams;
+export type GetPostParams = PostParams
 
-export type ViewPostParams = PostParams;
+export type ViewPostParams = PostParams
