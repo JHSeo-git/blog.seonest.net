@@ -1,50 +1,50 @@
-import '@/styles/mdx.css';
+import "@/styles/mdx.css"
 
-import { allPosts } from 'contentlayer/generated';
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import type { Metadata } from "next"
+import Image from "next/image"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { getHeadings, postSorter } from "@/utils/contentlayer-utils"
+import { getDistanceToNow } from "@/utils/date-utils"
+import { cn } from "@/utils/style-utils"
+import { allPosts } from "contentlayer/generated"
 
-import { Bio } from '@/components/Bio';
-import { Comment } from '@/components/Comment';
-import { DateDistance } from '@/components/DateDistance';
-import { Icons } from '@/components/Icons';
-import { Mdx } from '@/components/Mdx';
-import PostNav from '@/components/PostNav';
-import { PostViews } from '@/components/PostViews';
-import { getHeadings, postSorter } from '@/utils/contentlayer-utils';
-import { getDistanceToNow } from '@/utils/date-utils';
-import { cn } from '@/utils/style-utils';
+import { Bio } from "@/components/Bio"
+import { Comment } from "@/components/Comment"
+import { DateDistance } from "@/components/DateDistance"
+import { Icons } from "@/components/Icons"
+import { Mdx } from "@/components/Mdx"
+import PostNav from "@/components/PostNav"
+import { PostViews } from "@/components/PostViews"
 
 // @see https://github.com/rpearce/react-medium-image-zoom/issues/429#issuecomment-1663119432
-export const runtime = 'nodejs';
+export const runtime = "nodejs"
 
 type PageParams = {
-  slug: string[];
-};
+  slug: string[]
+}
 
 export async function generateStaticParams(): Promise<PageParams[]> {
   return allPosts.map((post) => ({
-    slug: post.slugAsParams.split('/'),
-  }));
+    slug: post.slugAsParams.split("/"),
+  }))
 }
 
 type PageProps = {
-  params: PageParams;
-};
+  params: PageParams
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const slug = params?.slug?.join('/') || '';
+  const slug = params?.slug?.join("/") || ""
 
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = decodeURIComponent(slug)
 
-  const post = allPosts.find((post) => post.slugAsParams === decodedSlug);
+  const post = allPosts.find((post) => post.slugAsParams === decodedSlug)
 
-  const title = post?.title;
-  const description = post?.description;
-  const url = post?.slug && `https://seonest.net${cleanUrl(post.slug)}`;
-  const ogImage = post?.thumbnail ? cleanUrl(post.thumbnail) : '/opengraph-image.png';
+  const title = post?.title
+  const description = post?.description
+  const url = post?.slug && `https://seonest.net${cleanUrl(post.slug)}`
+  const ogImage = post?.thumbnail ? cleanUrl(post.thumbnail) : "/opengraph-image.png"
 
   return {
     title,
@@ -55,27 +55,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url,
       images: [{ url: ogImage, alt: post?.title }],
     },
-  };
+  }
 }
 
-const cleanUrl = (url: string) => (url.startsWith('/') ? url : `/${url}`);
+const cleanUrl = (url: string) => (url.startsWith("/") ? url : `/${url}`)
 
 async function PostPage({ params }: PageProps) {
-  const slug = params?.slug?.join('/') || '';
+  const slug = params?.slug?.join("/") || ""
 
-  const decodedSlug = decodeURIComponent(slug);
-  const sortedPosts = allPosts.sort(postSorter);
-  const postIndex = sortedPosts.findIndex((post) => post.slugAsParams === decodedSlug);
-  const post = sortedPosts[postIndex];
+  const decodedSlug = decodeURIComponent(slug)
+  const sortedPosts = allPosts.sort(postSorter)
+  const postIndex = sortedPosts.findIndex((post) => post.slugAsParams === decodedSlug)
+  const post = sortedPosts[postIndex]
 
   if (!post) {
-    notFound();
+    notFound()
   }
 
-  const next = postIndex - 1 >= 0 && sortedPosts[postIndex - 1];
-  const prev = postIndex + 1 < sortedPosts.length && sortedPosts[postIndex + 1];
+  const next = postIndex - 1 >= 0 && sortedPosts[postIndex - 1]
+  const prev = postIndex + 1 < sortedPosts.length && sortedPosts[postIndex + 1]
 
-  const toc = getHeadings(post.body.raw);
+  const toc = getHeadings(post.body.raw)
 
   return (
     <main className="mx-auto py-10 xl:grid xl:grid-cols-[1fr_280px] xl:gap-10">
@@ -122,9 +122,9 @@ async function PostPage({ params }: PageProps) {
           </div>
           <hr
             className={cn(
-              'border-none p-0 outline-none',
-              'm-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300',
-              'bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500'
+              "border-none p-0 outline-none",
+              "m-[72px] h-[3px] rounded-md border-white bg-indigo-700 dark:border-black dark:bg-indigo-300",
+              "bg-gradient-to-r from-indigo-700 to-rose-700 dark:from-indigo-500 dark:to-rose-500"
             )}
           />
           <Bio />
@@ -166,7 +166,7 @@ async function PostPage({ params }: PageProps) {
       </div>
       <div className="h-12" />
     </main>
-  );
+  )
 }
 
-export default PostPage;
+export default PostPage

@@ -16,7 +16,7 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
 - [React](https://beta.reactjs.org/)
   - [v18.x](https://www.npmjs.com/package/react)
 - [Next.js](https://beta.nextjs.org/)
-  - [v13.x](https://www.npmjs.com/package/next)
+  - [v14.x](https://www.npmjs.com/package/next)
   - [App Router](https://beta.nextjs.org/docs/app-directory-roadmap)
 - DB
   - [Prisma](https://www.prisma.io/)

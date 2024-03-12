@@ -1,11 +1,11 @@
-import { allPosts } from 'contentlayer/generated';
-import Link from 'next/link';
+import Link from "next/link"
+import { postSorter } from "@/utils/contentlayer-utils"
+import { allPosts } from "contentlayer/generated"
 
-import { Card } from '@/components/Card';
-import { postSorter } from '@/utils/contentlayer-utils';
+import { Card } from "@/components/Card"
 
 async function IndexPage() {
-  const posts = allPosts.sort(postSorter);
+  const posts = allPosts.sort(postSorter)
 
   return (
     <main className="mx-auto max-w-4xl py-10">
@@ -23,7 +23,7 @@ async function IndexPage() {
         </Link>
       ))}
     </main>
-  );
+  )
 }
 
-export default IndexPage;
+export default IndexPage

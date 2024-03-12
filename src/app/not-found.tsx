@@ -10,7 +10,7 @@ function RootNotFound() {
         </a>
       </div>
     </div>
-  );
+  )
 }
 
-export default RootNotFound;
+export default RootNotFound

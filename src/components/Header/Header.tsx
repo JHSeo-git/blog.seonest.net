@@ -1,12 +1,12 @@
-import { cva } from 'class-variance-authority';
-import Link from 'next/link';
+import Link from "next/link"
+import { cva } from "class-variance-authority"
 
-import { Icons } from '../Icons';
-import ModeToggle from '../ModeToggle';
+import { Icons } from "../Icons"
+import ModeToggle from "../ModeToggle"
 
 const navigationMenuTriggerStyle = cva(
-  'group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-100 focus:bg-slate-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:focus:bg-slate-800'
-);
+  "group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-100 focus:bg-slate-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 dark:text-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:focus:bg-slate-800"
+)
 
 export function Header() {
   return (
@@ -38,5 +38,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  );
+  )
 }

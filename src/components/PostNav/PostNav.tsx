@@ -1,13 +1,13 @@
-'use client';
+"use client"
 
-import type { TOCItem } from '@/utils/contentlayer-utils';
+import type { TOCItem } from "@/utils/contentlayer-utils"
 
-import HeadingViewProvider from './HeadingViewProvider';
-import PostNavItem from './PostNav.Item';
+import HeadingViewProvider from "./HeadingViewProvider"
+import PostNavItem from "./PostNav.Item"
 
 interface PostNavProps {
-  title: string;
-  toc: TOCItem[];
+  title: string
+  toc: TOCItem[]
 }
 
 function PostNavChildren({ title, toc }: PostNavProps) {
@@ -20,7 +20,7 @@ function PostNavChildren({ title, toc }: PostNavProps) {
         </PostNavItem>
       ))}
     </nav>
-  );
+  )
 }
 
 function PostNav({ title, toc }: PostNavProps) {
@@ -28,7 +28,7 @@ function PostNav({ title, toc }: PostNavProps) {
     <HeadingViewProvider>
       <PostNavChildren title={title} toc={toc} />
     </HeadingViewProvider>
-  );
+  )
 }
 
-export default PostNav;
+export default PostNav

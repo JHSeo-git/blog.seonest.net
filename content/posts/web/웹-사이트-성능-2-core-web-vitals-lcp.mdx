@@ -1,11 +1,11 @@
 ---
-title: '웹 사이트 성능(2) - Core web vitals, LCP'
-description: '웹 사이트 성능 지표인 Core web vitals의 LCP(Largest Contentful Paint)에 대해 알아보았습니다.'
-date: '2021-10-17T05:35:31.865Z'
-category: 'web'
-tags: ['Core web vitals', 'LCP', 'Web']
-thumbnail: '/post/web/웹-사이트-성능-2-core-web-vitals-lcp/thumbnail.png'
-update: '2023-03-26T13:01:19Z'
+title: "웹 사이트 성능(2) - Core web vitals, LCP"
+description: "웹 사이트 성능 지표인 Core web vitals의 LCP(Largest Contentful Paint)에 대해 알아보았습니다."
+date: "2021-10-17T05:35:31.865Z"
+category: "web"
+tags: ["Core web vitals", "LCP", "Web"]
+thumbnail: "/post/web/웹-사이트-성능-2-core-web-vitals-lcp/thumbnail.png"
+update: "2023-03-26T13:01:19Z"
 ---
 
 이번 포스트에서는 Core Web Vitals와 그 중 하나인 LCP에 대해 알아보도록 하겠습니다.
@@ -380,12 +380,12 @@ Critical CSS라는 것은 스크롤 없이 볼 수 있는 콘텐츠에 사용되
   (brotli를 위해 [shrink-ray](https://github.com/aickin/shrink-ray#readme)나 [compress-brotli](https://github.com/Kikobeats/compress-brotli)를 사용할 수도 있습니다.)
 
 ```js
-const express = require('express');
-const compression = require('compression');
+const express = require("express")
+const compression = require("compression")
 
-const app = express();
+const app = express()
 
-app.use(compression());
+app.use(compression())
 ```
 
 - **Static Compression**  
@@ -394,29 +394,29 @@ app.use(compression());
   js 파일에 대해 요청이 왔을 때 압축된 파일을 제공하기 javascript endpoint를 제공하세요
 
 ```js
-var BrotliPlugin = require('brotli-webpack-plugin');
+var BrotliPlugin = require("brotli-webpack-plugin")
 module.exports = {
   plugins: [
     new BrotliPlugin({
-      asset: '[file].br',
+      asset: "[file].br",
       test: /\.(js)$/,
     }),
   ],
-};
+}
 ```
 
 ```js
-const express = require('express');
-const app = express();
+const express = require("express")
+const app = express()
 
-app.get('*.js', (req, res, next) => {
-  req.url = req.url + '.br';
-  res.set('Content-Encoding', 'br');
-  res.set('Content-Type', 'application/javascript; charset=UTF-8');
-  next();
-});
+app.get("*.js", (req, res, next) => {
+  req.url = req.url + ".br"
+  res.set("Content-Encoding", "br")
+  res.set("Content-Type", "application/javascript; charset=UTF-8")
+  next()
+})
 
-app.use(express.static('public'));
+app.use(express.static("public"))
 ```
 
 **Defer unused Javascript**
@@ -625,7 +625,7 @@ gzip, brotli와 같은 압축 알고리즘은 서버와 브라우저 사이에 �
 
 ```js
 if (navigator.connection && navigator.connection.effectiveType) {
-  if (navigator.connection.effectiveType === '4g') {
+  if (navigator.connection.effectiveType === "4g") {
     // Load video
   } else {
     // Load image

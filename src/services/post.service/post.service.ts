@@ -1,13 +1,13 @@
-import { db } from '@/lib/prisma';
+import { db } from "@/lib/prisma"
 
-import type * as PostTypes from './types';
+import type * as PostTypes from "./types"
 
 export function getPost({ slug }: PostTypes.GetPostParams) {
   return db.post.findUnique({
     where: {
       slug,
     },
-  });
+  })
 }
 
 export async function viewPost({ slug }: PostTypes.ViewPostParams) {
@@ -24,5 +24,5 @@ export async function viewPost({ slug }: PostTypes.ViewPostParams) {
         increment: 1,
       },
     },
-  });
+  })
 }

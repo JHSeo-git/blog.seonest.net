@@ -1,11 +1,11 @@
 ---
-title: 'Bundle - Module Bundler'
-description: '최신 JavaScript 개발에서 모듈은 빠져서는 안될 기능 중 하나입니다. 이번 포스팅에서는 모듈 번들러에 대해 알아보겠습니다.'
-date: '2021-07-11T08:03:27.842Z'
-category: 'javascript'
-tags: ['JavaScript', 'Bundler', 'Module', 'Web']
-thumbnail: '/post/javascript/bundle-module-bundler/thumbnail.png'
-update: '2023-03-25T13:42:20Z'
+title: "Bundle - Module Bundler"
+description: "최신 JavaScript 개발에서 모듈은 빠져서는 안될 기능 중 하나입니다. 이번 포스팅에서는 모듈 번들러에 대해 알아보겠습니다."
+date: "2021-07-11T08:03:27.842Z"
+category: "javascript"
+tags: ["JavaScript", "Bundler", "Module", "Web"]
+thumbnail: "/post/javascript/bundle-module-bundler/thumbnail.png"
+update: "2023-03-25T13:42:20Z"
 ---
 
 > 최신 자바스크립트 개발에서 **모듈**은 절대 빠져서는 안 될 용어 중 하나입니다.  
@@ -131,8 +131,8 @@ Entry는 번들링할 파일의 시작점입니다. 웹팩 설정 파일에 다�
 
 ```js
 module.exports = {
-  entry: './src/index.js',
-};
+  entry: "./src/index.js",
+}
 ```
 
 webpack.config.js가 있는 경로에서 하위 "`src/index.js` 파일을 번들링 하겠다" 라는 뜻입니다.
@@ -141,26 +141,26 @@ webpack.config.js가 있는 경로에서 하위 "`src/index.js` 파일을 번들
 
 ```js
 // ./src/index.js
-import LoginView from './LoginView.js';
-import HomeView from './HomeView.js';
-import PostView from './PostView.js';
+import HomeView from "./HomeView.js"
+import LoginView from "./LoginView.js"
+import PostView from "./PostView.js"
 
 function initApp() {
-  LoginView.init();
-  HomeView.init();
-  PostView.init();
+  LoginView.init()
+  HomeView.init()
+  PostView.init()
 }
 
-initApp();
+initApp()
 ```
 
 ```js
 module.exports = {
   entry: {
-    login: './src/LoginView.js',
-    main: './src/MainView.js',
+    login: "./src/LoginView.js",
+    main: "./src/MainView.js",
   },
-};
+}
 ```
 
 #### 2. Output
@@ -170,9 +170,9 @@ Output은 번들링 결과물의 경로를 설정합니다. 웹팩 설정 파일
 ```js
 module.exports = {
   output: {
-    filename: 'bundle.js',
+    filename: "bundle.js",
   },
-};
+}
 ```
 
 webpack.config.js가 있는 경로에서 "`bundle.js` 파일을 번들링 결과 파일로 생성하겠다" 라는 뜻입니다.
@@ -180,14 +180,14 @@ webpack.config.js가 있는 경로에서 "`bundle.js` 파일을 번들링 결과
 Entry와는 다르게 object 형태로 filename 등을 지정해주어야 합니다.
 
 ```js
-var path = require('path');
+var path = require("path")
 
 module.exports = {
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, './dist'),
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "./dist"),
   },
-};
+}
 ```
 
 또한, 웹팩에서 제공하는 옵션을 사용하여 파일 이름에 해시값이나 id를 추가할 수도 있습니다.
@@ -196,30 +196,30 @@ module.exports = {
 // [name] 결과 파일 이름에 entry 속성을 포함하는 옵션
 module.exports = {
   output: {
-    filename: '[name].bundle.js',
+    filename: "[name].bundle.js",
   },
-};
+}
 
 // [id] 모듈 id를 포함하는 옵션
 module.exports = {
   output: {
-    filename: '[id].bundle.js',
+    filename: "[id].bundle.js",
   },
-};
+}
 
 // [hash] 빌드 시 마다 고유 hash 값을 붙이는 옵션
 module.exports = {
   output: {
-    filename: '[name].[hash].bundle.js',
+    filename: "[name].[hash].bundle.js",
   },
-};
+}
 
 // [chunkhash] 각 청크된 파일 내용을 기준으로 생성된 hash 값을 붙이는 옵션
 module.exports = {
   output: {
-    filename: '[chunkhash].bundle.js',
+    filename: "[chunkhash].bundle.js",
   },
-};
+}
 ```
 
 #### 3. Loader
@@ -236,18 +236,18 @@ p {
 
 ```js
 // app.js
-import './common.css';
+import "./common.css"
 
-console.log('css loaded');
+console.log("css loaded")
 ```
 
 ```js
 module.exports = {
-  entry: './app.js',
+  entry: "./app.js",
   output: {
-    filename: 'bundle.js',
+    filename: "bundle.js",
   },
-};
+}
 ```
 
 위 대로 동작하면 빌드 시 에러가 나게 됩니다.
@@ -255,19 +255,19 @@ module.exports = {
 
 ```js
 module.exports = {
-  entry: './app.js',
+  entry: "./app.js",
   output: {
-    filename: 'bundle.js',
+    filename: "bundle.js",
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: ['css-loader'],
+        use: ["css-loader"],
       },
     ],
   },
-};
+}
 ```
 
 module 이라는 객체에 rules라는 배열에 test와 use를 가진 object를 추가했습니다.
@@ -327,12 +327,12 @@ module.exports = {
 예를 들어, 웹팩으로 빌드한 결과물로 HTML 파일을 생성하거나 웹팩의 빌드 진행율을 표시하는 등의 기능을 제공합니다.
 
 ```js
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+var webpack = require("webpack")
+var HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   plugins: [new HtmlWebpackPlugin(), new webpack.ProgressPlugin()],
-};
+}
 ```
 
 위 처럼 생성자 함수로 생성한 객체 인스턴스만 추가될 수 있습니다.
@@ -385,11 +385,11 @@ module.exports = {
 롤업은 중복 제거에 특화되어 있으며, 특히 여러 개의 진입점이 있을 경우 중복해서 번들될 수 있는 부분을 독립된 모듈로 분리해낼 수 있습니다.
 
 ```js
-import { ajax } from './utils';
+import { ajax } from "./utils"
 
-const query = 'Rollup';
+const query = "Rollup"
 
-ajax(`https://api.example.com?search=${query}`).then(handleResponse);
+ajax(`https://api.example.com?search=${query}`).then(handleResponse)
 ```
 
 ### rollup.config.js
@@ -404,31 +404,32 @@ ajax(`https://api.example.com?search=${query}`).then(handleResponse);
 추가적인 config 정보는 [여기서](https://rollupjs.org/command-line-interface/#configuration-files) 확인하세요.
 
 ```js
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import pkg from './package.json';
+import commonjs from "@rollup/plugin-commonjs"
+import resolve from "@rollup/plugin-node-resolve"
+
+import pkg from "./package.json"
 
 export default [
   // UMD
   {
-    input: 'src/main.js',
+    input: "src/main.js",
     output: {
-      name: 'howLongUntilLunch',
+      name: "howLongUntilLunch",
       file: pkg.browser,
-      format: 'umd',
+      format: "umd",
     },
     plugins: [resolve(), commonjs()],
   },
   // ESM, CJS
   {
-    input: 'src/main.js',
-    external: ['ms'],
+    input: "src/main.js",
+    external: ["ms"],
     output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' },
+      { file: pkg.main, format: "cjs" },
+      { file: pkg.module, format: "es" },
     ],
   },
-];
+]
 ```
 
 ### Rollup vs ...

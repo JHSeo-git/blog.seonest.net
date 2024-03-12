@@ -1,10 +1,10 @@
 ---
-title: 'Traditional Approaches vs Suspense in React'
-description: 'React에서 Data Fetch를 다루는 전통적 방법과 Suspense를 사용하는 방법을 비교해봅니다.'
-date: '2022-04-17T23:22:56.576Z'
-category: 'react'
-tags: ['React', 'Web']
-thumbnail: '/post/react/traditional-approaches-vs-suspense-in-react/thumbnail.png'
+title: "Traditional Approaches vs Suspense in React"
+description: "React에서 Data Fetch를 다루는 전통적 방법과 Suspense를 사용하는 방법을 비교해봅니다."
+date: "2022-04-17T23:22:56.576Z"
+category: "react"
+tags: ["React", "Web"]
+thumbnail: "/post/react/traditional-approaches-vs-suspense-in-react/thumbnail.png"
 ---
 
 > React에서 Data Fetch를 좀 더 이해하기 위해 다음 글을 직접 예시로 작성해보고 내용을 옮겨보았습니다.
@@ -49,8 +49,8 @@ React에서는 가장 흔한 방식이고 useEffect를 이용해 data fetch를 �
 
 ```js
 useEffect(() => {
-  fetchSomething();
-}, []);
+  fetchSomething()
+}, [])
 ```
 
 useEffect를 통해서 fetch된 data를 state에 업데이트하여 화면에 렌더링 하도록 하는 방식입니다.
@@ -209,9 +209,9 @@ Promise.all을 없애고, 두 promise를 별도로 기다리게 하면 됩니다
 
 ```ts
 useEffect(() => {
-  fetchUser<UserT>(1000).then((u) => setUser(u));
-  fetchPosts<PostT[]>(2000).then((p) => setPosts(p));
-}, []);
+  fetchUser<UserT>(1000).then((u) => setUser(u))
+  fetchPosts<PostT[]>(2000).then((p) => setPosts(p))
+}, [])
 ```
 
 하지만 이런 방식은 data와 component tree 복잡도가 올라갈수록 점진적으로 더 어려워집니다. data tree내의 어떤 부분이 사라지거나 stale 상황에서는 신뢰할 수 있는 component를 작성하기 어렵습니다. 따라서 모든 data를 fetch한 다음에 렌더링하는 것이 더 현실적인 옵션이 될 수 있습니다.

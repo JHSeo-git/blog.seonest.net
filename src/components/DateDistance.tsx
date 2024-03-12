@@ -1,21 +1,21 @@
-'use client';
-import * as React from 'react';
+"use client"
 
-import useIsomorphicLayoutEffect from '@/hooks/useIsomorphicLayoutEffect';
-import type { GetDistanceToNowOptions } from '@/utils/date-utils';
-import { getDistanceToNow } from '@/utils/date-utils';
+import * as React from "react"
+import { getDistanceToNow, type GetDistanceToNowOptions } from "@/utils/date-utils"
+
+import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect"
 
 interface DateDistanceProps extends React.HTMLAttributes<HTMLSpanElement> {
-  date: string;
-  options?: GetDistanceToNowOptions;
+  date: string
+  options?: GetDistanceToNowOptions
 }
 
 export function DateDistance({ date, options, ...props }: DateDistanceProps) {
-  const [distance, setDistance] = React.useState<string>();
+  const [distance, setDistance] = React.useState<string>()
 
   useIsomorphicLayoutEffect(() => {
-    setDistance(getDistanceToNow(date, options));
-  }, []);
+    setDistance(getDistanceToNow(date, options))
+  }, [])
 
-  return <span {...props}>{distance}</span>;
+  return <span {...props}>{distance}</span>
 }

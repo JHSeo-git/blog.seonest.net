@@ -1,8 +1,8 @@
 ---
-date: '2023-05-05T10:15:40.952Z'
+date: "2023-05-05T10:15:40.952Z"
 category: react
 title: Next generation(Next.js 13.4)
-description: 'Next.js 13.4 버전 릴리즈와 함께 드디어 App Router가 Stable로 전환되었습니다. Nex.js 13.4 업데이트 기능을 살펴보았습니다.'
+description: "Next.js 13.4 버전 릴리즈와 함께 드디어 App Router가 Stable로 전환되었습니다. Nex.js 13.4 업데이트 기능을 살펴보았습니다."
 published: true
 thumbnail: /post/react/next-generation-next-js-13-4/thumbnail.png
 ---
@@ -62,8 +62,9 @@ Next.js는 6년이 되었습니다. 원래의 설계 원칙은 그대로 유지�
 // Pages Router
 // pages/about.js
 
-import React from 'react';
-export default () => <h1>About us</h1>;
+import React from "react"
+
+export default () => <h1>About us</h1>
 ```
 
 추가적으로 구성할 것이 없었습니다. 단지 `pages/` 폴더 아래에 파일을 만들기면 하면
@@ -116,7 +117,7 @@ export default function Page() {
 // 다른 레이아웃 컴포넌트를 조합할 수 있는 방법이 없으며, 이 파일에서
 // 전역 데이터를 가져올 수 없습니다.
 export default function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+  return <Component {...pageProps} />
 }
 ```
 
@@ -157,7 +158,7 @@ Pages Router는 서버에서 초기 페이로드를 커스텀하기 위해 `_doc
 
 // 이 파일은 서버 요청에 대한 <html>과 <body> 태그를 커스텀하기 위해 사용됩니다.
 // 그러나 HTML 요소를 작성하는 거라기보단 프레임워크-전용 기능을 추가하는 것입니다.
-import { Html, Head, Main, NextScript } from 'next/document';
+import { Head, Html, Main, NextScript } from "next/document"
 
 export default function Document() {
   return (
@@ -168,7 +169,7 @@ export default function Document() {
         <NextScript />
       </body>
     </Html>
-  );
+  )
 }
 ```
 
@@ -185,7 +186,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>{children}</body>
     </html>
-  );
+  )
 }
 ```
 
@@ -210,8 +211,8 @@ Next.js와 React 개발자들은 JavaScript와 TypeScript 코드로 작성하고
 함께 구성하고 싶어 합니다. 처음에는:
 
 ```jsx
-import React from 'react';
-import Head from 'next/head';
+import React from "react"
+import Head from "next/head"
 
 export default () => (
   <div>
@@ -220,7 +221,7 @@ export default () => (
     </Head>
     <h1>Hi. I'm mobile-ready!</h1>
   </div>
-);
+)
 ```
 
 이 컴포넌트는 애플리케이션 어느 곳에서나 재사용하고 구성할 수 있는 로직을 캡슐화 합니다.
@@ -230,14 +231,15 @@ export default () => (
 예를 들어, 데이터를 fetch하고 싶을 때 원래 버전의 Next.js는 다음과 같았습니다:
 
 ```jsx
-import React from 'react';
-import 'isomorphic-fetch';
+import React from "react"
+
+import "isomorphic-fetch"
 
 export default class extends React.Component {
   static async getInitialProps() {
-    const res = await fetch('https://api.company.com/user/123');
-    const data = await res.json();
-    return { username: data.profile.username };
+    const res = await fetch("https://api.company.com/user/123")
+    const data = await res.json()
+    return { username: data.profile.username }
   }
 }
 ```
@@ -253,11 +255,11 @@ export default class extends React.Component {
 ```jsx
 // 라우트의 정적 버전을 생성합니다.
 export async function getStaticProps(context) {
-  return { props: {} };
+  return { props: {} }
 }
 // 또는 동적으로 서버에서 렌더링합니다.
 export async function getServerSideProps(context) {
-  return { props: {} };
+  return { props: {} }
 }
 ```
 
@@ -280,12 +282,12 @@ App Router를 사용하면 친숙한 `async`, `await`를 사용하여 [데이터
 // app/page.js
 
 export default async function Page() {
-  const res = await fetch('https://api.example.com/...');
+  const res = await fetch("https://api.example.com/...")
   // 해당 return값은 serialize되어 있지 않습니다.
   // Date, Map, Set, 등등으로 사용할 수 있습니다.
-  const data = res.json();
+  const data = res.json()
 
-  return '...';
+  return "..."
 }
 ```
 
@@ -298,10 +300,10 @@ _어떠한_ 컴포넌트라도 가능합니다.
 ```jsx
 // app/page.js
 
-import { Tweet } from 'react-tweet';
+import { Tweet } from "react-tweet"
 
 export default async function Page() {
-  return <Tweet id="790942692909916160" />;
+  return <Tweet id="790942692909916160" />
 }
 ```
 
@@ -311,8 +313,9 @@ export default async function Page() {
 ```jsx
 // app/page.js
 
-import { Suspense } from 'react';
-import { PostFeed, Weather } from './components';
+import { Suspense } from "react"
+
+import { PostFeed, Weather } from "./components"
 
 export default function Page() {
   return (
@@ -324,7 +327,7 @@ export default function Page() {
         <Weather />
       </Suspense>
     </section>
-  );
+  )
 }
 ```
 
@@ -351,14 +354,14 @@ Next.js와 다른 React 프레임워크는 이러한 베스트 프랙티스를 �
 ```jsx
 // app/page.tsx
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic"
 
-const DynamicHeader = dynamic(() => import('../components/header'), {
+const DynamicHeader = dynamic(() => import("../components/header"), {
   loading: () => <p>Loading...</p>,
-});
+})
 
 export default function Home() {
-  return <DynamicHeader />;
+  return <DynamicHeader />
 }
 ```
 
@@ -374,12 +377,12 @@ UI를 서버에서 클라이언트로 점진적으로 보낼 수 있습니다.
 ```jsx
 // app/layout.tsx
 
-import { getUser } from './auth';
-import { Dashboard, Landing } from './components';
+import { getUser } from "./auth"
+import { Dashboard, Landing } from "./components"
 
 export default async function Layout() {
-  const isLoggedIn = await getUser();
-  return isLoggedIn ? <Dashboard /> : <Landing />;
+  const isLoggedIn = await getUser()
+  return isLoggedIn ? <Dashboard /> : <Landing />
 }
 ```
 
@@ -423,19 +426,19 @@ React 팀은 mutate를 위한 muatate를 위한 first-party 솔루션을 [개발
 ```jsx
 // app/post/[id]/page.tsx
 
-import kv from './kv';
+import kv from "./kv"
 
 export default function Page({ params }) {
   async function increment() {
-    'use server';
-    await kv.incr(`post:id:${params.id}`);
+    "use server"
+    await kv.incr(`post:id:${params.id}`)
   }
 
   return (
     <form action={increment}>
       <button type="submit">Like</button>
     </form>
-  );
+  )
 }
 ```
 
@@ -509,9 +512,9 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
 ```
 
 ## 기타 개선

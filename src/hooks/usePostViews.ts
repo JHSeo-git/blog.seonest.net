@@ -1,34 +1,34 @@
-'use client';
+"use client"
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react"
 
-import { viewPost } from '@/lib/api/posts';
+import { viewPost } from "@/lib/api/posts"
 
 export function usePostViews(slug: string) {
-  const [views, setViews] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error>();
+  const [views, setViews] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error>()
 
   const fetchViews = useCallback(async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const data = await viewPost({ slug });
+      const data = await viewPost({ slug })
 
-      setViews(data.views);
+      setViews(data.views)
     } catch (error) {
       if (error instanceof Error) {
-        setError(error);
+        setError(error)
       }
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [slug]);
+  }, [slug])
 
   return {
     views,
     loading,
     error,
     fetchViews,
-  };
+  }
 }

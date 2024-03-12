@@ -1,9 +1,9 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
+import { useState } from "react"
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   return (
     <button
@@ -12,7 +12,7 @@ function Counter() {
     >
       당신은 {count}번 클릭했습니다.
     </button>
-  );
+  )
 }
 
-export { Counter };
+export { Counter }

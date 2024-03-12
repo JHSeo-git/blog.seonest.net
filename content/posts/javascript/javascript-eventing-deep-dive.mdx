@@ -1,11 +1,11 @@
 ---
-title: 'JavaScript Eventing Deep dive'
-description: 'JavaScript에서 이벤트 진행방식을 확인해보면서 조금 더 이해해보았습니다.'
-date: '2021-12-03T13:49:02.946Z'
-category: 'javascript'
-tags: ['JavaScript', 'Event', 'Web']
-thumbnail: '/post/javascript/javascript-eventing-deep-dive/thumbnail.png'
-update: '2023-03-26T09:27:30Z'
+title: "JavaScript Eventing Deep dive"
+description: "JavaScript에서 이벤트 진행방식을 확인해보면서 조금 더 이해해보았습니다."
+date: "2021-12-03T13:49:02.946Z"
+category: "javascript"
+tags: ["JavaScript", "Event", "Web"]
+thumbnail: "/post/javascript/javascript-eventing-deep-dive/thumbnail.png"
+update: "2023-03-26T09:27:30Z"
 ---
 
 > https://web.dev/eventing-deepdive/
@@ -21,9 +21,9 @@ update: '2023-03-26T09:27:30Z'
 이벤트 핸들러를 등록하면 프로그래머가 원하는 동작을 이벤트가 발생했을 때 실행할 수 있습니다.
 
 ```js
-window.addEventlistner('click', function (e) {
-  console.log(e);
-});
+window.addEventlistner("click", function (e) {
+  console.log(e)
+})
 ```
 
 ![window-event](https://files.seonest.net/images/qnfqnfqnf/post/120/image.png)
@@ -57,7 +57,7 @@ window.addEventlistner('click', function (e) {
 W3C가 만들어졌을 때 두 가지 이벤트 스타일에서 모두 장점을 발견했고 브라우저가 `addEventListener` 메서드에 대해 **세 번째 매개변수**를 통해 두 가지 모두를 지원해야 한다고 정했습니다.
 
 ```js
-element.addEventListner('click', handleClick, { capture: true | false });
+element.addEventListner("click", handleClick, { capture: true | false })
 ```
 
 options에 capture 속성이 만들어졌고, 기본값은 `false` 로 이벤트 버블링이 사용됨을 의미합니다.
@@ -71,7 +71,7 @@ options에 capture 속성이 만들어졌고, 기본값은 `false` 로 이벤트
 ![event-phase](https://files.seonest.net/images/qnfqnfqnf/post/122/image.png)
 
 ```js
-var phase = event.eventPhase;
+var phase = event.eventPhase
 ```
 
 이벤트 전파는 4가지 단계로 나뉩니다:
@@ -106,67 +106,67 @@ var phase = event.eventPhase;
 var clear = false,
   divInfo = null,
   divs = null,
-  useCapture = false;
+  useCapture = false
 
 window.onload = function () {
-  divInfo = document.getElementById('divInfo');
-  divs = document.getElementsByTagName('div');
-  chCapture = document.getElementById('chCapture');
+  divInfo = document.getElementById("divInfo")
+  divs = document.getElementsByTagName("div")
+  chCapture = document.getElementById("chCapture")
   chCapture.onclick = function () {
-    RemoveListeners();
-    AddListeners();
-  };
-  Clear();
-  AddListeners();
-};
+    RemoveListeners()
+    AddListeners()
+  }
+  Clear()
+  AddListeners()
+}
 
 function RemoveListeners() {
   for (var i = 0; i < divs.length; i++) {
-    var d = divs[i];
-    if (d.id != 'divInfo') {
-      d.removeEventListener('click', OnDivClick, true);
-      d.removeEventListener('click', OnDivClick, false);
+    var d = divs[i]
+    if (d.id != "divInfo") {
+      d.removeEventListener("click", OnDivClick, true)
+      d.removeEventListener("click", OnDivClick, false)
     }
   }
 }
 
 function AddListeners() {
   for (var i = 0; i < divs.length; i++) {
-    var d = divs[i];
-    if (d.id != 'divInfo') {
-      if (chCapture.checked) d.addEventListener('click', OnDivClick, true);
-      else d.addEventListener('click', OnDivClick, false);
+    var d = divs[i]
+    if (d.id != "divInfo") {
+      if (chCapture.checked) d.addEventListener("click", OnDivClick, true)
+      else d.addEventListener("click", OnDivClick, false)
       d.onmousemove = function () {
-        clear = true;
-      };
+        clear = true
+      }
     }
   }
 }
 
 function OnDivClick(e) {
   if (clear) {
-    Clear();
-    clear = false;
+    Clear()
+    clear = false
   }
-  if (e.eventPhase == 2) e.currentTarget.style.backgroundColor = 'red';
+  if (e.eventPhase == 2) e.currentTarget.style.backgroundColor = "red"
   var level =
     e.eventPhase == 0
-      ? 'none'
+      ? "none"
       : e.eventPhase == 1
-      ? 'capturing'
-      : e.eventPhase == 2
-      ? 'target'
-      : e.eventPhase == 3
-      ? 'bubbling'
-      : 'error';
-  divInfo.innerHTML += e.currentTarget.id + '; eventPhase: ' + level + '<br/>';
+        ? "capturing"
+        : e.eventPhase == 2
+          ? "target"
+          : e.eventPhase == 3
+            ? "bubbling"
+            : "error"
+  divInfo.innerHTML += e.currentTarget.id + "; eventPhase: " + level + "<br/>"
 }
 
 function Clear() {
   for (var i = 0; i < divs.length; i++) {
-    if (divs[i].id != 'divInfo') divs[i].style.backgroundColor = i & 1 ? '#f6eedb' : '#cceeff';
+    if (divs[i].id != "divInfo") divs[i].style.backgroundColor = i & 1 ? "#f6eedb" : "#cceeff"
   }
-  divInfo.innerHTML = '';
+  divInfo.innerHTML = ""
 }
 ```
 
@@ -180,7 +180,7 @@ eventPhase를 확인하여 Phase Chain을 확인해보면 좀 더 이해가 될 
 이 경우, 이벤트 캡쳐링 단계에서 이벤트가 발생하지 않고, 이벤트 대상에서 이벤트가 발생한 후 버블링 단계에서 이벤트가 발생합니다.
 
 ```js
-d.addEventListener('click', OnDivClick, false);
+d.addEventListener("click", OnDivClick, false)
 ```
 
 capturing을 사용하지 않고 `d4`를 눌러보면 어떻게 될까요?
@@ -191,7 +191,7 @@ capturing을 사용하지 않기 때문에 위에서 아래로 내려오는 capt
 ### capture: true
 
 ```js
-d.addEventListener('click', OnDivClick, true);
+d.addEventListener("click", OnDivClick, true)
 ```
 
 capturing을 사용하면 위에서 아래로 내려오는 capturing 단계에서 등록된 event가 트리거되고, target까지 내려간 다음 bubbling 시에는 이벤트가 트리거 되지 않습니다.
@@ -200,8 +200,8 @@ capturing을 사용하면 위에서 아래로 내려오는 capturing 단계에�
 ### 전체적으로
 
 ```js
-d.addEventListener('click', OnDivClick, true);
-d.addEventListener('click', OnDivClick, false);
+d.addEventListener("click", OnDivClick, true)
+d.addEventListener("click", OnDivClick, false)
 ```
 
 ![ex4](https://files.seonest.net/images/qnfqnfqnf/post/128/image.png)
@@ -215,13 +215,13 @@ capture: true, capture: false를 각각 가진 이벤트를 2번 등록해두었
 위 예시도 보았지만 모든 이벤트는 `window`에서 시작하여 먼저 캡쳐링 단계를 거칩니다.
 
 ```js
-document.getElementById('C').addEventListener(
-  'click',
+document.getElementById("C").addEventListener(
+  "click",
   function (e) {
-    console.log('#C was clicked');
+    console.log("#C was clicked")
   },
   true
-);
+)
 ```
 
 위 이벤트(캡쳐를 true로 등록한)가 있다고 생각하고 차근차근 다시 살펴보겠습니다.
@@ -315,30 +315,30 @@ target phase단계에서 이제 버블링 phase로 넘어갑니다.
 ```
 
 ```js
-document.getElementById('A').addEventListener(
-  'click',
+document.getElementById("A").addEventListener(
+  "click",
   function (e) {
-    console.log('When #A is clicked, I shall run first!');
+    console.log("When #A is clicked, I shall run first!")
   },
   false
-);
+)
 
-document.getElementById('A').addEventListener(
-  'click',
+document.getElementById("A").addEventListener(
+  "click",
   function (e) {
-    console.log('When #A is clicked, I shall run second!');
-    e.stopImmediatePropagation();
+    console.log("When #A is clicked, I shall run second!")
+    e.stopImmediatePropagation()
   },
   false
-);
+)
 
-document.getElementById('A').addEventListener(
-  'click',
+document.getElementById("A").addEventListener(
+  "click",
   function (e) {
-    console.log('When #A is clicked, I would have run third, if not for stopImmediatePropagation');
+    console.log("When #A is clicked, I would have run third, if not for stopImmediatePropagation")
   },
   false
-);
+)
 ```
 
 ![ex5](https://files.seonest.net/images/qnfqnfqnf/post/129/image.png)
@@ -368,14 +368,14 @@ document.getElementById('A').addEventListener(
 그런데 만약 이 **기본 작업**을 막아야 한다면... 그 때 `preventDefault`를 사용하면 됩니다.
 
 ```js
-document.getElementById('link').addEventListener(
-  'click',
+document.getElementById("link").addEventListener(
+  "click",
   function (e) {
-    e.preventDefault();
-    console.log('링크 클릭이 기본 동작으로 이동되지 않습니다.');
+    e.preventDefault()
+    console.log("링크 클릭이 기본 동작으로 이동되지 않습니다.")
   },
   false
-);
+)
 ```
 
 이 경우 클릭 이벤트 핸들러를 `<a>`요소에 연결하고 기본 작업을 하지 않도록 했습니다.
@@ -402,12 +402,12 @@ document.getElementById('link').addEventListener(
 
 ```js
 for (let i = 0; i < 100; i++) {
-  const button = document.createElement('button');
-  button.innerText = i;
-  document.body.appendChild(button);
-  button.addEventListener('click', function () {
-    console.log(i);
-  });
+  const button = document.createElement("button")
+  button.innerText = i
+  document.body.appendChild(button)
+  button.addEventListener("click", function () {
+    console.log(i)
+  })
 }
 ```
 
@@ -418,11 +418,11 @@ for (let i = 0; i < 100; i++) {
 이런 경우에 사용할 수 있는 것이 이벤트 위임입니다.
 
 ```js
-document.body.addEventListener('click', function (e) {
-  if (e.target.tagName === 'BUTTON') {
-    console.log(e.target.innerText);
+document.body.addEventListener("click", function (e) {
+  if (e.target.tagName === "BUTTON") {
+    console.log(e.target.innerText)
   }
-});
+})
 ```
 
 이벤트 위임은 이벤트 핸들러를 하위 요소 대신 상위 요소에 등록하여 여러 요소에 대한 이벤트 처리를 한 곳에서 관리하는 기법입니다.

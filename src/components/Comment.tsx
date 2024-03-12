@@ -1,19 +1,18 @@
-'use client';
+"use client"
 
 // import Giscus from '@giscus/react';
-import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
+import { usePathname } from "next/navigation"
+import appConfig from "@/app.config"
+import { useTheme } from "next-themes"
 
-import appConfig from '@/app.config';
-
-import { MyGiscus } from './MyGiscus';
+import { MyGiscus } from "./MyGiscus"
 
 export function Comment() {
-  const pathname = usePathname();
-  const { theme } = useTheme();
+  const pathname = usePathname()
+  const { theme } = useTheme()
 
   if (!appConfig.comment) {
-    return null;
+    return null
   }
 
   return (
@@ -31,5 +30,5 @@ export function Comment() {
         theme={theme}
       />
     </div>
-  );
+  )
 }

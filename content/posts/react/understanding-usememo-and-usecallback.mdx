@@ -1,10 +1,10 @@
 ---
-title: 'Understanding useMemo and useCallback'
-description: 'useMemo와 useCallback이 대한 이해를 쉽게 풀어낸 Josh.W.Comeau 글을 옮기면서 정리해보았습니다.'
-date: '2022-09-02T15:03:22.000Z'
-category: 'react'
-tags: ['React', 'Web']
-thumbnail: '/post/react/understanding-usememo-and-usecallback/thumbnail.png'
+title: "Understanding useMemo and useCallback"
+description: "useMemo와 useCallback이 대한 이해를 쉽게 풀어낸 Josh.W.Comeau 글을 옮기면서 정리해보았습니다."
+date: "2022-09-02T15:03:22.000Z"
+category: "react"
+tags: ["React", "Web"]
+thumbnail: "/post/react/understanding-usememo-and-usecallback/thumbnail.png"
 ---
 
 > joshwcomeau 블로그에서 [Understanding useMemo and useCallback](https://www.joshwcomeau.com/react/usememo-and-usecallback/) 를 옮긴 글입니다.
@@ -49,17 +49,17 @@ thumbnail: '/post/react/understanding-usememo-and-usecallback/thumbnail.png'
 사용자 입력 값인 `selectedNum`과 0 사이에 소수를 찾는 툴을 만든다고 가정해봅시다.
 
 ```jsx
-import React from 'react';
+import React from "react"
 
 function App() {
   // 입력받은 수를 상태에 담습니다.
-  const [selectedNum, setSelectedNum] = React.useState(100);
+  const [selectedNum, setSelectedNum] = React.useState(100)
 
   // 0과 입력받은 상태인 `selectedNum` 사이에 모든 소수를 계산합니다.
-  const allPrimes = [];
+  const allPrimes = []
   for (let counter = 2; counter < selectedNum; counter++) {
     if (isPrime(counter)) {
-      allPrimes.push(counter);
+      allPrimes.push(counter)
     }
   }
 
@@ -72,38 +72,38 @@ function App() {
           value={selectedNum}
           onChange={(event) => {
             // 과하게 계산되는 것으로부터 막기 위해 100k를 max로 잡습니다.
-            let num = Math.min(100_000, Number(event.target.value));
+            let num = Math.min(100_000, Number(event.target.value))
 
-            setSelectedNum(num);
+            setSelectedNum(num)
           }}
         />
       </form>
       <p>
-        There are {allPrimes.length} prime(s) between 1 and {selectedNum}:{' '}
-        <span className="prime-list">{allPrimes.join(', ')}</span>
+        There are {allPrimes.length} prime(s) between 1 and {selectedNum}:{" "}
+        <span className="prime-list">{allPrimes.join(", ")}</span>
       </p>
     </>
-  );
+  )
 }
 
 // Helper 함수는 주어진 숫자가 소수인지 아닌지 계산합니다.
 function isPrime(n) {
-  const max = Math.ceil(Math.sqrt(n));
+  const max = Math.ceil(Math.sqrt(n))
 
   if (n === 2) {
-    return true;
+    return true
   }
 
   for (let counter = 2; counter <= max; counter++) {
     if (n % counter === 0) {
-      return false;
+      return false
     }
   }
 
-  return true;
+  return true
 }
 
-export default App;
+export default App
 ```
 
 ![image.png](https://files.seonest.net/images/qnfqnfqnf/post/319/image.png)
@@ -178,14 +178,14 @@ export default App;
 
 ```jsx
 const allPrimes = React.useMemo(() => {
-  const result = [];
+  const result = []
   for (let counter = 2; counter < selectedNum; counter++) {
     if (isPrime(counter)) {
-      result.push(counter);
+      result.push(counter)
     }
   }
-  return result;
-}, [selectedNum]);
+  return result
+}, [selectedNum])
 ```
 
 `useMemo`는 2개의 argument를 가집니다.
@@ -215,10 +215,10 @@ const allPrimes = React.useMemo(() => {
 종종 어플리케이션 구조를 다시 잡아서 `useMemo` 사용을 피할 수 있습니다.
 
 ```jsx
-import React from 'react';
+import React from "react"
 
-import Clock from './Clock';
-import PrimeCalculator from './PrimeCalculator';
+import Clock from "./Clock"
+import PrimeCalculator from "./PrimeCalculator"
 
 function App() {
   return (
@@ -226,10 +226,10 @@ function App() {
       <Clock />
       <PrimeCalculator />
     </>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 기존 하나의 컴포넌트에서 2개의 새로운 컴포넌트 `Clock`과 `PrimeCalculator`로 분리하였습니다. `App` 에서 분리함으로써 이 2개 컴포넌트는 각각 자체 상태를 관리합니다. 한 컴포넌트에서 리렌더링하더라도 다른 컴포넌트에 영향을 주지 않습니다.
@@ -302,7 +302,7 @@ const getBackgroundColorFromTime = (time) => {
 function PrimeCalculator() {
   /* Component stuff here */
 }
-export default React.memo(PrimeCalculator);
+export default React.memo(PrimeCalculator)
 ```
 
 이렇게 하면 `PrimeCaculator` 컴포넌트는 항상 순수(pure)할 것입니다.
@@ -333,21 +333,21 @@ export default React.memo(PrimeCalculator);
 
 ```jsx
 // App.js
-import React from 'react';
+import React from "react"
 
-import Boxes from './Boxes';
+import Boxes from "./Boxes"
 
 function App() {
-  const [name, setName] = React.useState('');
-  const [boxWidth, setBoxWidth] = React.useState(1);
+  const [name, setName] = React.useState("")
+  const [boxWidth, setBoxWidth] = React.useState(1)
 
-  const id = React.useId();
+  const id = React.useId()
 
   const boxes = [
-    { flex: boxWidth, background: 'hsl(345deg 100% 50%)' },
-    { flex: 3, background: 'hsl(260deg 100% 40%)' },
-    { flex: 1, background: 'hsl(50deg 100% 60%)' },
-  ];
+    { flex: boxWidth, background: "hsl(345deg 100% 50%)" },
+    { flex: 3, background: "hsl(260deg 100% 40%)" },
+    { flex: 1, background: "hsl(50deg 100% 60%)" },
+  ]
 
   return (
     <>
@@ -360,7 +360,7 @@ function App() {
           type="text"
           value={name}
           onChange={(event) => {
-            setName(event.target.value);
+            setName(event.target.value)
           }}
         />
         <label htmlFor={`${id}-box-width`}>First box width:</label>
@@ -372,20 +372,20 @@ function App() {
           step={0.01}
           value={boxWidth}
           onChange={(event) => {
-            setBoxWidth(Number(event.target.value));
+            setBoxWidth(Number(event.target.value))
           }}
         />
       </section>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ```jsx
 // Boxes.js
-import React from 'react';
+import React from "react"
 
 function Boxes({ boxes }) {
   return (
@@ -394,10 +394,10 @@ function Boxes({ boxes }) {
         <div key={index} className="box" style={boxStyles} />
       ))}
     </div>
-  );
+  )
 }
 
-export default React.memo(Boxes);
+export default React.memo(Boxes)
 ```
 
 ![image.png](https://files.seonest.net/images/qnfqnfqnf/post/325/image.png)
@@ -418,11 +418,11 @@ export default React.memo(Boxes);
 
 ```js
 function getNumbers() {
-  return [1, 2, 3];
+  return [1, 2, 3]
 }
-const firstResult = getNumbers();
-const secondResult = getNumbers();
-console.log(firstResult === secondResult);
+const firstResult = getNumbers()
+const secondResult = getNumbers()
+console.log(firstResult === secondResult)
 ```
 
 `firstResult` 와 `secondResult` 가 동일하다고 생각하시나요?
@@ -448,12 +448,12 @@ console.log(firstResult === secondResult);
 function App() {
   // ...그리고 완전히 새로운 배열을 만듭니다.
   const boxes = [
-    { flex: boxWidth, background: 'hsl(345deg 100% 50%)' },
-    { flex: 3, background: 'hsl(260deg 100% 40%)' },
-    { flex: 1, background: 'hsl(50deg 100% 60%)' },
-  ];
+    { flex: boxWidth, background: "hsl(345deg 100% 50%)" },
+    { flex: 3, background: "hsl(260deg 100% 40%)" },
+    { flex: 1, background: "hsl(50deg 100% 60%)" },
+  ]
   // ...이 컴포넌트에 prop로 넘겨줍니다.
-  return <Boxes boxes={boxes} />;
+  return <Boxes boxes={boxes} />
 }
 ```
 
@@ -468,11 +468,11 @@ function App() {
 ```jsx
 const boxes = React.useMemo(() => {
   return [
-    { flex: boxWidth, background: 'hsl(345deg 100% 50%)' },
-    { flex: 3, background: 'hsl(260deg 100% 40%)' },
-    { flex: 1, background: 'hsl(50deg 100% 60%)' },
-  ];
-}, [boxWidth]);
+    { flex: boxWidth, background: "hsl(345deg 100% 50%)" },
+    { flex: 3, background: "hsl(260deg 100% 40%)" },
+    { flex: 1, background: "hsl(50deg 100% 60%)" },
+  ]
+}, [boxWidth])
 ```
 
 앞에서 본 예와 달리 여기서 소수 계산 비용이 많이 드는 지에 대해 걱정하지 않습니다. 우리의 목표는 단지 특정 배열에 대한 레퍼런스를 보존하는 것입니다.(**_preserve a reference_**)
@@ -491,12 +491,12 @@ const boxes = React.useMemo(() => {
 
 ```js
 const functionOne = function () {
-  return 5;
-};
+  return 5
+}
 const functionTwo = function () {
-  return 5;
-};
-console.log(functionOne === functionTwo); // false
+  return 5
+}
+console.log(functionOne === functionTwo) // false
 ```
 
 마찬가지로 컴포넌트 내에 함수를 정의해두었다면 매 번 렌더링될 때마다 고유한 함수가 재생성된다는 것을 의미합니다.
@@ -505,15 +505,15 @@ console.log(functionOne === functionTwo); // false
 
 ```jsx
 // App.js
-import React from 'react';
+import React from "react"
 
-import MegaBoost from './MegaBoost';
+import MegaBoost from "./MegaBoost"
 
 function App() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = React.useState(0)
 
   function handleMegaBoost() {
-    setCount((currentValue) => currentValue + 1234);
+    setCount((currentValue) => currentValue + 1234)
   }
 
   return (
@@ -521,34 +521,34 @@ function App() {
       Count: {count}
       <button
         onClick={() => {
-          setCount(count + 1);
+          setCount(count + 1)
         }}
       >
         Click me!
       </button>
       <MegaBoost handleClick={handleMegaBoost} />
     </>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ```jsx
 // MegaBoost.js
-import React from 'react';
+import React from "react"
 
 function MegaBoost({ handleClick }) {
-  console.log('Render MegaBoost');
+  console.log("Render MegaBoost")
 
   return (
     <button className="mega-boost-button" onClick={handleClick}>
       MEGA BOOST!
     </button>
-  );
+  )
 }
 
-export default React.memo(MegaBoost);
+export default React.memo(MegaBoost)
 ```
 
 ![image.png](https://files.seonest.net/images/qnfqnfqnf/post/329/image.png)
@@ -564,9 +564,9 @@ export default React.memo(MegaBoost);
 ```jsx
 const handleMegaBoost = React.useMemo(() => {
   return function () {
-    setCount((currentValue) => currentValue + 1234);
-  };
-}, []);
+    setCount((currentValue) => currentValue + 1234)
+  }
+}, [])
 ```
 
 배열을 반환하는 것 대신에 이번엔 **_function_** 을 반환합니다. 그리고 이 함수는 `handleMegaBoost` 변수에 담습니다.
@@ -575,8 +575,8 @@ const handleMegaBoost = React.useMemo(() => {
 
 ```jsx
 const handleMegaBoost = React.useCallback(() => {
-  setCount((currentValue) => currentValue + 1234);
-}, []);
+  setCount((currentValue) => currentValue + 1234)
+}, [])
 ```
 
 `useCallback`는 `useMemo`와 같은 목적으로 동작합니다만 함수를 위해 특별히 만들어졌습니다. 함수를 전달하면 메모하여 렌더링 간에 연결합니다.
@@ -585,9 +585,9 @@ const handleMegaBoost = React.useCallback(() => {
 
 ```jsx
 // This:
-React.useCallback(function helloWorld() {}, []);
+React.useCallback(function helloWorld() {}, [])
 // ...Is functionally equivalent to this:
-React.useMemo(() => function helloWorld() {}, []);
+React.useMemo(() => function helloWorld() {}, [])
 ```
 
 **useCallback는 syntactic sugar** 입니다. callback 함수를 메모화하려할 때 더 나은 표현으로 만들어줍니다.
@@ -612,8 +612,8 @@ React.useMemo(() => function helloWorld() {}, []);
 
 ```js
 function App() {
-  const [isDarkMode, toggleDarkMode] = useToggle(false);
-  return <button onClick={toggleDarkMode}>Toggle color theme</button>;
+  const [isDarkMode, toggleDarkMode] = useToggle(false)
+  return <button onClick={toggleDarkMode}>Toggle color theme</button>
 }
 ```
 
@@ -621,11 +621,11 @@ function App() {
 
 ```js
 function useToggle(initialValue) {
-  const [value, setValue] = React.useState(initialValue);
+  const [value, setValue] = React.useState(initialValue)
   const toggle = React.useCallback(() => {
-    setValue((v) => !v);
-  }, []);
-  return [value, toggle];
+    setValue((v) => !v)
+  }, [])
+  return [value, toggle]
 }
 ```
 
@@ -642,16 +642,16 @@ context를 사용하는 어플리케이션에서 데이터를 공유할 때 큰 
 그래서 일반적으로 이 객체를 메모하는 것이 좋습니다.
 
 ```jsx
-const AuthContext = React.createContext({});
+const AuthContext = React.createContext({})
 function AuthProvider({ user, status, forgotPwLink, children }) {
   const memoizedValue = React.useMemo(() => {
     return {
       user,
       status,
       forgotPwLink,
-    };
-  }, [user, status, forgotPwLink]);
-  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
+    }
+  }, [user, status, forgotPwLink])
+  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>
 }
 ```
 

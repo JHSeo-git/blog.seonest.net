@@ -1,9 +1,9 @@
 ---
-date: '2023-03-28T12:53:01.873Z'
+date: "2023-03-28T12:53:01.873Z"
 category: javascript
 title: You don't need a build step
 description: 자바스크립트 진영에서 빌드가 표준이 된 이유와 Deno는 어떻게 이를 해결했는지에 대한 글입니다.
-thumbnail: '/post/javascript/you-do-not-need-a-build-step/thumbnail.png'
+thumbnail: "/post/javascript/you-do-not-need-a-build-step/thumbnail.png"
 ---
 
 Deno 블로그에 올라온 [You don't need a build step](https://deno.com/blog/you-dont-need-a-build-step)라는 글을 읽고 정리한 글입니다.
@@ -167,9 +167,9 @@ Next.js의 첫 번째 단계는 모든 코드를 일반 자바스크립트로 �
 
 ```tsx
 export default function Post({ post, morePosts, preview }: Props) {
-  const router = useRouter();
+  const router = useRouter()
   if (!router.isFallback && !post?.slug) {
-    return <ErrorPage statusCode={404} />;
+    return <ErrorPage statusCode={404} />
   }
   return (
     <Layout preview={preview}>
@@ -198,7 +198,7 @@ export default function Post({ post, morePosts, preview }: Props) {
         )}
       </Container>
     </Layout>
-  );
+  )
 }
 ```
 
@@ -210,7 +210,7 @@ export default function Post({ post, morePosts, preview }: Props) {
 ```js
 function y(e) {
   let { post: t, morePosts: n, preview: l } = e,
-    c = (0, r.useRouter)();
+    c = (0, r.useRouter)()
   return c.isFallback || (null == t ? void 0 : t.slug)
     ? (0, s.jsx)(v.Z, {
         preview: l,
@@ -219,19 +219,19 @@ function y(e) {
             (0, s.jsx)(h, {}),
             c.isFallback
               ? (0, s.jsx)(j, {
-                  children: 'Loading…',
+                  children: "Loading…",
                 })
               : (0, s.jsx)(s.Fragment, {
-                  children: (0, s.jsxs)('article', {
-                    className: 'mb-32',
+                  children: (0, s.jsxs)("article", {
+                    className: "mb-32",
                     children: [
                       (0, s.jsxs)(N(), {
                         children: [
-                          (0, s.jsxs)('title', {
-                            children: [t.title, ' | Next.js Blog Example with ', w.yf],
+                          (0, s.jsxs)("title", {
+                            children: [t.title, " | Next.js Blog Example with ", w.yf],
                           }),
-                          (0, s.jsx)('meta', {
-                            property: 'og:image',
+                          (0, s.jsx)("meta", {
+                            property: "og:image",
                             content: t.ogImage.url,
                           }),
                         ],
@@ -253,7 +253,7 @@ function y(e) {
       })
     : (0, s.jsx)(i(), {
         statusCode: 404,
-      });
+      })
 }
 ```
 
@@ -403,10 +403,10 @@ Fresh에서 사용자가 포스트 페이지를 클릭했을 때 `/routes/[slug]
 페이지는 다음과 같은 모듈을 import하고 있습니다:
 
 ```tsx
-import { Handlers, PageProps } from '$fresh/server.ts';
-import { Head } from '$fresh/runtime.ts';
-import { getPost, Post } from '@/utils/posts.ts';
-import { CSS, render } from '$gfm';
+import { getPost, Post } from "@/utils/posts.ts"
+import { Head } from "$fresh/runtime.ts"
+import { Handlers, PageProps } from "$fresh/server.ts"
+import { CSS, render } from "$gfm"
 ```
 
 이는 Node에서 import하는 것과 비슷해 보일 수 있습니다.
@@ -414,18 +414,19 @@ import { CSS, render } from '$gfm';
 resolve되면 다음과 같습니다.
 
 ```tsx
-import { Handlers, PageProps } from 'https://deno.land/x/fresh@1.1.0/server.ts';
-import { Head } from 'https://deno.land/x/fresh@1.1.0/runtime.ts';
-import { getPost, Post } from '../utils/posts.ts';
-import { CSS, render } from 'https://deno.land/x/gfm@0.1.26/mod.ts';
+import { Head } from "https://deno.land/x/fresh@1.1.0/runtime.ts"
+import { Handlers, PageProps } from "https://deno.land/x/fresh@1.1.0/server.ts"
+import { CSS, render } from "https://deno.land/x/gfm@0.1.26/mod.ts"
+
+import { getPost, Post } from "../utils/posts.ts"
 ```
 
 [posts.ts](https://github.com/denoland/fresh-blog-example/blob/main/utils/posts.ts)에서 `getPost`와 `Post`를 import합니다.
 이 컴포넌트에서는 [또 다른 URL에서 모듈을 가져오고 있습니다.](https://deno.land/manual@v1.32.1/basics/modules#remote-import)
 
 ```tsx
-import { extract } from 'https://deno.land/std@0.160.0/encoding/front_matter.ts';
-import { join } from 'https://deno.land/std@0.160.0/path/posix.ts';
+import { extract } from "https://deno.land/std@0.160.0/encoding/front_matter.ts"
+import { join } from "https://deno.land/std@0.160.0/path/posix.ts"
 ```
 
 종속성 그래프의 특정 지점에서 다른 URL에서 코드를 호출하고 있습니다. 모든 URL입니다.

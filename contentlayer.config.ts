@@ -1,88 +1,88 @@
-import { defineDocumentType, makeSource } from 'contentlayer/source-files';
-import type { Options as AutolinkHeadingsOptions } from 'rehype-autolink-headings';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import type { Options as PrettyCodeOptions } from 'rehype-pretty-code';
-import rehypePrettyCode from 'rehype-pretty-code';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
+import { defineDocumentType, makeSource } from "contentlayer/source-files"
+import rehypeAutolinkHeadings, {
+  type Options as AutolinkHeadingsOptions,
+} from "rehype-autolink-headings"
+import rehypePrettyCode, { type Options as PrettyCodeOptions } from "rehype-pretty-code"
+import rehypeSlug from "rehype-slug"
+import remarkGfm from "remark-gfm"
 
-import { getReadingTime } from './src/utils/contentlayer-utils';
+import { getReadingTime } from "./src/utils/contentlayer-utils"
 
 export const Post = defineDocumentType(() => ({
-  name: 'Post',
-  filePathPattern: 'posts/**/*.mdx',
-  contentType: 'mdx',
+  name: "Post",
+  filePathPattern: "posts/**/*.mdx",
+  contentType: "mdx",
   fields: {
     title: {
-      type: 'string',
+      type: "string",
       required: true,
     },
     description: {
-      type: 'string',
+      type: "string",
       required: true,
     },
     published: {
-      type: 'boolean',
+      type: "boolean",
       default: true,
     },
     category: {
-      type: 'string',
+      type: "string",
       required: true,
     },
     tags: {
-      type: 'list',
-      of: { type: 'string' },
+      type: "list",
+      of: { type: "string" },
     },
     thumbnail: {
-      type: 'string',
+      type: "string",
     },
     date: {
-      type: 'date',
+      type: "date",
       required: true,
     },
     update: {
-      type: 'date',
+      type: "date",
     },
   },
   computedFields: {
     slug: {
-      type: 'string',
+      type: "string",
       resolve: (post) => `/${post._raw.flattenedPath}`,
     },
     slugAsParams: {
-      type: 'string',
-      resolve: (post) => post._raw.flattenedPath.split('/').slice(1).join('/'),
+      type: "string",
+      resolve: (post) => post._raw.flattenedPath.split("/").slice(1).join("/"),
     },
     readingTime: {
-      type: 'number',
+      type: "number",
       resolve: (post) => getReadingTime(post.body.raw),
     },
     lastModified: {
-      type: 'date',
+      type: "date",
       resolve: (post) => post.update ?? post.date,
     },
   },
-}));
+}))
 
 const rehypePrettyCodeOptions: Partial<PrettyCodeOptions> = {
-  theme: 'one-dark-pro',
+  theme: "one-dark-pro",
   keepBackground: true,
   onVisitLine(node) {
     if (node.children.length === 0) {
-      node.children = [{ type: 'text', value: ' ' }];
+      node.children = [{ type: "text", value: " " }]
     }
   },
-};
+}
 
 const rehypeAutolinkHeadingsOptions: Partial<AutolinkHeadingsOptions> = {
   properties: {
-    className: ['heading-anchor'],
-    ariaLabel: 'Link to this heading',
+    className: ["heading-anchor"],
+    ariaLabel: "Link to this heading",
   },
-};
+}
 
 export default makeSource({
-  contentDirPath: './content',
+  contentDirPath: "./content",
   documentTypes: [Post],
   mdx: {
     remarkPlugins: [remarkGfm],
@@ -92,4 +92,4 @@ export default makeSource({
       [rehypeAutolinkHeadings, rehypeAutolinkHeadingsOptions],
     ],
   },
-});
+})

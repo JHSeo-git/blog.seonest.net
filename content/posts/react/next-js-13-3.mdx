@@ -1,5 +1,5 @@
 ---
-date: '2023-04-16T13:18:03.945Z'
+date: "2023-04-16T13:18:03.945Z"
 category: react
 title: Next.js 13.3
 description: 점점 더 모습을 갖추어 가는 App Router.
@@ -58,22 +58,22 @@ app
 동적 sitemap을 생성하려면 라우트 배열을 `sitemap.js`파일에서 반환하면 됩니다.
 
 ```tsx
-import { allPosts } from 'contentlayer/generated';
+import { allPosts } from "contentlayer/generated"
 
-const siteUrl = 'https://seonest.net';
+const siteUrl = "https://seonest.net"
 
 export default async function sitemap() {
   const posts = allPosts.map((post) => ({
     url: `${siteUrl}${post.slug}`,
-    lastModified: post.update?.split('T')[0] ?? post.date.split('T')[0],
-  }));
+    lastModified: post.update?.split("T")[0] ?? post.date.split("T")[0],
+  }))
 
-  const routes = ['', '/about'].map((route) => ({
+  const routes = ["", "/about"].map((route) => ({
     url: `${siteUrl}${route}`,
-    lastModified: new Date().toISOString().split('T')[0],
-  }));
+    lastModified: new Date().toISOString().split("T")[0],
+  }))
 
-  return [...routes, ...posts];
+  return [...routes, ...posts]
 }
 ```
 
@@ -98,14 +98,14 @@ export default async function sitemap() {
 
 ```tsx
 // /app/about/opengraph-image.tsx
-import { ImageResponse } from 'next/server';
+import { ImageResponse } from "next/server"
 
-export const size = { width: 1200, height: 600 };
-export const alt = 'About Acme';
-export const contentType = 'image/png';
+export const size = { width: 1200, height: 600 }
+export const alt = "About Acme"
+export const contentType = "image/png"
 
 export default function og() {
-  return new ImageResponse();
+  return new ImageResponse()
   // ...
 }
 ```
@@ -190,14 +190,14 @@ dashboard
 // app/dashboard/layout.js
 
 export default async function Layout({ children, user, team }) {
-  const userType = getCurrentUserType();
+  const userType = getCurrentUserType()
 
   return (
     <>
-      {userType === 'user' ? user : team}
+      {userType === "user" ? user : team}
       {children}
     </>
-  );
+  )
 }
 ```
 

@@ -1,10 +1,10 @@
 ---
-title: 'New features in React 18'
-description: 'React 18이 정식으로 릴리즈 되었습니다. 많은 기능들이 소개되었고 그 기능들을 조금 더 살펴보았습니다.'
-date: '2022-04-05T14:13:27.201Z'
-category: 'react'
-tags: ['React', 'Web']
-thumbnail: '/post/react/new-features-in-react-18/thumbnail.png'
+title: "New features in React 18"
+description: "React 18이 정식으로 릴리즈 되었습니다. 많은 기능들이 소개되었고 그 기능들을 조금 더 살펴보았습니다."
+date: "2022-04-05T14:13:27.201Z"
+category: "react"
+tags: ["React", "Web"]
+thumbnail: "/post/react/new-features-in-react-18/thumbnail.png"
 ---
 
 ## 들어가면서
@@ -39,18 +39,18 @@ promises, setTimeout, native event handlers, React에서 batch되지 않던 even
 ```jsx
 // Before: only React events were batched.
 setTimeout(() => {
-  setCount((c) => c + 1);
-  setFlag((f) => !f);
+  setCount((c) => c + 1)
+  setFlag((f) => !f)
   // React will render twice, once for each state update (no batching)
-}, 1000);
+}, 1000)
 
 // After: updates inside of timeouts, promises,
 // native event handlers or any other event are batched.`
 setTimeout(() => {
-  setCount((c) => c + 1);
-  setFlag((f) => !f);
+  setCount((c) => c + 1)
+  setFlag((f) => !f)
   // React will only re-render once at the end (that's batching!)
-}, 1000);
+}, 1000)
 ```
 
 ## transitions
@@ -79,18 +79,18 @@ transition을 사용했던 위 사진에서는 task가 잘게 쪼개져서 concu
 그러나 transition이 없는 아래 사진은 long task가 block된 모습을 볼 수 있습니다. input에 타이핑을 하더라도 block으로 인해 화면에 렌더링되지 않은 이유입니다.
 
 ```jsx
-import { startTransition } from 'react';
+import { startTransition } from "react"
 
 const handleInput = () => {
   // Urgent: Show what was typed
-  setInputValue(input);
+  setInputValue(input)
 
   // Mark any state updates inside as transitions
   startTransition(() => {
     // Transition: Show the results
-    setSearchQuery(input);
-  });
-};
+    setSearchQuery(input)
+  })
+}
 ```
 
 startTransition으로 감싸진 update는 non-urgent(급하지 않은 것)으로 다뤄집니다.
@@ -126,15 +126,15 @@ useTransition은 위에도 살펴보았듯이 React에게 우선순위가 낮은
 
 ```jsx
 function App() {
-  const [isPending, startTransition] = useTransition();
-  const [filterTerm, setFilterTerm] = useState('');
+  const [isPending, startTransition] = useTransition()
+  const [filterTerm, setFilterTerm] = useState("")
 
-  const filteredProducts = filterProducts(filterTerm);
+  const filteredProducts = filterProducts(filterTerm)
 
   function updateFilterHandler(event) {
     startTransition(() => {
-      setFilterTerm(event.target.value);
-    });
+      setFilterTerm(event.target.value)
+    })
   }
 
   return (
@@ -143,7 +143,7 @@ function App() {
       {isPending && <p>Updating List...</p>}
       <ProductList products={filteredProducts} />
     </div>
-  );
+  )
 }
 ```
 
@@ -155,14 +155,14 @@ useDeferredValue는 상태를 wrapping 하지 않습니다. 대신에 상태 업
 
 ```jsx
 function ProductList({ products }) {
-  const deferredProducts = useDeferredValue(products);
+  const deferredProducts = useDeferredValue(products)
   return (
     <ul>
       {deferredProducts.map((product) => (
         <li>{product}</li>
       ))}
     </ul>
-  );
+  )
 }
 ```
 
@@ -305,15 +305,15 @@ Suspense를 통해 Comments가 완료되는지 안되는지 상관없이 HTML을
 React에서는 `React.lazy`를 이용하여 명시해줄 수 있고 메인 번들에서 `<Comments>`를 코드 스플리팅 할 수 있습니다.
 
 ```jsx
-import { lazy } from 'react';
+import { lazy } from "react"
 
-const Comments = lazy(() => import('./Comments.js'));
+const Comments = lazy(() => import("./Comments.js"))
 
 // ...
 
-<Suspense fallback={<Spinner />}>
+;<Suspense fallback={<Spinner />}>
   <Comments />
-</Suspense>;
+</Suspense>
 ```
 
 이전에는 server rendering에서 작동하지 않았습니다. (우리가 아는한, 유명한 해결방법조차도 코드 스플리팅 component에 대해 SSR에서 제외하거나 그 코드가 모두 로드된 이후에 hydrate하는 것 중 하나를 선택하도록 강요하여 코드 스플리팅 목적을 다소 무력화했습니다.)
@@ -421,11 +421,11 @@ import ... from 'react-dom/client';
 #### createRoot
 
 ```jsx
-import { createRoot } from 'react-dom/client';
+import { createRoot } from "react-dom/client"
 
-const container = document.getElementById('...');
-const root = createRoot(container);
-root.render(element);
+const container = document.getElementById("...")
+const root = createRoot(container)
+root.render(element)
 ```
 
 ```jsx
@@ -433,7 +433,7 @@ createRoot(container[, options]);
 ```
 
 ```jsx
-root.umount();
+root.umount()
 ```
 
 `createRoot()`는 전달된 container node의 content를 제어합니다. 내부의 기존 DOM element는 render가 호출될 때 교체됩니다. 이후 호출은 효율적인 업데이트를 위해 React의 DOM diffing 알고리즘을 사용합니다.
@@ -450,11 +450,12 @@ root에서는 `unmount`를 호출하여 마운트 해제할 수도 있습니다.
 #### hydrateRoot
 
 ```jsx
-import { hydrateRoot } from 'react-dom/client';
-import App from './App';
+import { hydrateRoot } from "react-dom/client"
 
-const container = document.getElementById('...');
-hydrateRoot(container, <App />);
+import App from "./App"
+
+const container = document.getElementById("...")
+hydrateRoot(container, <App />)
 ```
 
 ```jsx
@@ -500,9 +501,9 @@ hydrateRoot(element, container[, options])
 #### renderToString
 
 ```jsx
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer from "react-dom/server"
 
-ReactDOMServer.renderToString(element);
+ReactDOMServer.renderToString(element)
 ```
 
 React element를 초기 HTML로 렌더링합니다. React는 HTML string을 반환합니다. 이 방법은 서버에서 HTML을 생성하고, 최초 요청에서 더 빠른 페이지 로드를 makrup을 내려보내고, SEO 목적으로 페이지를 크롤링되도록 하는데 사용할 수 있습니다.
@@ -512,9 +513,9 @@ React element를 초기 HTML로 렌더링합니다. React는 HTML string을 반�
 #### renderToStaticMarkup
 
 ```jsx
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer from "react-dom/server"
 
-ReactDOMServer.renderToStaticMarkup(element);
+ReactDOMServer.renderToStaticMarkup(element)
 ```
 
 `renderToString`과 흡사하나 React가 내부적으로 사용하는 `data-reactroot`같은 추가 DOM attribute를 만들지 않습니다. 추가 attribute를 제거하면 일부 바이트를 절약할 수 있어 React를 간단한 정적 페이지 생성기로 사용할 때 유용합니다.
@@ -524,9 +525,9 @@ ReactDOMServer.renderToStaticMarkup(element);
 #### renderToPipeableStream
 
 ```jsx
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer from "react-dom/server"
 
-ReactDOMServer.renderToPipeableStream(element, options);
+ReactDOMServer.renderToPipeableStream(element, options)
 ```
 
 ```tsx
@@ -562,15 +563,15 @@ function renderToPipeableStream(
 ```jsx
 const { pipe, abort } = renderToPipeableStream(<App />, {
   onAllReady() {
-    res.statusCode = 200;
-    res.setHeader('Content-type', 'text/html');
-    pipe(res);
+    res.statusCode = 200
+    res.setHeader("Content-type", "text/html")
+    pipe(res)
   },
   onShellError(x) {
-    res.statusCode = 500;
-    res.send('<!doctype html><p>Loading...</p><script src="clientrender.js"></script>');
+    res.statusCode = 500
+    res.send('<!doctype html><p>Loading...</p><script src="clientrender.js"></script>')
   },
-});
+})
 ```
 
 React element를 초기 HTML로 렌더링합니다. output을 pipe하거나 abort할 수 있는 [Control object](https://github.com/facebook/react/blob/3f8990898309c61c817fbf663f5221d9a00d0eaa/packages/react-dom/src/server/ReactDOMFizzServerNode.js#L49-L54)를 반환합니다. 이후에 JavaScript 실행을 통해서 들어갈 "지연된" content block이 나중에 JavaScript 실행을 통해 "Popping in"되는 Suspense와 HTML streaming을 완벽하게 지원합니다.
@@ -581,7 +582,7 @@ React element를 초기 HTML로 렌더링합니다. output을 pipe하거나 abor
 #### renderToReadableStream
 
 ```jsx
-ReactDOMServer.renderToReadableStream(element, options);
+ReactDOMServer.renderToReadableStream(element, options)
 ```
 
 ```jsx
@@ -620,7 +621,7 @@ React 18이 되면서 depcreated 되었고, `renderToPipeableStream`로 업그�
 #### renderToStaticNodeStream
 
 ```jsx
-ReactDOMServer.renderToStaticNodeStream(element);
+ReactDOMServer.renderToStaticNodeStream(element)
 ```
 
 `renderToPipeableStream`이나 `renderToReadableStream`과 비슷하지만, `renderToStaticMarkup`처럼 React가 내부적으로 사용하는 `data-reactroot`같은 추가 DOM attribute를 만들지 않습니다.
@@ -645,29 +646,29 @@ React 17이하에서 기존에 존재하던 이슈들을 해결합니다. 그러
 
 ```jsx
 function Checkbox() {
-  const id = useId();
+  const id = useId()
   return (
     <>
       <label htmlFor={id}>Do you like React?</label>
       <input id={id} type="checkbox" name="react" />
     </>
-  );
+  )
 }
 
 function NameFields() {
-  const id = useId();
+  const id = useId()
   return (
     <div>
-      <label htmlFor={id + '-firstName'}>First Name</label>
+      <label htmlFor={id + "-firstName"}>First Name</label>
       <div>
-        <input id={id + '-firstName'} type="text" />
+        <input id={id + "-firstName"} type="text" />
       </div>
-      <label htmlFor={id + '-lastName'}>Last Name</label>
+      <label htmlFor={id + "-lastName"}>Last Name</label>
       <div>
-        <input id={id + '-lastName'} type="text" />
+        <input id={id + "-lastName"} type="text" />
       </div>
     </div>
-  );
+  )
 }
 ```
 
@@ -696,19 +697,19 @@ React에서 `useDeferredValue`를 사용하는 이점은 다른 작업이 완료
 
 ```jsx
 function Typeahead() {
-  const query = useSearchQuery('');
-  const deferredQuery = useDeferredValue(query);
+  const query = useSearchQuery("")
+  const deferredQuery = useDeferredValue(query)
 
   // memoizing은 React에게 query가 바뀔 때가 아닌
   // dependency로 등록된 deferredQuery가 바뀔 때 렌더링하도록 알려줍니다.
-  const suggestions = useMemo(() => <SearchSuggestions query={deferredQuery} />, [deferredQuery]);
+  const suggestions = useMemo(() => <SearchSuggestions query={deferredQuery} />, [deferredQuery])
 
   return (
     <>
       <SearchInput query={query} />
       <Suspense fallback="Loading results...">{suggestions}</Suspense>
     </>
-  );
+  )
 }
 ```
 
@@ -751,7 +752,7 @@ CSS-in-JS 라이브러리가 렌더링할 때 스타일을 삽입하는 것에�
 > Note: `useSyncExternalStore`는 앱 코드가 아니라 라이브러리에서 사용하기 위한 것입니다.
 
 ```jsx
-useInsertionEffect(didUpdate);
+useInsertionEffect(didUpdate)
 ```
 
 signature는 `useEffect`와 동일합니다. 그러나 모든 DOM _변경 전에_ 동기적으로 실행됩니다. `useLayoutEffect`에서 layout을 읽기 전에 DOM안에 스타일을 삽입하기 위해 이것을 사용하세요. 이 hook은 범위가 제한되어 있어서 ref에 엑세스할 수 없으며 업데이트를 예약 할 수도 없습니다.

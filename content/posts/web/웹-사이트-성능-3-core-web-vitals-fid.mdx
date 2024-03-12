@@ -1,11 +1,11 @@
 ---
-title: '웹 사이트 성능(3) - Core web vitals, FID'
-description: '웹 사이트 성능 지표인 Core web vitals의 FID(First Input Delay)에 대해 알아보았습니다.'
-date: '2021-11-02T11:56:19.607Z'
-category: 'web'
-tags: ['Core web vitals', 'FID', 'Web']
-thumbnail: '/post/web/웹-사이트-성능-3-core-web-vitals-fid/thumbnail.png'
-update: '2023-03-26T13:25:18Z'
+title: "웹 사이트 성능(3) - Core web vitals, FID"
+description: "웹 사이트 성능 지표인 Core web vitals의 FID(First Input Delay)에 대해 알아보았습니다."
+date: "2021-11-02T11:56:19.607Z"
+category: "web"
+tags: ["Core web vitals", "FID", "Web"]
+thumbnail: "/post/web/웹-사이트-성능-3-core-web-vitals-fid/thumbnail.png"
+update: "2023-03-26T13:25:18Z"
 ---
 
 > https://web.dev/fid
@@ -180,10 +180,10 @@ FID는 실제 사용자가 페이지와 상호 작용해야 하므로 사이트�
 ```js
 new PerformanceObserver((entryList) => {
   for (const entry of entryList.getEntries()) {
-    const delay = entry.processingStart - entry.startTime;
-    console.log('FID candidate:', delay, entry);
+    const delay = entry.processingStart - entry.startTime
+    console.log("FID candidate:", delay, entry)
   }
-}).observe({ type: 'first-input', buffered: true });
+}).observe({ type: "first-input", buffered: true })
 ```
 
 `PerformanceObserver`를 작성하여 `first-input` 타입에 대해서 옵저버하여 콘솔에 기록할 수 있습니다.
@@ -194,10 +194,10 @@ new PerformanceObserver((entryList) => {
 구글에서 제공하는 `web-vitals` 라이브러리를 사용하여 FID를 측정할 수도 있습니다.
 
 ```js
-import { getFID } from 'web-vitals';
+import { getFID } from "web-vitals"
 
 // FID를 이용 가능하게 되면 바로 측정 및 기록합니다.
-getFID(console.log);
+getFID(console.log)
 ```
 
 ## FID를 개선하는 방법

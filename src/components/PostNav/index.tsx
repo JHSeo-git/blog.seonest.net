@@ -1,1 +1,1 @@
-export { default } from './PostNav';
+export { default } from "./PostNav"

@@ -1,10 +1,10 @@
 ---
-date: '2023-01-21T06:57:58.814Z'
+date: "2023-01-21T06:57:58.814Z"
 category: react
 title: PlanetScale + Prisma + Next.js
 description: PlanetScale과 Prisma를 사용해보았습니다.
 
-thumbnail: '/post/react/planetscale-prisma-next-js/thumbnail.png'
+thumbnail: "/post/react/planetscale-prisma-next-js/thumbnail.png"
 ---
 
 ## 들어가면서
@@ -25,7 +25,7 @@ PlanetScale 적용 후에도 임시 용도나 테스트를 위해 사용할 예�
 
 ```yml
 # Use root/example as user/password credentials
-version: '3.1'
+version: "3.1"
 
 services:
   mysql:
@@ -193,16 +193,16 @@ Vercel 배포를 할 시점에 main branch로 pr을 통해 merge를 합니다.
 prisma client를 가져와서 사용합니다.
 
 ```ts
-import { db } from '@/lib/prisma';
+import { db } from "@/lib/prisma"
 
-import type * as PostTypes from './types';
+import type * as PostTypes from "./types"
 
 export function getViews({ slug }: PostTypes.GetViewsParams) {
   return db.postView.count({
     where: {
       slug,
     },
-  });
+  })
 }
 ```
 

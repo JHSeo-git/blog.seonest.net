@@ -1,6 +1,6 @@
-'use client';
+"use client"
 
-import Script from 'next/script';
+import Script from "next/script"
 
 function GoogleAnalytics() {
   return (
@@ -24,7 +24,7 @@ function GoogleAnalytics() {
         }}
       />
     </>
-  );
+  )
 }
 
-export default GoogleAnalytics;
+export default GoogleAnalytics

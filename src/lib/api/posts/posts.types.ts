@@ -1,15 +1,15 @@
 interface PostRequest {
-  slug: string;
+  slug: string
 }
 
 interface PostResponse {
-  views: number;
+  views: number
 }
 
-export type ViewPostRequest = PostRequest;
+export type ViewPostRequest = PostRequest
 
-export type ViewPostResponse = PostResponse;
+export type ViewPostResponse = PostResponse
 
-export type GetPostViewsRequest = PostRequest;
+export type GetPostViewsRequest = PostRequest
 
-export type GetPostViewsResponse = PostResponse;
+export type GetPostViewsResponse = PostResponse

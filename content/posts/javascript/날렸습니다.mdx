@@ -1,10 +1,10 @@
 ---
-title: '날렸습니다...'
-description: 'MySQL 백업 방법과 ORM 사용시 주의사항에 대해서 알아보았습니다.'
-date: '2021-07-16T08:18:22.931Z'
-category: 'javascript'
-tags: ['JavaScript', 'TypeORM', 'MySQL']
-thumbnail: '/post/javascript/날렸습니다/thumbnail.png'
+title: "날렸습니다..."
+description: "MySQL 백업 방법과 ORM 사용시 주의사항에 대해서 알아보았습니다."
+date: "2021-07-16T08:18:22.931Z"
+category: "javascript"
+tags: ["JavaScript", "TypeORM", "MySQL"]
+thumbnail: "/post/javascript/날렸습니다/thumbnail.png"
 ---
 
 데이터를 날렸습니다.
@@ -98,9 +98,9 @@ $ mysqlbinlog /var/log/mysql/mybin-log.000001 > restore.sql
 ```js
 module.exports = {
   cli: {
-    migrationsDir: join(__dirname, '/migrations'),
+    migrationsDir: join(__dirname, "/migrations"),
   },
-};
+}
 ```
 
 cli migrationDir 경로를 지정해주고 마이그레이션 코드를 생성해줍니다.
