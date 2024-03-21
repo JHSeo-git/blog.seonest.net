@@ -12,7 +12,7 @@ module.exports = {
     "next/core-web-vitals",
     "prettier",
   ],
-  plugins: ["json-format", "simple-import-sort", "react", "tailwindcss", "@typescript-eslint"],
+  plugins: ["json-format", "react", "tailwindcss", "@typescript-eslint"],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": "allow-with-description" }],
