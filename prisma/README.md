@@ -78,4 +78,4 @@ The database is already in sync with the Prisma schema.
 
 저는 위에도 적었다 싶이 supabase SQL Editor를 통해 insert query를 실행했습니다.
 
-![A screen shot image for SQL Editor](./docs/sql-editor.png)
+![A screen shot image for SQL Editor](./__docs/sql-editor.png)
