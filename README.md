@@ -20,7 +20,7 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
   - [App Router](https://beta.nextjs.org/docs/app-directory-roadmap)
 - DB
   - [Prisma](https://www.prisma.io/)
-  - [PlanetScale](https://planetscale.com/)
+  - [Supabase](https://supabase.io/)
 - UI
   - [framer-motion](https://www.framer.com/motion/)
   - [next-themes](https://github.com/pacocoursey/next-themes)
@@ -50,7 +50,19 @@ cd my-blog
 pnpm install
 ```
 
-3. Run dev server.
+3. Edit .env file
+
+copy .env.example to .env and edit it.
+
+```bash
+# supabase
+# Connect to Supabase via connection pooling with Supavisor.
+SUPABASE_DATABASE_URL="postgres://postgres.../postgres?schema=preview&pgbouncer=true&connection_limit=1"
+# Direct connection to the database. Used for migrations.
+DIRECT_URL="postgres://postgres.../postgres?schema=preview&pgbouncer=true&connection_limit=1"
+```
+
+4. Run dev server.
 
 ```bash
 pnpm dev
