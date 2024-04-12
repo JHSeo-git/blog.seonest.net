@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import NextImage from "next/image"
 import { cn } from "@/utils/style-utils"
