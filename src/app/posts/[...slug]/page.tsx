@@ -25,9 +25,11 @@ type PageParams = {
 }
 
 export async function generateStaticParams(): Promise<PageParams[]> {
-  return allPosts.map((post) => ({
-    slug: post.slugAsParams.split("/"),
-  }))
+  return allPosts
+    .filter((post) => !post.draft)
+    .map((post) => ({
+      slug: post.slugAsParams.split("/"),
+    }))
 }
 
 type PageProps = {
