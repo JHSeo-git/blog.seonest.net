@@ -3,7 +3,6 @@ date: "2023-08-04T14:48:41.381Z"
 category: react
 title: React 18이 애플리케이션 성능을 향상시키는 방법
 description: React 18 어떤 점이 애플리케이션 성능향상에 도움이 될까요? Vercel 블로그 글을 옮기며 정리해보았습니다.
-published: true
 thumbnail: /post/react/how-react-18-improves-application-performance/thumbnail.png
 ---
 
@@ -111,7 +110,7 @@ React는 중단 없이 단일 작업으로 트리를 렌더링한 후 DOM에 커
 `CitiesList` 컴포너트를 다시 렌더링합니다. 목록이 수만 개의 도시로 구성되어 있기 때문에 계산 비용이 상당히 많이 들기 때문에 키 입력과 input 입력에
 반영되는 것 사이에 분명한 시각적 피드백 지연이 있습니다.
 
-<IFrame src="https://codesandbox.io/embed/romantic-chandrasekhar-w4zcct?fontsize=14&hidenavigation=1&theme=dark"></IFrame>
+<IFrame src="https://codesandbox.io/embed/romantic-chandrasekhar-w4zcct?fontsize=14&hidenavigation=1&theme=dark" />
 
 > 맥북과 같은 고사양 디바이스를 사용하는 경우 CPU 4x 쓰로틀하여 저사양 디바이스를 시뮬레이션 할 수 있습니다. 이 설정은
 > devtools > performance > ⚙️ > cpu 에서 설정할 수 있습니다.
@@ -211,7 +210,7 @@ transition이 시작되면 동시성 렌더러가 백그라운드에서 새로�
 이는 상태 업데이트가 사용자에게 혼란을 줄 수 있는 시각적 변화를 초래할 수 있다고 React에게 알리며, 따라서 React는 업데이트를 즉시 커밋하지 않고
 백그라운드에서 새로운 상태를 준비하면서 현재 UI를 상호작용 가능한 상태로 유지할 수 있습니다.
 
-<IFrame src="https://codesandbox.io/embed/quizzical-lake-r3shnj?fontsize=14&hidenavigation=1&theme=dark"></IFrame>
+<IFrame src="https://codesandbox.io/embed/quizzical-lake-r3shnj?fontsize=14&hidenavigation=1&theme=dark" />
 
 이제 input 필드에 텍스트를 입력하면 키 입력 사이에 시각적인 지연 없이 사용자 입력이 부드럽게 유지됩니다. 이는 `text` 상태가 여전히 동기적으로 업데이트되고
 input 필드가 해당 상태의 `value`를 사용하기 때문에 발생합니다.
