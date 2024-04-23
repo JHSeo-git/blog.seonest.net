@@ -86,7 +86,7 @@
     "prettier": "^3.2.5",
     "pretty-quick": "^4.0.0",
     "prisma": "^5.12.1",
-    "seonest-post-gen": "^0.2.0",
+    "seonest-post-gen": "^0.3.1",
     "simple-git-hooks": "^2.11.1",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7",

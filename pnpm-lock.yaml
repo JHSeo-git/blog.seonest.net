@@ -176,8 +176,8 @@ devDependencies:
     specifier: ^5.12.1
     version: 5.12.1
   seonest-post-gen:
-    specifier: ^0.2.0
-    version: 0.2.0
+    specifier: ^0.3.1
+    version: 0.3.1
   simple-git-hooks:
     specifier: ^2.11.1
     version: 2.11.1
@@ -4987,6 +4987,14 @@ packages:
     engines: { node: ">=16" }
     dev: true
 
+  /commander@12.0.0:
+    resolution:
+      {
+        integrity: sha512-MwVNWlYjDTtOjX5PiD7o5pK0UrFU/OYgcJfjjK4RaHZETNtjJqrZa9Y9ds88+A+f+d5lv+561eZ+yCKoS3gbAA==,
+      }
+    engines: { node: ">=18" }
+    dev: true
+
   /commander@4.1.1:
     resolution:
       {
@@ -5001,14 +5009,6 @@ packages:
         integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==,
       }
     engines: { node: ">= 10" }
-    dev: true
-
-  /commander@9.5.0:
-    resolution:
-      {
-        integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==,
-      }
-    engines: { node: ^12.20.0 || >=14 }
     dev: true
 
   /comment-json@4.2.3:
@@ -6705,18 +6705,6 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /fs-extra@10.1.0:
-    resolution:
-      {
-        integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==,
-      }
-    engines: { node: ">=12" }
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.1
-    dev: true
-
   /fs-extra@11.1.1:
     resolution:
       {
@@ -6728,6 +6716,18 @@ packages:
       jsonfile: 6.1.0
       universalify: 2.0.1
     dev: false
+
+  /fs-extra@11.2.0:
+    resolution:
+      {
+        integrity: sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==,
+      }
+    engines: { node: ">=14.14" }
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 6.1.0
+      universalify: 2.0.1
+    dev: true
 
   /fs-monkey@1.0.5:
     resolution:
@@ -10917,17 +10917,17 @@ packages:
     dependencies:
       lru-cache: 6.0.0
 
-  /seonest-post-gen@0.2.0:
+  /seonest-post-gen@0.3.1:
     resolution:
       {
-        integrity: sha512-hw8QbowyXts7pQwOC6IJaUxqY9XcPLTR0lieUTQeGKP0dmlj1aO2M0dr2OhV9Nxu7erhZpOjf01X7VcyoqiBbQ==,
+        integrity: sha512-9z2WC9Pny6cjtxfF/ff7hF/S0PbNq5MwZO3Z48vgfCK1aSYxe75SVUv0exCE0wYqNldfaZaE1mUtKp4oGMFsxA==,
       }
     hasBin: true
     dependencies:
       chalk: 5.3.0
       cjk-slug: 0.3.1
-      commander: 9.5.0
-      fs-extra: 10.1.0
+      commander: 12.0.0
+      fs-extra: 11.2.0
       gray-matter: 4.0.3
       inquirer: 9.2.19
     dev: true
