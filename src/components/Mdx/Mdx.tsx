@@ -23,7 +23,7 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
 
   if (src.startsWith("http")) {
     return (
-      <Zoom wrapElement="span">
+      <Zoom>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={cn(mdxImageStyle(), className)} src={src} alt={alt} {...props} />
       </Zoom>
@@ -31,7 +31,7 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
   }
 
   return (
-    <Zoom wrapElement="span">
+    <Zoom>
       <NextImage
         className={cn(mdxImageStyle(), className)}
         src={src}
