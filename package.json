@@ -49,6 +49,7 @@
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
     "react-medium-image-zoom": "^5.2.0",
+    "react-twc": "^1.4.1",
     "react-tweet": "^3.2.1",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-pretty-code": "^0.13.1",

@@ -11,7 +11,7 @@ const config = {
   siteLogo: "https://seonest.net/favicon.ico",
   social: {
     github: "JHSeo-git",
-    twitter: "jhseo_dev",
+    twitter: "seo_dev2142",
   },
   avatar: "/avatar.png",
   comment: true,
