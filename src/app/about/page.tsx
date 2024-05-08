@@ -1,39 +1,36 @@
 import Link from "next/link"
 import { postSorter } from "@/utils/contentlayer-utils"
 import { allPosts } from "contentlayer/generated"
+import { twc } from "react-twc"
 
 export const metadata = {
   title: "About",
 }
 
+const LinkText = twc.span`text-sm font-medium underline underline-offset-4`
+
 async function AbountPage() {
   const latestPosts = allPosts.sort(postSorter).slice(0, 5)
 
   return (
-    <main className="mx-auto max-w-4xl divide-y-2 py-5">
-      <article className="py-6">
-        <h1 className="mb-4 text-3xl font-bold leading-normal">
-          Hi, I&apos;m JHSeo,
-          <br />
-          I&apos;m a software engineer.
-        </h1>
-        <p>I wanna make a better world.</p>
+    <main className="mx-auto max-w-4xl space-y-2 py-8">
+      <article>
+        <h1 className="font-mono font-bold">JHSeo</h1>
+        <p>I&apos;m a software engineer.</p>
       </article>
-      <article className="py-6">
-        <h2 className="text-xl font-semibold">Recent Posts</h2>
-        <ul className="list-disc space-y-1 py-4 pl-6">
+      <article className="pt-6">
+        <h2 className="font-mono text-lg">Recent Posts</h2>
+        <ul className="list-disc space-y-4 py-4 pl-5">
           {latestPosts.map((post) => (
             <li key={post._id}>
               <Link href={post.slug}>
-                <span className="text-base font-semibold text-blue-600 underline underline-offset-4">
-                  {post.title}
-                </span>
+                <LinkText>{post.title}</LinkText>
               </Link>
             </li>
           ))}
         </ul>
       </article>
-      <article className="py-6">
+      {/* <article className="py-6">
         <h2 className="text-xl font-semibold">Projects</h2>
         <ul className="list-disc space-y-1 py-4 pl-6">
           <li>
@@ -159,7 +156,7 @@ async function AbountPage() {
             </Link>
           </li>
         </ul>
-      </article>
+      </article> */}
     </main>
   )
 }
