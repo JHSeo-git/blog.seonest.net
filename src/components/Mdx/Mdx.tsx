@@ -145,7 +145,7 @@ const components: MDXComponents = {
   blockquote: ({ className, children, ...props }) => (
     <blockquote
       className={cn(
-        "mt-6 border-l-2 border-slate-300 pl-6 italic text-slate-800 [&>*]:text-slate-600",
+        "mt-6 break-all border-l-2 border-slate-300 pl-6 italic text-slate-800 [&>*]:text-slate-600",
         className
       )}
       {...props}
@@ -156,7 +156,7 @@ const components: MDXComponents = {
   code: ({ className, ...props }) => (
     <code
       className={cn(
-        "relative rounded bg-slate-100 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400",
+        "relative break-all rounded bg-slate-100 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400",
         className
       )}
       {...props}
