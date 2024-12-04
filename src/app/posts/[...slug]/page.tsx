@@ -33,11 +33,11 @@ export async function generateStaticParams(): Promise<PageParams[]> {
 }
 
 type PageProps = {
-  params: PageParams
+  params: Promise<PageParams>
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const slug = params?.slug?.join("/") || ""
+  const slug = (await params)?.slug?.join("/") || ""
 
   const decodedSlug = decodeURIComponent(slug)
 
@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 const cleanUrl = (url: string) => (url.startsWith("/") ? url : `/${url}`)
 
 async function PostPage({ params }: PageProps) {
-  const slug = params?.slug?.join("/") || ""
+  const slug = (await params)?.slug?.join("/") || ""
 
   const decodedSlug = decodeURIComponent(slug)
   const sortedPosts = allPosts.sort(postSorter)
