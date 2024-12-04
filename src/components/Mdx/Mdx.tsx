@@ -3,7 +3,7 @@ import NextImage from "next/image"
 import { cn } from "@/utils/style-utils"
 import { cva } from "class-variance-authority"
 import type { MDXComponents } from "mdx/types"
-import { useMDXComponent } from "next-contentlayer/hooks"
+import { useMDXComponent } from "next-contentlayer2/hooks"
 import { Tweet as ReactTweet } from "react-tweet"
 
 import { Admonition } from "../Admonition"

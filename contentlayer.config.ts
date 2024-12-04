@@ -1,4 +1,4 @@
-import { defineDocumentType, makeSource } from "contentlayer/source-files"
+import { defineDocumentType, makeSource } from "contentlayer2/source-files"
 import rehypeAutolinkHeadings, {
   type Options as AutolinkHeadingsOptions,
 } from "rehype-autolink-headings"
@@ -85,7 +85,7 @@ export default makeSource({
   contentDirPath: "./content",
   documentTypes: [Post],
   mdx: {
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: [remarkGfm as (options: unknown) => void],
     rehypePlugins: [
       rehypeSlug,
       [rehypePrettyCode as (options: unknown) => void, rehypePrettyCodeOptions],
