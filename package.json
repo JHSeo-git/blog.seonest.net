@@ -2,30 +2,30 @@
   "name": "blog.seonest.net",
   "version": "0.0.2",
   "private": true,
-  "license": "MIT",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/JHSeo-git/blog.seonest.net.git"
   },
+  "license": "MIT",
   "author": {
     "name": "JHSeo",
     "email": "qnfqnfqnf@gmail.com"
   },
+  "type": "module",
   "scripts": {
     "analyze": "ANALYZE=true pnpm build",
-    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "post": "seonest-post-gen -d content/posts",
-    "tz": "date -u +\"%Y-%m-%dT%H:%M:%SZ\"",
+    "dev": "next dev",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx,json}\" --cache",
+    "format:write": "prettier --write \"**/*.{ts,tsx,mdx,json}\" --cache",
+    "postinstall": "npx prisma generate",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache",
-    "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
-    "typecheck": "tsc --noEmit",
+    "post": "seonest-post-gen -d content/posts",
     "prepare": "simple-git-hooks",
-    "postinstall": "npx prisma generate"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "tz": "date -u +\"%Y-%m-%dT%H:%M:%SZ\""
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.18.2",
@@ -81,6 +81,7 @@
     "lint-staged": "^15.2.9",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
+    "prettier-plugin-packagejson": "^2.5.6",
     "pretty-quick": "^4.0.0",
     "prisma": "^5.18.0",
     "rehype-autolink-headings": "^7.1.0",
