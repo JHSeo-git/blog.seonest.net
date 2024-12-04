@@ -20,11 +20,11 @@ export async function generateStaticParams(): Promise<PageParams[]> {
 }
 
 type PageProps = {
-  params: PageParams
+  params: Promise<PageParams>
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const category = params?.slug
+  const category = (await params)?.slug
 
   const decodedCategory = decodeURIComponent(category)
 
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 async function CategoryPage({ params }: PageProps) {
-  const category = params?.slug
+  const category = (await params)?.slug
 
   if (typeof category !== "string") {
     notFound()

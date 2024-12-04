@@ -1,14 +1,12 @@
 import bundleAnalyzer from "@next/bundle-analyzer"
-import { createContentlayerPlugin } from "next-contentlayer2"
+import { createContentlayerPlugin, NextConfig } from "next-contentlayer2"
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 })
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
 
   images: {
     remotePatterns: [
