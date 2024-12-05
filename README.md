@@ -14,9 +14,9 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
 ## Stack
 
 - [React](https://beta.reactjs.org/)
-  - [v18.x](https://www.npmjs.com/package/react)
+  - [v19.x](https://www.npmjs.com/package/react)
 - [Next.js](https://beta.nextjs.org/)
-  - [v14.x](https://www.npmjs.com/package/next)
+  - [v15.x](https://www.npmjs.com/package/next)
   - [App Router](https://beta.nextjs.org/docs/app-directory-roadmap)
 - DB
   - [Prisma](https://www.prisma.io/)
@@ -27,7 +27,7 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
   - [radix-ui](https://www.radix-ui.com/)
   - [tailwindcss](https://tailwindcss.com/)
 - MDX
-  - [contentlayer](https://www.contentlayer.dev/)
+  - [contentlayer2](https://github.com/timlrx/contentlayer2)
   - [remark-gfm](https://github.com/remarkjs/remark-gfm)
   - [rehype-autolink-headings](https://github.com/rehypejs/rehype-autolink-headings)
   - [rehype-pretty-code](https://github.com/atomiks/rehype-pretty-code)
