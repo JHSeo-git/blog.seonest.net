@@ -59,7 +59,7 @@ async function CategoryPage({ params }: PageProps) {
     <main className="mx-auto max-w-4xl py-10">
       <div className="flex items-baseline justify-between px-6">
         <h1 className="text-5xl font-bold capitalize">{category}</h1>
-        <p className="hidden text-lg text-gray-700 sm:block dark:text-gray-300">
+        <p className="hidden text-lg text-gray-700 dark:text-gray-300 sm:block">
           {posts.length} Post{posts.length > 0 ? "s" : ""}
         </p>
       </div>
