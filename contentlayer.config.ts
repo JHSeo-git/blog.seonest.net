@@ -85,10 +85,10 @@ export default makeSource({
   contentDirPath: "./content",
   documentTypes: [Post],
   mdx: {
-    remarkPlugins: [remarkGfm as (options: unknown) => void],
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [
       rehypeSlug,
-      [rehypePrettyCode as (options: unknown) => void, rehypePrettyCodeOptions],
+      [rehypePrettyCode, rehypePrettyCodeOptions],
       [rehypeAutolinkHeadings, rehypeAutolinkHeadingsOptions],
     ],
   },
