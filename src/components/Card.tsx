@@ -13,7 +13,7 @@ export function Card({ post }: CardProps) {
 
   return (
     <div className="group flex flex-col gap-5 sm:flex-row md:gap-10">
-      <div className="relative shrink-0  sm:h-[150px] sm:w-[250px] md:h-[210px] md:w-[350px]">
+      <div className="relative shrink-0 sm:h-[150px] sm:w-[250px] md:h-[210px] md:w-[350px]">
         {post.thumbnail ? (
           <Image
             className="size-full rounded-md object-cover transition-all group-hover:-translate-y-2 group-hover:shadow-md"

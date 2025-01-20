@@ -6,7 +6,11 @@ module.exports = {
   singleQuote: false,
   semi: false,
   printWidth: 100,
-  plugins: ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-packagejson"],
+  plugins: [
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-packagejson",
+    "prettier-plugin-tailwindcss",
+  ],
   importOrder: [
     "^(react/(.*)$)|^(react$)",
     "^(next/(.*)$)|^(next$)",
