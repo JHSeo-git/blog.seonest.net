@@ -13,7 +13,7 @@ interface PostNavProps {
 function PostNavChildren({ title, toc }: PostNavProps) {
   return (
     <nav className="mb-8">
-      <h2 className="mb-4 text-lg font-bold uppercase tracking-[1px]">{title}</h2>
+      <h2 className="mb-4 text-lg font-bold tracking-[1px] uppercase">{title}</h2>
       {toc.map((tocItem) => (
         <PostNavItem href={tocItem.link} key={tocItem.id} id={tocItem.id} level={tocItem.level}>
           {tocItem.text}

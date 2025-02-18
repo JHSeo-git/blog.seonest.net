@@ -66,12 +66,8 @@ export const Post = defineDocumentType(() => ({
 
 const rehypePrettyCodeOptions: Partial<PrettyCodeOptions> = {
   theme: "one-dark-pro",
-  keepBackground: true,
-  onVisitLine(node) {
-    if (node.children.length === 0) {
-      node.children = [{ type: "text", value: " " }]
-    }
-  },
+  defaultLang: "bash",
+  bypassInlineCode: true,
 }
 
 const rehypeAutolinkHeadingsOptions: Partial<AutolinkHeadingsOptions> = {

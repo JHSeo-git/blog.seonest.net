@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect } from "react"
-import { cn } from "@/utils/style-utils"
 import useSWR from "swr"
 
 import ApiClient from "@/lib/api-client"
+import { cn } from "@/lib/utils"
 import { usePostViews } from "@/hooks/usePostViews"
 
 import { Icons } from "./Icons"

@@ -1,4 +1,4 @@
-import { cn } from "@/utils/style-utils"
+import { cn } from "@/lib/utils"
 
 interface CalloutProps {
   icon?: string
