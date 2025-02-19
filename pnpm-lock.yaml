@@ -1,7 +1,7 @@
 lockfileVersion: "9.0"
 
 settings:
-  autoInstallPeers: true
+  autoInstallPeers: false
   excludeLinksFromLockfile: false
 
 patchedDependencies:
@@ -3085,8 +3085,6 @@ packages:
       {
         integrity: sha512-dYFdjLb7y1ajfxQopN05mylEpK9ZX0sO1/RfMXdfmwjlIsPkbh4p7A682x++zFPLDCo1x3p82dtljHf5cW2LKA==,
       }
-    peerDependencies:
-      typanion: "*"
 
   cliui@8.0.1:
     resolution:
@@ -8006,7 +8004,7 @@ snapshots:
     dependencies:
       "@contentlayer2/core": 0.5.4(acorn@8.14.0)(esbuild@0.25.0)
       "@contentlayer2/utils": 0.5.4
-      clipanion: 3.2.1(typanion@3.14.0)
+      clipanion: 3.2.1
       typanion: 3.14.0
     transitivePeerDependencies:
       - "@effect-ts/otel-node"
@@ -9623,7 +9621,7 @@ snapshots:
 
   client-only@0.0.1: {}
 
-  clipanion@3.2.1(typanion@3.14.0):
+  clipanion@3.2.1:
     dependencies:
       typanion: 3.14.0
 
