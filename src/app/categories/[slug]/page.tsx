@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import { postSorter } from "@/utils/contentlayer-utils"
 import { allPosts } from "contentlayer/generated"
 
-import { Card } from "@/components/Card"
+import { Card } from "@/components/card"
 
 type PageParams = {
   slug: string

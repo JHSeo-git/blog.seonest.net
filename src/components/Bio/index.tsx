@@ -1,1 +1,0 @@
-export { Bio } from "./Bio"

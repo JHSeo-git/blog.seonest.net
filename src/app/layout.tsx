@@ -5,10 +5,10 @@ import { Analytics } from "@vercel/analytics/react"
 
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import { Footer } from "@/components/Footer"
-import GoogleAnalytics from "@/components/GoogleAnalytics"
-import { Header } from "@/components/Header"
-import Providers from "@/components/Providers"
+import { Footer } from "@/components/footer"
+import GoogleAnalytics from "@/components/google-analytics"
+import { Header } from "@/components/header"
+import Providers from "@/components/providers"
 
 export const metadata = {
   metadataBase: new URL("https://seonest.net"),
