@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@/utils/style-utils"
+
+import { cn } from "@/lib/utils"
 
 import { Icons } from "./Icons"
 
@@ -34,7 +35,7 @@ function CopyToClipboard({ children, ...props }: CopyToClipboardProps) {
       </div>
       <button
         className={cn(
-          "absolute right-4 top-4 z-20 inline-flex h-8 items-center justify-center rounded-md border-none p-2 text-sm font-medium text-slate-300 opacity-50 outline-none transition-all hover:bg-transparent hover:opacity-100 dark:text-slate-100 dark:hover:bg-slate-800"
+          "absolute top-4 right-4 z-20 inline-flex h-8 cursor-pointer items-center justify-center rounded-md border-none p-2 text-sm font-medium text-slate-300 opacity-50 transition-all outline-none hover:bg-transparent hover:opacity-100 dark:text-slate-100 dark:hover:bg-slate-800"
         )}
         onClick={onCopy}
       >

@@ -1,4 +1,4 @@
-import "@/styles/mdx.css"
+// import "@/styles/mdx.css"
 
 import type { Metadata } from "next"
 import Image from "next/image"
@@ -6,9 +6,9 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getHeadings, postSorter } from "@/utils/contentlayer-utils"
 import { getDistanceToNow } from "@/utils/date-utils"
-import { cn } from "@/utils/style-utils"
 import { allPosts } from "contentlayer/generated"
 
+import { cn } from "@/lib/utils"
 import { Bio } from "@/components/Bio"
 import { Comment } from "@/components/Comment"
 import { DateDistance } from "@/components/DateDistance"
@@ -81,7 +81,7 @@ async function PostPage({ params }: PageProps) {
 
   return (
     <main className="mx-auto py-10 xl:grid xl:grid-cols-[1fr_280px] xl:gap-10">
-      <div className="mx-auto w-full min-w-0 max-w-4xl xl:max-w-none">
+      <div className="mx-auto w-full max-w-4xl min-w-0 xl:max-w-none">
         {post.thumbnail && (
           <div className="relative overflow-hidden rounded-xl md:rounded-[20px]">
             <Image
@@ -106,7 +106,7 @@ async function PostPage({ params }: PageProps) {
             </div>
             <PostViews slug={post.slugAsParams} />
           </div>
-          <h1 className="mt-2 text-4xl font-bold leading-tight lg:mt-4 lg:text-6xl">
+          <h1 className="mt-2 text-4xl leading-tight font-bold lg:mt-4 lg:text-6xl">
             {post.title}
           </h1>
         </div>

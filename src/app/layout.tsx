@@ -1,10 +1,10 @@
 import "@/styles/globals.css"
 
 import type { Viewport } from "next"
-import { cn } from "@/utils/style-utils"
 import { Analytics } from "@vercel/analytics/react"
 
 import { fontSans } from "@/lib/fonts"
+import { cn } from "@/lib/utils"
 import { Footer } from "@/components/Footer"
 import GoogleAnalytics from "@/components/GoogleAnalytics"
 import { Header } from "@/components/Header"

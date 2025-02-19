@@ -28,11 +28,11 @@ export function Card({ post }: CardProps) {
         )}
       </div>
       <div className="flex flex-1 flex-col">
-        <h3 className="text-2xl font-bold leading-normal text-black transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-400">
+        <h3 className="text-2xl leading-normal font-bold text-black transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-400">
           {title}
         </h3>
         {description && (
-          <p className="mt-1 leading-7 text-gray-900 dark:text-gray-200 sm:line-clamp-3 md:line-clamp-4">
+          <p className="mt-1 leading-7 text-gray-900 sm:line-clamp-3 md:line-clamp-4 dark:text-gray-200">
             {description}
           </p>
         )}

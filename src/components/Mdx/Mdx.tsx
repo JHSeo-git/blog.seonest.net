@@ -1,10 +1,11 @@
 import * as React from "react"
 import NextImage from "next/image"
-import { cn } from "@/utils/style-utils"
 import { cva } from "class-variance-authority"
 import type { MDXComponents } from "mdx/types"
 import { useMDXComponent } from "next-contentlayer2/hooks"
 import { Tweet as ReactTweet } from "react-tweet"
+
+import { cn } from "@/lib/utils"
 
 import { Admonition } from "../Admonition"
 import { Callout } from "../Callout"
@@ -23,7 +24,7 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
 
   if (src.startsWith("http")) {
     return (
-      <Zoom>
+      <Zoom wrapElement="span" zoomImg={{ alt, src }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={cn(mdxImageStyle(), className)} src={src} alt={alt} {...props} />
       </Zoom>
@@ -31,7 +32,7 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
   }
 
   return (
-    <Zoom>
+    <Zoom wrapElement="span" zoomImg={{ alt, src }}>
       <NextImage
         className={cn(mdxImageStyle(), className)}
         src={src}
@@ -114,7 +115,7 @@ const components: MDXComponents = {
   a: ({ className, children, ...props }) => (
     <a
       className={cn(
-        "break-all font-medium text-slate-900 underline underline-offset-4 dark:text-slate-50",
+        "font-medium break-all text-slate-900 underline underline-offset-4 dark:text-slate-50",
         className
       )}
       {...props}
@@ -123,17 +124,20 @@ const components: MDXComponents = {
     </a>
   ),
   p: ({ className, children, ...props }) => (
-    <p className={cn("leading-7 [&:not(:first-child)]:mt-6", className)} {...props}>
+    <p className={cn("leading-7 not-first:mt-6", className)} {...props}>
       {children}
     </p>
   ),
   ul: ({ className, children, ...props }) => (
-    <ul className={cn("my-6 ml-6 list-disc", className)} {...props}>
+    <ul
+      className={cn("my-6 list-disc pl-6 [li_>_&]:m-0 [li_>_&]:list-[circle]", className)}
+      {...props}
+    >
       {children}
     </ul>
   ),
   ol: ({ className, children, ...props }) => (
-    <ol className={cn("my-6 ml-6 list-decimal", className)} {...props}>
+    <ol className={cn("my-6 list-decimal pl-6 [li_>_&]:m-0", className)} {...props}>
       {children}
     </ol>
   ),
@@ -145,7 +149,7 @@ const components: MDXComponents = {
   blockquote: ({ className, children, ...props }) => (
     <blockquote
       className={cn(
-        "mt-6 break-all border-l-2 border-slate-300 pl-6 italic text-slate-800 [&>*]:text-slate-600",
+        "mt-6 border-l-2 border-slate-300 pl-6 break-all text-slate-800 italic [&>*]:text-slate-600",
         className
       )}
       {...props}
@@ -156,7 +160,7 @@ const components: MDXComponents = {
   code: ({ className, ...props }) => (
     <code
       className={cn(
-        "relative break-all rounded bg-slate-100 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400",
+        "relative rounded bg-slate-100 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold break-all text-slate-900 dark:bg-slate-800 dark:text-slate-400",
         className
       )}
       {...props}

@@ -1,4 +1,4 @@
-import { cn } from "@/utils/style-utils"
+import { cn } from "@/lib/utils"
 
 import { AdmonitionIcon } from "./AdmonitionIcon"
 
