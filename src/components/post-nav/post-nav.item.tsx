@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 
-import { useHeadingView } from "./HeadingViewProvider"
-import useHeadingInViewEffect from "./useHeadingInViewEffect"
+import { useHeadingView } from "./heading-view-provider"
+import useHeadingInViewEffect from "./use-heading-in-view-effect"
 
 interface PostNavItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   id: string

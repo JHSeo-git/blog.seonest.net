@@ -4,7 +4,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-import { Icons } from "./Icons"
+import { Icons } from "./icons"
 
 async function copyToClipboard(value: string) {
   navigator.clipboard.writeText(value)

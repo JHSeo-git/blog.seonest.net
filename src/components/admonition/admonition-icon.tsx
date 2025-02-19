@@ -1,5 +1,5 @@
-import { Icons } from "../Icons"
-import type { AdmonitionType } from "./Admonition"
+import { Icons } from "../icons"
+import type { AdmonitionType } from "./admonition"
 
 interface AdmonitionIconProps {
   admonitionType: AdmonitionType

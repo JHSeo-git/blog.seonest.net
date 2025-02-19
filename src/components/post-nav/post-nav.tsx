@@ -2,8 +2,8 @@
 
 import type { TOCItem } from "@/utils/contentlayer-utils"
 
-import HeadingViewProvider from "./HeadingViewProvider"
-import PostNavItem from "./PostNav.Item"
+import HeadingViewProvider from "./heading-view-provider"
+import PostNavItem from "./post-nav.item"
 
 interface PostNavProps {
   title: string

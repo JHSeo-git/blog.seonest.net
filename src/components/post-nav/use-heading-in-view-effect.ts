@@ -1,8 +1,8 @@
 import { usePathname } from "next/navigation"
 
-import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect"
+import useIsomorphicLayoutEffect from "@/hooks/use-isomorphic-layout-effect"
 
-import { useHeadingView } from "./HeadingViewProvider"
+import { useHeadingView } from "./heading-view-provider"
 
 export default function useHeadingInViewEffect(id: string) {
   const { setHeadingId } = useHeadingView()

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { getDistanceToNow, type GetDistanceToNowOptions } from "@/utils/date-utils"
 
-import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect"
+import useIsomorphicLayoutEffect from "@/hooks/use-isomorphic-layout-effect"
 
 interface DateDistanceProps extends React.HTMLAttributes<HTMLSpanElement> {
   date: string

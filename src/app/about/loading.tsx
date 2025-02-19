@@ -1,4 +1,4 @@
-import { Icons } from "@/components/Icons"
+import { Icons } from "@/components/icons"
 
 function AboutPageLoading() {
   return (

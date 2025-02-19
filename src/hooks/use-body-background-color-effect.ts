@@ -1,4 +1,4 @@
-import useIsomorphicLayoutEffect from "./useIsomorphicLayoutEffect"
+import useIsomorphicLayoutEffect from "./use-isomorphic-layout-effect"
 
 export default function useBodyBackgroundColorEffect(color: string) {
   useIsomorphicLayoutEffect(() => {

@@ -5,9 +5,9 @@ import useSWR from "swr"
 
 import ApiClient from "@/lib/api-client"
 import { cn } from "@/lib/utils"
-import { usePostViews } from "@/hooks/usePostViews"
+import { usePostViews } from "@/hooks/use-post-views"
 
-import { Icons } from "./Icons"
+import { Icons } from "./icons"
 
 type PostView = {
   views: number
