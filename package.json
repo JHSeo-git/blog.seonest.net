@@ -99,6 +99,7 @@
     "tailwindcss-radix": "^4.0.1",
     "typescript": "^5.7.3"
   },
+  "packageManager": "pnpm@10.2.0",
   "pnpm": {
     "patchedDependencies": {
       "rehype-pretty-code": "patches/rehype-pretty-code.patch"
