@@ -22,6 +22,10 @@ const Image = ({ src, alt, className, ...props }: React.ImgHTMLAttributes<HTMLIm
     return <span className={cn(mdxImageStyle(), className)} />
   }
 
+  if (typeof src !== "string") {
+    return <span className={cn(mdxImageStyle(), className)} />
+  }
+
   if (src.startsWith("http")) {
     return (
       <Zoom wrapElement="span" zoomImg={{ alt, src }}>

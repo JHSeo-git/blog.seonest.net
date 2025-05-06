@@ -1,5 +1,5 @@
 import bundleAnalyzer from "@next/bundle-analyzer"
-import { createContentlayerPlugin, NextConfig } from "next-contentlayer2"
+import { createContentlayerPlugin, type NextConfig } from "next-contentlayer2"
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
