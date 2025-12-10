@@ -256,5 +256,6 @@ interface MdxProps {
 export function Mdx({ code }: MdxProps) {
   const Component = useMDXComponent(code)
 
+  // eslint-disable-next-line react-hooks/static-components
   return <Component components={components} />
 }

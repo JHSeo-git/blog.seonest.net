@@ -1,9 +1,5 @@
-import bundleAnalyzer from "@next/bundle-analyzer"
-import { createContentlayerPlugin, type NextConfig } from "next-contentlayer2"
-
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-})
+import type { NextConfig } from "next"
+import { createContentlayerPlugin } from "next-contentlayer2"
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -20,4 +16,4 @@ const withContentlayer = createContentlayerPlugin({
   // Additional Contentlayer config options
 })
 
-export default withBundleAnalyzer(withContentlayer(nextConfig))
+export default withContentlayer(nextConfig)
