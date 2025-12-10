@@ -14,8 +14,8 @@
   "type": "module",
   "scripts": {
     "analyze": "ANALYZE=true pnpm build",
-    "build": "next build --turbopack",
-    "content": "contentlayer2 build",
+    "build": "pnpm build:content && next build --turbopack",
+    "build:content": "contentlayer2 build",
     "dev": "next dev --turbopack",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\" --cache",
