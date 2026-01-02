@@ -22,7 +22,7 @@ React 18은 React 애플리케이션의 렌더링 방식을 근본적으로 바�
 Repaint 등과 같은 다른 작업도 함께 처리합니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/process-of-main-thread.avif"
+  src="/post/react/how-react-18-improves-application-performance/process-of-main-thread.webp"
   alt="Flow of main thread at a browser"
 >
   <span>메인스레드는 작업을 하나씩 처리합니다</span>
@@ -34,7 +34,7 @@ small task는 브라우저에서 부드럽게 실행되어 원활한 사용자 �
 
 실행하는데 50ms 이상 걸리는 모든 작업이 [long task](https://web.dev/long-tasks-devtools/#what-are-long-tasks)로 간주됩니다.
 
-![A diagram of a long task](/post/react/how-react-18-improves-application-performance/long-task.avif)
+![A diagram of a long task](/post/react/how-react-18-improves-application-performance/long-task.webp)
 
 왜 50ms 벤치마크 일까요? 원활한 시각적 경험을 제공하기 위해 디바이스가 16ms(60fps)마다 새 프레임을 생성해야 한다는 사실을 기반으로 합니다.
 그러나 디바이스(브라우저)는 사용자 입력에 응답하고 JavaScript 실행 등의 다른 작업도 함께 수행해야 합니다.
@@ -54,7 +54,7 @@ small task는 브라우저에서 부드럽게 실행되어 원활한 사용자 �
 미칠 수 있습니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/total-blocking-time.avif"
+  src="/post/react/how-react-18-improves-application-performance/total-blocking-time.webp"
   alt="A diagram of Total Blocking Time"
 >
   <span>
@@ -76,7 +76,7 @@ small task는 브라우저에서 부드럽게 실행되어 원활한 사용자 �
 > 도 참고하시면 좋습니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/interaction-to-next-paint.avif"
+  src="/post/react/how-react-18-improves-application-performance/interaction-to-next-paint.webp"
   alt="A diagram of Interaction to Next Paint"
 >
   <span>Interaction to Next Paint(INP)는 측정된 지표 중 가장 지연이 높은 250ms 입니다.</span>
@@ -92,7 +92,7 @@ React에서 시각적 업데이트는 렌더링 단계와 커밋 단계로 나�
 
 렌더링 단계에서 React는 현재 DOM과 새로운 React 컴포넌트 트리 사이의 차이점을 계산하고 필요한 업데이트를 준비합니다.
 
-![A diagram of a rendering phase in react](/post/react/how-react-18-improves-application-performance/rendering-phase-in-react.avif)
+![A diagram of a rendering phase in react](/post/react/how-react-18-improves-application-performance/rendering-phase-in-react.webp)
 
 렌더링 단계 다음에는 커밋 단계입니다. 이 단계에서 React는 렌더링 단계에서 계산된 업데이트를 실제 DOM에 적용합니다. 여기에는 새로운 React 컴포넌트 트리를
 표현하기 위해 DOM 노드를 생성, 업데이트, 삭제하는 작업이 포함됩니다.
@@ -100,7 +100,7 @@ React에서 시각적 업데이트는 렌더링 단계와 커밋 단계로 나�
 기존 동기식 렌더링에서 React는 컴포넌트 트리 내의 모든 엘리먼트에 동일한 우선순위를 부여합니다. 컴포넌트 트리가 렌더링될 때, 초기 렌더링이나 상태 변경 시,
 React는 중단 없이 단일 작업으로 트리를 렌더링한 후 DOM에 커밋하여 화면에 컴포넌트를 시각적으로 업데이트합니다.
 
-![A diagram of a synchronous rendering](/post/react/how-react-18-improves-application-performance/react-sync-rendering.avif)
+![A diagram of a synchronous rendering](/post/react/how-react-18-improves-application-performance/react-sync-rendering.webp)
 
 동기식 렌더링은 렌더링을 시작한 컴포넌트가 항상 렌더링이 완료되도록 보장하는 "all-or-nothing" 작업입니다. 컴포넌트의 복잡성에 따라 렌더링 단계가 완료되는 데
 시간이 걸릴 수 있습니다. 이 시간 동안 메인 스레드가 차단되므로 애플리케이션과 상호작용하려는 사용자는 React가 렌더링을 완료하고 결과를 DOM에 커밋할 떄까지
@@ -118,7 +118,7 @@ React는 중단 없이 단일 작업으로 트리를 렌더링한 후 DOM에 커
 performance 탭을 보면 모든 키 입력에서 최적 상태가 아닌 long task가 발생한 것을 볼 수 있습니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/performance-tab-for-long-tasks.avif"
+  src="/post/react/how-react-18-improves-application-performance/performance-tab-for-long-tasks.webp"
   alt="A screenshot of a browser performance tab for long tasks"
 >
   <span>
@@ -132,7 +132,7 @@ React 18은 백그라운드에서 동작하는 새로운 동시성 렌더러를 
 몇 가지 방법을 안내합니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/react-18-concurrent-priority-diagram.avif"
+  src="/post/react/how-react-18-improves-application-performance/react-18-concurrent-priority-diagram.webp"
   alt="A diagram of a concurrent rendering priorities"
 >
   <span>
@@ -145,7 +145,7 @@ React 18은 백그라운드에서 동작하는 새로운 동시성 렌더러를 
 양보함으로써 React는 이러한 렌더링을 차단하지 않고 더 중요한 작업의 우선순위를 렌더링 할 수 있습니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/react-yield-to-main-thread.avif"
+  src="/post/react/how-react-18-improves-application-performance/react-yield-to-main-thread.webp"
   alt="A diagram of a yield to main thread for prioriting component"
 >
   <span>
@@ -160,7 +160,7 @@ React 18은 백그라운드에서 동작하는 새로운 동시성 렌더러를 
 최적의 사용자 경험을 얻을 수 있습니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/react-concurrent-rendering-diagram.avif"
+  src="/post/react/how-react-18-improves-application-performance/react-concurrent-rendering-diagram.webp"
   alt="A diagram of a concurrent rendering flow diagram"
 >
   <span>React는 사용자 경험(우선순위가 더 높다고 보이는)에 따라 현재 렌더링을 잠시 멈춥니다.</span>
@@ -202,7 +202,7 @@ transition이 시작되면 동시성 렌더러가 백그라운드에서 새로�
 좋은 성능으로 업데이트할 수 있을 때까지 결과를 메모리에 유지합니다. 브라우저가 유휴 상태이고 우선순위가 더 높은 작업(사용자 상호작용과 같은)이
 보류 중이 아닐 때를 말합니다.
 
-![A diagram of using a startTransition hook](/post/react/how-react-18-improves-application-performance/start-transition-hook.avif)
+![A diagram of using a startTransition hook](/post/react/how-react-18-improves-application-performance/start-transition-hook.webp)
 
 `CitiesList` 데모에 transition을 사용하는 것은 적합한 예입니다. 각 키 입력에 대해 동기식 `searchQuery` 파라미터로 값을 직접 업데이트하는
 대신, 상태를 두 개의 값으로 분할하고 `searchQuery`상태 업데이트를 `startTransition`으로 감쌀 수 있습니다.
@@ -222,7 +222,7 @@ performance 탭을 보면 상태 업데이트를 `startTransition`으로 감싼 
 Total Blocking Time이 훨씬 감소한 것을 확인할 수 있습니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/performance-tab-with-start-transition-hook.avif"
+  src="/post/react/how-react-18-improves-application-performance/performance-tab-with-start-transition-hook.webp"
   alt="A screenshot of the performance tab with the startTransition hook and without"
 >
   <span>performance 탭은 long task의 수와 Total Blocking Time이 크게 감소했음을 보여줍니다.</span>
@@ -240,7 +240,7 @@ React Server Components는 React 18에서 **experimental 기능**이지만
 또는 서버에서 컴포넌트 트리를 HTML로 렌더링하고 이 정적 HTML을 JavaScript 번들과 함께 클라이언트로 전송하여 클라이언트에서 컴포넌트를
 hydrate(Server-Side Rendering)하는 것이었습니다.
 
-![A diagram of Client-Side Rendering and Server-Side Rendering](/post/react/how-react-18-improves-application-performance/client-side-rendering-and-server-side-rendering.avif)
+![A diagram of Client-Side Rendering and Server-Side Rendering](/post/react/how-react-18-improves-application-performance/client-side-rendering-and-server-side-rendering.webp)
 
 두 접근 방식 모두 동기식 React 렌더러가 컴포넌트 트리를 이미 서버에서 사용가능하더라도 클라이언트에서 제공된 JavaScript 번들을 통해 컴포넌트 트리를
 다시 빌드해야 한다는 사실에 의존합니다.
@@ -248,7 +248,7 @@ hydrate(Server-Side Rendering)하는 것이었습니다.
 React Server Components를 사용하면 React가 실제 직렬화된 컴포넌트 트리를 클라이언트로 전송할 수 있습니다. 클라이언트 측 React 렌더러는
 이 형식을 이해하고 HTML 파일이나 JavaScript 번들로 전송하지 않고도 React 컴포넌트 트리를 성능적으로 재구성합니다.
 
-![A diagram of React Server Components Rendering](/post/react/how-react-18-improves-application-performance/react-server-component.avif)
+![A diagram of React Server Components Rendering](/post/react/how-react-18-improves-application-performance/react-server-component.webp)
 
 이 새로운 렌더링 패턴은 `react-server-dom-webpack/server`의 `renderToPipeableStream` 메소드와 `react-dom/client`의 `createRoot`
 메소드를 결합하여 사용할 수 있습니다.
@@ -286,7 +286,7 @@ root.render(<Index />);
 이러한 컴포넌트를 Client Components 라고 합니다.
 
 <ImageCaption
-  src="/post/react/how-react-18-improves-application-performance/ship-rsc-and-client-components-to-client.avif"
+  src="/post/react/how-react-18-improves-application-performance/ship-rsc-and-client-components-to-client.webp"
   alt="A diagram of a shipping React Server Components and Client Components to client"
 >
   <span>
@@ -367,7 +367,7 @@ export default function Page() {
 `Suspense`의 진정한 힘은 React의 동시성 기능과 긴밀하게 통합될 때 나타납니다. 예를 들어 컴포넌트가 데이터 로드를 기다리는 중이어서 일시 중단된 경우,
 React는 컴포넌트가 데이터를 수신할 떄까지 유휴 상태로 있지 않습니다. 대신, React는 일시중단된 컴포넌트의 렌더링을 중단하고 다른 작업을 수행합니다.
 
-![A diagram of processing a react suspense](/post/react/how-react-18-improves-application-performance/react-suspense.avif)
+![A diagram of processing a react suspense](/post/react/how-react-18-improves-application-performance/react-suspense.webp)
 
 이 시간 동안 해당 컴포넌트가 여전히 로딩 중임을 나타내는 fallback UI를 렌더링하도록 React에 지시할 수 있습니다. await된 데이터를 사용할 수 시점이 되면,
 React는 이전 transition에서 보았던 것처럼 이전에 일시중단된 컴포넌트의 렌더링을 원활하게 재개할 수 있습니다.
@@ -376,7 +376,7 @@ React는 이전 transition에서 보았던 것처럼 이전에 일시중단된 �
 React는 진행 중인 렌더링을 일시중단하고 사용자가 상호작용하는 컴포넌트의 우선순위를 높일 수 있습니다. 가령 사용자가 렌더링 중인 버튼을 클릭하면,
 React는 렌더링하는 동안 다른 컴포넌트의 렌더링의 우선순위보다 높게 설정할 수 있습니다.
 
-![A diagram of reprioritize rendering when user interact in rendering](/post/react/how-react-18-improves-application-performance/priority-for-user-interact-when-rendering.avif)
+![A diagram of reprioritize rendering when user interact in rendering](/post/react/how-react-18-improves-application-performance/priority-for-user-interact-when-rendering.webp)
 
 컴포넌트가 준비되면 React는 DOM에 커밋하고 이전 렌더링을 재개합니다. 이렇게 하면 사용자 상호작용에 높은 우선순위가 부여되고 사용자 입력에 따라 UI가
 반응하게 되고 또한 시용자 입력에 따른 최신 상태로 유지됩니다.
@@ -425,7 +425,7 @@ fetchPost(1) // 동일한 렌더링 패스에서 호출: 메모된 값을 반환
 이러한 기능은 Context API에 접근할 수 없는 React Server Components로 작업할 때 유용합니다. 캐시 및 fetch의 자동 캐싱 동작을 통해
 전역 모듈에서 단일 함수를 export하여 애플리케이션 전체에서 재사용할 수 있습니다.
 
-![A diagram of cache mechanism for data-fetch](/post/react/how-react-18-improves-application-performance/data-fetching-with-caching.avif)
+![A diagram of cache mechanism for data-fetch](/post/react/how-react-18-improves-application-performance/data-fetching-with-caching.webp)
 
 ```jsx
 async function fetchBlogPost(id) {

@@ -1,0 +1,214 @@
+---
+title: 동적으로 Image 만들기, edge-function을 곁드린
+description: 최근 Vercel에서 satori라는 HTML,CSS to SVGs Converter를 공개했습니다. 어떻게 동작하는지, 그리고 이를 이용해 어떻게 Dynamic OG Image Generator를 새롭게 만들었는지 확인해보고 직접 사용해보았습니다.
+author: seonest
+date: 2022-11-29T04:20:50.018Z
+---
+
+Vercel은 4년 전에 Serverless 환경에서 Open Graph Image를 동적으로 생성할 수 있는 [dynamic og-image generator](https://github.com/vercel/og-image)를 공개했습니다.
+그리고 얼마전 10월 HTML and CSS to SVG(or PNG 등) convert할 수 있는 tool인 [satori](https://github.com/vercel/satori)와 함께 새로운 dynamic og-image generator인 [@vercel/og](https://www.npmjs.com/package/@vercel/og)를 공개했습니다.
+
+Vercel은 기존 og-image generator를 대신할 @vercel/og을 왜 새롭게 만들었을까요?
+그리고 @vercel/og의 코어엔진인 satori은 어떤 특징을 가지고 있을까요? 그리고 이를 통해 어떤 좋은 점이 있을까요?
+
+## 들어가면서
+
+트위터의 트윗 중 카드가 있는 트윗의 참여가 [40%가 더 높다고 합니다.](https://www.agorapulse.com/social-media-lab/link-tweet-with-an-image-vs-tweet-with-twitter-cards-does-it-really-matter/)
+
+이를 위해 정적 소셜 이미지를 만들고 공유하는 것은 어렵진 않습니다.
+그러나 즉시 계산되고 실시간으로 생성해야 하는 **동적 이미지**를 처리하는 것에는 한계가 있었습니다.
+
+그래서 Vercel은 4년 전 동적으로 이미지를 생성할 수 있는 Open Graph Image Generator를 릴리즈했습니다.
+
+## 기존 Open Graph Image Generator
+
+Vercel은 4년전에 Serverless Function 에서 HTML Page를 만들어 스크릿샷을 찍는 방식으로, 동적으로 [open graph](https://ogp.me/) 이미지를 생성하여 개발자들이 사용할 수 있도록 [og-image.vercel.app](https://og-image.vercel.app/)을 발표했습니다.
+이 og-image generator는 [puppeteer](https://www.npmjs.com/package/puppeteer-core)를 사용하여 HTML/CSS를 동적으로 Image를 생성했습니다.
+이후 수많은 개발자들은 자신들의 소셜 이미지들을 만들기 위해 사용해왔습니다.
+그러나 기능적으로 잘 동작했지만 이 접근법은 몇 가지 단점들이 존재했습니다:
+
+- **어렵다**: 이 솔루션은 Serverless Function 에서 크로미움을 실행해야만 합니다. Puppeteer를 통해 HTML을 생성하고 스크린샷을 찍어야 합니다.
+  이러한 도구를 설정하는 것이 어려웠고 에러가 나는 경우가 많았습니다.
+- **느리다**: 크로미움은 Serverless Function에 맞추기 위해 압축을 하는데 cold boot 시에 압축을 해제해야 합니다.
+  이는 매우 느립니다(대략 4초 정도 걸립니다). 그 결과 _카드 이미지가 느리게 생성되거나 깨질 수_ 있습니다.
+- **비싸다**: 스크린샷을 찍기 위해 전체 브라우저를 생성하는 것은 비효율적입니다.
+  이로 인해 함수가 커져 비용이 많이 들고 계산 낭비가 될 수 있습니다.
+- **크다**: 크로미움은 지난 4년 동안 계속 성장해왔습니다. 현재는 [Serverless Function에 사용하기에는 너무 큽니다.](https://github.com/vercel/og-image/issues/148)
+
+![og-image-generator-deps](/post/javascript/dynamic-og-image-with-edge-function/og-image-generator-deps.png)
+
+## 새로운 Open Graph Image Generator
+
+최근 공개된 **@vercel/og**는 Edge Functions, WebAssembly, satori(HTML/CSS to SVGs converter)를 사용하여 기존 og-image generator보다 5배 더 빨라졌습니다.
+
+기존 generator에 비해 @vercel/og는:
+
+- **쉽다**: 기존과 달리 headless 브라우저를 사용하지 않습니다.
+  HTML와 CSS를 사용해 동적으로 SVGs를 만들어 이미지를 정의할 수 있습니다.
+- **저렴하다**: Vercel Edge Functions는 Serverless Function에서 크로미움이 동작하는 비용에 비해 160배 더 저렴합니다.
+  게다가, 생성된 이미지는 Edge에 저장될 수 있고 캐시가 가능합니다.
+- **빠르다**: 기존 크로미움 + Puppeteer(50MB)에 비해 100배 더 작아(500KB) _거의 실시간으로_ functions을 시작할 수 있습니다.
+  그래서 이미지를 생성하는게 빠르고 Open Grpah Debugger 같은 툴이 항상 이미지를 인식할 수 있습니다.
+
+[vercel.com/docs](https://vercel.com/docs) 사이트에서 사용한 결과로 기존에 비해 P99 TTFB에서 **5배 더 빨라졌고** (4.96s -> 0.99s)
+P90에서 **5.3배 더 빨라졌습니다.** (4s -> 0.75s)
+코드 또한 애플리케이션 코드와 함께 배치되어 유지 관리와 업데이트가 더 쉬워졌습니다.
+
+![5x-faster-performance](/post/javascript/dynamic-og-image-with-edge-function/5x-faster-performance.png)
+
+@vercel/og의 주요 기능들은 다음과 같습니다:
+
+- 기본 CSS layout, styling, typogrphay를 지원합니다.
+- 프레임워크 또는 프론트엔드 애플리케이션이 어떤 것이든 상관없이 사용할 수 있습니다.
+- 구글 fonts와 다른 CDNs에서 fonts와 emoji subset 다운로드를 지원합니다.
+
+## Edge에서 동적 소셜 이미지
+
+@vercel/og는 HTML과 CSS를 이미지로 변환합니다.
+
+코어 엔진인 [satori](https://github.com/vercel/satori)는 최신 브라우저, Node.js, Web Workers에서 사용될 수 있습니다.
+satori 위에 만들어진 @vercel/og는 WebAssembly를 통해 소셜 카드 이미지를 쉽게 Edge 환경에서 사용할 수 있습니다.
+
+React component 추상화를 활용하여 소셜 카드를 나머지 프론트엔드 코드베이스와 함께 배치할 수 있습니다.
+
+```jsx
+// pages/api/og.jsx
+
+import { ImageResponse } from "@vercel/og"
+
+export const config = {
+  runtime: "experimental-edge",
+}
+
+export default function () {
+  return new ImageResponse(
+    <div
+      style={{
+        display: "flex",
+        fontSize: 128,
+        background: "white",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      Hello, World!
+    </div>
+  )
+}
+```
+
+@vercel/og는 이미지가 생성된 이후에 올바른 Cache-Control 헤더를 자동으로 추가하여 Edge에서 캐시되도록 합니다.
+
+```json
+'content-type': 'image/png'
+'cache-control': 'public, immutable, no-transform, max-age=31536000'
+```
+
+직접 `headers`를 설정할 수도 있습니다. 더 자세한 내용은 [여기](https://vercel.com/docs/concepts/functions/edge-functions/og-image-api)를 참고하세요.
+
+## tailwindcss 지원
+
+> experimental
+
+@vercel/og는 `tw` prop을 통해 tailwindcss를 지원합니다.
+
+```jsx
+<div tw="flex h-full items-center bg-white justify-center">
+  <div tw="bg-gray-50 flex">
+    <div tw="flex flex-col md:flex-row w-full py-12 px-4 md:items-center justify-between p-8">
+      <h2 tw="flex flex-col text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 text-left">
+        <span>Ready to dive in?</span>
+        <span tw="text-indigo-600">Start your free trial today.</span>
+      </h2>
+      <div tw="mt-8 flex md:mt-0">
+        <div tw="flex rounded-md shadow">
+          <a
+            href="#"
+            tw="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-5 py-3 text-base font-medium text-white"
+          >
+            Get started
+          </a>
+        </div>
+        <div tw="ml-3 flex rounded-md shadow">
+          <a
+            href="#"
+            tw="flex items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-base font-medium text-indigo-600"
+          >
+            Learn more
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+![tw-image](/post/javascript/dynamic-og-image-with-edge-function/tw-image.png)
+
+더 많은 예시는 [og-playground](https://og-playground.vercel.app)와 [공식문서](https://vercel.com/docs/concepts/functions/edge-functions/og-image-examples) 확인할 수 있습니다.
+
+## 지원되는 CSS Property
+
+@vercel/og의 코어엔진인 satori는 React Native와 동일한 [layout engine](https://yogalayout.com/)을 사용합니다.
+
+<Callout title="Note">
+  React Native를 사용해보신 분은 아시겠지만 CSS와 약간 다른 점이 있습니다. 가령 `display`의 기본값이
+  block이 아니라 flex라던지 말이죠. 그러나 완전히 React Native와 같은 것도 아닙니다. 예를 들어
+  `display: flex`를 사용하면 React Native는 기본값이 `flex-direction: column`이지만 satori는
+  `flex-direction: row` 입니다.
+</Callout>
+
+더 자세한 CSS Property는 [여기서](https://github.com/vercel/satori#css) 확인하세요.
+
+## 개인 프로젝트에 적용하기
+
+> https://github.com/JHSeo-git/own-your-tag
+
+satori와 @vercel/og, edge-runtime(functions)를 사용하여 간단한 프로젝트를 만들어보았습니다.
+
+사용해본 경험은 다음과 같습니다:
+
+- 문서가 잘 되어 있어서 따라가기 쉬웠습니다. satori 문서가 잘 되어 있어서 @vercel/og 또한 satori 문서만 보고 사용해도 큰 무리 없었습니다.
+- 이메일 템플릿을 만드는 느낌과 비슷한 경험을 했습니다.
+- 위 블로그 글에도 작성되어 있듯이 첫 번째 요청은 P99, P90 수준과 비슷하게 (0.8s) 나왔습니다.
+- 두 번째 요청부터는 edge에 캐싱되어 50ms 수준으로 응답이 오는 것을 확인했습니다.
+- 자동으로 사용자와 가장 가까운 edge에서 응답하는데 x-vercel-id(icn1::...)로 확인해보았을 때 저의 경우 edge location은 인천으로 확인됩니다.
+- `tw` prop을 이용한 tailwindcss가 experimental이라곤 하지만 제가 사용해보았을 때 큰 문제는 없었습니다.
+
+![first-image](/post/javascript/dynamic-og-image-with-edge-function/first-image.png)
+
+![cache-image](/post/javascript/dynamic-og-image-with-edge-function/cache-image.png)
+
+![headers](/post/javascript/dynamic-og-image-with-edge-function/headers.png)
+
+![edge-location](/post/javascript/dynamic-og-image-with-edge-function/edge-location.png)
+
+코드는 https://github.com/JHSeo-git/own-your-tag 확인할 수 있고, 테스트는 https://own-your-tag.vercel.app/ 여기서 해보실 수 있습니다.
+
+<Callout title="Note">
+  어떤 이유인지는 모르겠는데 React Developer Tools 확장 프로그램이 문제가 되서 브라우저 CPU 부하를
+  일으킬 수 있습니다. 이 부분은 확인을 더 해봐야 될 것 같습니다. 크롬의 경우 브라우저 작업 관리자를
+  켜서 CPU가 70이상을 잡아먹고 있는 서비스워커(..../background.js )를 찾아 강제 종료를 하거나 React
+  Developer Tools을 삭제(비활성화)하고 다시 시도해보시면 될 것 같습니다.
+</Callout>
+
+## 마치며
+
+next.js 13버전이 공개되고 satori가 함께 공개되었을 때 한 번 써봐야지 생각만 하고 있다가 이번에 사용해보게 되었습니다.
+문서도 깔끔하게 잘 되어있고 사용하기도 편했습니다. 같이 공개된 블로그 글도 읽는 재미도 있었구요.
+
+그리고 edge runtime(function)에 대해서 한 번 더 생각해보게 되었습니다.
+점점 프론트엔드 진영에 edge 서비스에 대한 관심이 높아지고 있는데 그 이유에 대해서 조금은 더 알게 되었습니다.
+
+결국 사용자와 물리적으로 가장 가까운 서버에서 서비스를 제공하는 것이 좋다라는 것이고, 무엇보다 빠르고 가볍게 서비스를 제공하는 것이 가능하다는 점이 큰 장점이라고 생각합니다.
+@vercel/og와 satori, vercel edge runtime을 사용해보며 조금은 느껴진 것 같습니다.
+
+다음에는 edge에 대해서 좀 더 알아보려고 합니다.
+
+## reference
+
+- https://vercel.com/docs/concepts/functions/edge-functions/og-image-generation
+- https://vercel.com/blog/introducing-vercel-og-image-generation-fast-dynamic-social-card-images
+- https://github.com/vercel/og-image
+- https://github.com/vercel/satori
+- https://www.npmjs.com/package/@vercel/og

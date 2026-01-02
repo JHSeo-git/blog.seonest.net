@@ -1,0 +1,94 @@
+// @ts-nocheck
+import { frontmatter as __fd_glob_64 } from "../content/docs/index.mdx?collection=docs&only=frontmatter"
+import { frontmatter as __fd_glob_63 } from "../content/blog/you-do-not-need-a-build-step.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_62 } from "../content/blog/why-vercel-reverted-edge-rendering-to-nodejs.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_61 } from "../content/blog/why-react-re-renders.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_60 } from "../content/blog/why-i-love-react-by-kent-c-dodds.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_59 } from "../content/blog/web-rendering.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_58 } from "../content/blog/web-performance-4-core-web-vitals-cls.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_57 } from "../content/blog/web-performance-3-core-web-vitals-fid.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_56 } from "../content/blog/web-performance-2-core-web-vitals-lcp.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_55 } from "../content/blog/web-performance-1-metrics.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_54 } from "../content/blog/use-a-reverse-proxy-nginx.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_53 } from "../content/blog/understanding-usememo-and-usecallback.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_52 } from "../content/blog/understanding-react-server-components.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_51 } from "../content/blog/understanding-react-server-components-by-josh-w-comeau.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_50 } from "../content/blog/traditional-approaches-vs-suspense-in-react.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_49 } from "../content/blog/the-two-reacts.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_48 } from "../content/blog/the-end-of-front-end-development.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_47 } from "../content/blog/tailwind-css-v4-0.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_46 } from "../content/blog/should-i-use-pixelds-or-ems-rems.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_45 } from "../content/blog/seonest.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_44 } from "../content/blog/rsc-mental-model.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_43 } from "../content/blog/remix@1.6.5.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_42 } from "../content/blog/remix-맛보기-2.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_41 } from "../content/blog/remix-맛보기-1.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_40 } from "../content/blog/react-rfc-useevent.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_39 } from "../content/blog/react-hydration-issues.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_38 } from "../content/blog/react-compiler.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_37 } from "../content/blog/react-chronicles.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_36 } from "../content/blog/react-19-beta.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_35 } from "../content/blog/profiling-react-app.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_34 } from "../content/blog/planetscale-prisma-next-js.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_33 } from "../content/blog/nextjs-react-server-component.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_32 } from "../content/blog/nextjs-layout-rfc-update.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_31 } from "../content/blog/nextjs-layout-rfc-new-routing-system.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_30 } from "../content/blog/nextjs-12.3.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_29 } from "../content/blog/next-js-13.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_28 } from "../content/blog/next-js-13-3.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_27 } from "../content/blog/next-js-13-2.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_26 } from "../content/blog/next-js-13-1.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_25 } from "../content/blog/next-generation-next-js-13-4.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_24 } from "../content/blog/new-features-in-react-18.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_23 } from "../content/blog/mysql-backup-lesson.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_22 } from "../content/blog/javascript-object-2-class.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_21 } from "../content/blog/javascript-object-1-prototype.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_20 } from "../content/blog/javascript-how-it-works.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_19 } from "../content/blog/javascript-eventing-deep-dive.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_18 } from "../content/blog/how-react-18-improves-application-performance.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_17 } from "../content/blog/great-developer-experience-vercel.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_16 } from "../content/blog/github-copilot.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_15 } from "../content/blog/github-code-search.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_14 } from "../content/blog/fixing-ract-condition-in-react.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_13 } from "../content/blog/figma-cube-skew-plugin.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_12 } from "../content/blog/esm-typescript.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_11 } from "../content/blog/ecmascript-2022.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_10 } from "../content/blog/dynamic-og-image-with-edge-function.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_9 } from "../content/blog/design-system.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_8 } from "../content/blog/delightful-react-file-directory.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_7 } from "../content/blog/debug-react-hello-world.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_6 } from "../content/blog/complex-context-apis.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_5 } from "../content/blog/chatgpt-prompt-engineering-for-developers.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_4 } from "../content/blog/bundle-module-bundler.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_3 } from "../content/blog/blog-creation.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_2 } from "../content/blog/about-monorepo.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_1 } from "../content/blog/about-http.mdx?collection=blog&only=frontmatter"
+import { frontmatter as __fd_glob_0 } from "../content/blog/10-modern-web-architecture-concepts.mdx?collection=blog&only=frontmatter"
+import { server } from 'fumadocs-mdx/runtime/server';
+import type * as Config from '../source.config';
+
+const create = server<typeof Config, import("fumadocs-mdx/runtime/types").InternalTypeConfig & {
+  DocData: {
+  }
+} & {
+  DocData: {
+    blog: {
+      /**
+       * Last modified date of document file, obtained from version control.
+       *
+       */
+      lastModified?: Date;
+    },
+    docs: {
+      /**
+       * Last modified date of document file, obtained from version control.
+       *
+       */
+      lastModified?: Date;
+    },
+  }
+}>({"doc":{"passthroughs":["extractedReferences","lastModified"]}});
+
+export const blog = await create.docLazy("blog", "content/blog", {"10-modern-web-architecture-concepts.mdx": __fd_glob_0, "about-http.mdx": __fd_glob_1, "about-monorepo.mdx": __fd_glob_2, "blog-creation.mdx": __fd_glob_3, "bundle-module-bundler.mdx": __fd_glob_4, "chatgpt-prompt-engineering-for-developers.mdx": __fd_glob_5, "complex-context-apis.mdx": __fd_glob_6, "debug-react-hello-world.mdx": __fd_glob_7, "delightful-react-file-directory.mdx": __fd_glob_8, "design-system.mdx": __fd_glob_9, "dynamic-og-image-with-edge-function.mdx": __fd_glob_10, "ecmascript-2022.mdx": __fd_glob_11, "esm-typescript.mdx": __fd_glob_12, "figma-cube-skew-plugin.mdx": __fd_glob_13, "fixing-ract-condition-in-react.mdx": __fd_glob_14, "github-code-search.mdx": __fd_glob_15, "github-copilot.mdx": __fd_glob_16, "great-developer-experience-vercel.mdx": __fd_glob_17, "how-react-18-improves-application-performance.mdx": __fd_glob_18, "javascript-eventing-deep-dive.mdx": __fd_glob_19, "javascript-how-it-works.mdx": __fd_glob_20, "javascript-object-1-prototype.mdx": __fd_glob_21, "javascript-object-2-class.mdx": __fd_glob_22, "mysql-backup-lesson.mdx": __fd_glob_23, "new-features-in-react-18.mdx": __fd_glob_24, "next-generation-next-js-13-4.mdx": __fd_glob_25, "next-js-13-1.mdx": __fd_glob_26, "next-js-13-2.mdx": __fd_glob_27, "next-js-13-3.mdx": __fd_glob_28, "next-js-13.mdx": __fd_glob_29, "nextjs-12.3.mdx": __fd_glob_30, "nextjs-layout-rfc-new-routing-system.mdx": __fd_glob_31, "nextjs-layout-rfc-update.mdx": __fd_glob_32, "nextjs-react-server-component.mdx": __fd_glob_33, "planetscale-prisma-next-js.mdx": __fd_glob_34, "profiling-react-app.mdx": __fd_glob_35, "react-19-beta.mdx": __fd_glob_36, "react-chronicles.mdx": __fd_glob_37, "react-compiler.mdx": __fd_glob_38, "react-hydration-issues.mdx": __fd_glob_39, "react-rfc-useevent.mdx": __fd_glob_40, "remix-맛보기-1.mdx": __fd_glob_41, "remix-맛보기-2.mdx": __fd_glob_42, "remix@1.6.5.mdx": __fd_glob_43, "rsc-mental-model.mdx": __fd_glob_44, "seonest.mdx": __fd_glob_45, "should-i-use-pixelds-or-ems-rems.mdx": __fd_glob_46, "tailwind-css-v4-0.mdx": __fd_glob_47, "the-end-of-front-end-development.mdx": __fd_glob_48, "the-two-reacts.mdx": __fd_glob_49, "traditional-approaches-vs-suspense-in-react.mdx": __fd_glob_50, "understanding-react-server-components-by-josh-w-comeau.mdx": __fd_glob_51, "understanding-react-server-components.mdx": __fd_glob_52, "understanding-usememo-and-usecallback.mdx": __fd_glob_53, "use-a-reverse-proxy-nginx.mdx": __fd_glob_54, "web-performance-1-metrics.mdx": __fd_glob_55, "web-performance-2-core-web-vitals-lcp.mdx": __fd_glob_56, "web-performance-3-core-web-vitals-fid.mdx": __fd_glob_57, "web-performance-4-core-web-vitals-cls.mdx": __fd_glob_58, "web-rendering.mdx": __fd_glob_59, "why-i-love-react-by-kent-c-dodds.mdx": __fd_glob_60, "why-react-re-renders.mdx": __fd_glob_61, "why-vercel-reverted-edge-rendering-to-nodejs.mdx": __fd_glob_62, "you-do-not-need-a-build-step.mdx": __fd_glob_63, }, {"10-modern-web-architecture-concepts.mdx": () => import("../content/blog/10-modern-web-architecture-concepts.mdx?collection=blog"), "about-http.mdx": () => import("../content/blog/about-http.mdx?collection=blog"), "about-monorepo.mdx": () => import("../content/blog/about-monorepo.mdx?collection=blog"), "blog-creation.mdx": () => import("../content/blog/blog-creation.mdx?collection=blog"), "bundle-module-bundler.mdx": () => import("../content/blog/bundle-module-bundler.mdx?collection=blog"), "chatgpt-prompt-engineering-for-developers.mdx": () => import("../content/blog/chatgpt-prompt-engineering-for-developers.mdx?collection=blog"), "complex-context-apis.mdx": () => import("../content/blog/complex-context-apis.mdx?collection=blog"), "debug-react-hello-world.mdx": () => import("../content/blog/debug-react-hello-world.mdx?collection=blog"), "delightful-react-file-directory.mdx": () => import("../content/blog/delightful-react-file-directory.mdx?collection=blog"), "design-system.mdx": () => import("../content/blog/design-system.mdx?collection=blog"), "dynamic-og-image-with-edge-function.mdx": () => import("../content/blog/dynamic-og-image-with-edge-function.mdx?collection=blog"), "ecmascript-2022.mdx": () => import("../content/blog/ecmascript-2022.mdx?collection=blog"), "esm-typescript.mdx": () => import("../content/blog/esm-typescript.mdx?collection=blog"), "figma-cube-skew-plugin.mdx": () => import("../content/blog/figma-cube-skew-plugin.mdx?collection=blog"), "fixing-ract-condition-in-react.mdx": () => import("../content/blog/fixing-ract-condition-in-react.mdx?collection=blog"), "github-code-search.mdx": () => import("../content/blog/github-code-search.mdx?collection=blog"), "github-copilot.mdx": () => import("../content/blog/github-copilot.mdx?collection=blog"), "great-developer-experience-vercel.mdx": () => import("../content/blog/great-developer-experience-vercel.mdx?collection=blog"), "how-react-18-improves-application-performance.mdx": () => import("../content/blog/how-react-18-improves-application-performance.mdx?collection=blog"), "javascript-eventing-deep-dive.mdx": () => import("../content/blog/javascript-eventing-deep-dive.mdx?collection=blog"), "javascript-how-it-works.mdx": () => import("../content/blog/javascript-how-it-works.mdx?collection=blog"), "javascript-object-1-prototype.mdx": () => import("../content/blog/javascript-object-1-prototype.mdx?collection=blog"), "javascript-object-2-class.mdx": () => import("../content/blog/javascript-object-2-class.mdx?collection=blog"), "mysql-backup-lesson.mdx": () => import("../content/blog/mysql-backup-lesson.mdx?collection=blog"), "new-features-in-react-18.mdx": () => import("../content/blog/new-features-in-react-18.mdx?collection=blog"), "next-generation-next-js-13-4.mdx": () => import("../content/blog/next-generation-next-js-13-4.mdx?collection=blog"), "next-js-13-1.mdx": () => import("../content/blog/next-js-13-1.mdx?collection=blog"), "next-js-13-2.mdx": () => import("../content/blog/next-js-13-2.mdx?collection=blog"), "next-js-13-3.mdx": () => import("../content/blog/next-js-13-3.mdx?collection=blog"), "next-js-13.mdx": () => import("../content/blog/next-js-13.mdx?collection=blog"), "nextjs-12.3.mdx": () => import("../content/blog/nextjs-12.3.mdx?collection=blog"), "nextjs-layout-rfc-new-routing-system.mdx": () => import("../content/blog/nextjs-layout-rfc-new-routing-system.mdx?collection=blog"), "nextjs-layout-rfc-update.mdx": () => import("../content/blog/nextjs-layout-rfc-update.mdx?collection=blog"), "nextjs-react-server-component.mdx": () => import("../content/blog/nextjs-react-server-component.mdx?collection=blog"), "planetscale-prisma-next-js.mdx": () => import("../content/blog/planetscale-prisma-next-js.mdx?collection=blog"), "profiling-react-app.mdx": () => import("../content/blog/profiling-react-app.mdx?collection=blog"), "react-19-beta.mdx": () => import("../content/blog/react-19-beta.mdx?collection=blog"), "react-chronicles.mdx": () => import("../content/blog/react-chronicles.mdx?collection=blog"), "react-compiler.mdx": () => import("../content/blog/react-compiler.mdx?collection=blog"), "react-hydration-issues.mdx": () => import("../content/blog/react-hydration-issues.mdx?collection=blog"), "react-rfc-useevent.mdx": () => import("../content/blog/react-rfc-useevent.mdx?collection=blog"), "remix-맛보기-1.mdx": () => import("../content/blog/remix-맛보기-1.mdx?collection=blog"), "remix-맛보기-2.mdx": () => import("../content/blog/remix-맛보기-2.mdx?collection=blog"), "remix@1.6.5.mdx": () => import("../content/blog/remix@1.6.5.mdx?collection=blog"), "rsc-mental-model.mdx": () => import("../content/blog/rsc-mental-model.mdx?collection=blog"), "seonest.mdx": () => import("../content/blog/seonest.mdx?collection=blog"), "should-i-use-pixelds-or-ems-rems.mdx": () => import("../content/blog/should-i-use-pixelds-or-ems-rems.mdx?collection=blog"), "tailwind-css-v4-0.mdx": () => import("../content/blog/tailwind-css-v4-0.mdx?collection=blog"), "the-end-of-front-end-development.mdx": () => import("../content/blog/the-end-of-front-end-development.mdx?collection=blog"), "the-two-reacts.mdx": () => import("../content/blog/the-two-reacts.mdx?collection=blog"), "traditional-approaches-vs-suspense-in-react.mdx": () => import("../content/blog/traditional-approaches-vs-suspense-in-react.mdx?collection=blog"), "understanding-react-server-components-by-josh-w-comeau.mdx": () => import("../content/blog/understanding-react-server-components-by-josh-w-comeau.mdx?collection=blog"), "understanding-react-server-components.mdx": () => import("../content/blog/understanding-react-server-components.mdx?collection=blog"), "understanding-usememo-and-usecallback.mdx": () => import("../content/blog/understanding-usememo-and-usecallback.mdx?collection=blog"), "use-a-reverse-proxy-nginx.mdx": () => import("../content/blog/use-a-reverse-proxy-nginx.mdx?collection=blog"), "web-performance-1-metrics.mdx": () => import("../content/blog/web-performance-1-metrics.mdx?collection=blog"), "web-performance-2-core-web-vitals-lcp.mdx": () => import("../content/blog/web-performance-2-core-web-vitals-lcp.mdx?collection=blog"), "web-performance-3-core-web-vitals-fid.mdx": () => import("../content/blog/web-performance-3-core-web-vitals-fid.mdx?collection=blog"), "web-performance-4-core-web-vitals-cls.mdx": () => import("../content/blog/web-performance-4-core-web-vitals-cls.mdx?collection=blog"), "web-rendering.mdx": () => import("../content/blog/web-rendering.mdx?collection=blog"), "why-i-love-react-by-kent-c-dodds.mdx": () => import("../content/blog/why-i-love-react-by-kent-c-dodds.mdx?collection=blog"), "why-react-re-renders.mdx": () => import("../content/blog/why-react-re-renders.mdx?collection=blog"), "why-vercel-reverted-edge-rendering-to-nodejs.mdx": () => import("../content/blog/why-vercel-reverted-edge-rendering-to-nodejs.mdx?collection=blog"), "you-do-not-need-a-build-step.mdx": () => import("../content/blog/you-do-not-need-a-build-step.mdx?collection=blog"), });
+
+export const docs = await create.docsLazy("docs", "content/docs", {}, {"index.mdx": __fd_glob_64, }, {"index.mdx": () => import("../content/docs/index.mdx?collection=docs"), });

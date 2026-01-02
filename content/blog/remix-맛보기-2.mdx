@@ -1,0 +1,794 @@
+---
+title: Remix 맛보기 (2)
+description: Remix에 대해 한 번 살펴보기 위해서 공식 예제를 따라가며 Remix에 대해서 살펴보았습니다. 2개 포스트로 나눠서 작성해보았고 이 글은 두 번째 글입니다.
+author: seonest
+date: 2022-07-02T14:00:58.272Z
+---
+
+
+> [저번 글](https://www.seonest.net/posts/Remix-%EB%A7%9B%EB%B3%B4%EA%B8%B0-1)에 이어서...
+
+Remix의 특징인 SSR 프레임워크를 조금 더 살펴보고 넘어가도록 하겠습니다.
+
+Remix가 어떻게 프레임워크를 다루는지 확인해보면 개발할 때 좀 더 프레임워크에 맞는 기술을 쓸 수 있을지 않을까 생각합니다.
+
+## Server Framework
+
+Remix는 다른 서버사이드 MVC Web framework(Rails, Laravel, Spring, ...)에서 사용되는 View와 Controller를 제공합니다. 그러나 Model은 자유롭게 쓸 수 있도록 남겨두었습니다.
+
+뛰어난 Database, ORM, mailer 등등 그 공간을 채울 JavaScript 에코시스템들이 있습니다. 정해진 Model은 없지만 Remix는 Cookie와 Session 관리를 위한 Fetch API 관련 helper를 제공합니다.
+
+그리고 Remix는 View와 Controller를 분리하는 대신에 Remix Route Module을 통해 2개 모두 책임을 가집니다.
+
+대부분의 서버사이드 프레임워크는 "model focused"입니다. controller는 단일 Model에 대해 _여러 URLs_ 를 관리합니다.
+
+반면 Remix는 _UI focused_ 입니다. Route는 전체 URL 또는 URL의 segment로 관리할 수 있습니다. Route가 URL segment에 매핑되면 nested URL segment는 UI에서 nested layout이 됩니다. 이를 통해 각 layout(view)는 자체 controller가 될 수 있으며 Remix는 데이터와 컴포넌트를 통해 완전한 UI를 빌드합니다.
+
+대부분의 경우 Remix Route Module은 UI와 Model을 모두 동일한 파일에 포함할 수 있으므로 개발자 생산성이 매우 뛰어납니다.
+
+Route Module은 3가지 기본 export가 있습니다: `loader`, `action`, `default`(component)
+
+```jsx
+// Loader는 서버에서 동작합니다.
+// GET request에 component에 data를 제공합니다.
+export async function loader() {
+  return json(await db.projects.findAll())
+}
+
+// Actions는 서버에서 동작합니다.
+// POST, PUT, PATCH, DELETE를 다룹니다.
+// 마찬가지로 component에 data를 제공할 수 있습니다.
+export async function action({ request }) {
+  const form = await request.formData()
+  const errors = validate(form)
+  if (errors) {
+    return json({ errors })
+  }
+  await createProject({ title: form.get("title") })
+  return json({ ok: true })
+}
+
+// default export는 route가 URL에 매칭될 때
+// rendering되는 component입니다.
+// 이것은 서버와 클라이언트 2곳에서 모두 동작합니다.
+export default function Projects() {
+  const projects = useLoaderData()
+  const actionData = useActionData()
+
+  return (
+    <div>
+      {projects.map((project) => (
+        <Link key={project.slug} to={project.slug}>
+          {project.title}
+        </Link>
+      ))}
+
+      <Form method="post">
+        <input name="title" />
+        <button type="submit">Create New Project</button>
+      </Form>
+      {actionData?.errors ? <ErrorMessages errors={actionData.errors} /> : null}
+
+      <Outlet />
+    </div>
+  )
+}
+```
+
+실제로 브라우저 JavaScript를 전혀 사용하지 않고 Remix를 서버사이드 프레임워크로 사용할 수 있습니다. `loader`, `action`, HTML form을 통한 mutations등을 통해 많은 웹 프로젝트의 core 기능을 충분히 제공할 수 있습니다.
+
+이러한 방식으로 **Remix는 스케일 다운합니다.** 애플리케이션에 모든 페이지가 브라우저에 많은 JavaScript가 필요한 것은 아니며 모든 사용자 상호작용이 브라우저의 기본 동작보다 특별한 감각이 필요한 것도 아닙니다. Remix는 먼저 간단한 방법으로 빌드한 기본 모델을 변경하지 않고 확장할 수 있습니다.
+
+## Browser Framework
+
+일단 Remix가 브라우저에 document를 전달하면 브라우저 자바스크립트 모듈이 그 페이지를 "hydrate"합니다.
+
+사용자가 Link를 클릭하면 전체 Document와 전체 Asset에 대해 서버를 다시 갔다오는 대신 Remix가 다음 페이지의 데이터를 가져와 UI를 업데이트합니다. 이는 전체 Document 요청을 하는 것보다 많은 성능 이점이 있습니다. (코드 스플리팅이 잘 된 CSR 느낌 같기도 합니다)
+
+1. Asset을 다시 다운로드할(또는 캐시에서 가져올) 필요가 없습니다.
+2. Asset은 브라우저에서 다시 parsing할 필요가 없습니다
+3. 가져온 데이터가 전체 Document보다 훨씬 작습니다.(때로는 수십 배)
+
+Remix에는 client side 네비게이션을 위한 내장 최적화기능도 있습니다. 두 URL 간에 어떤 레이아웃이 유지될지 알고 있으므로 변경되는 항목에 대한 데이터만 가져옵니다.
+
+이 접근 방식은 스크롤 위치를 재설정하지 않고 최상단으로 스크롤하는 것보다 더 의미있는 곳으로 포커스를 이동할 수 있는 것과 같은 UX 이점도 있습니다.
+
+Remix는 사용자가 링크를 클릭하려고 할 때 페이지의 모든 리소스를 미리 가져올 수도 있습니다. Browser Framework는 이미 Asset manifest에 대해 알고 있기 때문에 모든 데이터, JavaScript 모듈, CSS 리소스까지 미리 가져올 수 있습니다. 네트워크가 느린 경우에도 Remix 앱이 빠르게 느껴지는 방식입니다.
+
+또한 Remix는 client side API를 제공하므로 HTML, 브라우저 기본 모델을 변경하지 않고도 풍부한 사용자 경험을 만들 수 있습니다.
+
+Route Module을 사용하여 브라우저에서 JavaScript로만 수행할 수 있는 몇몇 작지만 유용한 form을 위한 UX 향상을 할 수 있습니다.
+
+1. Form을 Submit할 때 버튼 disabled
+2. 서버사이드 validation 실패 시 input에 focus
+3. 에러 메시지에서 Animate
+
+```jsx
+export default function Projects() {
+  const projects = useLoaderData()
+  const actionData = useActionData()
+  const { state } = useTransition()
+  const busy = state === "submitting"
+  const inputRef = React.useRef()
+
+  React.useEffect(() => {
+    if (actionData.errors) {
+      inputRef.current.focus()
+    }
+  }, [actionData])
+
+  return (
+    <div>
+      {projects.map((project) => (
+        <Link key={project.slug} to={project.slug}>
+          {project.title}
+        </Link>
+      ))}
+
+      <Form method="post">
+        <input ref={inputRef} name="title" />
+        <button type="submit" disabled={busy}>
+          {busy ? "Creating..." : "Create New Project"}
+        </button>
+      </Form>
+
+      {actionData?.errors ? (
+        <FadeIn>
+          <ErrorMessages errors={actionData.errors} />
+        </FadeIn>
+      ) : null}
+
+      <Outlet />
+    </div>
+  )
+}
+```
+
+이 예제 코드가 가장 흥미로운 것은 **only additive**라는 것입니다. 상호작용은 여전히 기본적으로 동일하게 동작합니다.
+
+Remix는 백엔드 controller level에 도달하기 때문에 이 작업을 원활하게 수행할 수 있습니다.
+
+예를 들어, 백엔드(무거운 웹 프레임워크)에서 일반적인 HTML form과 서버사이드 핸들러를 빌드하는 것은 Remix에서 하는 것과 별반 다르지 않습니다. 그러나 애니메이션된 validation 메세지, focus 관리, pending UI를 가능하도록 하는 것은 코드에서 근본적인 변화를 요구합니다.
+
+일반적으로 사람들은 API를 만든다음에 클라이언트사이드 JavaScript에서 두 개를 연결합니다. Remix를 사용하면 기본적으로 동작하는 방식을 변경하지 않고 기존 "서버사이드 View" 주위에 일부 코드를 추가하기만 하면 됩니다.
+
+이것을 널리 알려진 용어로 Remix에서는 Progressive Enhancement라고 부릅니다.
+
+처음엔 일반적인 HTML form(Remix scales down)과 함께 작게 시작할 수 있습니다.
+그 이후 시간과 열정을 가질 때 그 UI를 scale up 합니다.
+
+## Data Flow
+
+> React가 처음 등장했을 때 가장 매력적인 기능 중 하나는 "단방향 데이터 흐름"이었습니다.
+> _- [Remix Data Flow](https://remix.run/blog/remix-data-flow)_
+
+![remix-view-action-state.png](https://files.seonest.net/images/qnfqnfqnf/post/282/image.png)
+
+이 아이디어는 데이터가 앱을 통해 단방향으로만 흐를 수 있으므로 앱을 훨씬 더 쉽게 직관적으로 이해하고 추론할 수 있다는 것입니다.
+
+![how-to-connect.png](https://files.seonest.net/images/qnfqnfqnf/post/283/image.png)
+
+Remix의 주요 기능 중 하나는 서버에서 Component로 데이터를 가져오는 상호작용을 단순화하는 것입니다. Remix는 네트워크 전체의 데이터 흐름을 확장하여 서버(State)에서 클라이언트(View), 다시 서버(Action)로 진정한 단방향 순환형을 만듭니다.
+
+![remix-data-flow.png](https://files.seonest.net/images/qnfqnfqnf/post/284/image.png)
+
+UI는 _remote state_ 와 _local state_ 의 함수입니다. 기존 React 앱에서 _모든 상태_ 는 클라이언트에 있으며 "단방향 데이터 흐름"을 벗어나 네트워크를 통해 서버로 동기화되어야 합니다. 이 부분은 버그가 발생하기 쉬운 영역입니다.
+
+_remote state_ 는 사용자 데이터와 같이 지속되어야 하는 데이터입니다. 이 상태(예를 들면, 사용자에게 읽지 않은 알림이 몇 개나 있습니까?)는 _클라이언트 밖에서_ 저장되고 Loader와 Action과 같은 Remix 메커니즘에서 앱으로 재조정합니다.
+
+대표적으로 _local state_ 는 사용자 경험에 부정적인 영향을 주지 않고 잃어버려도 되는(예: 새로고침같은) 임시 데이터 입니다. 이 상태(예: 사용자의 알림을 표시하는 dropdown 열기)는 React state 또는 local storage와 같은 메커니즘을 통해 클라이언트에 저장됩니다. 중요한 것은 네트워크 전체에서 지속하고 동기화할 필요가 없으므로 복잡성과 버그 가능성이 감소한다는 것입니다.
+
+![remix-state.png](https://files.seonest.net/images/qnfqnfqnf/post/285/image.png)
+
+Forms, fetcher, loader, action 이것들은 모두 Remix의 "상태 관리" 솔루션입니다. 클라이언트와 서버 간의 동기화 상태를 지속적으로 유지하는 도구를 제공하여 앱과 네트워크를 통해 주기적으로 단방향 데이터 흐름을 보장합니다.
+
+Remix를 사용하면 UI가 로컬뿐만 아니라 _네트워크 전체의_ 상태 함수가 됩니다.
+
+Remix 데이터 추상화의 흥미로운 비유는 React의 가상 DOM 추상화입니다.
+
+React에서 DOM을 직접 업데이트하는 것에 대해 걱정하지 않아도 됩니다. 상태를 설정하면 가상 DOM이 DOM을 효율적으로 업데이트하는 방법을 알아내기 위해 모든 작업을 수행합니다.
+
+Remix는 이 아이디어를 영구적인 데이터를 위한 API layer로 확장합니다.
+
+Remix에서 클라이언트사이트 상태를 서버와 동기화된 상태로 유지하는 것에 대해 걱정할 필요가 없습니다. mutation으로 "set state" 하면 Loader가 받아 최신 데이터를 다시 가져오고 Component View를 업데이트 합니다.
+
+![remix-data-flow-code.png](https://files.seonest.net/images/qnfqnfqnf/post/286/image.png)
+
+Remix가 웹사이트를 만들 때 어떻게 복잡성을 줄이는지 설명하는데 이해가 되기를 바랍니다.
+~~(아직 저도 이해가...)~~
+
+Remix는 JavaScript보다 먼저 도작하기 때문에 점진적 향상으로 지원되는 경험을 얻을 수 있기에 사용자에게 유리합니다. 그러나 상태 관리 솔루션과 전통적으로 결합되어 복잡하게 만들 필요가 없기 때문에 개발자로서도 이득입니다.
+
+> Remix를 사용할 때 애플리케이션 상태 관리에 대해 걱정할 필요가 없습니다. Redux, Apollo 등 이러한 도구가 훌륭하지만 Remix를 사용할 때 필요하지 않습니다.
+> 전체 작업을 위해 클라이언트 사이드 JavaScript가 전혀 필요하지 않기 때문입니다.
+>
+> 브라우저에서 JavaScript 없이 작동할 수 있다면 브라우저에서 상태 관리가 필요하지 않다는 것을 의미합니다.
+
+## Mutations
+
+> Data Write
+
+다시 돌아와서 이전 글에서 다루지 않은 Data Mutation을 살펴보겠습니다.
+
+Remix의 Data Write(a.k.a mutation)은 `<form>`, HTTP를 기반으로 합니다.
+그런 다음 점진적 향상을 통해 optimistic UI, loading, validation feedback을 활성화하지만 프로그래밍 모델은 여전히 HTML form을 기반으로 합니다.
+
+```tsx
+// app/routes/jokes/new.tsx
+
+export default function NewJokeRoute() {
+  return (
+    <div>
+      <p>Add your own hilarious joke</p>
+      <form method="post">
+        <div>
+          <label>
+            Name: <input type="text" name="name" />
+          </label>
+        </div>
+        <div>
+          <label>
+            Content: <textarea name="content" />
+          </label>
+        </div>
+        <div>
+          <button type="submit" className="button">
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+```
+
+`/jokes/new` 라우트입니다.
+아직 form에서 아무것도 할 수 없습니다.
+
+여기에 해당 form submit을 동작하기 위해서 다음과 같은 [action](https://remix.run/docs/en/v1/api/conventions#action)을 export하는 작업이 필요합니다.
+
+```tsx
+export const action: ActionFunction = async ({ request }) => {
+  const form = await request.formData()
+  const name = form.get("name")
+  const content = form.get("content")
+  // we do this type check to be extra sure and to make TypeScript happy
+  // we'll explore validation next!
+  if (typeof name !== "string" || typeof content !== "string") {
+    throw new Error(`Form not submitted correctly.`)
+  }
+
+  const fields = { name, content }
+
+  const joke = await db.joke.create({ data: fields })
+  return redirect(`/jokes/${joke.id}`)
+}
+```
+
+> 데이터를 가져오기 위해서는 저번 글에 설명했듯이 loader 함수를 export해야 합니다.
+> Remix에서 Route Module에서 데이터 흐름을 위한 export convention을 모두 확인했습니다.
+> loader, action, default
+
+validation을 통과한다면 새로운 joke를 생성하고 새로운 joke 페이지로 리다이렉션 할 수 있어야 합니다.
+
+> `redirect` 유틸은 사용자에게 적절한 헤더/상태코드가 있는 `Response`객체를 생성하기 위한 간단한 유틸입니다.
+
+![capture1.png](https://files.seonest.net/images/qnfqnfqnf/post/287/image.png)
+
+![capture2.png](https://files.seonest.net/images/qnfqnfqnf/post/288/image.png)
+
+다시 잘 생각해보면, `useEffect` 또는 `useAnything` hook 없이, 단지 form, submit을 처리하는 비동기 함수만 있으면 됩니다.
+
+또 다른 사실은 새로운 joke 페이지로 리다이렉션되었을 때 거기로 갔다는 것입니다. 캐시 업데이트에 대해 전혀 생각할 필요가 없습니다. Remix는 캐시 무효화를 자동으로 처리합니다. 그것에 대해 생각할 필요가 없습니다.
+
+validation에 관해서는 일반적으로 React validation 접근 방식을 수행할 수 있습니다. `useState`, `onChange` 핸들러를 연결하고 사용자가 입력할 때 실시간으로 validation을 하는 것이 좋습니다. 그러나 모든 작업을 수행하더라도 여전히 서버에서 validation을 수행하고 싶을 것입니다.(하는 것이 좋습니다)
+
+여기에 `action` 함수에 관해 한 가지 알아야 할 것이 있습니다. 함수의 return value가 있는 걸 볼 수 있습니다.(`loader` 함수와 같은): Response 또는 serializable JavaScript 객체.
+
+일반적으로 일부 웹 사이트에서 볼 수 있는 "제출 확인" 다이얼로그를 피하기 위해 action이 성공했을 때 `redirect` 할 것입니다.
+그러나 오류가 있을 경우 오류 메시지가 포함된 객체를 반환하면 component가 해당 값을 가져와 [useActionData](https://remix.run/docs/en/v1/api/remix#useactiondata) hook을 통해 사용자에게 표시할 수 있습니다.
+
+> useActionData
+> useLoaderData와 비슷하게 action 함수에서 return한 값을 받아 쓸 수 있는 hook입니다.
+> `const data = useActionData();`
+
+```tsx
+
+function validateJokeContent(content: string) {
+  if (content.length < 10) {
+    return `That joke is too short`;
+  }
+}
+
+function validateJokeName(name: string) {
+  if (name.length < 3) {
+    return `That joke's name is too short`;
+  }
+}
+
+type ActionData = {
+  formError?: string;
+  fieldErrors?: {
+    name: string | undefined;
+    content: string | undefined;
+  };
+  fields?: {
+    name: string;
+    content: string;
+  };
+};
+
+const badRequest = (data: ActionData) =>
+  json(data, { status: 400 });
+
+export const action: ActionFunction = async ({
+  request,
+}) => {
+  const form = await request.formData();
+  const name = form.get("name");
+  const content = form.get("content");
+  if (
+    typeof name !== "string" ||
+    typeof content !== "string"
+  ) {
+    return badRequest({
+      formError: `Form not submitted correctly.`,
+    });
+  }
+
+  const fieldErrors = {
+    name: validateJokeName(name),
+    content: validateJokeContent(content),
+  };
+  const fields = { name, content };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({ fieldErrors, fields });
+  }
+
+  const joke = await db.joke.create({ data: fields });
+  return redirect(`/jokes/${joke.id}`);
+};
+
+export default function NewJokeRoute() {
+  const actionData = useActionData<ActionData>();
+
+  return (
+    <div>
+      <p>Add your own hilarious joke</p>
+      <form method="post">
+        <div>
+          ...
+
+          {actionData?.fieldErrors?.name ? (
+            <p
+              className="form-validation-error"
+              role="alert"
+              id="name-error"
+            >
+              {actionData.fieldErrors.name}
+            </p>
+          ) : null}
+
+          ...
+}
+
+```
+
+![capture3-log.png](https://files.seonest.net/images/qnfqnfqnf/post/290/image.png)
+
+![capture3.png](https://files.seonest.net/images/qnfqnfqnf/post/289/image.png)
+
+여기에는 몇가지 유의하면서 한 부분이 있습니다.
+먼저 `ActionData` type safety를 확보할 수 있도록 type을 정의한 것을 볼 수 있습니다.
+
+```ts
+type ActionData = {
+  formError?: string
+  fieldErrors?: {
+    name: string | undefined
+    content: string | undefined
+  }
+  fields?: {
+    name: string
+    content: string
+  }
+}
+```
+
+action이 아직 호출되지 않은 경우 `useActionData`는 `undefined`가 return 될 수 있다는 것을 유의하세요. 그래서 여기에 약간 방어적인 프로그래밍을 가져야 합니다.
+
+fields도 반환한다는 것을 알 수 있습니다. 이는 JavaScript가 어떤 이유로 로드되지 않는 경우 서버의 값으로 form을 다시 렌더링할 수 있도록 하기 위한 것입니다. `defaultValue`도 마찬가지 입니다.
+
+또 다른 것은 이 모든 것이 매우 훌륭하고 선언적이라는 것입니다. 여기서 상태에 관해서 전혀 생각할 필요가 없습니다.
+action은 데이터를 가져오고 처리하고 값을 반환합니다.
+component는 action 데이터를 사용하고 그 값을 기반으로 렌더링합니다.
+여기에는 상태 관리가 없습니다. race condition에 대해서 생각할 필요가 없습니다.
+
+그리고 클라이언트 사이드 validation을 하길 원한다면(실시간으로 사용자 입력을 체크하는 것), 단지 action에서 사용한 `validateJokeContent`와 `validateJokeName` 함수를 호출하기만 하면 됩니다. 클라이언트와 서버에서 공유된 코드를 _실제로_ 원활하게 사용할 수 있습니다.
+
+## Authentication
+
+> [HTTP 쿠키](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)가 작동하는 방식을 이해하면 더 좋습니다.
+
+여기에서는 자세한 내용을 다루기 보단 Remix에서 제공하는 [session helper API](https://remix.run/docs/en/v1/api/remix#sessions)를 자세히 보도록 하겠습니다.
+
+### Session
+
+> 세션은 특히 서버사이드 form validation을 할 때나 JavaScript가 페이지에 없는 경우 서버가 동일한 사람의 요청을 식별할 수 있도록 하는 웹 사이트의 중요한 부분입니다.
+
+Remix에서 세션은 "session storage" 객체(SessionStorage interface 구현체)를 사용하여 loader, action 메소드에서 route별로(express middleware와 같은 것이라기 보단) 관리됩니다.
+
+session storage는 쿠키를 parsing 하는 방법, 생성하는 방법, Database 또는 파일 시스템에 세션을 저장하는 방법을 이해합니다.
+
+Remix에는 일반적인 시나리오를 위한 몇 가지 사전 빌드된 session storage 옵션과 직접 만들 수 있는 것이 존재합니다:
+
+- `createCookieSessionStorage`
+- `createMemorySessionStorage`
+- `createFileSessionStorage` (node)
+- `createCloudflareKVSessionStorage` (cloudflare-workers)
+- `createArcTableSessionStorage` (architect(AWS Lambda), Amazon DynamoDB)
+- `createSessionStorage` 커스텀 스토리지
+
+```tsx
+// app/sessions.js
+
+import { createCookieSessionStorage } from "@remix-run/node" // or "@remix-run/cloudflare"
+
+const { getSession, commitSession, destroySession } = createCookieSessionStorage({
+  // a Cookie from `createCookie` or the CookieOptions to create one
+  cookie: {
+    name: "__session",
+
+    // all of these are optional
+    domain: "remix.run",
+    // Expires can also be set (although maxAge overrides it when used in combination).
+    // Note that this method is NOT recommended as `new Date` creates only one date on each server deployment, not a dynamic date in the future!
+    //
+    // expires: new Date(Date.now() + 60_000),
+    httpOnly: true,
+    maxAge: 60,
+    path: "/",
+    sameSite: "lax",
+    secrets: ["s3cret1"],
+    secure: true,
+  },
+})
+
+export { getSession, commitSession, destroySession }
+```
+
+`app/sessions.js` 처럼 세션 데이터에 접근해야 하는 모든 경로가 동일한 곳에서 가져올 수 있도록 세션 저장소 객체를 설정하는 것이 좋습니다.([Route Module 제약사항](https://remix.run/docs/en/v1/guides/constraints)을 확인하세요)
+
+> [No Module Side Effects](https://remix.run/docs/en/v1/guides/constraints#no-module-side-effects)
+> Remix는 자동으로 코드 스플리팅합니다. side effect를 일으킬 수 있는 코드(예: 브라우저에서 동작할 수 없는 종속성 코드가 들어간다던지)를 넣게 되면 오류가 날 수 있습니다.
+> 이를 미리 방지하고자 `.server.tsx`와 같은 파일명으로 사용하여 Remix에게 힌트를 제공하세요.
+
+세션 저장소에 대한 입/출력은 HTTP cookies를 통합니다.
+
+- `getSession()`은 request의 `Cookie` 헤더에서 현재 세션정보를 가져옵니다.
+- `commitSession()` / `destroySession()`은 response의 `Set-Cookie` 헤더를 사용합니다.
+
+`loader`와 `action` 함수에서 세션에 접근하기 위해 위 메소드를 사용합니다.
+
+```jsx
+// app/routes/login.js
+
+export async function loader({ request }) {
+  const session = await getSession(request.headers.get("Cookie"))
+
+  if (session.has("userId")) {
+    // Redirect to the home page if they are already signed in.
+    return redirect("/")
+  }
+
+  const data = { error: session.get("error") }
+
+  return json(data, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  })
+}
+
+export async function action({ request }) {
+  const session = await getSession(request.headers.get("Cookie"))
+  const form = await request.formData()
+  const username = form.get("username")
+  const password = form.get("password")
+
+  const userId = await validateCredentials(username, password)
+
+  if (userId == null) {
+    session.flash("error", "Invalid username/password")
+
+    // Redirect back to the login page with errors.
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    })
+  }
+
+  session.set("userId", userId)
+
+  // Login succeeded, send them to the home page.
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  })
+}
+```
+
+마찬가지로 로그아웃도 다음과 같이 진행할 수 있습니다:
+
+```jsx
+// app/routes/logout.js
+
+export const action: ActionFunction = async ({ request }) => {
+  const session = await getSession(request.headers.get('Cookie'));
+  return redirect('/login', {
+    headers: {
+      'Set-Cookie': await destroySession(session),
+    },
+  });
+};
+
+export default function LogoutRoute() {
+  return (
+    <>
+      <p>Are you sure you want to log out?</p>
+      <Form method="post">
+        <button>Logout</button>
+      </Form>
+      <Link to="/">Never mind</Link>
+    </>
+  );
+}
+```
+
+> **Note**
+> 로그아웃 할 경우에 `loader`가 아닌 `action`에서 하는 것은 중요합니다.
+> 그렇지 않으면 [Cross-Site Request Forgery](https://developer.mozilla.org/en-US/docs/Glossary/CSRF) 공격에 노출됩니다.
+> 또한 Remix는 `actions`이 호출될 때만 `loaders`를 재 호출합니다.
+
+## Error 관리
+
+Remix에서는 에러 처리를 위한 Boundary component를 제공합니다.
+
+- ErrorBoundary: 예상치 못한 에러처리
+- CatchBoundary: 예상된 에러처리
+
+### Unexpected errors
+
+> ErrorBoundary
+
+여러가지 이유로(동료에 의해, 본인에 의해, 라이브러리에 의해 등등) 완벽하게 에러를 피할 순 없습니다.
+
+운이 좋게도 Remix는 에러 처리는 훌륭합니다. React에서 [Error Boundary 기능](https://reactjs.org/docs/error-boundaries.html#gatsby-focus-wrapper)을 사용했을 수도 있습니다.
+
+Remix는 모든 Route Module에서 [ErrorBoundary component](https://remix.run/docs/en/v1/api/conventions#errorboundary) 를 export 할 수 있습니다. 서버에서 역시 동작할 수 있기에 React에 비해 훨씬 Cool합니다. 뿐만 아니라 `loader`, `action`에서 발생하는 error도 처리합니다.
+
+`app/routes/jokes/*` 에서 데이터를 읽거나 처리하는데 오류가 있는 경우를 대비하여 각 자식 Route Module에 `ErrorBoundary`를 추가합니다.
+
+> app/root.tsx ErrorBoundary는 조금 더 복잡합니다.
+
+```tsx
+// app/routes/jokes/new
+
+export function ErrorBoundary() {
+  return (
+    <div className="bg-error rounded-lg p-4 text-white">
+      Something unexpected went wrong. Sorry about that.
+    </div>
+  )
+}
+```
+
+![error-boundary.png](https://files.seonest.net/images/qnfqnfqnf/post/291/image.png)
+
+이렇게 된다면 앱의 나머지 부분은 정상 동작을 하게 됩니다. 앱에서 에러가 난 부분을 제외한 나머지 부분은 완전히 상호작용 가능합니다. 사용자 경험에 대한 또 다른 장점이 있습니다.
+
+### Expected erros
+
+> CatchBoundary
+
+일반적으로 우리가 예상할 수 있는 에러가 있습니다. 인증(401) 또는 권한(403), 찾지 못할 경우(404) 같은 것들이 있습니다.
+
+예상치 못한 오류는 500 Level 오류로, 예상된 오류는 400 Level 오류로 생각하는 것이 도움이 될 수 있습니다.
+
+Remix는 예상된 오류를 ErrorBoundary와 비슷한 [CatchBoundary component](https://remix.run/docs/en/v1/api/conventions#catchboundary) 를 제공합니다. 사용방법은 앞선 ErrorBoundary와 거의 비슷합니다.
+
+```tsx
+export const loader: LoaderFunction = async ({ request }) => {
+  const userId = await getUserId(request)
+  if (!userId) {
+    throw new Response("Unauthorized", { status: 401 })
+  }
+  return json({})
+}
+
+export function CatchBoundary() {
+  const caught = useCatch()
+
+  if (caught.status === 401) {
+    return (
+      <div className="bg-error rounded-lg p-4 text-white">
+        <p>You must be logged in to create a joke.</p>
+        <Link to="/login" className="btn btn-warning btn-sm mt-4">
+          Login
+        </Link>
+      </div>
+    )
+  }
+}
+```
+
+`loader` return 값을 `useLoaderData` hook으로 가져오듯이, `useCatch` hook을 통해 throw된 `Response` 객체를 가져올 수 있습니다.
+
+![catch-boundary.png](https://files.seonest.net/images/qnfqnfqnf/post/292/image.png)
+
+> `ErrorBoundary`와 `CatchBoundary`를 사용하면 "happy path"에 대해서는 default export가 "happy path"를 나타내고 에러에 대해 걱정할 필요가 없습니다.
+
+## Link
+
+> anchor tag
+
+react-router를 써보셨다면 `<Link>` component를 사용해보셨을 것 같아요.
+
+마찬가지로 Remix에도 동일한 component를 제공합니다.
+
+```jsx
+import { Link } from "@remix-run/react"
+
+export default function GlobalNav() {
+  return (
+    <nav>
+      <Link to="/dashboard">Dashboard</Link> <Link to="/account">Account</Link>{" "}
+      <Link to="/support">Dashboard</Link>
+    </nav>
+  )
+}
+```
+
+추가적으로 `Link`는 loading 을 최소화하기 위해 자동으로 다음 페이지가 필요한 Asset(JavaScrip Module, stylesheets, data...)를 prefetch할 수 있습니다.
+
+props로 제공되며 다음과 같은 값을 제공합니다.
+
+```jsx
+<>
+  <Link /> {/* defaults to "none" */}
+  <Link prefetch="none" />
+  <Link prefetch="intent" />
+  <Link prefetch="render" />
+</>
+```
+
+- **none**: 기본 행위입니다. 모든 prefetch를 막습니다. 브라우저에서 사용자 session이 요구될 때 추천됩니다.
+- **intent**: prefetch하려고 할 때 이걸 사용하면 됩니다.
+- **render**: link가 렌더링되었을 때 fetch 합니다.
+
+Remix는 HTML `<link rel="prefetch" />` 태그로 prefetching하기 위해 브라우저 캐시를 사용합니다. link 태그가 anchor 태그 내부에 렌더링되기 때문에 `a *:last-child {}` 같은 스타일 selector가 동작하지 않습니다. 대신 `a *:last-of-type{}`을 사용해야 합니다. 추후 이 제한을 없앨 생각입니다.
+
+## Meta
+
+Meta 태그는 SEO, Social 미디어에 유용합니다. 까다로운 부분은 필요한 데이터에 접근하는 방법입니다.
+
+이것이 Remix에 [meta](https://remix.run/docs/en/v1/api/conventions#meta) export를 가지는 이유입니다.
+
+```tsx
+import type { MetaFunction } from "@remix-run/node" // or "@remix-run/cloudflare"
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Something cool",
+    description: "This becomes the nice preview on search results.",
+  }
+}
+```
+
+> `meta` 함수는 서버(예: 초기 페이지 로드) 또는 클라이언트(예: 클라이언트 navigation)에서 실행될 수 있으므로 `process.env.NODE_ENV`와 같은 서버에서만 접근가능한 데이터에 에 직접 접근할 수 없습니다. 만약 `meta`에 서버사이드 데이터가 필요하다면 `loader`를 통해서 데이터를 가져올 수 있고, `meta` 함수의 `data` 파라미터로 접근가능합니다.
+
+Remix는 이 meta정보를 HTML에 렌더링하기 위한 [Meta 컴포넌트](https://remix.run/docs/en/v1/api/remix#links-livereload-meta-scripts-scrollrestoration)를 제공합니다.
+
+## Resource Routes
+
+HTML Document가 아닌 다른 것을 렌더링할 경우가 있습니다. 예를 들어 블로그 Post Social Image, Product Image, Report CSV Data, RSS Feed, Sitemap 등 을 생성하는 endpoint가 있거나 mobile app을 위한 API Route를 구현하려고 할 수 있습니다.
+
+route module에서 default component를 export하지 않으면, Resource Route로 사용됩니다.
+
+Remix는 이를 위해 [Resource Routes](https://remix.run/docs/en/v1/guides/resource-routes) 를 제공합니다.
+
+예를 들어 `/jokes.rss` endpoint에서 RSS Feed를 제공하려고 합니다.
+
+> Remix에서 파일명에서 `.`은 특별한 의미를 가지기 때문에 [escape](https://remix.run/docs/en/v1/api/conventions#escaping-special-characters)해야 합니다.
+> `/jokes.rss` : `app/routes/jokes[.]rss.tsx` 또는 `app/routes/[jokes.rss].tsx`
+
+```tsx
+// app/routes/jokes[.]rss.tsx
+
+export const loader: LoaderFunction = async ({ request }) => {
+  ...
+
+  const rssString = `
+    <rss xmlns:blogChannel="${jokesUrl}" version="2.0">
+      ...
+    </rss>
+  `.trim();
+
+  return new Response(rssString, {
+    headers: {
+      'Cache-Control': `public, max-age=${60 * 10}, s-maxage=${60 * 60 * 24}`,
+      'Content-Type': 'application/xml',
+      'Content-Length': String(Buffer.byteLength(rssString)),
+    },
+  });
+};
+```
+
+## Optimistic UI
+
+> UI에서 spinner를 보이는 것을 피하기 위한 패턴입니다. 그리고 서버에서 데이터가 변경되었을 때 사용자 상호작용에 즉시 응답하는 것처럼 애플리케이션을 만드는 패턴입니다.
+
+앱에 Optimistic UI를 추가하여 JavaScript를 통해 점진적 향상의 이점을 얻고 사이트를 더욱 개선할 수 있습니다.
+
+앱이 충분히 빠르지만 일부 사용자는 앱 연결이 좋지 않을 수 있습니다. jokes를 submit했지만 무언가 나타나기 전에 잠시 기다려야 한다는 것을 의미합니다. 어디간에 스피너를 추가할 수 있지만 Request에 대한 성공을 Optimistic으로 보고 사용자에게 렌더링하는 것이 훨씬 더 나은 사용자 경험을 줄 것입니다.
+
+> Remix에는 [Optimistic UI에 대한 매우 심층적인 가이드](https://remix.run/docs/en/v1/guides/optimistic-ui#strategy)를 가지고 있습니다.
+
+```tsx
+export default function NewJokeRoute() {
+  const actionData = useActionData<ActionData>();
+  const transition = useTransition();
+
+  if (transition.submission) {
+    const name = transition.submission.formData.get('name');
+    const content = transition.submission.formData.get('content');
+    if (
+      typeof name === 'string' &&
+      typeof content === 'string' &&
+      !validateJokeContent(content) &&
+      !validateJokeName(name)
+    ) {
+      console.log('tran');
+      return <JokeDisplay joke={{ name, content }} isOwner={true} canDelete={false} />;
+    }
+  }
+  ...
+  return (
+    <div>
+      <p className="font-bold py-[1em]">Add your own hilarious joke</p>
+      ...
+    </div>
+  )
+}
+```
+
+기존에 사용한 Validation 기능을 사용할 수 있습니다. 따라서 submit된 항목이 서버사이드 validation 검사에 실패하면 Optimistic UI도 마찬가지로 렌더링하지 않습니다.
+
+즉, 이 선언적 Optimistic UI 패턴은 오류 복구에 대해 걱정할 필요가 없이 때문에 환상적입니다. Request가 실패하면 component가 다시 렌더링 되고 더 이상 submit되지 않으며 모든 것이 이전과 같이 작동합니다.
+
+<Video src="https://remix.run/jokes-tutorial/img/optimistic-ui.mp4" />
+
+## 마무리하며
+
+Remix 튜토리얼을 통해 어느정도 기본적인 프레임워크를 훑어본 것 같습니다.
+åç
+상당히 매력적이고 Remix 철학에 대해 깊게 생각하게 됩니다.
+
+개발자 경험도 상당히 좋고, 사용자 경험에도 좋은 영향을 줄 것이라는 데에 의심할 여지가 없습니다.
+
+무엇보다 Web의 기본부터 시작해서 점진적 향상을 통한 확장을 너무나도 쉽게 이룰 수 있다는 것이 매우 인상 깊었습니다.
+
+또한 프론트엔드 개발에서 서버 지식은 반드시 필요한 영역이 아닐까 생각합니다.
+
+백엔드 영역이 프론트 영역을 넘고 있다는 생각이 있었는데, 이 글과 최근 React, Next.js 등 행보를 보면 프론트 영역이 백엔드 영역을 넘나들고 있다는 생각이 듭니다.
+
+앞으로도 좀 더 사용하고 싶은 생각이 듭니다!
+
+## reference
+
+- https://remix.run/blog/remix-data-flow
+- https://remix.run/docs/en/v1/tutorials/jokes
+- https://remix.run/docs/en/v1/guides/data-writes
+- https://remix.run/docs/en/v1/api/remix#sessions

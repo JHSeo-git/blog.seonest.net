@@ -1,0 +1,224 @@
+---
+title: React Server Components 이해하기
+description: React Server Components를 언제 사용할지를, 왜 사용해야되는지를 이해하기 위해 Vercel 블로그 글을 옮기며 정리해보았습니다.
+author: seonest
+date: 2023-08-06T04:49:27.584Z
+---
+
+React Server Components가 언제 사용할지를, 왜 사용해야되는지를 이해하기 위해 Vercel 블로그 글을 옮기며 React Server Components fundamentals를 정리해보았습니다.
+
+## 들어가면서
+
+[React Server Components](https://react.dev/blog/2020/12/21/data-fetching-with-react-server-components)(RSC)는 순수한
+렌더링 라이브러리를 넘어 프레임워크 내에서 데이터 fetch와 원격 클라이언트-서버 커뮤니케이션을 통합하는 것으로 React의 fundamentals를 확장합니다.
+
+아래 내용은 RSC가 왜 필요한지, 어떤 걸 잘하는지, 언제 사용해야되는지에 대해 설명합니다. 또한 Next.js가 App Router를 통해 [RSC 구현 사항](https://nextjs.org/docs/getting-started/react-essentials?utm_source=vercel_site&utm_medium=web&utm_campaign=understanding_rsc)
+을 어떻게 간소화하고 향상했는지도 살펴볼 것입니다.
+
+## 왜 우리는 Server Component가 필요할까요?
+
+React 이전의 세상을 생각해보세요. PHP와 같은 언어에서는 클라이언트와 서버 간의 관계가 더 가까웠습니다. 모놀리식 아키텍처에서는 여러분이 만들고 있는
+페이지 내부에서 바로 서버에 접속해 데이터를 호출할 수 있었습니다. 하지만 팀 간 종속성이나 높은 트래픽 수요로 인해 모놀리식 애플리케이션을 확장하기가
+어렵다는 단점도 있었습니다. 가령 특정 페이지가 많은 트래픽을 받는다면, 그 페이지를 담당하는 서버를 확장해야 했습니다. 이는 다른 페이지에도 영향을 미쳤습니다.
+
+React는 기존 코드베이스에 결합하기 쉽고 점진적으로 적용하기 위해 만들어졌습니다. 많은 상호작용을 원하는 세상에 부응하기 위해 클라이언트와 서버의 문제를
+분리하여 프론트엔드를 훨씬 더 유연하게 구성할 수 있도록 했습니다. 이는 특히 팀에게 중요했습니다. 각각 다른 개발자가 만든 두 개의 React 컴포넌트가 있지만,
+동일한 프레임워크 내에서 작동하기 때문에 _결국 함께 잘 동작_ 할 수 있기 때문입니다.
+
+이를 달성하기 위해 React는 기존 웹 표준을 기반으로 혁신을 이뤄야 했습니다. 지난 10년간 Multi-Page Application(MPA),
+Single-Page Application(SPA), Client-Side Rendering(CSR), Server-Side Rendering(SSR) 등이 발전하는 동안에도 빠른 데이터 제공,
+높은 상호작용, 뛰어난 개발자 경험 유지라는 [목표](https://github.com/reactwg/server-components/discussions/5)는 변하지 않았습니다.
+
+## Server-Side Rendering과 React Suspense는 무엇을 해결했을까요?
+
+Server Components라는 현재에 도달하는 과정에서 해결해야 할 다른 문제들이 있었습니다. RSC의 필요성을 더 잘 이해하려면 먼저
+Server-Side Rendering(SSR)과 Suspense의 필요성을 파악하는 것이 도움이 됩니다.
+
+SSR은 초기 페이지 로딩에 초점을 맞춥니다. pre-rendering된 HTML을 클라이언트에 전송하고, 클라이언트가 일반적인 React 앱처럼 동작하려면 같이 다운로드한
+JavaScript를 hydrate 해야합니다. SSR은 페이지로 직접 이동할 때 한 번만 발생합니다. 그 이후에는 CSR로 이루어집니다.
+
+SSR만 사용하면 HTML을 더 빨리 얻을 수 있지만, JavaScript와 상호작용하기 전에 "all-or-nothing" 워터폴을 기다려야 합니다:
+
+- 어떤 데이터가 표시되려면 서버에서 모든 데이터를 가져와야 합니다.
+- 어떤 영역을 hydrate 하려면 서버에서 모든 JavaScript를 다운로드해야 합니다.
+- 어떤 상호작용이 일어나려면 클라이언트는 모든 hydration을 완료해야 합니다.
+
+이 문제를 해결하기 위해 Server-Side HTML 스트리밍과 클라이언트에서 선택적 hydration 할 수 있는
+[React는 Suspense를 만들었습니다.](https://github.com/reactwg/react-18/discussions/37) 컴포넌트를 `<Suspense>`로 감싸면
+서버에 해당 컴포넌트의 렌더링과 hydration 우선순위를 낮춰 다른 컴포넌트가 해당 컴포넌트와 같이 무거운 컴포넌트에 의해 차단되지 않고 로드될 수
+있도록 할 수 있습니다.
+
+`<Suspense>`에 여러 컴포넌트가 있는 경우, React는 작성한 순서대로 트리를 따라 동작하므로 애플리케이션을 최적으로 스트리밍할 수 있습니다.
+하지만 사용자가 특정 컴포넌트와 상호작용을 시도하면 해당 컴포넌트가 다른 컴포넌트보다 더 높은 우선순위를 갖습니다.
+
+이렇게 하면 상황이 크게 개선되지만 여전히 몇 가지 문제가 남습니다:
+
+- 컴포넌트를 표시하기 전에 _전체 페이지_ 에 대한 데이터를 서버에서 가져와야 합니다. 이 문제를 해결할 수 잇는 유일한 방법은 `useEffect()` hook을 통해
+  클라이언트 사이드에서 데이터를 fetch하는 것인데, 이는 서버 사이드에서 가져오는 것보다 왕복 시간이 더 길고 컴포넌트가 렌더링되고
+  hydrate된 _이후에_ 발생합니다.
+- 브라우저에서 비동기로 스트리밍되더라도 결국 모든 페이지의 JavaScript는 다운로드 됩니다. 앱 복잡성이 커지면 사용자가 다운로드하는 코드의 양도
+  증가합니다.
+- hydration을 최적화하더라도 사용자는 클라이언트 사이드 JavaScript가 다운로드하고 컴포넌트가 만들어질 떄까지 해당 컴포넌트와 상호작용할 수 없습니다.
+- JavaScript 연산의 대부분은 클라이언트(여전히 다양한 기기에서 실행되는)에서 발생합니다. 더 강력하고 예측 가능한 서버로 옮기는게 어떨까요?
+
+![A diagram showing how Next.js works without React Server Components](/post/react/understanding-react-server-components/without-react-server-components-in-next-js.webp)
+
+> React Server Components가 없는 Next.js에서는 데이터를 fetch하려면 추가로 API 레이어가 필요합니다
+
+## React Server Components는 무엇을 하나요?
+
+위 문제를 해결하기 위해 React는 Server Components를 만들었습니다. RSC는 개별적으로 데이터를 가져와 서버에서 렌더링하고,
+그 결과인 HTML은 필요에 따라 다른 서버 컴포넌트, 클라이언트 컴포넌트를 끼워넣으면서(인터리빙) React 컴포넌트 트리(클라이언트 사이드)로 스트리밍됩니다.
+
+이 프로세스는 클라이언트 사이드에서 리렌더링할 필요가 없으므로 성능이 향상됩니다. 클라이언트 컴포넌트의 경우, 컴퓨팅 부하가 클라이언트와 서버로 분산되기
+때문에 hydration을 RSC 스트리밍과 동시에 할 수 있습니다.
+
+다시 말해, 서버(훨씬 더 강력하고 물리적으로 데이터 원천에 가까운)가 컴퓨팅 집약적인 렌더링을 처리하고 상호작용이 필요한 코드만 클라이언트로 전송합니다.
+
+상태 변경으로 인해 RSC를 리렌더링해야 하는 경우 서버에서 refresh하고 기존 DOM에 **hard refresh없이** 원활하게 병합합니다. 따라서 서버에서
+뷰의 일부가 업데이트되더라도 클라이언트 상태는 유지됩니다.
+
+### RSC: 성능과 번들 사이즈
+
+RSC는 클라이언트 사이드 JavaScript 번들의 크기를 줄이고 로딩 성능을 개선하는데 도움이 될 수 있습니다.
+
+일반적으로 클라이언트는 애플리케이션을 탐색하는 동안 모든 코드와 데이터 종속성을 다운로드한 다음 실행합니다. [코드 스플리팅](https://nextjs.org/learn/foundations/how-nextjs-works/code-splitting?utm_source=vercel_site&utm_medium=web&utm_campaign=understanding_rsc)
+기능이 있는 React 프레임워크가 없다면 이는 사용자가 현재 있는 페이지에 필요하지 않은 불필요한 코드를 사용자에게 모두 전송하는 것을 의미하기도 합니다.
+
+하지만 RSC는 앱의 데이터 원천에 더 가까운 서버에서 모든 종속성을 해결합니다. 또한 서버에서만 코드를 렌더링하므로 클라이언트 머신(예: 휴대폰)보다 작업이
+훨씬 빠릅니다. 그리고 React는 처리된 결과와 클라이언트 컴포넌트만 브라우저로 전송합니다.
+
+<Tweet id="1681355056950525963" />
+
+즉, 서버 컴포넌트를 사용하면 초기 페이지 로딩이 더 빠르고 간결해집니다. **기본 클라이언트 사이드 런타임은 캐싱이 가능하고 크기를 예측할 수 있으며
+애플리케이션이 커쳐도 증가하지 않습니다.** 클라이언트 컴포넌트를 통해서 클라이언트 사이드 상호작용이 더 필요한 애플리케이션인 경우, 사용자 용 JavaScript가
+추가로 더해집니다.
+
+### RSC: 인터리빙과 Suspense 통합
+
+RSC는 클라이언트 사이드 코드와 완전히 인터리빙되므로 클라이언트 컴포넌트와 서버 컴포넌트가 동일한 React 트리에서 렌더링될 수 있습니다.
+애플리케이션 코드의 대부분을 서버로 옮김으로써 RSC는 클라이언트 사이드 데이터 fetch 워터폴을 방지하고 서버 사이드에서 데이터 종속성을 빠르게 해결하는데
+도움이 됩니다.
+
+기존 CSR에서 컴포넌트는 비동기 작업이 완료되기를 기다리는 동안 React Suspense를 사용해 렌더링 프로세스를 "일시 중지" 합니다.(그리고 fallback 상태를
+표시) RSC를 사용하면 데이터 fetch와 렌더링이 모두 서버에서 이루어집니다. 그래서 Suspense는 서버 사이드에서도 대기 시간을 관리하여 fallback과
+완료된 페이지 렌더링 속도를 높여 전체 왕복 시간을 단축시킵니다.
+
+[클라이언트 컴포넌트는 초기 로드 시 여전히 SSR이 적용된다는 점](https://github.com/reactwg/server-components/discussions/4)에 유의해야
+합니다. RSC 모델은 SSR이나 Suspense를 대체하는 것이 아니라 애플리케이션의 한 부분으로써 함께 동작합니다.
+
+![A diagram showing how Next.js works with React Server Components](/post/react/understanding-react-server-components/with-react-server-components-in-next-js.webp)
+
+> React Server Components가 포함된 Next.js에서는 동일한 컴포넌트에서 데이터 fetch와 UI 렌더링을 수행할 수 있습니다. 또한 Server Action은 페이지에서 JavaScript가 로드되기 전(또는 JavaScript 없이)에 사용자가 서버 사이드 데이터와 상호작용할 수 있는 방법을 제공합니다.
+
+### RSC: 제한사항
+
+서버 컴포넌트에 작성된 모든 코드는 직렬화 가능해야 하며, 이는 `useEffect()` 또는 상태와 같은 라이프사이클 hook을 사용할 수 없음을 의미합니다.
+
+하지만 Server Action을 통해 클라이언트에서 서버와 상호작용할 수 있는데, 이에 대해서는 [아래에서]() 설명하겠습니다.
+
+또한 RSC는 웹소켓을 통한(또는 그와 같은) 지속적인 업데이트는 지원하지 않습니다. 이러한 경우 클라이언트 사이드에서 fetch또는 폴링 접근 방식을
+사용해야 합니다.
+
+<IFrame src="https://www.youtube.com/embed/g5BGoLyGjY0" />
+
+> [Delba de Oliveira, Vercel Senior Developer Advocate, discusses React, Server Components, and more with Andrew Clark and Sebastian Markbåge from the React core team.](https://youtu.be/g5BGoLyGjY0)
+
+## React Server Components 사용하는 방법
+
+RSC의 장점은 동작 원리를 완전히 알지 못해도 이를 활용할 수 있다는 것입니다. Next.js 13.4에 도입된 App Router에서 기본적으로 모든 컴포넌트가
+서버 컴포넌트가 RSC를 가장 기능적으로 잘 만들어 제공된 예시입니다.
+
+만약 `useEffect()`나 상태와 같은 라이프사이클 이벤트를 사용하려면 클라이언트 컴포넌트를 만들어야 합니다. 클라이언트 컴포넌트로 선택하려면 컴포넌트 상단에
+"use client"를 작성하면 됩니다. 더 자세한 내용은 [여기](https://nextjs.org/docs/getting-started/react-essentials#client-components)
+를 참고하세요.
+
+### 서버 컴포넌트와 클라이언트 컴포넌트 균형 맞추기
+
+RSC는 클라이언트 컴포넌트를 대체하기 위한 것이 아니라는 점을 인지하는 것이 중요합니다. 정상적인 애플리케이션은 동적 데이터 fetch는 RSC를, 풍부한
+상호작용에는 클라이언트 컴포넌트를 모두 활용합니다. 문제는 각 컴포넌트를 언제 활용할지 결정하는데 있습니다.
+
+개발자는 서버 사이드 렌더링과 데이터 fetch는 RSC를 활용하고 로컬 상호작용과 사용자 경험에는 클라이언트 컴포넌트를 사용하는 것을 고려하세요.
+적절한 균형을 유지하면 고성능의 효율적이고 매력적인 애플리케이션을 만들 수 있습니다.
+
+가장 중요한 것은 느린 컴퓨터, 느린 휴대폰, 느린 와이파이 등 정상적이지 않은 환경에서 애플리케이션을 계속 테스트하는 것입니다. 적절한 컴포넌트 조합으로
+앱이 얼마나 더 잘 작동하는지 보고 놀랄 수도 있습니다.
+
+RSC가 사용자에게 부담을 주는 문제(과도한 클라이언트 사이드 JavaScript)에 대해 완전한 해결책은 아니지만, 사용자 디바이스에서 컴퓨팅의 비중을 선택할
+수 있는 권한을 부여하는 것은 확실합니다.
+
+### Next.js에서 향상된 데이터 fetch
+
+RSC는 서버에서 데이터를 가져오기 때문에 백엔드 데이터를 안전하게 액세스할 수 있을 뿐만 아니라 서버와 클라이언트 간의 상호작용을 줄여 성능을 향상시킵니다.
+[Next.js 개선점과 함께](https://nextjs.org/docs/app/building-your-application/data-fetching?utm_source=vercel_site&utm_medium=web&utm_campaign=understanding_rsc)
+RSC는 더 나은 데이터 캐싱, 단일 호출로 다둥 fetch, 중복 `fetch()` 자동 제거 기능 등을 지원하여 클라이언트 사이드 데이터 전송의 효율성을 극대화합니다.
+
+가장 중요한 것은 클라이언트 사이트 데이터 fetch 워터폴(요청이 서로 쌓여 순차적으로 해결해야 하는)을 서버에서 데이터를 fetch하는 것으로 바꾸면 이를
+방지하는데 도움이 된다는 점입니다. 서버 사이드 fetch는 전체 클라이언트를 차단하지 않고 훨씬 더 빠르게 해결하므로 오버헤드가 훨씬 더 적습니다.
+
+또한 개별 컴포넌트를 충분히 세밀하게 제어할 수 없고 데이터를 과도하게 fetch하는 경향이 있던 `getServerSideProps()`와 `getStaticProps()`와 같은
+Next.js 전용 메소드가 더 이상 필요하지 않ㅅ급니다.(사용자가 페이지로 이동하면 실제로 어떤 컴포넌트와 상호작용했는지에 관계없이 모든 데이터를 fetch
+해왔습니다.)
+
+이제 Next.js App Router에서 fetch한 모든 데이터는 기본적으로 정적이며 빌드 시점에 만들어집니다. 하지만 이는 쉽게 변경할 수 있습니다: Next.js는
+`fetch` 옵션을 확장하여 캐싱, revalidate 룰을 쉽게 변경할 수 있습니다.
+
+`{next: {revalidate: number}}`을 사용하여 설정된 간격으로 정적 데이터를 새로고침하거나 또는 백엔드 변경이 발생할 때(점진적 정적 재생성(Incremental Static Regeneration)) 새로고침할 수 있으며,
+`{cache: 'no-store'}`을 사용하여 동적 데이터에 대한 fetch 요청을(SSR) 그대로 전달할 수 있습니다.
+
+Next.js App Router 내의 React Server Components는 이 모든 기능을 통해 효율적이고 안전하게 동적 데이터 fetch를 수행할 수 있도록 하며,
+높은 수준의 사용자 경험을 제공하기 위해 기본적으로 모두 캐시됩니다.
+
+### Server Actions: mutability을 향한 React의 첫 번째 발걸음
+
+RSC의 맥락에서 Server Action은 서버/클라이언트 경계를 넘어 전달할 수 있는, 서버 사이드 RSC에서 정의한 함수입니다. 사용자가 클라이언트 사이드에서
+앱과 상호작용 할 때 Server Action(서버 사이드에서 안전하게 실행되는)을 직접 호출할 수 있습니다.
+
+이 접근 방식은 클라이언트와 서버 간에 원활한 RPC([Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call))
+환경을 제공합니다. 서버와 통신하기 위해 별도의 API 라우트를 작성하는 대신 클라이언트 컴포넌트에서 Server Action을 직접 호출할 수 있습니다.
+
+Next.js App Router는 더 나은 데이터 캐싱, revalidating, mutating을 중심으로 만들어졌다는 점을 기억하세요. [Next.js의 Server Action](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions?utm_source=vercel_site&utm_medium=web&utm_campaign=understanding_rsc)은
+탐색을 통해 클라이언트 캐시 무결성을 유지하면서, 서버에 대한 동일 요청으로 캐시를 변경하고 React 트리를 업데이트할 수 있다는 것을 의미합니다.
+
+특히 Server Action은 데이터베이스 업데이트나 form submit 같은 작업을 처리하도록 설계되었습니다. 예를 들어 form을 점진적으로 개선할 수 있으므로
+JavaScript가 아직 로드되지 않은 경우데도 사용자가 form과 상호작용할 수 있으며 Server Action이 form 데이터를 제출, 처리합니다.
+
+Server Action이 제공하는 점진적인 향상과 API에 대한 개발 작업의 제거는 접근성, 사용성, 개발자 경험 측면에서 모두 훌륭한 결과를 가져옵니다.
+
+### Next.js에게 맡기기
+
+Next.js는 서버 컴포넌트, Server Action, Suspesne, Transition 등 RSC 릴리즈와 함께 모두 통합된 최초의 React 프레임워크입니다.
+
+여러분이 제품을 만드는데 집중하는 동안 Next.js는 전략적 스트리밍과 스마트 캐싱을 사용하여 애플리케이션 렌더링이 차단되지 않고 동적 데이터를 최고 속도로
+제공할 수 있도록 보장합니다.
+
+## 요약
+
+React Server Components는 컴포넌트 내에서 바로 서버와 상호작용할 수 있는 네이티브 방식을 제공하여 동적 데이터와 상호작용하는데 필요한 코드와
+인지적 부하를 모두 줄여줍니다. 클라이언트 컴포넌트는 이전과 마찬가지로 완전한 기능을 유지하면서 사용할 수 있습니다. 이제 해야할 일은 각가의 컴포넌트를
+언제 사용할지 선택하는 것입니다.
+
+이 주제에 대한 자세한 안내는 [Next.js 문서](https://nextjs.org/docs/getting-started/react-essentials?utm_source=vercel_site&utm_medium=blog&utm_campaign=understanding_rsc)를
+참조하세요.
+
+RSC에 대해 더 관심이 있으시다면 이 글들이 좋은 인사이트를 제공할 것입니다.
+
+- ["We migrated 50,000 lines of code to React Server Components" | Mux](https://www.mux.com/blog/what-are-react-server-components)
+- ["Speeding up the dbt™ docs by 20x with React Server Components" | Dagster](https://dagster.io/blog/dbt-docs-on-react)
+- ["Next.js App Router and Sanity CMS in action" | Formidable](https://formidable.dev/blog/2023/powering-our-website-s-evolution-next-js-app-router-and-sanity-cms-in-action/)
+
+## 마무리하며
+
+RSC에 대해 많은 이해에 도움이 되는 글이었습니다. 현재 이 사이트도 Next.js App Router로 만들어져 있습니다.
+이 글 내용에서도 나왔지만 RSC 내용을 완전히 알지 못하더라도 그 장점을 누릴 수 있습니다.
+
+이런 순서로 된 블로그 글이 많은 도움이 되는 것 같습니다. 어떤 문제점이 있어서 이러한 기능이 나왔는지, 왜 사용해야되는지, 그래서 어디에 사용해야되는지 와 같이
+자연스럽게 질문과 답이 이어지는 글이 좋은 것 같습니다.
+
+계속해서 Next.js를 관심있게 사용할 것 같고 메이저 릴리즈가 나올 때마다 새로운 기능을 적용해보려고 합니다.
+
+웹 애플리케이션 역사에서 SSR에서 CSR로 넘어가고 다시 SSR(예전 SSR이 아니지만)로 돌아오고, 앞으로 발전해 나가는 모습들을 볼 때 참 재밌는 것 같습니다.
+
+## reference
+
+- https://vercel.com/blog/understanding-react-server-components

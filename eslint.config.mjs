@@ -38,8 +38,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "public/",
-    ".contentlayer/**",
     ".lintstagedrc.cjs",
+    ".source/**",
   ]),
 ])
 

@@ -1,0 +1,293 @@
+---
+title: JavaScript 동작 원리
+description: JavaScript 엔진, 런타임, Call Stack, Heap 등 동작원리를 알고 있다면 조금 더 효율적인 개발을 할 수 있지 않을까 하는 생각에 JavaScript가 브라우저에서 어떻게 해석되고 동작되는지 알아보았습니다.
+author: seonest
+date: 2021-09-26T09:20:47.806Z
+---
+
+Javascript가 브라우저에서 어떻게 해석되고 동작 되는지 알아보고자 합니다.
+
+## 개요
+
+자바스크립트는 웹 개발에서 필수적인 언어로, 웹 브라우저와 서버 측 플랫폼에서 실행됩니다.
+
+이러한 환경에서 자바스크립트 코드를 해석하고 실행하는 것이 자바스크립트 엔진입니다.
+
+이 글에서는 Google에서 개발한 V8 자바스크립트 엔진에 대해 알아보겠습니다.
+
+1. 자바스크립트 엔진
+2. V8
+3. 런타임
+4. Memory Heap and Call Stack
+
+## 1. 자바스크립트 엔진
+
+자바스크립트는 웹 브라우저와 Node.js와 같은 서버 측 플랫폼에서 실행되며, 이러한 환경에서 JavaScript 코드를 해석하고 실행하는 것을 담당하는 것이 자바스크립트 엔진입니다.
+
+대표적인 자바스크립트 엔진으로는 Google의 V8 엔진, Mozilla의 SpiderMonkey 엔진, Microsoft의 Chakra 엔진 등이 있습니다.
+
+그 중에서 V8에 대해서 조금 더 자세히 살펴보려고 합니다.
+
+## 2. V8
+
+V8 엔진은 Google이 주도하여 개발한 고성능 자바스크립트 엔진으로, Chrome 웹 브라우저와 Node.js에서 사용됩니다.
+V8 엔진은 C++로 작성되었으며, 자바스크립트 코드를 기계 코드로 변환해 실행합니다.
+이를 통해 빠른 실행 속도와 최적화를 달성할 수 있습니다.
+
+V8 엔진의 구성요소는 다음과 같습니다.
+
+- Memory Heap : 메모리 할당이 일어나는 곳
+- Call Stack : 호출 스택이 쌓이는 곳
+
+![1](/post/javascript/javascript-how-it-works/engine.png)
+
+### 작동원리
+
+![v8-1](/post/javascript/javascript-how-it-works/v8.png)
+
+1. 자바스크립트 소스코드를 가져와 Parser에게 넘깁니다.
+2. Parser는 파싱을 통해 AST(Abstract Syntax Tree)로 변환합니다.
+3. AST를 인터프리터를 통해 byte code로 변환(Ignition) 합니다.
+4. 그리고 Bytecode를 실행함으로써 실제 작동하게 됩니다.
+5. 그 중 자주 사용되는 코드는 TruboFan으로 보내집니다.
+6. TruboFan은 이 코드를 Optimized Machine Code로 컴파일해놓고 사용합니다.
+
+> - V8은 8기통 엔진을 뜻합니다.
+> - Ignition은 엔진 시동시에 사용되는 점화기입니다.
+> - TurboFan은 너무 과호출되는 부분을 식혀주는 Fan입니다.
+> - 내연 자동차 엔진 구동부에 네이밍을 따왔습니다.
+
+#### Ignition
+
+AST를 해석하고 최적화하는 **인터프리터** 입니다.
+
+> 컴파일러 대비 이점
+>
+> 1. 메모리 사용량 감소 : 기계어로 컴파일하는 것보다 bytecode로 컴파일 하는 것이 메모리 사용량이 적습니다.
+> 2. 파싱 시 오버헤드 감소 : bytecode는 기계어보다 간결하기 때문에 파싱하기에 이점이 있습니다.
+> 3. 컴파일 파이프 라인의 복잡성 감소 : optimizing, deoptimizing 이든 bytecode 하나만 생각하면 되기 때문에 복잡성이 컴파일러에 비해 낮습니다.
+>
+> **Ross Mcllroy _Ignition - an interpreter for V8_**
+
+#### TurboFan
+
+최적화 담당 **컴파일러** 입니다.
+
+V8 런타임 중에 `Profiler` 에게 함수나 변수들의 호출 빈도와 같은 데이터를 수집하도록 합니다.
+
+이렇게 모인 데이터는 `TurboFan`에 의해 몇 가지 기준을 통해서 최적화를 진행합니다.
+아래는 대표적 최적화 방법 2개를 설명합니다.
+
+1. Hidden Class(히든클래스) : 비슷한 것들끼리 분류해놓고 가져다 쓰는 것
+2. Inline Caching(인라이캐싱) : 아래 철학을 통해 접근하고자하는 필드 오프셋을 캐싱하여 사용
+   - 동적인 언어라고 해봤자 실제로는 안바뀌는게 더 많다
+   - 성능을 빠르게 하려면 딴 거 다 필요없고 루프를 노려라
+
+## 3. 런타임
+
+![2](/post/javascript/javascript-how-it-works/js-engine-runtime.png)
+
+### Web APIs
+
+> 브라우저에서 제공하는 APIs.
+
+자바스크립트(JavaScript) 코드를 사용하여 접근할 수 있으며 window나 element에 대한 간단한 작업에서부터 WebGL이나 Web Audio와 같은 API를 사용해 복잡한 그래픽 및 오디오 효과를 만들어내는 것까지 가능합니다.
+
+### Event Loop
+
+> Callback Event Queue에서 하나 씩 꺼내 동작시키는 Loop
+
+자바스크립트는 단일 스레드 기반 언어입니다.
+
+그러나 자바스크립트가 사용되는 환경을 생각해보면 많은 작업이 동시에 처리되고 있는 걸 볼 수 있습니다.
+예를 들면, 웹브라우저는 애니메이션 효과를 보여주면서 마우스 입력을 받아서 처리하고, NodeJs기반의 웹서버에서는 동시에 여러 개의 HTTP 요청을 처리하기도 합니다.
+
+어떻게 스레드가 하나인데 이런 일이 가능할까요?
+**질문을 바꿔보면 '자바스크립트는 어떻게 동시성(Concurrency)을 지원하는 걸까요'?**
+
+자바스크립트는 이벤트 루프를 이용해서 비동기 방식으로 동시성을 지원합니다.
+단, 자바스크립트 엔진에서 제공되는 것이 아닌 브라우저나 NodeJS에서 지원합니다.
+
+![loop](/post/javascript/javascript-how-it-works/eventloop.png)
+
+Node.js는 비동기 IO를 지원하기 위해 libuv 라이브러리를 사용하며, 이 libuv가 이벤트 루프를 제공합니다.
+![nodejs](/post/javascript/javascript-how-it-works/nodejs.jpg)
+
+<Callout>
+  자바스크립트가 '단일 스레드' 기반의 언어라는 말은 '자바스크립트 엔진이 단일 콜 스택을 사용한다'는
+  관점에서만 사실입니다. 실제 자바스크립트가 구동되는 환경(브라우저, NodeJs등)에서는 주로 여러 개의
+  스레드가 사용되며, 이러한 구동 환경이 단일 콜 스택을 사용하는 자바 스크립트 엔진과 상호 연동하기
+  위해 사용하는 장치가 바로 '이벤트 루프'인 것입니다.
+</Callout>
+
+이벤트 루프는
+
+- '현재 실행중인 이벤트가 없는지'와
+- '콜백 큐에 이벤트가 있는지'를
+
+반복적으로 확인합니다.
+
+간단하게 정리하면 다음과 같습니다.
+
+1. 모든 비동기 API들은 작업이 완료되면 콜백 함수를 콜백 큐에 추가합니다.
+2. 이벤트 루프는 '현재 실행중인 이벤트(콜백)가 없을 때'(주로 호출 스택이 비워졌을 때) 콜백 큐의 첫 번째 이벤트(콜백)를 꺼내와 실행합니다.
+
+### Callback Queue(Task Queue)
+
+비동기 Task를 실행 관리하기 위해 사용되는 Queue 입니다.
+
+- 자바스크립트의 런타임 환경의 Callback Queue는 처리할 메세지 목록과 실행할 콜백 함수들의 리스트입니다.
+  버튼 클릭 같은 이벤트나 DOM 이벤트, http 요청, setTimeout 같은 비동기 함수는 Web API를 호출하며 Web API는 콜백 함수를 Callback Queue에 넣습니다.
+- Callback queue는 대기하다가 Call Stack이 비는 시점에 이벤트 루프를 돌려 해당 콜백 함수를 스택에 넣습니다.
+  **이벤트 루프의 기본 역할은 콜백 큐와 콜 스택 두 부분을 지켜보고 있다가 콜 스택이 비는 시점에 콜백을 실행시켜 주는 것입니다.**
+- 브라우저에서는 이벤트가 발생할 때마다 메세지가 추가되고 이벤트 리스너가 첨부됩니다.
+  콜백 함수의 호출은 호출 스택의 초기 프레임으로 사용되며 자바스크립트가 싱글 스레드 이므로 스택에 대한 모든 호출이 반환될 때까지 메세지 폴링 및 처리가 중지 됩니다.
+  동기식 함수 호출은 이와 반대로 새 호출 프레임을 스택에 추가합니다.
+
+```js
+function delay() {
+  for (var i = 0; i < 100000; i++);
+}
+function foo() {
+  delay()
+  console.log("foo!")
+}
+function bar() {
+  delay()
+  console.log("bar!")
+}
+function baz() {
+  delay()
+  console.log("baz!")
+}
+
+setTimeout(foo, 10)
+setTimeout(bar, 10)
+setTimeout(baz, 10)
+```
+
+이 코드를 실행하면 아무런 지연 없이 비동기 함수인 `setTimeout` 함수가 세 번 호출된 이후에 실행을 마치고 Call Stack이 비워질 것입니다.
+
+그리고 10ms가 지나간 후에 `foo`, `bar`, `baz` 함수가 순차적으로 콜백 큐에 추가됩니다.
+
+이벤트 루프는 `foo` 함수가 콜백 큐에 들어오자 마자, 콜 스택이 비어있으므로 바로 `foo`를 실행해서 호출 스택에 추가합니다.
+
+`foo` 함수의 실행이 끝나고 콜 스택이 비워지면 이벤트 루프가 다시 콜백 큐에서 다음 콜백인 `bar`를 가져와 실행한다.
+
+`bar`의 실행이 끝나면 마찬가지로 큐에 남아있는 `baz`를 큐에서 가져와 실행한다.
+
+그리고 `baz`까지 실행이 모두 완료되면 현재 진행중인 콜백도 없고 콜백 큐도 비어있기 때문에, 이벤트 루프는 새로운 콜백이 콜백 큐에 추가될 때까지 대기하게 된다.
+
+### setTimeout vs Promise
+
+> 동일하게 비동기 함수를 선언한대로 실행되는거 아닐까?  
+> 어? 아니네?
+
+![image.png](https://files.seonest.net/images/qnfqnfqnf/post/65/image.png)
+
+<Callout>
+  **zero delays**
+  <br />
+  실제로 0ms 후에 콜백이 시작된다는 의미는 아닙니다. 0ms 지연된 setTimeout은 주어진 간격 후에 콜백
+  함수를 실행하지 않습니다. 왜냐하면 지연은 보장된 시간이 아니라 요청을 처리하기 위해 필요한 최소의
+  시간이기 때문입니다. 기본적으로 특정 시간 제한을 지정 했더라도 대기중인 메시지의 모든 코드가 완료
+  될 때까지 대기해야 합니다.
+</Callout>
+
+`Promise`는 `setTimeout`보다 먼저 실행됩니다.
+
+그 이유는 이벤트 루프가 다루는 task의 실행 우선순위가 다르기 때문입니다.
+
+- Macrotasks(Tasks): 브라우저가 내부에서 JavaScript/DOM 영역으로 이동할 수 있도록 작업이 예약되고 이러한 작업이 순차적으로 발생하도록 합니다.
+- Microtasks: 일반적으로 일괄 작업에 반응하는 것과 같이 현재 실행 중인 스크립트 직후에 발생해야 하는 일이나 완전히 새로운 태스크에 대한 불이익을 받지 않고 무언가를 비동기화하도록 예약됩니다.
+
+[웹 스펙](https://html.spec.whatwg.org/#event-loop-processing-model)에 명세된 것으로 브라우저는 task 실행이 끝날 때마다 다른 큐로부터 task가 실행되기 전에 microtask 큐에 있는 것은 먼저 실행하도록 합니다.
+
+즉, Microtask는 Macrotask보다 우선순위가 높고 먼저 실행됩니다.
+
+- Macrotasks: setTimeout, setInterval, setImmeidate, requestAnimationFrame, I/O, UI Rendering
+- Microtasks: process.nextTick, Promises, queueMicrotask, MutationObserver 등
+
+> - https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/
+> - https://stackoverflow.com/questions/38752620/promise-vs-settimeout
+
+## 4. 메모리 힙과 콜 스택
+
+자바스크립트 엔진이 구동되면서 코드를 읽고 실행하는 과정에서 아주 중요한 두가지 단계가 있습니다.
+
+1. 정보(ex. 변수, 함수 등)를 특정한 장소에 저장하는 것과
+2. 실제 현재 실행되고 있는 코드를 트래킹하는 작업이 그 두가지입니다.
+
+여기서 정보를 저장하는 공간(Memory Allocation이 발생하는 공간)이 바로 **메모리 힙**이고, 실행 중인 코드를 트래킹하는 공간이 **콜 스택**입니다.
+
+### 메모리 힙
+
+메모리 생존주기는 프로그래밍 언어와 관계없이 비슷합니다.
+
+1. 필요할때 할당한다. (allocate)
+2. 사용한다. (읽기, 쓰기) (use)
+3. 필요없어지면 해제한다. (release)
+
+2번 부분은 모든 언어에서 명시적으로 사용됩니다. 그러나 1번 부분과 3번 부분은 저수준 언어에서는 명시적이며, 자바스크립트와 같은 대부분의 고수준 언어에서는 암묵적으로 작동합니다.
+
+메모리 힙은 변수, 함수 저장, 호출 등의 작업이 발생하여 위 내용들이 진행되는 공간입니다.
+쉽게 생각하면 'Memory Heap'이라는 이름의 창고가 있고, 변수나 함수들은 겉에 이름이 라벨지로 붙어있는 박스입니다.
+(실제로는 메모리 주소에 실제 값이 해당 위치에 저장되어 있습니다.)
+
+![heap](/post/javascript/javascript-how-it-works/memoryheap.png)
+
+### 콜 스택
+
+콜 스택은 메모리에 존재하는 공간 중의 하나로, 코드를 읽어내려가면서 수행할 작업들을 밑에서부터 하나씩 쌓고, 메모리 힙에서 작업 수행에 필요한 것들을 찾아서 작업을 수행하는 공간입니다.
+
+![stack](/post/javascript/javascript-how-it-works/callstack.png)
+
+### 메모리 관리
+
+> Garbage Collector(GC)
+
+콜 스택과 메모리 힙을 배우면서 각각의 공간은 무제한이 아니고 한정적임을 알 수 있습니다.
+공간이 무한정 하다면야 크게 효율성에 대해서 고려하지 않을 수도 있지만, 콜스택과 메모리 힙은 언제나 한정적이기 때문에 이를 효율적으로 관리할 필요가 있습니다.
+
+자바스크립트는 이 공간을 효율적으로 관리하기 위해서, 더 이상 효용가치가 없다고 판단되는 변수, 함수 등을 함수 실행 종료 후 메모리 힙에서 제거하는 동작을 수행합니다.
+
+필요한 데이터만 메모리 힙에 저장함으로써 메모리를 더욱 여유롭게 관리합니다.
+따라서 자바스크립트는 Garbage Collected Language라고 말할 수 있으며, 이러한 역할을 수행해주는 도구를 `Garbage Collector`라고 합니다.
+
+하지만 이는 자칫 자바스크립트 개발자들에게 잘못된 인상을 심어줄 수도 있습니다. '스스로 메모리 관리를 해주니까 내가 따로 메모리를 신경쓸 필요는 없지않을까?' 라고 생각할 수 있지만, 언제나 그렇듯 이 또한 프로그램에 지나지 않기 때문에 완벽하지는 않습니다.
+
+그럼 이 Garbage Collector는 어떠한 원리로 작동하는 것일까요?
+
+V8 엔진은 가비지 콜렉션을 수행하기 위해 두 가지 주요 알고리즘을 사용합니다:
+
+- **Generational Collection**: 이 방식에서 V8은 메모리를 두 개의 영역, 즉 새로운 영역(New Space)과 오래된 영역(Old Space)으로 나눕니다.
+  새로 생성된 객체는 New Space에 할당되며, 이 영역은 비교적 작고 빠르게 채워집니다.
+  New Space가 가득 차면, Scavenge라는 가비지 콜렉션 과정이 시작됩니다.
+  여기서 살아있는 객체는 Old Space로 이동하고, New Space는 정리됩니다.
+  이렇게 객체가 생성된 후 일정 시간 동안 살아남으면 Old Space로 이동하는 것이 Generational Collection의 기본 아이디어입니다.
+- **Incremental Marking**: Old Space에 있는 객체에 대한 가비지 콜렉션은 Mark-Sweep-Compact 알고리즘을 사용합니다.
+  이 알고리즘은 메모리에서 살아있는 객체를 찾기 위해 Mark 단계를 수행하고, 살아있지 않은 객체를 회수하는 Sweep 단계를 거친 후, 메모리를 재구성하는 Compact 단계로 이루어집니다.
+  이 과정이 한 번에 진행되면 애플리케이션의 실행이 일시 중단되는데, 이를 방지하기 위해 Incremental Marking 기법을 도입했습니다.
+  이 기법은 Mark-Sweep-Compact 알고리즘을 여러 작은 단계로 나누어 애플리케이션의 실행을 방해하지 않으면서 가비지 콜렉션을 수행합니다.
+
+더 자세한 정보는 [kakao FE기술블로그 - 자바스크립트 v8엔진의 가비지 컬렉션 동작 방식](https://fe-developers.kakaoent.com/2022/220519-garbage-collection/) 글을 참고하세요.
+
+## 마무리하며
+
+자바스크립트 동작 원리 중 V8엔진을 주로 내용으로 다루었습니다.
+V8 엔진은 자바스크립트의 인기에 큰 영향을 미쳤습니다. V8 엔진의 고성능 덕분에 자바스크립트는 웹 브라우저에서 더 복잡한 애플리케이션을 구동할 수 있게 되었습니다.
+또한, Node.js의 등장으로 자바스크립트는 서버 측 개발에도 활용되기 시작했습니다.
+
+동작 원리를 이해하면서 자바스크립트가 어떻게 동작하는지에 대한 이해도가 높아졌다면, 자바스크립트를 더욱 효율적으로 사용할 수 있을 것입니다.
+이 글을 통해 자바스크립트 동작 원리를 이해하는데 도움이 되었으면 좋겠습니다.
+
+## Reference
+
+- https://joshua1988.github.io/web-development/translation/javascript/how-js-works-inside-engine/
+- https://evan-moon.github.io/2019/06/28/v8-analysis/
+- https://meetup.toast.com/posts/78
+- https://developer.mozilla.org/ko/docs/Web/%EC%B0%B8%EC%A1%B0/API
+- https://velog.io/@imacoolgirlyo/JS-%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%EC%97%94%EC%A7%84-Event-Loop-Event-Queue-Call-Stack#3-event-queue
+- https://developer.mozilla.org/ko/docs/Web/JavaScript/Memory_Management
+- https://helloworldjavascript.net/pages/285-async.html
+- https://fe-developers.kakaoent.com/2022/220519-garbage-collection/

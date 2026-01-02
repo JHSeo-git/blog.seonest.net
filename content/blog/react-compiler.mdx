@@ -1,0 +1,485 @@
+---
+title: React Compiler
+description: 내 코드는 그대로지만 그대로가 아닌
+author: seonest
+date: 2024-06-06T14:04:02.451Z
+---
+
+React Conf 2024가 3주전에 열렸습니다. 흥미로운 소식들이 많이 포함되어 있었습니다.
+React 팀에서 발표한 [React 19 RC](https://react.dev/blog/2024/04/25/react-19), [React Native의 새로운 아키텍쳐(베타)](https://github.com/reactwg/react-native-new-architecture/discussions/189),
+그리고 커뮤니티에서 [React Router v7](https://remix.run/blog/merging-remix-and-react-router), [Universal Server Components(Expo Router)](https://www.youtube.com/watch?v=T8TZQ6k4SLE&t=20765s),
+[RedwoodJS](https://redwoodjs.com/blog/rsc-now-in-redwoodjs)에서 React Server Components 등의 발표들이 있었습니다.
+
+그 외 흥미로운 발표도 또한 많이 있었습니다. 다 챙겨보지 못하였지만 제목만 보고도 흥미로운 발표들이 많았습니다.
+([여기서](https://react.dev/blog/2024/05/22/react-conf-2024-recap) React Conf 2024에 대한 내용을 확인해보세요.)
+
+그 중에서도 가장 흥미있게 들었던 소식은 [React Compiler](https://react.dev/learn/react-compiler)입니다.
+저에게 최근 React에서 무엇이 가장 기대되냐고 물었을 때 그 중 하나가 바로 React Compiler였습니다.
+
+React Forget으로 알게된 이 프로젝트가 어느 정도 결실을 맺고 React 19에 포함된다는 소식을 들었을 때,
+너무나 기대되었습니다. 그래서 이번 포스트에서는 React 공식 블로그 글에 작성된 React Compiler 내용을 정리해보려고 합니다.
+
+## 들어가면서
+
+<Callout title="Caution">
+  해당 문서는 아직 Work In Progress 입니다. 더 많은 정보는 [React Compiler Working Group
+  repo](https://github.com/reactwg/react-compiler/discussions)에서 확인 할 수 있고, 더 안정화되면 이
+  문서에도 업데이트 할 예정입니다.
+</Callout>
+
+이 글에서는 Compiler를 사용하는 방법, 설치, eslint, troubleshooting 등에 대해 알 수 있습니다.
+
+<Callout title="Note">
+  React Compiler는 새로운 실험적 Comipler입니다. 아직 완벽하지 않으며 Production을 위한 준비가
+  완벽하지 않습니다. React Compiler는 React 19 RC에 포함되어 있습니다. 만약 React 19로 업그레이드 할
+  수 없다면, Working Group에서 설명된 cache function을 만들어서 사용할 수 있습니다. 그러나 이는
+  추천되지는 않습니다. 가능하면 React 19로 업그레이드 하는 것이 좋습니다.
+</Callout>
+
+**React Compiler는 React app을 빌드 시에 자동으로 최적화해주는 도구입니다.**
+plain JavaScript와 함께 동작하고 [Rules of React](https://react.dev/reference/rules)를 이해하고 있습니다.
+따라서 어떠한 코드도 재작성할 필요가 없습니다. 단지 사용하면 됩니다.
+
+Compiler는 [eslint 플러그인](https://react.dev/learn/react-compiler#installing-eslint-plugin-react-compiler)도 함께 포함되어 있습니다. 이를 통해 Editor에서 바로 분석할 수 있습니다.
+이 플러그인은 Compiler와 독립적으로 실행되기에 app에서 Compiler를 사용하지 않더라도 사용할 수 있습니다.
+React 개발자는 코드베이스 품질을 개선하기 위해서 이 eslint 플러그인을 사용할 것을 권장합니다.
+
+## Compiler가 하는것이 정확히 무엇인가요?
+
+React Compiler는 애플리케이션을 최적화하기 위해서 자동으로 코드를 메모아이즈 합니다.
+`useMemo`, `useCallback`, `React.memo`와 같은 메모아이제이션 APIs에 익숙할 것입니다.
+이 API를 사용하면 input이 변경되지 않는다면 애플리케이션의 특정 부분을 다시 계산할 필요가 없음을 React에
+알려주어 업데이트 작업을 줄일 수 있습니다. 이는 강력하지만 메모아이제이션을 적용하는 것을 잊어버리거나 잘못 적용하기 쉽습니다.
+의미 있는 변경이 없는 UI 부분까지 React가 확인해야 하므로 비효율적인 업데이트로 이어질 수 있습니다.
+
+React Compiler는 JavaScript와 Rules of React 지식을 사용하여 컴포넌트와 Hook 내 값을 자동으로 메모아이즈합니다.
+만약 Rule 위반을 감지한다면 해당 컴포넌트나 Hook만 건너뛰고 다른 코드는 안전하게 계속 컴파일 합니다.
+
+코드베이스가 이미 잘 메모아이즈 되어있다면 Compiler를 사용해도 큰 성능 향상을 기대하기는 어려울 수 있습니다.
+그러나 실제로 성능 문제를 일으키는 정확한 종속성을 손으로 메모아이즈 하는 것은 상당히 까다로운 작업입니다.
+
+### Deep Dive
+
+**React Compiler가 어떤 종류의 메모아이제이션을 추가하는 건가요?**
+
+React Compiler 초기 릴리즈 버전에서는 우선 **업데이트 성능을 향상**(컴포넌트 리렌더링)시키는데 집중되어 있습니다.
+따라서 두가지 유즈케이스에 집중합니다:
+
+1. 연쇄적인 컴포넌트 리렌더링 건너뛰는 것
+   - `<Parent />`를 리렌더링하면 `<Parent />`만 변경되었음에도 불구하고 컴포넌트 트리에 있는 많은 컴포넌트가 함께 리렌더링 됩니다.
+2. React 외부에서 값비싼 계산을 건너뛰는 것
+   - 예를 들어, 컴포넌트나 Hook 내에서 `expensiveProcessAReallyLargeArrayOfOBjects()` 같은 함수를 호출하는 것
+
+#### 리렌더링 최적화
+
+React는 현재 상태(더 정확히는: props, state, context)의 함수로써 UI(`UI = f(state)`)를 표현합니다.
+컴포넌트 상태가 바뀔 때, React는 해당 컴포넌트를 리렌더링합니다. 그리고 그 컴포넌트의 모든 Children을 함께 리렌더링합니다.
+(`useMemo()`, `useCallback()`, `React.memo()`로 수동으로 메모아이제이션을 적용하지 않는 한)
+예를 들어, 다음 예제에서 `<FriendList>` 상태가 변경될 때마다 `<MessageButton>`은 리렌더링됩니다:
+
+```jsx
+function FriendList({ friends }) {
+  const onlineCount = useFriendOnlineCount()
+  if (friends.length === 0) {
+    return <NoFriends />
+  }
+  return (
+    <div>
+      <span>{onlineCount} online</span>
+      {friends.map((friend) => (
+        <FriendListCard key={friend.id} friend={friend} />
+      ))}
+      <MessageButton />
+    </div>
+  )
+}
+```
+
+[React Compiler 플레이그라운드에서 이 예제를 실행해보세요](https://playground.react.dev/#N4Igzg9grgTgxgUxALhAMygOzgFwJYSYAEAYjHgpgCYAyeYOAFMEWuZVWEQL4CURwADrEicQgyKEANnkwIAwtEw4iAXiJQwCMhWoB5TDLmKsTXgG5hRInjRFGbXZwB0UygHMcACzWr1ABn4hEWsYBBxYYgAeADkIHQ4uAHoAPksRbisiMIiYYkYs6yiqPAA3FMLrIiiwAAcAQ0wU4GlZBSUcbklDNqikusaKkKrgR0TnAFt62sYHdmp+VRT7SqrqhOo6Bnl6mCoiAGsEAE9VUfmqZzwqLrHqM7ubolTVol5eTOGigFkEMDB6u4EAAhKA4HCEZ5DNZ9ErlLIWYTcEDcIA)
+
+React Compiler는 수동 메모아이제이션에 대한 기능을 자동으로 적용합니다. 그래서 상태가 변경될 때 앱에서 관련된 부분만 리렌더링하도록 하며,
+이를 "세분화된 반응성(fine-grained reactivity)"라고도 합니다.
+이 예시에서는 React Compiler는 `friends`가 변경되더라도 `<FriendListCard />`의 리턴값을 재사용할 수 있다고 판단하여 해당 JSX를
+재생성하지 않고 `friends` 개수가 변경될 때 `<MessageButton>` 리렌더링을 피할 수 있습니다.
+
+#### 값비싼 계산 또한 메모아이제이션 됩니다.
+
+React Compiler는 렌더링하는 동안 사용되는 값비싼 계산에 대해서도 자동으로 메모아이제이션 할 수 있습니다.
+
+```jsx
+// 이 함수는 컴포넌트나 Hook이 아니기 때문에 React Compiler에 의해 메모아이제이션 **되지 않습니다**.
+function expensivelyProcessAReallyLargeArrayOfObjects() {
+  /* ... */
+}
+
+// 이 함수는 컴포넌트이기 때문에 React Compiler에 의해 메모아이제이션 됩니다.
+function TableContainer({ items }) {
+  // 이 함수 호출 결과는 메모아이제이션 됩니다.
+  const data = expensivelyProcessAReallyLargeArrayOfObjects(items)
+  // ...
+}
+```
+
+[React Compiler 플레이그라운드에서 이 예제를 실행해보세요](https://playground.react.dev/#N4Igzg9grgTgxgUxALhAejQAgFTYHIQAuumAtgqRAJYBeCAJpgEYCemASggIZyGYDCEUgAcqAGwQwANJjBUAdokyEAFlTCZ1meUUxdMcIcIjyE8vhBiYVECAGsAOvIBmURYSonMCAB7CzcgBuCGIsAAowEIhgYACCnFxioQAyXDAA5gixMDBcLADyzvlMAFYIvGAAFACUmMCYaNiYAHStOFgAvk5OGJgAshTUdIysHNy8AkbikrIKSqpaWvqGIiZmhE6u7p7ymAAqXEwSguZcCpKV9VSEFBodtcBOmAYmYHz0XIT6ALzefgFUYKhCJRBAxeLcJIsVIZLI5PKFYplCqVa63aoAbm6u0wMAQhFguwAPPRAQA+YAfL4dIloUmBMlODogDpAA)
+
+그러나 `expensivelyProcessAReallyLargeArrayOfObjects`가 정말 값비싼 함수라면, React 외부에서 자체 메모아이제이션을 하는 것을 고려할 수 있습니다:
+
+- React Compiler는 모든 함수가 아닌 React 컴포넌트와 Hook만 메모아이제이션합니다.
+- React Compiler의 메모아이제이션은 여러 컴포넌트나 Hook에 공유되지 않습니다.
+
+따라서 여러 컴포넌트에서 `expensivelyProcessAReallyLargeArrayOfObjects`가 사용된다면, 똑같은 항목이 전달되더라도 값비싼 계산이 반복적으로
+실행됩니다. 코드를 더 복잡하게 만들기 전에 먼저 [프로파일링](https://react.dev/reference/react/useMemo#how-to-tell-if-a-calculation-is-expensive)을 통해 정말로 그렇게 비싼지 확인하는 것이 좋습니다.
+
+## React Compiler는 무엇을 가정하나요?
+
+> 어떤점을 주의해야 할까요?
+
+React Compiler는 애플리케이션 코드가 다음과 같다고 가정합니다:
+
+1. 유효하고 시맨틱한 JavaScript 코드라고 가정합니다.
+2. nullable/optional value나 property에 접근하기 전에 (예를 들어, `strictNullChecks`를 사용하는 TypeScript에서),
+   즉 `if (Object.nullableProperty) { object.nullableProperty.foo }` 나 `object.nullableProperty?.foo`와 같이 체크한다고 가정합니다.
+3. [Rules of React](https://react.dev/reference/rules)를 따른다고 가정합니다.
+
+React Compiler는 수 많은 Rules of React를 정적으로 확인할 수 있으며, 만약 오류를 감지하면 컴파일할 때 해당 부분을 안전하게 스킵합니다.
+오류를 확인하기 위해 [eslint-plugin-react-compiler](https://www.npmjs.com/package/eslint-plugin-react-compiler)를 설치하는 것을 추천합니다.
+
+## React Compiler를 사용해도 되나요?
+
+React Compiler는 아직 실험적인 기능이며 많은 부분이 *거친 상태*입니다. Meta와 같은 회사에서 Production에 사용되었지만,
+React Compiler를 앱 Production에 배포하는 것은 코드베이스의 상태와 Rules of React를 얼마나 잘 준수했는지에 따라 달라질 수 있습니다.
+
+당장 React Compiler를 서둘러 사용할 필요는 없습니다. 안정적인 릴리즈가 나올 때까지 기다렸다가 도입해도 괜찮습니다.
+하지만 React Compiler를 개선하는 데 도움이 되는 [피드백을 제공할 수 있게](https://react.dev/learn/react-compiler#reporting-issues) 앱에서 소규모로 사용해 보시면 좋습니다.
+
+## Getting Started
+
+이 문서에 더해서 추가적인 정보와 커뮤니티 토론을 볼 수 있는 [React Compiler Working Group](https://github.com/reactwg/react-compiler)를
+확인하는 것을 추천드립니다.
+
+### 호환성 체크
+
+React Compiler를 설치하기 이전에 먼저 코드베이스에서 이를 사용할 수 있는지 확인해야 합니다.
+
+```bash
+npx react-compiler-healthcheck@latest
+```
+
+이 스크립트는 다음을 진행합니다:
+
+- 성공적으로 최적화할 수 있는 컴포넌트 수를 확인합니다: 많으면 많을수록 좋습니다.
+- `<StrictMode>` 사용여부 확인: 이 기능을 활성화하고 준수하면 [Rules of React](https://react.dev/reference/rules)이 준수될 가능성이 높습니다.
+- 호환되지 않는 라이브러리 확인: React Compiler와 호환되지 않는 알려진 라이브러리 확인
+
+예를 들어 다음과 같이 결과가 나옵니다:
+
+```bash
+Successfully compiled 8 out of 9 components.
+StrictMode usage not found.
+Found no usage of incompatible libraries.
+```
+
+### eslint-plugin-react-compiler 설치
+
+React Compiler는 eslint plugin도 지원합니다. eslint plugin은 React Compiler와 독립적으로 사용할 수 있으므로
+React Compiler를 사용하지 않더라도 eslint plugin을 사용할 수 있습니다.
+
+```bash
+npm install eslint-plugin-react-compiler
+```
+
+그리고 eslint config를 다음과 같이 추가하세요:
+
+```js
+module.exports = {
+  plugins: ["eslint-plugin-react-compiler"],
+  rules: {
+    "react-compiler/react-compiler": "error",
+  },
+}
+```
+
+eslint plugin은 에디터에서 Rules of React를 위반하는 모든 부분을 표시합니다. 표시된 컴포넌트나 Hook은 최적화를 건너뛰었다는 뜻입니다.
+이는 완전히 괜찮으며 React Compiler는 코드베이스의 다른 컴포넌트를 계속 최적화할 수 있습니다.
+
+**모든 eslint 위반을 바로 수정할 필요는 없습니다.** 최적화되는 컴포넌트와 Hook 양을 늘리기 위해 원하는 속도로 해결할 수 있지만
+React Compiler를 사용하기 전에 모든 것을 수정할 필요는 없습니다.
+
+### 코드베이스에서 React Compiler 사용하기
+
+#### 기존 프로젝트
+
+React Compiler는 [Rules of React](https://react.dev/reference/rules)을 따르는 함수형 컴포넌트와 Hook을 컴파일하도록 설계되었습니다.
+또한 React Compiler는 해당 컴포넌트나 Hook에 대해서 규칙을 위반하는 코드를 처리할 수도(건너뛰어서) 있습니다.
+그러나 JavaScript의 유연한 특성으로 인해 React Compiler는 가능한 모든 위반 코드를 포작할 수 없으며, React Compiler가 실수로
+Rules of React을 위반하는 컴포넌트/Hook을 컴파일하여 정의되지 않은 동작이 발생할 수 있는 오작동(false negative)을 할 수 있습니다.
+
+따라서 기존 프로젝트에 React Compiler를 성공적으로 적용하려면 먼저 제품 코드의 작은 디렉토리부터 시작하는 것이 좋습니다.
+React Compiler가 특정 디레토리 집합에서만 실행되도록 설정하면 됩니다:
+
+```js {3}
+const ReactCompilerConfig = {
+  sources: (filename) => {
+    return filename.indexOf("src/path/to/dir") !== -1
+  },
+}
+```
+
+드문 경우지만 컴파일모드 옵션을 사용하면 컴파일러가 `compilationMode: "annotation"` 옵션을 사용하는 모드에서 실행되도록 구성할 수도 있습니다.
+이렇게 하면 React Compiler는 `"use memo"` 지시어로 주석이 달린 컴포넌트와 Hook만 컴파일하도록 설정할 수 있습니다.
+어노테이션 모드는 얼리 어답터를 돕기 위한 임시 모드이며, `"use memo"` 지시문은 장기적으로 사용할 의도는 없다는 점에 유의해야 합니다.
+
+```js {2,7}
+const ReactCompilerConfig = {
+  compilationMode: "annotation",
+}
+
+// src/app.jsx
+export default function App() {
+  "use memo"
+  // ...
+}
+```
+
+React Compiler를 사용하여 컴파일하고 배포하는데 자신감이 생기면 다른 디렉토리로 범위를 확장하고 전채 앱을 천천히 배포할 수 있습니다.
+
+#### 새로운 프로젝트
+
+새로운 프로젝트를 시작하는 경우 전체 코드베이스에서 React Compiler를 사용하도록 설정할 수 있습니다.
+
+## 사용법
+
+### Babel
+
+```bash
+npm install babel-plugin-react-compiler
+```
+
+React Compiler에는 빌드 파이프라인에서 React Compiler를 사용할 수 있는 Babel plugin을 포함하고 있습니다.
+
+설치 후 Babel 설정에 추가하면 됩니다. 파이프라인에서 React Compiler를 먼저 실행하는 것이 중요합니다:
+
+```js {10}
+// babel.config.js
+const ReactCompilerConfig = {
+  /* ... */
+}
+
+module.exports = function () {
+  return {
+    plugins: [
+      // 먼저 실행되어야 합니다(babel plugin 순서에서 왼쪽/위쪽에 위치할수록 먼저 실행됨)
+      ["babel-plugin-react-compiler", ReactCompilerConfig],
+      // ...
+    ],
+  }
+}
+```
+
+React Compiler는 분석을 위해 입력 소스 정보가 필요하므로 다른 babel plugin보다 `babel-plugin-react-compiler`가 먼저
+실행되어야 합니다.
+
+### Vite
+
+Vite를 사용한다면 vite-plugin-react에 플러그인을 추가하세요.
+
+```js {11}
+// vite.config.js
+const ReactCompilerConfig = {
+  /* ... */
+}
+
+export default defineConfig(() => {
+  return {
+    plugins: [
+      react({
+        babel: {
+          plugins: [["babel-plugin-react-compiler", ReactCompilerConfig]],
+        },
+      }),
+    ],
+    // ...
+  }
+})
+```
+
+### Next.js
+
+Next.js에는 React Compiler를 활성화하기 위한 실험적인 설정을 가지고 있습니다.
+이 설정은 자동으로 Babel이 `babel-plugin-react-compiler`를 설정하도록 합니다.
+
+- React 19 RC를 사용하는 Next.js canary버전을 설치하세요.
+- `babel-plugin-react-compiler`를 설치하세요.
+
+```bash
+npm install next@canary babel-plugin-react-compiler
+```
+
+`next.config.js`에 실험적인 설정을 다음과 같이 구성하세요:
+
+```js {4:6}
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    reactCompiler: true,
+  },
+}
+
+module.exports = nextConfig
+```
+
+이 실험적인 설정을 사용하면 React Compiler가 지원됩니다:
+
+- App Router
+- Pages Router
+- webpack(default)
+- Turbopack (`--turbo`를 통해 opt-in)
+
+### Remix
+
+`vite-plugin-babel`를 설치하고 React Compiler babel plugin을 추가하세요:
+
+```bash
+npm install vite-plugin-babel
+```
+
+```js {2,17}
+// vite.config.js
+import babel from "vite-plugin-babel"
+
+const ReactCompilerConfig = {
+  /* ... */
+}
+
+export default defineConfig({
+  plugins: [
+    remix({
+      /* ... */
+    }),
+    babel({
+      filter: /\.[jt]sx?$/,
+      babelConfig: {
+        presets: ["@babel/preset-typescript"], // 먄약 TypeScript를 사용한다면
+        plugins: [["babel-plugin-react-compiler", ReactCompilerConfig]],
+      },
+    }),
+  ],
+})
+```
+
+### Webpack
+
+React Compiler에 대한 loader를 만들 수 있습니다:
+
+```js
+const ReactCompilerConfig = { /* ... */ };
+const BabelPluginReactCompiler = require('babel-plugin-react-compiler');
+
+function reactCompilerLoader(sourceCode, sourceMap) {
+  // ...
+  const result = transformSync(sourceCode, {
+    // ...
+    plugins: [
+      [BabelPluginReactCompiler, ReactCompilerConfig],
+    ],
+  // ...
+  });
+
+  if (result === null) {
+    this.callback(
+      Error(
+        `Failed to transform "${options.filename}"`
+      )
+    );
+    return;
+  }
+
+  this.callback(
+    null,
+    result.code
+    result.map === null ? undefined : result.map
+  );
+}
+
+module.exports = reactCompilerLoader;
+```
+
+### Expo
+
+- https://react.dev/learn/react-compiler#usage-with-expo
+
+### Metro(React Native)
+
+- https://react.dev/learn/react-compiler#usage-with-react-native-metro
+
+## Troubleshooting
+
+이슈를 보고하려면 먼저 [React Compiler Playground](https://playground.react.dev/)에서 최소한의 예제를 만들어 버그 리포트에 포함하세요.
+[facebook/react](https://github.com/facebook/react/issues) 레파지토리에 이슈를 오픈할 수 있습니다.
+
+또한 React Compiler Working Group에 피드백을 제공할 수도 있습니다. 자세한 내용은 [여기](https://github.com/reactwg/react-compiler)를 참조하세요.
+
+### `(0 , _c) is not a function` error
+
+이 오류는 React 19 RC 이상을 사용하지 않는 경우에 발생합니다. 이 문제를 해결하려면 먼저 [React 19 RC로 업그레이드](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)하세요.
+
+React 19로 업그레이드할 수 없는 경우 [Working Group](https://github.com/reactwg/react-compiler/discussions/6)에 설명된 대로 cache 함수를 사용하여 시도해볼 수 있습니다.
+그러나 이 방법은 권장되지 않으며 가능하면 React 19로 업그레이드해야 합니다.
+
+### 컴포넌트가 최적화되었는지 어떻게 알 수 있나요?
+
+[React Devtools](https://react.dev/learn/react-developer-tools)(v5.0+)는 React Compiler를 기본적으로 지원합니다.
+컴파일러에 최적화된 컴포넌트 옆에 "Memo ✨" 배지가 표시됩니다.
+
+![A screenshot for a badge through components optimized using react compiler in react devtools](/post/react/react-compiler/react-devtools-for-react-compiler-optimization.png)
+
+### 컴파일 이후에 무언가가 잘 작동하지 않습니다
+
+`eslint-plugin-react-compiler`를 설치한 경우 React Compiler는 에디터에서 Rules of React를 위반하는 모든 것을 표시합니다.
+이렇게 표시되면 React Compiler가 해당 컴포넌트나 Hook을 최적화하는 과정을 건너뛰었다는 뜻입니다. 이는 완전히 괜찮으며 React Compiler는
+코드베이스의 다른 컴포넌트를 계속 최적화할 수 있습니다. 모든 eslint 위반을 바로 수정할 필요는 없습니다. 원하는 속도로 해결할 수 있습니다.
+
+그러나 유연하고 동적인 JavaScript의 특성으로 인해 React Compiler는 모든 위반 코드를 포착할 수 없습니다.
+이러한 경우 무한 루프와 같은 버그 및 정의되지 않은 동작이 발생할 수 있습니다.
+
+컴파일 이후에 앱이 제대로 도작하지 않고 eslint 오류가 표시되지 않는다면 React Compiler가 코드를 잘못 컴파일하고 있을 수도 있습니다.
+이를 확인하려면 관련성이 있다고 생각되는 컴포넌트나 Hook `"use no memo"` 지시문을 사용하여 컴파일을 제외하여 문제를 해결해 보세요.
+
+```jsx
+function SuspiciousComponent() {
+  // 이 컴포넌트가 React 컴파일러에서 컴파일되지 않도록 합니다.
+  "use no memo"
+  // ...
+}
+```
+
+<Callout title="Note">
+  `"use no memo"` 지시문은 React Compiler의 특정 컴포넌트나 Hook을 컴파일하지 않도록 하는 임시
+  방법입니다. 이 지시어는 `"use client"`와 같이 오래 사용되지는 않을 것입니다.
+  <br />꼭 필요한 경우가 아니라면 이 지시어를 사용하지 않는 것이 좋습니다. 코드를 수정하더라도
+  지시어를 제거하지 않으면 React Compiler가 컴파일을 영원히 건너뛰게 됩니다.
+</Callout>
+
+오류가 사라지면 `"use no memo"` 지시문을 제거해도 문제가 다시 발생하는지 확인하세요.
+그런 다음 [React Compiler Playground](https://playground.react.dev/)를 사용하여 버그 리포트하여 문제 해결에 도움을 요청하세요.
+
+### 기타 문제
+
+https://github.com/reactwg/react-compiler/discussions/7 을 참조하세요.
+
+## 마무리하며
+
+최근 React Compiler가 실험적 기능으로 공개되며 많은 개발자들이 사용해본 후기를 커뮤니티를 통해 접할 수 있었습니다.
+
+<Tweet id="1794127501389685153" />
+
+React Compiler가 React 컴포넌트/Hook을 최적화하는데 절대적 은탄환은 아니지만,
+코드베이스에 더 이상 `useMemo`, `useCallback`과 같은 불필요한 코드를 추가하면서 성능을 최적화할 필요가 없어진다는 것은 큰 변화입니다.
+
+React Compiler를 사용하면서 성능 최적화에 대한 부담을 덜어주고, 개발자들은 더 많은 시간을 코드의 가독성과 유지보수에 집중할 수 있게 되었습니다.
+곧 제 프로젝트에도 React Compiler를 적용해보고 경험을 공유해보려고 합니다.
+
+## reference
+
+- https://react.dev/learn/react-compiler

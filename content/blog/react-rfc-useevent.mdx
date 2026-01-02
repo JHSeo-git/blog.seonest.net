@@ -1,0 +1,381 @@
+---
+title: "React RFC: useEvent()"
+description: React 팀에서 새로운 Hook인 useEvent()에 대한 RFC를 공개했습니다. 어떤 문제점에서 출발했는지 살펴보았습니다.
+author: seonest
+date: 2022-05-14T15:01:34.471Z
+---
+
+> A Hook to define an event handler with an always-stable function identity
+> (always-stable 함수로 이벤트 핸들러를 정의하기 위한 hook)
+> _- [RFC: useEvent()](https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md)_
+
+`useEvent` hook에 대한 내용의 글을 봤고 굉장히 흥미로운 내용이 있어서 글로 옮겨보려고 합니다.
+
+아직 정식 릴리즈 되지 않은 기능이지만 많은 사람들이 기대하는 hook인건 확실한 것 같습니다.
+
+어떤 문제점에서 출발했는지 살펴보도록 하겠습니다.
+
+## What is the problem?
+
+### 1. 이벤트 핸들러에서 states/props를 읽는 것은 최적화를 방해합니다.
+
+> re-render시에 함수가 불필요하게 매번 재생성되기 때문에
+
+아래 예시를 보겠습니다.
+
+```tsx
+function _SendButton({ onClick }: { onClick: () => void }) {
+  console.log("render SendButton")
+  return <button onClick={onClick}>send</button>
+}
+
+const SendButton = React.memo(_SendButton)
+
+export default function App() {
+  const [text, setText] = React.useState("")
+  const onInput = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setText(e.currentTarget.value)
+  }, [])
+
+  const send = () => {
+    console.log("send:", text)
+  }
+
+  return (
+    <div>
+      <input value={text} onChange={onInput} />
+      <SendButton onClick={send} />
+    </div>
+  )
+}
+```
+
+`<input>`에 입력을 하면 `App`이 리렌더링 되므로 `send` 함수도 대상이 되며 `SendButton` 또한 prop 영향으로 리렌더링 됩니다.
+
+이 문제를 해결하기 위해서 보통 `useCallback`을 사용합니다.
+
+```jsx
+const send = React.useCallback(() => {
+  console.log("send:", text)
+}, [])
+```
+
+`useCallback`으로 `send`함수를 감싼다면 리렌더링 시에 함수가 재생성되지 않습니다. 그러나 이 예시에는 문제가 있습니다. deps 의존성 배열이 비어있기때문에 한 번만 생성되므로 최초 `text` 상태인 빈 값 만 보여지게 됩니다.
+
+hook은 fiber 트리에서 _실제 갈고리처럼_ 의존성 data를 가져오기 때문에 명시적 의존성 변경이 없다면 업데이트 될 수 없습니다.
+
+따라서 `text`를 deps 배열에 추가해야 합니다.
+
+```jsx
+const send = React.useCallback(() => {
+  console.log("send:", text)
+}, [text])
+```
+
+그러나... `text` 의존성이 있는 한 리렌더링 문제를 피할 수는 없습니다.
+
+### 2. useEffect는 이벤트 핸들러가 변경될 때 재실행되선 안됩니다.
+
+이번 예시에서 `Chat` 컴포넌트가 있습니다.
+`Chat` 컴포넌트는 room에 연결될 때 몇 가지 효과를 가집니다.
+
+room에 들어가거나 메시지를 받을 때 선택된 `theme`을 가진 toast를 보여줍니다.
+그리고 `muted` 셋팅에 따라 사운드를 발생합니다.
+
+```jsx
+function Chat({ selectedRoom }) {
+  const [muted, setMuted] = useState(false)
+  const theme = useContext(ThemeContext)
+
+  useEffect(() => {
+    const socket = createSocket("/chat/" + selectedRoom)
+    socket.on("connected", async () => {
+      await checkConnection(selectedRoom)
+      showToast(theme, "Connected to " + selectedRoom)
+    })
+    socket.on("message", (message) => {
+      showToast(theme, "New message: " + message)
+      if (!muted) {
+        playSound()
+      }
+    })
+    socket.connect()
+    return () => socket.dispose()
+  }, [selectedRoom, theme, muted]) // 🟡 의존성 중 하나라도 변경되면 재 실행됩니다.
+  // ...
+}
+```
+
+위 에시의 문제는 `theme`이나 `muted` 상태가 변경될 때마다 `useEffect`가 재실행(소켓 재연결)이 발생한다는 것입니다. `theme`, `muted`가 effect 내부에서 사용되므로 의존성 배열에 선언되어야 합니다. 그래서 그 중 하나라도 변경된다면 `useEffect`는 재실행되고 소켓을 destroy, recreating 하게 됩니다.
+
+소켓 callback을 `useEffect` 밖으로 옮기고 `useCallback`으로 감싸더라도 의존성 배열에는 `theme`, `muted`를 포함해야 하고, `useEffect`는 이 callback을 의존하기에 여전히 동일하게 `useEffect`는 재실행됩니다.
+
+```jsx
+  const onConnected = useCallback((connectedRoom) => {
+    showToast(theme, 'Connected to' + connectedRoom);
+  }, [theme]);
+
+  const onMessage = useCallback((message) => {
+    showToast(theme, 'New message: ' + message);
+    if (!muted) {
+      playSound();
+    }
+  }, [muted]);
+
+  useEffect(() => {
+    ...
+    socket.on('connected', async () => {
+      await checkConnection(selectedRoom);
+      onConnected(selectedRoom);
+    });
+    socket.on('message', onMessage);
+    ...
+  }, [selectedRoom, onConnected, onMessage]);
+```
+
+재생성, 재실행을 막기 위해 `theme`, `muted`를 의존성 배열에서 제거한다면 원하는 동작을 하지 못합니다. 초기 값 만을 계속 보게 될 것입니다. theme을 변경하더라도 바뀌지 않을 것이며, 음소거를 했더라도 사운드는 계속해서 들릴 것입니다.
+
+## useEvent()
+
+> RFC단계이며 정식 버전에 곧 릴리즈 될 것으로...
+
+```jsx
+useEvent(handler)
+```
+
+위 문제들로 인해 `useEvent()` 등장하게 됩니다.
+
+memoize된 callback(`useCallback`)을 반환하는 hook입니다.
+
+`useEvent()` hook [간략한 내부 구현](https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md#internal-implementation)을 보면 Ref를 통해 구현합니다.
+
+```jsx
+function useEvent(handler) {
+  const handlerRef = useRef(null)
+
+  // layout effect 전에 실행 합니다.
+  useLayoutEffect(() => {
+    handlerRef.current = handler
+  })
+
+  return useCallback((...args) => {
+    // 렌더리 중에 호출되면 에러를 throw 합니다.
+    const fn = handlerRef.current
+    return fn(...args)
+  }, [])
+}
+```
+
+> concurrent mode에서 ref를 셋팅하는 것은 안전하지 않기 때문에 layout effect전에 해야합니다.
+>
+> 1. 전달된 handler을 담을 ref를 선언하고
+> 2. useLayoutEffect를 통해 ref에 전달된 handler을 담습니다.
+> 3. 이것(ref에 담긴 handler)을 호출하는 함수를 useCallback으로 감싸서 반환합니다.
+
+다시 말해, 전달한 함수의 최신 버전을 호출하는 안정적인 함수를 만들어줍니다.
+
+`useEvent` 실제 구현은 위 코드와 몇 가지 차이점이 있습니다.
+
+주석에서 작성되어 있지만 렌더링 시에 호출이 되면 에러를 throw합니다.
+(`useEffect`에서 호출되거나 다른 시기에 호출되는 것은 괜찮습니다.)
+
+그래서 렌더링 동안에는 이 함수는 불투명(opaque)하게 처리되며 절대 호출되지 않도록 강제합니다.
+
+"현재" 버전의 handler는 모든 layout effect가 동작하기 전에 바뀝니다.
+이를 통해, 어느 한 컴포넌트의 effect가 다른 컴포넌트 상태의 이전 버전을 볼 수 있는 문제(userland's pitfall)를 피할 수 있습니다.
+
+> ("현재" handler로 변경되는 정확한 시점은 [미해결 상태](https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md#unresolved-questions)입니다.)
+
+그렇다면 이 `useEvent`를 통해 위 문제들을 어떻게 해결할 수 있을까요?
+
+### 1. 이벤트 핸들러에서 states/props를 읽는 것은 최적화를 방해합니다.
+
+```tsx
+const send = useEvent(() => {
+  console.log("send:", text)
+})
+```
+
+`send`함수를 `useEvent()`로 감싸서 처리하는 것으로 간단하게 가능합니다.
+text가 바뀌어도 함수가 재생성되지 않습니다.
+
+### 2. useEffect는 이벤트 핸들러가 변경될 때 재실행되선 안됩니다.
+
+```jsx
+  // ✅ Stable
+  const onConnected = useEvent(connectedRoom => {
+    showToast(theme, 'Connected to ' + connectedRoom);
+  });
+
+  // ✅ Stable
+  const onMessage = useEvent(message => {
+    showToast(theme, 'New message: ' + message);
+    if (!muted) {
+      playSound();
+    }
+  });
+
+  useEffect(() => {
+    ...
+    socket.on('connected', async () => {
+      await checkConnection(selectedRoom);
+      onConnected(selectedRoom);
+    });
+    socket.on('message', onMessage);
+    ...
+  }, [selectedRoom]); // ✅ room이 바뀔 때에만 재실행됩니다.
+```
+
+`useEvent`를 onConnected 함수와 onMessage 함수를 `useCallback` 대신 사용하여 의존성을 제거하였습니다. 그래서 `useEffect`에서 의존성도 제거할 수 있습니다.
+
+이를 통해
+
+- `theme`, `muted`가 바뀌어도 함수가 재생성되지 않으며
+- `selectedRoom`이 바뀔 때만 `useEffect`가 재실행됩니다.
+
+## 주의해야 할 점
+
+> render 시에 호출되는 함수인 경우엔 여전히 useCallback을 사용해야 합니다.
+
+`useEvent`는 React Ref를 사용하기 때문에 concurrent 기능에 영향을 줄 수 있기에 렌더링 시에 호출되면 안됩니다.
+
+예를 들어 `renderItem` callback은 `useEvent`를 사용하면 안됩니다. 대신 `useCallback`을 사용해야 합니다.
+
+```jsx
+function ThemedGrid() {
+  const theme = useContext(ThemeContext)
+  const renderItem = useCallback(
+    (item) => {
+      // 렌더링 시 호출되기에 이벤트가 아닙니다.
+      return <Row {...item} theme={theme} />
+    },
+    [theme]
+  )
+  return <Grid renderItem={renderItem} />
+}
+```
+
+> linter: callback앞에 on, handle이 붙은 callback인 경우에 `useEvent`를 사용해야 하는 것을 lint하도록
+
+## 염려되는 점
+
+- **React에 새로운 개념이 추가되는 점입니다.**
+  - 사람들은 이미 새로운 함수 정의와 관련된 사례("`useCallback`을 모든 곳에 사용해야되나요?")로 어려움을 겪고 있습니다.
+  - 그러나 `useEvent`가 실제 사용에서 불가피하다고 생각합니다. 왜냐하면 first-class API, 공유된 표현, 베스트 practices의 이점들 때문입니다.
+- **일반적인 이벤트 핸들러와 비교했을 때 `useEvent`로 감싸는 것은 더 시끄러워보입니다.**
+  - 이벤트 핸들러가 아닌 동일한 문제를 위해 사용하는 `useCallback`과 비교해야 합니다. `useEvent`는 좀 더 사용하기 편하게 개선되었습니다.(의존성 배열 없음, invalidation 없음). 또한 선택 사항이므로 원하는 경우 코드를 그대로 유지할 수 있습니다.
+- **`useEvent`라는 명칭, DOM 이벤트 핸들러보다 더 넓은 용어를 포함합니다.**
+  - `useStableCallback`이나 `useCommittedCallback`으로도 부를 수 있습니다. 그러나 요점은 이벤트 핸들러에 사용하도록 권장하는 것입니다.
+- **`useCallback`에 비교해서 `useEvent`는 commit 단계에서 추가적인 작업이 필요합니다.**
+  - 그러나 실제로 이러한 패턴은 이미 많이 사용되고 있습니다. 이런 사례를 가진 많은 라이브러리와 제품이 존재하지만 타이밍 문제로 고통받는 솔루션 보다 전반적으로 더 나은 것처럼 보입니다.
+- **몇 가지 엣지 케이스가 있습니다. 그러나 크게 문제가 있진 않을 거라고 생각합니다.**
+  - `useEvent`에서의 "현재" 버전의 값은 "호출" 당시의 값을 의미합니다. 이것이 진정한 "라이브" 바인딩을 얻지 못한다는 것을 의미합니다. 이러한 이유로 이벤트는 일반적으로 비동기식이 되면 안됩니다. 단지 fire-and-forget(발생시키고 잊어버려라)으로 다루는게 가장 좋습니다.
+  - `onSomething={cond ? handler1 : handler2}`와 같은 "조건부 이벤트" 경우에 `onSomething`이 의존성에 포함되어있다면 `cond`가 변경될 때 재실행 될 것입니다. `useEvent`로 감싼다면 "보호"할 수 있습니다.
+
+## Alternative(?): useRefData
+
+> _- [Alternative to useEvent](https://jser.dev/react/2022/05/07/alternatives-to-useevent.html)_
+
+ref를 이용하여 대체할 수 있는 hook을 만들어보면서 더 이해해보려 합니다.
+
+```tsx
+const [text, setText] = React.useState("")
+const textRef = React.useRef(text)
+
+React.useLayoutEffect(() => {
+  textRef.current = text
+}, [text])
+
+const send = React.useCallback(() => {
+  console.log("send:", textRef.current)
+}, [])
+```
+
+> concurrent mode에서 ref를 셋팅하는 것은 안전하지 않기 때문에 useEffect보다 더 이른시기에 동작하는 useLayoutEffect에서 사용합니다.
+
+위 코드는 잘 동작합니다. 그러나 더 많은 상태를 관리해야된다면 어떨까요?
+코드는 더 못생겨질 것이고 관리는 더 어려워집니다.
+
+그래서 재사용가능한 hook으로 다시 만들어보자면,
+
+```jsx
+function useRefData(data) {
+  const ref = React.useRef(data)
+  React.useLayoutEffect(() => {
+    ref.current = data
+  }, [data])
+  return ref
+}
+```
+
+```jsx
+const textRef1 = useRefData(text1)
+const textRef2 = useRefData(text2)
+
+const send = React.useCallback(() => {
+  console.log("send:", textRef1.current, textRef2.current)
+}, [])
+```
+
+`useRefData`라는 hook을 만들어 조금 더 보기 좋아보이게 바꾸어 보았습니다.
+그러나 여전히 "아름답진" 않습니다. 한 개의 data만 받을 수 있기도 하고 많은 상태가 있을 땐 여전히 못생겼습니다.
+
+```jsx
+function useRefData(...args) {
+  const refs = args.map(React.useRef)
+  React.useLayoutEffect(() => {
+    for (let i = 0; i < args.length; i++) {
+      refs[i].current = args[i]
+    }
+  }, args)
+
+  return React.useCallback(() => refs.map((ref) => ref.current), [])
+}
+```
+
+```jsx
+const getData = useRefData(text1, text2)
+
+const send = React.useCallback(() => {
+  const [text1, text2] = getData()
+  console.log("send:", text1, text2)
+}, [getData])
+```
+
+`useEvent`와 매우 흡사한 느낌입니다. `useEvent`와 비교해서 거의 동일한 개념적 구현을 가집니다.
+
+```jsx
+const rawCallback = () => {
+  console.log("send:", text1, text2)
+}
+
+const callback = useRefData(rawCallback)()[0]
+```
+
+1. `useRefData`: 입력 데이터를 안정화
+2. `useEvent`: 사용을 안정화
+
+어떤 것이 더 나아보이나요?
+
+1. `useRefData`: 이해하기 쉽지만 망치기도 쉽습니다.
+2. `useEvent`: 추가적인 이해가 필요하지만 관리하기 더 쉽습니다.
+
+## 마무리하며
+
+`useCallback`과 의존성 문제로 인해서 `Ref`를 가끔 사용하면서 시간을 꽤 소비할 경우가 많았는데 이 hook이 나온다면 훨씬 간단하게 문제를 해결할 수 있을 것 같다는 생각이 듭니다.
+
+다만 위에도 작성되어있듯이 점점 더 복잡해지는 느낌은 듭니다.
+(~~나만 그런걸 수도...~~)
+
+명칭에 Event가 들어가서 약간 헷갈릴 수도 있을 것 같은데 이벤트 핸들러에 주로 사용되도록 권장하기에 괜찮을 것 같기도 합니다. 다른 것도 마찬가지니까 어느정도 명칭에 익숙해지면 자연스럽게 받아들여지지 않을까 싶습니다.
+
+다음에는 이전 포스트에 React Deep Dive하는 글에 이어서 써볼까 싶습니다.
+
+> 여담이긴한데 최근에 RN을 만지고 있는데 네이티브쪽은 영 모르겠네여 ㄷㄷ
+> 근데 Flutter3가 나왔다고 하니 뭔가... Flutter를 해볼껄 그랬나 싶기도 하고...
+> 요샌 이러고 있습니다. ㅎ
+
+## reference
+
+- https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md
+- https://jser.dev/react/2022/05/07/alternatives-to-useevent.html
