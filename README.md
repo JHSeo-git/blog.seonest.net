@@ -1,6 +1,6 @@
 # blog.seonest.net
 
-![seonest](./opengraph-image.png)
+![seonest](./app/opengraph-image.png)
 
 ## About this project
 
