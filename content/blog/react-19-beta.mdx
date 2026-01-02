@@ -398,13 +398,12 @@ Server Actions은 `"use server"` 지시어가 사용되면 프레임워크는 �
 자동으로 생성하고 해당 참조를 클라이언트 컴포넌트에 전달합니다.
 클라이언트에서 해당 함수가 호출되면 React는 서버에 함수를 실행하라는 요청을 보내고 결과를 반환합니다.
 
-<Callout title="Note">
-  <p>**서버 컴포넌트에 대해 지시어는 없습니다.**</p>
-  <p>
+<Callout title="서버 컴포넌트에 대해 지시어는 없습니다">
+  <>
     흔히 오해하는 것은 서버 컴포넌트는 `"use server"`로 알려져있지만 실제로는 서버 컴포넌트에 대한
     지시어는 없습니다. `"use server"` 지시어는 Server Actions에서 사용됩니다.
-  </p>
-  <p>자세한 내용은 [Directives](https://react.dev/reference/rsc/directives)를 확인하세요.</p>
+  </>
+  <>자세한 내용은 [Directives](https://react.dev/reference/rsc/directives)를 확인하세요.</>
 </Callout>
 
 ## React 19 개선점
@@ -498,13 +497,11 @@ function App({ children }) {
 이는 DOM ref, 클래스 컴포넌트에서 ref, `useImerativeHandle`에서 모두 동일하게 동작합니다.
 
 <Callout title="Note">
-  <p>
+  <>
     이전에는 React는 컴포넌트가 언마운트 할 때 `ref` 함수를 `null`로 호출했습니다. `ref`가 cleanup
     function을 반환한다면, 이제 React는 이 단계(`null`로 호출)를 건너뜁니다.
-  </p>
-  <p>
-    향후 버전에서는 컴포넌트 언마운트 시에 `null`로 ref를 호출하는 부분을 deprecate할 예정입니다.
-  </p>
+  </>
+  <>향후 버전에서는 컴포넌트 언마운트 시에 `null`로 ref를 호출하는 부분을 deprecate할 예정입니다.</>
 </Callout>
 
 `ref` cleanup function이 도입되었기 때문에 `ref` 콜백 함수에서 다른 것을 반환하는 것이
@@ -566,14 +563,11 @@ function BlogPost({ post }) {
 React가 위 컴포넌트를 렌더링할 때, `<title>`, `<link>`, `<meta>` 태그를 확인하고, 자동으로 `<head>`로 hoist 합니다.
 네이티브로 이러한 메타데이터 태그를 지원함으로써, client-only 앱, 스트리밍 SSR, 서버 컴포넌트에서 모두 잘 동작할 수 있도록 합니다.
 
-<Callout title="Note">
-  <p>**메타데이터 라이브러리가 여전히 필요할지도 모릅니다**</p>
-  <p>
-    간단한 사용 케이스에서는 Document 메타데이터를 렌더링하는 것이 적합할 수 있지만 라이브러리는
-    현재 라우트 기반으로 일반적인 메타데이터를 특정 메타데이터로 재정의하는 것과 같은 보다 강력한
-    기능을 제공합니다. [`react-helmet`](https://github.com/nfl/react-helmet)과 같은 라이브러리나
-    프레임워크를 통해서 이러한 기능을 사용하면 보다 더 쉽게 지원할 수도 있습니다.
-  </p>
+<Callout title="메타데이터 라이브러리가 여전히 필요할지도 모릅니다">
+  간단한 사용 케이스에서는 Document 메타데이터를 렌더링하는 것이 적합할 수 있지만 라이브러리는 현재
+  라우트 기반으로 일반적인 메타데이터를 특정 메타데이터로 재정의하는 것과 같은 보다 강력한 기능을
+  제공합니다. [`react-helmet`](https://github.com/nfl/react-helmet)과 같은 라이브러리나 프레임워크를
+  통해서 이러한 기능을 사용하면 보다 더 쉽게 지원할 수도 있습니다.
 </Callout>
 
 더 많은 정보를 확인하려면 [`<title>`](https://react.dev/reference/react-dom/components/title), [`<link>`](https://react.dev/reference/react-dom/components/link), [`<meta>`](https://react.dev/reference/react-dom/components/meta)를 확인하세요.

@@ -586,7 +586,7 @@ ReactDOMServer.renderToReadableStream(element, options)
 ```
 
 ```jsx
-let controller = new AbortController();
+let controller = new AbortController()
 try {
   let stream = await renderToReadableStream(
     <html>
@@ -595,20 +595,20 @@ try {
     {
       signal: controller.signal,
     }
-  );
+  )
 
   // This is to wait for all suspense boundaries to be ready. You can uncomment
   // this line if you don't want to stream to the client
   // await stream.allReady;
 
   return new Response(stream, {
-    headers: { 'Content-Type': 'text/html' },
-  });
+    headers: { "Content-Type": "text/html" },
+  })
 } catch (error) {
   return new Response('<!doctype html><p>Loading...</p><script src="clientrender.js"></script>', {
     status: 500,
-    headers: { 'Content-Type': 'text/html' },
-  });
+    headers: { "Content-Type": "text/html" },
+  })
 }
 ```
 

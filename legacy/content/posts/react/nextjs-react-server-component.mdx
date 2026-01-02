@@ -155,7 +155,7 @@ return {
   props: {
     data: JSON.parse(JSON.stringify(data)),
   },
-};
+}
 ```
 
 위 형태로 반환해서 넘겨주는 것으로 해결했습니다. 아마 JSON 형태가 아닌 값이 있을 때 문제가 생기는 것 같아 한 번 감싸서 처리하도록 변경했습니다.

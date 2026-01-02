@@ -64,10 +64,10 @@ src
 첫 번째는 component를 쉽게 import하기를 원했습니다. 그리고 아래와 같이 쓰기를 바랬습니다.
 
 ```js
-import Button from '../Button';
-
 // Or, using aliases:
-import Button from '@components/Button';
+import Button from "@components/Button"
+
+import Button from "../Button"
 ```
 
 그 다음으로는 IDE에서 작업할 때 `index.js`이 넘쳐나는 것을 원하지 않습니다.
@@ -333,10 +333,11 @@ Webpack은 _aliases_ 를 만들어 쓸 수 있게 해줍니다.
 
 ```js
 // This:
-import { sortCategories } from '../../helpers/category.helpers';
 
 // …turns into this:
-import { sortCategories } from '@helpers/category.helpers';
+import { sortCategories } from "@helpers/category.helpers"
+
+import { sortCategories } from "../../helpers/category.helpers"
 ```
 
 **어떻게 동작하는지:** `@helpers`는 `/src/helpers` 폴더를 alias 합니다.

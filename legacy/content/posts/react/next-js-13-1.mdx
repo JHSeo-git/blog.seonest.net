@@ -196,12 +196,11 @@ import { Button, Dropdown, Slider } from "acme-ui"
 
 ```js
 // Before (with barrel file)
-import { Button, Slider, Dropdown } from '@acme/ui';
-
+import { Button, Dropdown, Slider } from "@acme/ui"
 // After (with modularized imports from plugin)
-import { Button } from '@acme/ui/dist/button';
-import { Slider } from '@acme/ui/dist/slider';
-import { Dropdown } from '@acme/ui/dist/dropdown';
+import { Button } from "@acme/ui/dist/button"
+import { Dropdown } from "@acme/ui/dist/dropdown"
+import { Slider } from "@acme/ui/dist/slider"
 ```
 
 `next.config.js`에서 `modularizeImports` 옵션을 사용하세요.
