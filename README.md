@@ -1,6 +1,6 @@
 # blog.seonest.net
 
-![seonest](./src/app/opengraph-image.png)
+![seonest](./opengraph-image.png)
 
 ## About this project
 
@@ -13,25 +13,23 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
 
 ## Stack
 
-- [React](https://beta.reactjs.org/)
+- [React](https://react.dev/)
   - [v19.x](https://www.npmjs.com/package/react)
-- [Next.js](https://beta.nextjs.org/)
-  - [v15.x](https://www.npmjs.com/package/next)
-  - [App Router](https://beta.nextjs.org/docs/app-directory-roadmap)
+- [Next.js](https://nextjs.org/)
+  - [v16.x](https://www.npmjs.com/package/next)
+  - [App Router](https://nextjs.org/docs/app)
 - DB
   - [Prisma](https://www.prisma.io/)
   - [Supabase](https://supabase.io/)
 - UI
-  - [framer-motion](https://www.framer.com/motion/)
+  - [tailwindcss v4](https://tailwindcss.com/)
   - [next-themes](https://github.com/pacocoursey/next-themes)
-  - [radix-ui](https://www.radix-ui.com/)
-  - [tailwindcss](https://tailwindcss.com/)
+  - [lucide-react](https://lucide.dev/)
+  - [@paper-design/shaders-react](https://paper.design/)
 - MDX
-  - [contentlayer2](https://github.com/timlrx/contentlayer2)
-  - [remark-gfm](https://github.com/remarkjs/remark-gfm)
-  - [rehype-autolink-headings](https://github.com/rehypejs/rehype-autolink-headings)
+  - [fumadocs](https://fumadocs.vercel.app/) (fumadocs-mdx, fumadocs-core, fumadocs-ui)
+  - [shiki](https://shiki.style/)
   - [rehype-pretty-code](https://github.com/atomiks/rehype-pretty-code)
-  - [rehype-slug](https://github.com/rehypejs/rehype-slug)
 - [pnpm](https://pnpm.io/)
 
 ## Running Locally
@@ -56,7 +54,7 @@ copy .env.example to .env and edit it.
 
 ```bash
 # supabase
-# Connect to Supabase via connection pooling with Supavisor.
+# Connect to Supabase via connection pooling.
 SUPABASE_DATABASE_URL="postgres://postgres.../postgres?schema=preview&pgbouncer=true&connection_limit=1"
 # Direct connection to the database. Used for migrations.
 DIRECT_URL="postgres://postgres.../postgres?schema=preview&pgbouncer=true&connection_limit=1"
