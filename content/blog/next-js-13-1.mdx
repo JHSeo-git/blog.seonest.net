@@ -1,0 +1,253 @@
+---
+title: Next.js 13.1
+description: Next.js의 13.1 업데이트된 내용을 확인해보았습니다.
+author: seonest
+date: 2022-12-25T09:19:59.935Z
+---
+
+## 들어가면서
+
+Next.js 13 버전이 나오면서 새로운 layout 기능을 추가했습니다.
+아직 이 블로그 프로젝트에는 적용하진 못했지만 [토이 프로젝트](https://github.com/JHSeo-git/blogmark)를 진행하면서 `/app`을 포함한 여러 새로운 기능들을 사용해보았습니다.
+아직은 부족한 점도 있었다고 느꼈는데 많은 좋은 점을 느꼈습니다.
+
+커뮤니티의 피드백을 빠른 시간내에 수용하여 13.1 버전이 릴리즈 되었습니다.
+Next.js 사이트에서 13.1버전 릴리즈와 함께 공개된 [글](https://nextjs.org/blog/next-13-1)을 옮기보면서 업데이트된 기능들을 살펴보려고 합니다.
+
+## Next.js 13.1 릴리즈
+
+- [app폴더 (Beta) 개선사항](#app폴더-beta-개선사항): 안정성과 성능 개선하였습니다.
+- [내부 모듈 Transpilation(stable)](#내부-모듈-transpilationstable): `next-transpile-modules`을 core로 가져왔습니다.
+- [Edge Runtime(stable)](#edge-runtimestable): Edge를 위한 light Node.js 런타임입니다.
+- [Turbopack 업데이트](#turbopack-업데이트): Tailwind CSS, `next/image`, `next/font` 등을 지원합니다.
+- [미들웨어 개선사항](#미들웨어-개선사항): response를 return하고 request header를 설정할 수 있습니다.
+- [SWC Import Resolution](#swc-import-resolution): [barrel 파일](https://github.com/basarat/typescript-book/blob/master/docs/tips/barrel.md#barrel)을 사용할 때 더 작은 JavaScript 번들을 만들 수 있습니다.
+- [추가 개선사항](#추가-개선사항): 메모시 사용 개선, 새로운 탬플릿 등
+
+## app폴더 (Beta) 개선사항
+
+Next.js 13 버전에서 새로운 `app` 폴더(beta)를 발표했습니다.
+새로운 라우팅과 데이터 fetching 시스템은 기존 `pages`폴더에서 `app`폴더로 점진적으로 적용할 수 있습니다.
+
+`app`폴더는 많은 이점을 제공합니다. 향상된 레이아웃, 컴포넌트의 co-locatetion,
+테스트, 스타일, 컴포넌트 레벨에서의 fetching 등이 있습니다.
+커뮤니티 피드백을 통해서 `app`폴더의 안정성과 성능을 개선하였습니다.
+
+- **이제는 레이아웃 Div가 없습니다.**: 기존에는 `app` 폴더를 사용하게 되면 navigationg할 때
+  레이아웃을 스크롤할 수 있도록 `<div>`가 자동으로 추가되었습니다.
+  13.1 버전에서는 추가적인 element가 더이상 만들어지지 않고 스크롤링이 유지됩니다.
+- **TypeScript PlugIn**: 페이지, 레이아웃 설정 옵션에 대한 제안, IDE,
+  Server Component와 Client Component와 관련된 힌트들(Server Component에서는 `useState`를 쓸 수 없다 라는 것과 같은). [더보기](https://www.youtube.com/watch?v=pqMqn9fKEf8)
+- **안정성 개선**: 많은 버그들, 향상된 CSS Module 지원, 레이아웃과 페이지에 `cache()`와 `fetch()`를 올바르게 중복 제거(de-duplicating), 메모리 누수 등을 패치하였습니다.
+- **더 작은 Client-Side JavaScript**: `app` 폴더는 `pages` 폴더에 비해 client-side JavaScript가 `9.3kb`를 더 줄였습니다.
+  baseline은 Server Component를 1개를 추가하든 1000개를 추가하든 증가하지 않고 동일합니다.
+  React 런타임은 Next.js가 이전에 다루었던 메카니즘을 처리하기 위한 React Server Component 런타임으로 인해 조금 더 큽니다.
+  이것은 추후 개선될 예정입니다.
+
+![baseline-runtime](/post/react/next-js-13-1/baseline-runtime.png)
+
+[beta documentation](https://beta.nextjs.org/docs)에서 더 많은 정보를 확인할 수 있습니다.
+
+## 내부 모듈 Transpilation(stable)
+
+이제 로컬 패키지(monorepo 같이) 또는 외부 의존성(`node_modules`)에서 트랜스파일, 번들된 의존성을 마킹할 수 있습니다.
+이 내부 모듈이 `next-transpile-modules` 패키지를 대체합니다.
+
+```diff
+- const withTM = require('next-transpile-modules')(['awesome_module']);
+- module.exports = withTM({});
++ module.exports = {
++   transpilePackages: ['awesome_module'],
++ };
+```
+
+migration 가이드는 next-transpile-modules 메인테이너인 [@martpie](https://github.com/martpie)가 작성한 [이 글](https://github.com/martpie/next-transpile-modules/releases/tag/the-end)을 확인하시면 됩니다.
+
+## Edge Runtime(stable)
+
+> A light Node.js runtime for the edge, now stable for API routes
+
+Next.js내 Edge 런타임은 Vercel과 같은 Edge computing 플랫폼과 호환되거나 자체 호스팅할 때 Node.js APIs(`Request`, `Response` 등)의 엄격한 subset을 사용합니다.
+이러한 APIs는 브라우저를 포함하여 어디에서든 동작합니다. 그래서 개발자들에게 한 번만 배우면 어디서든 사용할 수 있게 해줍니다.
+
+Next.js 미들웨어는 더 나은 성능을 위해 이러한 가벼운 edge 런타임을 이미 디폴트로 사용하고 있습니다.
+미들웨어가 애플리케이션의 모든 요청 전에 실행될 수 있으므로 낮은 latency를 보장하기 위해 가벼운 런타임을 갖는 것이 중요합니다.
+Next.js 12.2 버전에서 [API Routes](https://nextjs.org/blog/next-12-2#edge-api-routes-experimental) 에서도 사용할 수 있도록 옵션으로 제공하였습니다.
+
+13.1 버전부터는 Next.js내 Edge 런타임은 API Routes에서도 **stable 버전**으로 사용할 수 있습니다.
+
+```js
+// pages/api/hello.ts
+
+// "experimental-" prefix is no longer needed
+export const config = {
+  runtime: 'edge',
+};
+
+export default function handler(req: Request) {
+  return new Response('Hello World');
+}
+```
+
+자체 호스팅할 때는 Edge 런타임을 사용하는 미들웨어와 API Routes는 `next start`의 일부로 기본적으로 single-region 워크로드에서 실행됩니다.
+Vercel에서는 Next.js 미들웨어와 API Routes는 가능한 가장 낮은 latency을 위해 [Vercel Edge Function을 사용하여 전세계로 배포됩니다.](https://vercel.com/docs/concepts/next.js/overview)
+
+[Vercel Edge Functions는 이젠 일반적으로 사용가능합니다.](https://vercel.com/blog/edge-functions-generally-available)
+
+## Turbopack 업데이트
+
+[Turbopack](https://turbo.build/pack)이 Next.js 13버전과 함께 alpha로 공개된 이후에
+안정성 향상, 가장 많이 요청된 기능에 대한 지원, 플러그인 계획, 다른 프레임워크에서의 사용 에 집중했다고 하네요.
+
+Next.js 13.0.0 이후의 Turbopack:
+
+- Tailwind CSS를 포함하여 PostCSS 지원
+- `next/image` 지원
+- `next/font` (Google Fonts) 지원
+- dyanamic `import()` 구문을 통한 CSS loading 지원
+- CSS source map 지원
+- `next dev` 에러 overlay에서 향상된 오류 처리
+- 향상된 메모리 사용
+- 향상된 CSS 모듈 지원
+- HMR source map에 대한 향상된 안정성
+
+Turbopack이 alpha 릴리즈할 때 벤치마크한 내용으로 프로모션을 했었는데 벤치마크에 대한 내용이 오해를 살 수 있는 부분을
+여러 사람들이 지적했는데 그 중 [Evan You](https://twitter.com/youyuxi)에 [피드백](https://github.com/yyx990803/vite-vs-next-turbo-hmr/discussions/8)이 있는 것을 보았습니다.
+
+이번에 벤치마크를 다시 공개했는데 Vite팀과 함께 작업했다고 하고 테스트 방법을 많이 개선했다고 합니다.
+
+이 콜라보레이션의 결과로 React 업데이트 메커니즘에서 사용된 시간을 포함하여 더 정확한 메트릭을 사용합니다.
+Next.js 13.1에서 turbopack은 webpack보다 React Refresh time이 30ms 향상되었습니다.
+또한 Vite를 SWC와 함께 사용한 새로운 벤치마크도 추가했습니다. 이는 Vite를 Babel과 함께 사용하는 것에 비해 향상된 성능을 보여줍니다.
+
+[업데이트된 벤치마크](https://turbo.build/pack/docs/benchmarks)과 [테스트 방법](https://turbo.build/blog/turbopack-benchmarks)에 대해서 확인하세요.
+
+다양한 이슈에 대해서 확인하기 위해 [Github Discussion](https://github.com/vercel/turbo/discussions/2312)을 확인하는 것도 좋을 것 같습니다.
+
+## 미들웨어 개선사항
+
+여러 피드백을 통해 이전 보다 더 강력해졌습니다.
+13.1 버전부터는 미들웨어에서 request에 headers를 설정할 수 있고 또한 바로 response 할 수도 있습니다.
+
+이를 통해 Next.js 라우팅 라이프사이클의 모든 부분을 커스터마이징할 수 있는 강력하고 새로운 유연성을 제공합니다.
+`next.config.js`내에 `experimental.allowMiddlewareResponseBody` 설정은 더이상 필요하지 않습니다.
+
+request에 headers를 더 쉽게 설정할 수 있고 `rewrite`나 `redirect` 없이 바로 response 할 수 있습니다.
+
+```js
+// middleware.ts
+import { NextResponse } from 'next/server';
+
+export function middleware(request: Request) {
+  // Check if a user has access...
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ message: 'Unauthorized' });
+  }
+
+  // Add a new header, this will change the incoming request headers
+  // that you can read in getServerSideProps and API routes
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-version', '13.1');
+
+  return NextResponse.next({
+    request: {
+      // Apply new request headers
+      headers: requestHeaders,
+    },
+  });
+}
+```
+
+더 자세한 내용은 [여기서](https://nextjs.org/docs/advanced-features/middleware) 확인하세요.
+
+[다양한 예제](https://github.com/vercel/examples/tree/main/edge-functions)를 통해 확인해보세요.
+
+## SWC Import Resolution
+
+> Import resolution for smaller bundles
+
+유명한 많은 npm 패키지는 "barrel files"(다른 모듈들을 re-export하는 single 파일)를 사용합니다.
+예를 들어:
+
+```js
+// acme-ui/index.ts
+export * from "./button"
+export * from "./slider"
+export * from "./dropdown"
+```
+
+이는 한 줄로 named export를 사용할 수 있게 해줍니다.
+
+```js
+import { Button, Dropdown, Slider } from "acme-ui"
+```
+
+번들러는 이러한 barrel 파일을 이해하고 사용하지 않는 re-exports를 제거("dead code elimination"이라고도 부릅니다)할 수도 있습니다.
+그러나 이 프로세스는 re-export된 모든 파일을 parsing/compiling하는 작업이 포함됩니다.
+배포된 몇몇 npm 패키지들 중에서는 re-export된 수천개의 모듈을 가진 barrel 파일을 제공하고 이로인해 컴파일 시간이 느려집니다.
+이러한 라이브러리는 이 이슈를 피하기 위해 `babel-plugin-transform-imports`가 추천됩니다.
+
+그렇지만 SWC를 사용하는 사용자에게는 이전에 이러한 플러그인이 없었습니다.
+이번에 `modularizeImports`로 불리는 Next.js에 내장된 새로운 SWC transform을 추가하여 이 문제를 해결합니다.
+
+새로운 설정은 import 문을 정의된 패턴을 기반으로 변경하도록 SWC transform을 활성화합니다.
+예를 들어, 아래의 코드는 direct import를 사용하도록 자동으로 변경됩니다.
+
+```js
+// Before (with barrel file)
+import { Button, Dropdown, Slider } from "@acme/ui"
+// After (with modularized imports from plugin)
+import { Button } from "@acme/ui/dist/button"
+import { Dropdown } from "@acme/ui/dist/dropdown"
+import { Slider } from "@acme/ui/dist/slider"
+```
+
+`next.config.js`에서 `modularizeImports` 옵션을 사용하세요.
+
+```js
+// next.config.js
+module.exports = {
+  modularizeImports: {
+    "@acme/ui": {
+      transform: "@acme/ui/dist/{{member}}",
+    },
+  },
+}
+```
+
+이 transform을 이용해서 `@mui/icons-material` 이나 `lodash`도 사용하지 않는 파일을 컴파일 할 때 건너뛸 수 있습니다.
+
+[여기서](https://nextjs.org/docs/advanced-features/compiler#modularize-imports) 더 자세한 정보를 확인하세요.
+
+## 추가 개선사항
+
+- `next/font`에서 이제 동일한 font 선언에서 다양한 font weight와 스타일을 지원합니다.([Learn more](https://nextjs.org/docs/basic-features/font-optimization#google-fonts))
+- `next/dynamic`이 이제 React primitive인 `lazy()`와 `<Suspense>`를 사용합니다. 이전의 `suspense` 옵션은 더 이상 필요없습니다.
+  이 업데이트를 통해 `next/dynamic`은 `app` 폴더와 호환됩니다.
+- `create-next-app`이 `@next/font`를 기본으로 포함하는 새로운 디자인과 함께 업데이트 되었습니다.
+  `npx create-next-app@latest` 를 사용하거나 또는 [template을 배포해보세요.](https://vercel.com/templates/next.js/nextjs-boilerplate)
+- `app` 폴더(beta)의 최신 기능과 convention을 보여주는 [App Directory Playground](https://app-dir.vercel.app/)을 많이 개선했습니다. [직접 만들어보세요.](https://vercel.com/templates/next.js/app-directory)
+- 이미지 placeholder, lazy loading, 자동 최적화, 키보드 지원 등을 포함한 [고성능 이미지 갤러리 탬플릿]()을 만들었습니다. [직접 만들어보세요.](https://vercel.com/templates/next.js/image-gallery-starter)
+- [React, Express.js 사용한 대규모 애플리케이션을 Next.js로 마이그레이션](https://vercel.com/blog/migrating-a-large-open-source-react-application-to-next-js-and-vercel)하는 방법을 이해하기 위한 자료를 만들었습니다.
+
+## 마무리하며
+
+Turbopack은 초기에 쓰기엔 아직 불안정한 것 같아 아직까지는 사용해보진 않았지만 빠르게 안정화되어 가는것 같아 조만간 사용해보지 않을까 싶습니다.
+아직까진 개발모드에서만 동작하기 때문에 어느정도 체감이 될지 궁금하기도 합니다.
+
+Next.js 13버전에서 새로운 라우팅에 대해 느껴보기 위해서 [간단한 프로젝트](https://github.com/JHSeo-git/blogmark)도 진행해보았습니다.
+아직은 부족하거나 이상하게 사용할지도 모르겠지만, 번들링된 파일이나 미들웨어, Edge Function API 라우팅 등 성능이 좋다는 것을 많이 느꼈습니다.
+또한 컨벤션이 불편할거라고 생각했는데 어느정도 익숙해지니 기존 컨벤션들이 좀 더 불편하겠다는 생각도 하게 되었습니다.
+그러면서 discussion이나 issue에 많이 들어가보게 되었는데, 꽤나 빠르게 업데이트가 되고 있는 것 같습니다.
+
+Edge Function을 적극적으로 promotion 하고 있는 것 같아서 이 부분을 잘 알아놓는것도 중요하겠다는 생각이 들었습니다.
+(아마도 매출과도 영향이 있을 것 같기도 하지만 프론트엔드 흐름에 Edge는 꽤나 중요한 부분이라고 생각하게 됩니다.)
+
+또한 Vercel이 잘 하고 있는 것이 많은 개발자들이 빠르게 익숙해지도록 다양한 예제와 문서를 잘 만드는 점 같습니다.
+이를 통해서 빠르게 Next.js의 새로운 기능들을 배울 수 있고 그러면서 더욱 더 Next.js에 종속(?)되어 가는 것 같습니다.
+
+다음번에는 Edge와 관련된 글을 써봐야겠다는 생각을 합니다.
+
+## reference
+
+- https://nextjs.org/blog/next-13-1

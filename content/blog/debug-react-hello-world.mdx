@@ -1,0 +1,174 @@
+---
+title: 'Debug React "Hello world"'
+description: React 또는 Web에서 디버깅은 어떻게 해야될까요? 그에 관해 간단하게 알아보았습니다.
+author: seonest
+date: 2022-04-17T10:12:39.897Z
+---
+
+> 아래 글, 영상을 보고 이해하고자 옮겨보려고 합니다.
+>
+> https://www.youtube.com/watch?v=OcB3rTln-fI > https://github.com/JSerZANP/react-source-code-walkthrough-en/blob/main/chapters/1-debug-hello-world.md
+
+Front-End Developer라고 할 만한 실력을 가지고 있는지 매일 의심스럽습니다.
+
+React가 어떻게 동작되는지 관심은 늘 있었지만 어물쩡 넘어갔던 적이 많았던 것 같습니다.
+
+이런 글을 읽으면 즐겁기도 하지만 늘 저의 바닥을 확인하는 시간이 되기도 합니다.
+
+서두가 길었지만 React를 Deep-Dive하기 전에 확실히 알고 넘어가야 하는 부분인 것 같아 이렇게 옮기려고 합니다.
+
+React 또는 Web에서 디버깅은 어떻게 해야할지 아직까지도 잘 모르는 것 같습니다. (주로 무지성 `console.log`를 쓸 때가 많았던 것 같습니다.)
+
+이번에 읽은 글은 React에서 Debug에 대한 얘기입니다.
+(~~사실 React를 Deep하게 이해하고 싶어 글을 읽다가 이 부분이 꽤 기억에 남아 먼저 옮기고 시작해보려고 합니다.~~)
+
+[JSer](https://github.com/JSerZANP) 라는 Front-End Developer가 작성한 React 강의(?) 첫 번째 Walkthrough 내용입니다.
+
+이 글 이외에도 React를 사용하면서 이해하기 어려운 Deep 로직을 잘 설명해주는 [글](https://jser.dev/)과 [영상](https://www.youtube.com/c/JSerJSer)이 이어지니 읽어보시는 걸 추천드립니다.
+
+여기서는 디버그 시 아래 2가지 경우를 알려줍니다.
+
+- Chrome Profiler
+- Breakpoints
+
+이것을 사용해보기 위해 프로젝트 Set up 부터 하도록 하겠습니다.
+
+## Set up
+
+우선 React team에서 제공하는 Hello world 환경을 셋팅해봅시다.
+(React 컨트리뷰트 방법 중에 간단한 dev runtime을 사용하기에 [해당 문서](https://reactjs.org/docs/how-to-contribute.html)를 참고하시면 도움이 될 것 같습니다.)
+
+```bash
+git clone https://github.com/facebook/react.git
+cd react
+yarn install
+```
+
+빌드를 하기 위해서는 [사전에 필요한 확인](https://reactjs.org/docs/how-to-contribute.html#contribution-prerequisites)이 있습니다.
+(대부분은 충족하실 거고, 저 같은 경우는 JDK가 설치되어 있지 않아 설치하였습니다.)
+
+그 다음 build를 해주시면 됩니다.
+
+> The easiest way to try your changes is to run yarn build react/index,react-dom/index --type=UMD and then open fixtures/packaging/babel-standalone/dev.html. This file already uses react.development.js from the build folder so it will pick up your changes.
+
+```bash
+yarn build react/index,react-dom/index --type=UMD
+```
+
+성공하면 다음과 같이 빌드가 완료됩니다.
+![build](https://files.seonest.net/images/qnfqnfqnf/post/194/image.png)
+
+그 다음 `fixtures/packaging/babel-standalone/dev.html` 파일을 크롬에서 열면 됩니다. (React 18이 되면서 `render`함수 deprecated error 가 뜨지만 여기서는 무시하도록 합니다.)
+
+![dev.html](https://files.seonest.net/images/qnfqnfqnf/post/196/image.png)
+
+위와 같은 화면이 뜨면 준비는 완료되었습니다.
+
+빌드된 내용을 조금 더 설명하자면 다음과 같습니다.
+
+```html
+<!-- yarn을 통해 빌드된 React, ReactDOM의 개발 버전 -->
+<script src="../../../build/node_modules/react/umd/react.development.js"></script>
+<script src="../../../build/node_modules/react-dom/umd/react-dom.development.js"></script>
+```
+
+```html
+<!-- JSX syntax를 변환하기 위한 babel.js -->
+<script src="https://unpkg.com/babel-standalone@6/babel.js"></script>
+```
+
+```html
+<!-- real DOM -->
+<div id="container"><h1>Hello World!</h1></div>
+```
+
+```html
+<!-- type="text/babel" script 태그 내 raw React Code(JSX syntax) -->
+<script type="text/babel">
+  ReactDOM.render(<h1>Hello World!</h1>, document.getElementById("container"))
+</script>
+```
+
+## Debug
+
+> react-devtool을 파일로 직접 실행한 HTML에서도 확인하고 싶으시면 [설정](https://github.com/facebook/react/tree/main/packages/react-devtools#the-react-tab-doesnt-show-up)을 해야합니다.
+> ![debug-tool.png](https://files.seonest.net/images/qnfqnfqnf/post/199/debug-tool.png)
+> 또는, serve 와 같은 툴을 이용해 서버를 직접 실행하여도 무방합니다.
+
+- Chrome Profiler
+- Breakpoints
+
+### Chrome Profiler
+
+> https://developer.chrome.com/docs/devtools/evaluate-performance/#record
+
+크롬 개발자도구에는 runtime을 record하여 performance를 측정할 수 있는 도구가 있습니다.
+
+위 코드로 record를 하면 아래와 같이 나오게 됩니다.
+
+![record](https://files.seonest.net/images/qnfqnfqnf/post/200/image.png)
+
+이걸 보면 브라우저에서 많은 일을 하는 것을 볼 수 있습니다.
+그래서 너무 많은 정보가 있지만 그 중에 필요한 부분만 볼 것이기 때문에 걱정 안하셔도 됩니다.
+(~~사실 필요한 부분을 찾는게 더 어렵달까...~~)
+
+중간 영역에 `Main`이라고 하는 부분을 중점적으로 볼 것입니다.
+
+![babel-render](https://files.seonest.net/images/qnfqnfqnf/post/201/image.png)
+
+> 최신 크롬 브라우저에서 실행했을 시에 개발자 도구 performance에서 위와 같이 render 함수가 나타나지 않는 것을 확인했습니다. 원인이 무엇인지는 모르겠지만 'Evaluate Script' 라는 표시만 나타날뿐 call stack이 나타나지 않아서 이리저리 확인해보다가 포기하고 Chromium browser로 확인해보니 정상적으로 나와서 그것으로 확인했습니다.
+
+bar 색깔은 function call과 같은 작업이 완료된 것을 의미합니다. 대부분의 연한 초록색 영역은 babel이 code를 변환 작업한 영역이라 여기서는 넘어가도록 하겠습니다.
+
+그것보단 바로 우측에 있는 `render`를 보겠습니다. 이것이 바로 `ReactDOM.render()`가 작업한 영역입니다.
+
+이 `render` 부분을 더 자세하게 보겠습니다. (스크롤 업, 다운으로 확대, 축소가 가능합니다.)
+
+![render-detail](https://files.seonest.net/images/qnfqnfqnf/post/202/image.png)
+
+화살표로 그려놨듯이 bar의 진행방향은 **위에서 아래로**, **그 다음 왼쪽에서 오른쪽** 입니다.
+
+1. 맨 위, 맨 왼쪽을 보면 root call은 `render` 입니다.
+2. `render`는 `legacyRenderSubtreeIntoContainer`를 호출합니다.
+3. 그 다음 `legacyCreateRootFromDOMContainer`를 호출합니다.
+4. ...
+
+이젠 call tree를 쉽게 이해할 수 있을 것입니다.
+
+그래서 real DOM을 업데이트하는 마지막 call은 우측 하단에 있고 그것은 `commitPlacement`입니다.
+
+그리고 해당 부분을 focus한다면, 위 이미지 하단에 보듯이 실제 function 라인 링크해주고 있어서 찾아갈 수 있습니다.
+
+![function-link](https://files.seonest.net/images/qnfqnfqnf/post/203/image.png)
+
+이렇게 call tree에서 문제가 있는 부분을 따라가면서 해당 함수 라인을 찾아갈 수 있습니다.
+
+### Breakpoints
+
+> 중단점
+
+대부분의 IDE를 사용하면 디버그할 때 가장 많이 사용되는 기능 중에 하나일 것입니다.
+
+크롬 개발자 도구에서도 그 기능을 사용할 수 있습니다.
+
+위에서 문제가 될 부분을 call tree를 통해 찾아갔다면 **해당 부분의 라인을 눌러서** breakpoint를 걸 수 있습니다.
+
+![breakpoint](https://files.seonest.net/images/qnfqnfqnf/post/204/image.png)
+
+페이지를 다시 호출하면 해당 함수가 호출될 때 breakpoint를 걸었기 때문에 해당 부분에 멈추어있습니다.
+
+우측을 보면 그 시점의 call stack, local variable 등을 볼 수 있습니다.
+
+## 다음은
+
+이젠 profiler를 통해 call tree를 이해하고 특정 함수에 breakpoint를 걸어 디버깅을 할 수 있습니다.
+
+그러나 React 동작 코드를 이해하기 위해서는 모든 함수가 어떻게 동작하는지 알아야 합니다.
+
+다음은 profiler를 통해 나온 모든 함수를 따라가 이해해보도록 하겠습니다.
+
+## reference
+
+- https://www.youtube.com/watch?v=OcB3rTln-fI
+- https://github.com/JSerZANP/react-source-code-walkthrough-en/blob/main/chapters/1-debug-hello-world.md
+- https://reactjs.org/docs/how-to-contribute.html

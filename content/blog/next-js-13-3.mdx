@@ -1,0 +1,273 @@
+---
+title: Next.js 13.3
+description: 점점 더 모습을 갖추어 가는 App Router.
+author: seonest
+date: 2023-04-16T13:18:03.945Z
+---
+
+Next.js 13.3 버전이 지난 주에 [릴리즈](https://github.com/vercel/next.js/releases/tag/v13.3.0) 되었습니다.
+
+이번 릴리즈에서는 App Router가 점점 더 모습을 갖추어 가고 있습니다.
+
+- [파일 기반 메타데이터 API](#파일-기반-메타데이터-api): sitemap, robots, favicon 등을 동적으로 생성할 수 있습니다.
+- [동적 Open Graph 이미지](#동적-open-graph-이미지): JSX, HTML, CSS를 이용하여 OG 이미지를 생성할 수 있습니다.
+- [App Router에 대한 정적 파일 Export](#app-router에-대한-정적-파일-export): 서버 컴포넌트에 대한 Static / Single-Page Application(SPA) 지원
+- [Parallel Routes and Interception](#parallel-routes-and-interception): App Route를 사용한 고급 라우팅 기능
+
+현재 App Route는 베타 버전입니다. Vercel은 다음 마이너 릴리즈에서 App Route를 Stable 버전으로 변경할 예정이라고 합니다.
+따라서 성능 최적화, 기능 개선, 버그 수정에 초점을 맞추어 개발되고 있습니다.
+
+## 파일 기반 메타데이터 API
+
+[Next.js 13.2](https://nextjs.org/blog/next-13-2#built-in-seo-support-with-new-metadata-api)에서 메타데이터 API가 공개되었습니다.
+메타데이터 API를 사용하여 HTML head의 title, meta, link 태그 등을 정적,동적으로 타입 완전하게 생성할 수 있었습니다.
+
+이번 릴리즈에서는 메타데이터 API를 config에 기반한 메타데이터 외에도 새로운 파일 컨벤션을 지원합니다.
+이를 통해 페이지를 편리하게 커스텀하여 SEO를 개선하고 웹에서 공유할 수 있습니다:
+
+- `opengraph-image.(jpg|png|svg)`
+- `twitter-image.(jpg|png|svg)`
+- `favicon.ico`
+- `icon.(ico|jpg|png|svg)`
+- `sitemap.(xml|js|jsx|ts|tsx)`
+- `robots.txt`
+- `manifest.(json|js|jsx|ts|tsx)`
+
+예를 들어 파일 기반 메타데이터 API를 사용하여 앱의 favicon과 `/about`페이지에 대한 Open Graph 이미지를 생성할 수 있습니다.
+
+```bash
+app
+├── favicon.ico
+├── layout.js
+├── page.js
+└── about
+    ├── opengraph-image.jpg
+    └── page.js
+```
+
+위 처럼 파일을 구성해두었다면 Next.js는 캐싱을 위해 프로덕션 환경에서 이러한 파일에 해시(파일이름)를 자동으로 추가합니다.
+그리고 asset의 URL, file type, image 크기와 같은 정확한 메타데이터 정보로 관련 head 요소를 업데이트합니다.
+
+![filename-with-hash-using-file-based-metadata-api](/post/react/next-js-13-3/filename-with-hash-using-file-based-metadata-api.png)
+
+애플리케이션에 정적 파일을 추가하는 것이 가장 간단한 방법이지만 파일을 동적으로 생성할 수도 있습니다.
+각 정적 파일 컨벤션에는 `.js|.jsx|.ts|.tsx` 확장자를 사용할 수 있습니다.
+
+예를 들어 정적 `sitemap.xml` 파일을 정적으로 추가할 수 있지만 대부분의 사이트에는 동적 데이터를 사용하여 동적으로 생성되는 페이지가 일부 있습니다.
+동적 sitemap을 생성하려면 라우트 배열을 `sitemap.js`파일에서 반환하면 됩니다.
+
+```tsx
+import { allPosts } from "contentlayer/generated"
+
+const siteUrl = "https://seonest.net"
+
+export default async function sitemap() {
+  const posts = allPosts.map((post) => ({
+    url: `${siteUrl}${post.slug}`,
+    lastModified: post.update?.split("T")[0] ?? post.date.split("T")[0],
+  }))
+
+  const routes = ["", "/about"].map((route) => ({
+    url: `${siteUrl}${route}`,
+    lastModified: new Date().toISOString().split("T")[0],
+  }))
+
+  return [...routes, ...posts]
+}
+```
+
+[config 기반](https://beta.nextjs.org/docs/api-reference/metadata#metadata-object) 및 파일 기반 옵션을 통해서
+정적 및 동적 메타데이터 모두 메타데이터 API를 통해 사용가능합니다.
+
+메타데이터 API는 App Router(`/app`)와 함께 사용할 수 있습니다. 페이지 폴더(`/pages/`)에는 사용할 수 없습니다.
+
+[파일 기반 메타데이터와 API](https://beta.nextjs.org/docs/api-reference/metadata#file-based-metadata)를 더 자세히 확인해보세요.
+
+## 동적 Open Graph 이미지
+
+6개월 전에 Vercel에서 JSX, HTML, CSS를 사용하여 동적으로 이미지를 생성할 수 있는 라이브러리인 [@vercel/og](https://vercel.com/blog/introducing-vercel-og-image-generation-fast-dynamic-social-card-images)와 [Satori](https://github.com/vercel/satori)를 공개했습니다.
+
+[저도 간단하게 사용해보았는데요](https://github.com/JHSeo-git/own-your-tag) 참 신기하고 좋았습니다.
+
+이와 간련해서 [간단한 블로그 글](https://www.seonest.net/posts/javascript/%EB%8F%99%EC%A0%81%EC%9C%BC%EB%A1%9C-image-%EB%A7%8C%EB%93%A4%EA%B8%B0-edge-function%EC%9D%84-%EA%B3%81%EB%93%9C%EB%A6%B0)도 작성했었는데 확인하시면 좋을 것 같습니다.
+
+어째뜬 해당 라이브러리를 통해 동적 Open Graph 기능이 Next.js에 들어오게 되었습니다.
+
+`next/server`에서 `ImageResponse`를 import하여 사용할 수 있습니다.
+
+```tsx
+// /app/about/opengraph-image.tsx
+import { ImageResponse } from "next/server"
+
+export const size = { width: 1200, height: 600 }
+export const alt = "About Acme"
+export const contentType = "image/png"
+
+export default function og() {
+  return new ImageResponse()
+  // ...
+}
+```
+
+`ImageResponse`는 라우트 핸들러와 파일 기반 메타데이터를 포함한 다른 Next.js API와 자연스럽게 통합됩니다.
+예를 들어, `opengraph-image.tsx` 파일에서 `ImageResponse`를 사용하여 빌드 시점 또는 런타임(Request 시에)에
+OG 이미지 및 트위터 이미지를 생성할 수 있습니다.
+
+[Image Response API](https://beta.nextjs.org/docs/optimizing/image-generation)를 더 자세히 확인해보세요.
+
+## App Router에 대한 정적 파일 Export
+
+기존 `pages`폴더를 통한 Next.js 애플리케이션은 `next export` 기능이 정상적으로 동작했습니다만
+App Router(`/app`)에서는 해당 기능이 서버 컴포넌트와 연관 관계 등으로 인해 제약이 있었습니다.
+
+Next.js 13.3 버전에서는 App Router에 대한 정적 파일 Export 기능이 추가되었습니다.
+
+특히 최근에 업데이트 된 리액트 공식홈페이지의 [새로운 리액트 프로젝트 시작하기 문서](https://react.dev/learn/start-a-new-react-project)에서 `create-react-app`이 사라지고, 시작 템플릿 중 하나로
+`next.js`가 추가되었는데, 그와도 연관이 있을 것 같습니다.
+
+따라서 Next.js는 정적 사이트 또는 SPA로 시작한 다음 나중에 서버가 필요할 경우 점진적으로 업그레이드 할 수 있게 되었습니다.
+
+`next build`를 실행할 때 Next.js는 경로별로 HTML 파일을 생성합니다.
+SPA를 개별 HTML 파일로 분리하면 client-side로 불필요한 JavaScript 코드를 내려받는 것을 방지하여
+번들 크기를 줄이고 페이지를 더 빠르게 로드할 수 있습니다.
+
+```json
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  output: 'export',
+};
+
+```
+
+정적 export는 정적 라우트 핸들러, OG 이미지, React Server Component를 포함한 App Router의 새로운
+기능과 함께 동작합니다.
+
+예를 들어, Server Component는 기존 Static-Site Generation(SSG)와 비슷하게 동작합니다.
+초기 페이지 로드를 위한 정적 HTML, 라우트 간 클라이언트 이동을 위한 정적 페이로드를 포함하여 컴포넌트를 렌더링합니다.
+
+이전에는 `pages` 디렉토리에서 정적 export를 사용하려면 `next export`를 실행해야 했습니다.
+그러나 `next.config.js` `output: 'export'` 옵션을 사용하면 `next build`를 했을 시에 `out` 폴더에 정적 파일이 생성됩니다.
+`app` router와 `pages` 폴더를 위해 같은 설정을 사용할 수 있습니다.
+이것은 `next export`가 더 이상 필요없다는 것을 의미합니다.
+
+향상된 정적 export와 함께, `cookies()`나 `headers()`와 같이 서버가 필요한 동적 함수를
+사용하려고 할 때 개발 프로세스(`next dev`)에서 오류가 발생할 것입니다.(프로덕션까지 가지 않아도)
+
+[Static Export](https://beta.nextjs.org/docs/configuring/static-export)에 대한 더 자세한 내용을 확인해보세요.
+
+## Parallel Routes and Interception
+
+아마 이번 업데이트 중에 가장 많은 주목을 받았던 기능으로 보입니다.
+
+처음 [RFC](https://www.seonest.net/posts/react/nextjs-layout-rfc-update#advanced-routing-patterns)를 읽을 때도 이 기능을 사용할 때 컨벤션이 꽤나 복잡해질 수 있을 것 같다는 생각을 했습니다.
+
+그나마 예제를 보니 이해하기 쉬운 부분이 있어서 공유합니다.
+
+<Tweet id="1645827055534354439" />
+
+Paralle Routes를 사용하면 독립적으로 탐색할 수 있는 여러 페이지를 같은 뷰에서 동시에 렌더링할 수 있습니다.
+또한 페이지를 조건부로 렌더링하는데에도 사용할 수 있습니다.
+
+Parelle Routes는 **"slots"** 이라는 이름을 사용하여 생성합니다.
+Slots는 `@folder` 컨벤션을 사용하여 정의됩니다:
+
+```bash
+dashboard
+├── @user
+│   └── page.js
+├── @team
+│   └── page.js
+├── layout.js
+└── page.js
+```
+
+동일 경로 layout은 slots를 props로 사용할 수 있습니다.
+
+```tsx
+// app/dashboard/layout.js
+
+export default async function Layout({ children, user, team }) {
+  const userType = getCurrentUserType()
+
+  return (
+    <>
+      {userType === "user" ? user : team}
+      {children}
+    </>
+  )
+}
+```
+
+위 예에서 `@user`, `@team` parallel route slots(명시적)은 로직에 따라 조건부로 렌더링됩니다.
+`children`은 `@folder`에 매핑할 필요가 없는 암묵적 route slot입니다.
+예를 들어, `dashboard/page.js`는 `dashboard/@children/page.js`에 해당합니다.
+
+Intercepting routes는 브라우저 URL을 "표시"는 하면서 현재 레이아웃 내에서 새 라우트를 로드할 수 있습니다.
+이 기능은 모달을 통한 피드에서 사진을 확장하는 등 현재 페이지의 컨텍스트를 유지하는 것이 중요한 경우에 유용합니다.
+
+<Tweet id="1644130884323536899" />
+
+Intercepting routes는 `../`와 유사하게 `(..)`규칙을 사용하여 라우트를 정의할 수 있습니다.
+`(...)`규칙을 사용하여 `app` 디렉토리를 기준으로 상대 경로를 만들 수도 있습니다.
+
+```bash
+feed
+├── @modal
+│   └── (..)photo
+│       └── [id]
+│           └── page.tsx
+├── page.tsx
+└── layout.tsx
+photo
+└── [id]
+    └── page.tsx
+```
+
+위의 예에서는 사용자 프로필에서 사진을 클릭하면 client-side 탐색동안에는 모달로 사진이 열립니다.
+그러나 페이지를 새로 고치거나 공유해서 들어올 경우 기본 레이아웃으로 사진이 로드됩니다.
+
+![parallel-routes-and-intercepting-routes-instagram-modal-routing](/post/react/next-js-13-3/parallel-routes-and-intercepting-routes-instagram-modal-routing.png)
+
+Parallel routes 와 interception을 사용하여 인스타그램과 같은 모달 라우팅을 구현할 수 있습니다.
+이를 통해 URL을 통해 모달 콘텐츠를 공유할 수 있도록 하고, 페이지를 새로 고칠 때 컨텍스트가 손실되지 않도록 하며,
+뒤로가기, 앞으로가기 탐색을 통해 모달을 닫고 다시 여는 등 모달을 만들 때 발생할 수 있는 문제를 해결할 수 있습니다.
+
+[Parallel](https://beta.nextjs.org/docs/routing/parallel-routes)과 [Intercepting Routes](https://beta.nextjs.org/docs/routing/intercepting-routes)에서 더 자세한 내용을 확인해보세요.
+
+## 기타 개선
+
+- **디자인 업데이트**: Next.js [홈페이지](https://nextjs.org/)와 [쇼케이스](https://nextjs.org/showcase)가 새로운 디자인으로 개편되었습니다.
+- **Turbopack**: 베타 버전이 가까워짐에 따라 미들웨어, 모든 `next/font` 옵션, Server Component를 사용한 스트리밍에 대한 지원이 추가되었습니다.([see demo](https://twitter.com/padmaia/status/1641130761775464448))
+  vercel.com 및 nextjs.org 와 같은 Next.js 앱에서 개밥먹기하는 동안 발견된 버그를 추가로 패치했습니다.([Learn more](https://nextjs.org/docs/advanced-features/turbopack))
+- **Fast refresh for `next.config.js`**: `next.config.js` 파일을 수정할 때마다 서버를 재시작하지 않고도 변경사항을 즉시 확인할 수 있습니다.
+  이는 `.env`, `.env.*`, `jsconfig.json`, `tsconfig.json` 설정 파일에도 적용됩니다.
+- **접근성**: App Router에 페이지에서 라우트 알림이 포함됩니다. 이 기능은 스크린리더 및 기타 보조 기술에 대한 client-side 라우트 전환을 알립니다. ([Learn more](https://nextjs.org/docs/accessibility))
+- **정적 타입 Link**: 이제 `next.config.js`에 설정된 `redirects`와 `rewrites`가 타입 검사에 고려됩니다.([Learn more](https://beta.nextjs.org/docs/configuring/typescript#statically-typed-links))
+- **`create-next-app` + Tailwind CSS**: 이제 `npx create-next-app@latest`로 새 프로젝트를 시작할 때
+  Tailwind CSS를 선택하거나 `--tailwind` 플래그를 사용하여 사전에 스캐폴드 구성을 할 수 있습니다.
+- **Route Handlers**: [HTTP에 지원되는 동사](supported HTTP verb)(`GET`, `POST` 등)가 아닌 `export default`를 사용하면 `route.ts`에서 오류가 발생합니다.([Learn more](https://beta.nextjs.org/docs/routing/route-handlers))
+- **Images**: 이제 `next/image`가 `fetchPriority="high"` 속성을 지원합니다.
+- **Metadata**: 13.2에서 depreate된 메타데이터 API(`head.js`)는 제거되었습니다.
+  대신 [Metadata API](https://beta.nextjs.org/docs/api-reference/metadata)를 통해서 SEO 빌트인 기능을 사용하세요.
+- **라우트에서 폴더를 제외할 수 있는 기능**: 폴더명 앞에 `_`를 붙이면 해당 폴더와 모든 하위 세그먼트를 라우팅에서 제외합니다.
+  예를 들어, `app/_dashboard/page.tsx`는 라우팅할 수 없습니다.
+- **App Router**: 지정된 라우트 세그먼트의 동적 파라미터를 읽기 위해 `useParams` 클라이언트 컴포넌트 hook을 새롭게 추가하였습니다.([Learn more](https://beta.nextjs.org/docs/api-reference/use-params))
+- **스타일시트 로딩 개선**: Next.js는 React의 Suspensey CSS를 구현합니다. 이는 CSS 로딩(특히 라우트 이동시에)을 둘러싼 많은 이슈들, FOUC(Flashes Of Unstyled Content)를 해결합니다.
+- **Not Found 핸들링 개선**: `notFound()` 에러를 잡는 것 뿐만아니라 `app/not-found.js` 파일은 전체 애플리케이션에서 일치하지 않는 URL도 처리합니다.
+  즉, 앱에서 처리하지 않는 URL을 방문하는 사용자에게는 `app/not-found.js` 파일에서 내보낸 UI가 표시됩니다.([Learn more](https://beta.nextjs.org/docs/api-reference/file-conventions/not-found))
+- **Client-side 라우터 캐시 개선**: `router.refresh()`가 전체 캐시를 무효화하고 search param이 캐시 키의 일부가 되어 두 search param(예: `/?search=leerob`, `/?search=tim`) 사이를 탐색하여
+  파라미터에 의존하던 콘텐츠를 정확히 복원할 수 있습니다.
+
+## 마무리하며
+
+Next.js 13.3에서 추가된 기능들을 살펴보았습니다. 이번 릴리즈에서는 Next.js 13.2에서 추가된 기능들을 개선하고, 새로운 기능들을 추가했습니다.
+
+특히 Parallel routs, Intercepting routes가 추가되었는데, 아직 사용해보진 않았지만 추가적인 라이브러리 사용이나 구현없이도 다양한 기능을 개발할 수 있을 것 같아 기대가 됩니다.
+
+매번 빠르게 릴리즈되는 것을 보니 참 대단하나는 생각이 듭니다.
+그러나 서드파티 라이브러리들이 이 속도에 맞추지 못하여 Next.js의 기능을 사용하기 어려운 경우가 있습니다.
+저는 블로그 글을 MDX로 관리하고 렌더링하는데 `contentlayer`를 사용하고 있는데 정적 생성이 13.3 버전과 호환이 되지 않아 빌드가 되지 않는 [문제](https://github.com/contentlayerdev/contentlayer/issues/415)가 있었습니다.
+
+[이 블로그 사이트](https://github.com/JHSeo-git/blog.seonest.net)에서 조금씩 새로운 기능들을 사용해보고 있으니 참고하시면 좋을 것 같습니다.
