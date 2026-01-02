@@ -5,10 +5,9 @@ import { notFound } from "next/navigation"
 import { getMDXComponents } from "@/mdx-components"
 import { InlineTOC } from "fumadocs-ui/components/inline-toc"
 
-import { createMetadata } from "@/lib/metadata"
+import { createMetadata, getBlogPageOgImage } from "@/lib/metadata"
 import { blog } from "@/lib/source"
 import { cn } from "@/lib/utils"
-// import { createMetadata } from '@/lib/metadata';
 import { buttonVariants } from "@/components/ui/button"
 
 import { ShareButton } from "./page.client"
@@ -70,9 +69,17 @@ export async function generateMetadata(props: PageProps<"/blog/[slug]">): Promis
 
   if (!page) notFound()
 
+  const ogImageUrl = getBlogPageOgImage(page).url
+
   return createMetadata({
     title: page.data.title,
     description: page.data.description ?? "The post by Seonest",
+    openGraph: {
+      images: ogImageUrl,
+    },
+    twitter: {
+      images: ogImageUrl,
+    },
   })
 }
 

@@ -1,5 +1,5 @@
 import { createElement } from "react"
-import { loader } from "fumadocs-core/source"
+import { InferPageType, loader } from "fumadocs-core/source"
 import { blog as blogPosts, docs } from "fumadocs-mdx:collections/server"
 import { toFumadocsSource } from "fumadocs-mdx/runtime/server"
 import { icons } from "lucide-react"
@@ -19,3 +19,6 @@ export const source = loader({
 export const blog = loader(toFumadocsSource(blogPosts, []), {
   baseUrl: "/blog",
 })
+
+export type SourcePage = InferPageType<typeof source>
+export type BlogPage = InferPageType<typeof blog>

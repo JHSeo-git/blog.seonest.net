@@ -1,8 +1,10 @@
 import { Metadata } from "next"
 
+import { BlogPage } from "./source"
+
 export const baseUrl =
   process.env.NODE_ENV === "development" || !process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? new URL("http://localhost:3000")
+    ? new URL("http://localhost:3001")
     : new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`)
 
 export function createMetadata(metadata: Metadata) {
@@ -27,5 +29,14 @@ export function createMetadata(metadata: Metadata) {
       images: [{ url: "/opengraph-image.png", alt: "Seonest" }],
       ...metadata.twitter,
     },
+  }
+}
+
+export function getBlogPageOgImage(page: BlogPage) {
+  const segments = [...page.slugs, "image.webp"]
+
+  return {
+    segments,
+    url: `/og/blog/${segments.join("/")}`,
   }
 }

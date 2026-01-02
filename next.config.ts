@@ -3,9 +3,9 @@ import { createMDX } from "fumadocs-mdx/next"
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ["@takumi-rs/image-response"],
 
   images: {
-    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "pbs.twimg.com" },
       { protocol: "https", hostname: "abs.twimg.com" },
