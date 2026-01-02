@@ -26,7 +26,7 @@ export function Hero() {
     <>
       {showShaders && (
         <GrainGradient
-          className="animate-fd-fade-in absolute inset-0 top-1/4 duration-800"
+          className="animate-fd-fade-in absolute inset-0 opacity-50 duration-800"
           colors={
             resolvedTheme === "dark"
               ? ["#5fd4f4", "#2c7fa1", "#0b2a3300"]
