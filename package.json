@@ -96,7 +96,7 @@
     "tailwindcss-radix": "^4.0.2",
     "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.2.0",
+  "packageManager": "pnpm@10.27.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@prisma/client",
