@@ -1,30 +1,30 @@
 import { notFound } from "next/navigation"
 import { ImageResponse } from "@takumi-rs/image-response"
 
-import { getBlogPageOgImage } from "@/lib/metadata"
-import { blog } from "@/lib/source"
+import { getDocsPageOgImage } from "@/lib/metadata"
+import { source } from "@/lib/source"
 import { getImageResponseOptions, generate as MetadataImage } from "@/app/og/generate"
 
 export const revalidate = false
 
-export async function GET(_req: Request, { params }: RouteContext<"/og/blog/[...slug]">) {
+export async function GET(_req: Request, { params }: RouteContext<"/og/docs/[...slug]">) {
   const { slug } = await params
-  const page = blog.getPage(slug.slice(0, -1))
+  const page = source.getPage(slug.slice(0, -1))
   if (!page) notFound()
 
   return new ImageResponse(
     <MetadataImage
       title={page.data.title}
       description={page.data.description}
-      subjective="/blog"
+      subjective="/docs"
     />,
     await getImageResponseOptions()
   )
 }
 
 export function generateStaticParams() {
-  return blog.getPages().map((page) => ({
+  return source.getPages().map((page) => ({
     lang: page.locale,
-    slug: getBlogPageOgImage(page).segments,
+    slug: getDocsPageOgImage(page).segments,
   }))
 }

@@ -5,6 +5,7 @@ import type { ImageResponseOptions } from "@takumi-rs/image-response"
 export interface GenerateProps {
   title: ReactNode
   description?: ReactNode
+  subjective?: ReactNode
 }
 
 const font = readFile("./lib/og/NanumGothicCoding-Regular.ttf").then((data) => ({
@@ -27,7 +28,7 @@ export async function getImageResponseOptions(): Promise<ImageResponseOptions> {
   }
 }
 
-export function generate({ title, description }: GenerateProps) {
+export function generate({ title, description, subjective }: GenerateProps) {
   const siteName = "Seonest"
   const primaryTextColor = "rgb(240,240,240)"
   const logo = (
@@ -61,6 +62,17 @@ export function generate({ title, description }: GenerateProps) {
           padding: "4rem",
         }}
       >
+        {subjective && (
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: "24px",
+              color: "rgb(240,240,240,0.7)",
+            }}
+          >
+            {subjective}
+          </span>
+        )}
         <span
           style={{
             fontWeight: 600,

@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 
-import { BlogPage } from "./source"
+import { BlogPage, DocsPage } from "./source"
 
 export const baseUrl =
   process.env.NODE_ENV === "development" || !process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -38,5 +38,14 @@ export function getBlogPageOgImage(page: BlogPage) {
   return {
     segments,
     url: `/og/blog/${segments.join("/")}`,
+  }
+}
+
+export function getDocsPageOgImage(page: DocsPage) {
+  const segments = [...page.slugs, "image.webp"]
+
+  return {
+    segments,
+    url: `/og/docs/${segments.join("/")}`,
   }
 }

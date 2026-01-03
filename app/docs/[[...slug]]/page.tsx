@@ -6,6 +6,7 @@ import { Card, Cards } from "fumadocs-ui/components/card"
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page"
 import { createRelativeLink } from "fumadocs-ui/mdx"
 
+import { createMetadata, getDocsPageOgImage } from "@/lib/metadata"
 import { source } from "@/lib/source"
 
 export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
@@ -65,10 +66,19 @@ export async function generateStaticParams() {
 export async function generateMetadata(props: PageProps<"/docs/[[...slug]]">): Promise<Metadata> {
   const params = await props.params
   const page = source.getPage(params.slug)
+
   if (!page) notFound()
 
-  return {
+  const ogImageUrl = getDocsPageOgImage(page).url
+
+  return createMetadata({
     title: page.data.title,
-    description: page.data.description,
-  }
+    description: page.data.description ?? "The document by Seonest",
+    openGraph: {
+      images: ogImageUrl,
+    },
+    twitter: {
+      images: ogImageUrl,
+    },
+  })
 }

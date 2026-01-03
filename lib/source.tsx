@@ -58,5 +58,5 @@ export const allSource = loader(
   }
 )
 
-export type SourcePage = InferPageType<typeof source>
+export type DocsPage = InferPageType<typeof source>
 export type BlogPage = InferPageType<typeof blog>
