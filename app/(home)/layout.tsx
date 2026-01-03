@@ -19,6 +19,18 @@ export default function Layout({ children }: { children: ReactNode }) {
       {...baseOptions()}
       links={[
         {
+          type: "menu",
+          on: "menu",
+          text: "Documentation",
+          items: [
+            {
+              text: "Get Started",
+              url: "/docs",
+              icon: <Sparkles />,
+            },
+          ],
+        },
+        {
           type: "custom",
           // only displayed on navbar, not mobile menu
           on: "nav",
