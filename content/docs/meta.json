@@ -1,0 +1,7 @@
+{
+  "title": "Seonest",
+  "description": "The documentation for Seonest",
+  "icon": "Building",
+  "root": true,
+  "pages": ["---Introduction---", "index", "what-is-seonest", "---Writing---", "claude-code"]
+}

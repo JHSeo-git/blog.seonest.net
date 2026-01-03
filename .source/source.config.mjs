@@ -1,10 +1,14 @@
 // source.config.ts
+import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { defineCollections, defineConfig, defineDocs, frontmatterSchema } from "fumadocs-mdx/config";
 import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
 var docs = defineDocs({
   dir: "content/docs",
   docs: {
+    schema: frontmatterSchema.extend({
+      index: z.boolean().default(false)
+    }),
     async: true
   }
 });
@@ -18,6 +22,9 @@ var blog = defineCollections({
   async: true
 });
 var source_config_default = defineConfig({
+  mdxOptions: {
+    remarkPlugins: [remarkMdxMermaid]
+  },
   plugins: [lastModified()]
 });
 export {

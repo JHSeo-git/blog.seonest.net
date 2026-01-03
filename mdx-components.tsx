@@ -3,6 +3,8 @@ import defaultMdxComponents from "fumadocs-ui/mdx"
 import type { MDXComponents } from "mdx/types"
 import { Tweet as ReactTweet } from "react-tweet"
 
+import { Mermaid } from "@/components/mermaid"
+
 import { cn } from "./lib/utils"
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
@@ -28,6 +30,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     IFrame: ({ className, ...props }: React.IframeHTMLAttributes<HTMLIFrameElement>) => (
       <iframe className={cn("my-4 h-[500px] w-full", className)} {...props} />
     ),
+    Mermaid,
     ...components,
   }
 }

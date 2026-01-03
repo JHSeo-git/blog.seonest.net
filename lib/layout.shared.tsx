@@ -28,7 +28,6 @@ export function baseOptions(): BaseLayoutProps {
         </>
       ),
     },
-    links: [],
     githubUrl: "https://github.com/JHSeo-git/blog.seonest.net",
   }
 }
