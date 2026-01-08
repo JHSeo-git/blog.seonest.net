@@ -46,3 +46,10 @@ pnpm analyze          # Bundle analysis (ANALYZE=true)
 - Pre-commit hooks run prettier and eslint on staged files
 - Import order managed by prettier-plugin-sort-imports
 - TypeScript strict mode enabled
+
+## Content Guidelines
+
+- MDX files in `content/docs` require proper frontmatter with `title` and `description`
+- MDX files in `content/blog` require proper frontmatter with `title`, `description`, `author`, and `date`
+- Documentation images go in `public/post/*` following the path structure
+- Run `pnpm build` before submitting PRs to ensure MDX compiles correctly
