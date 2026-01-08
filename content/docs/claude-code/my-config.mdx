@@ -1,0 +1,61 @@
+---
+title: My Config
+description: My claude code configuration
+---
+
+![claude code configuration](/post/docs/claude-code/my-config/claude-config.png)
+
+| 옵션                                        | 현재 값           | 기본값            | 설명                                                |
+| ------------------------------------------- | ----------------- | ----------------- | --------------------------------------------------- |
+| **Auto-compact**                            | **false\***       | true              | 컨텍스트가 길어질 때 자동으로 대화 내용을 요약/압축 |
+| **Show tips**                               | true              | true              | 사용 팁 표시                                        |
+| **Thinking mode**                           | true              | true              | Claude 추론 모드                                    |
+| **Prompt suggestions**                      | true              | true              | 프롬프트 제안 기능                                  |
+| **Rewind code (checkpoints)**               | true              | true              | 코드 변경을 되돌릴 수 있는 체크포인트 기능          |
+| **Verbose output**                          | **true\***        | false             | 상세한 출력 표시                                    |
+| **Terminal progress bar**                   | true              | true              | 터미널 진행 상황 바 표시                            |
+| **Default permission mode**                 | **Plan Mode\***   | Auto Accept       | 기본 권한 모드                                      |
+| **Respect .gitignore in file picker**       | true              | true              | 파일 선택 시 .gitignore 파일 제외                   |
+| **Theme**                                   | Dark mode         | System            | 테마 설정                                           |
+| **Notifications**                           | Auto              | Auto              | 알림 설정                                           |
+| **Output style**                            | default           | default           | 출력 스타일                                         |
+| **Language**                                | Default (English) | Default (English) | 인터페이스 언어                                     |
+| **Editor mode**                             | normal            | normal            | 에디터 모드                                         |
+| **Model**                                   | **opus\***        | Default           | 사용할 Claude 모델                                  |
+| **Auto-connect to IDE (external terminal)** | false             | false             | 외부 터미널에서 IDE 자동 연결                       |
+| **Claude in Chrome enabled by default**     | true              | true              | Chrome 확장 프로그램 기본 활성화                    |
+
+## Auto-compact: false
+
+- `CLAUDE.md`, `commands`, `sub-agents`, `hooks`을 제대로 설정하면 `auto-compact`을 줄일 수 있음
+- `auto-compact`가 발동될 때마다 중요한 컨텍스트가 손실되는 경우가 빈번하게 발생
+- 해당 압축 과정을 분석해보니 핵심 세부사항들이 누락
+- `auto-compact`를 비활성화하고, 세션별로 컨텍스트를 더 잘 관리하는 방식으로 전환
+
+{/* prettier-ignore */}
+<Callout title="Note">
+  `auto-compact` 실행 시 내부에서 무슨 일이 일어나는지 확인하려면 아래 명령어로 세션별 분석 결과를 볼 수
+  있습니다.   
+```npm 
+npx claude-code-templates@latest --chats 
+```
+</Callout>
+
+## Verbose output: true
+
+- 상세 로그로 디버깅/모니터링 용이
+
+## Default permission mode: Plan Mode
+
+- Claude와 의견을 주고받으며 만족스러운 계획 수립 가능
+- 계획 완성 후 편집 자동 승인 모드로 전환하면 Claude가 한 번에 작업 완료
+- PR 작성 같은 체계적인 작업에 특히 유용
+- 좋은 계획을 세우는 것이 성공적인 결과의 핵심
+
+## Model: opus
+
+- Sonnet보다 크고 느리지만 더 정교한 추론 가능
+- 더 적은 횟수로 원하는 결과를 얻을 확률이 높음
+- 도구 활용 능력이 뛰어남
+- 복잡한 코딩 작업에서 결과적으로 더 효율적일 수 있음
+- 재시도 횟수가 줄어들어 시간 절약 효과
