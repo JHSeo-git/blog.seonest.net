@@ -32,8 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   )
 
-  console.log(items)
-
   return [
     {
       url: url("/"),
@@ -50,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    ...items.filter((v) => v !== undefined && !v.url.endsWith("/docs")),
-    ...blogs.filter((v) => v !== undefined && !v.url.endsWith("/blog")),
+    ...items.filter((v) => v !== undefined && v.url !== url("/docs")),
+    ...blogs.filter((v) => v !== undefined && v.url !== url("/blog")),
   ]
 }
