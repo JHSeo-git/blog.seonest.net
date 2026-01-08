@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
 import { baseUrl } from "@/lib/metadata"
-import { source } from "@/lib/source"
+import { blog as blogPosts, source } from "@/lib/source"
 
 export const revalidate = false
 
@@ -13,6 +13,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       return {
         url: url(page.url),
+        lastModified: lastModified ? new Date(lastModified) : undefined,
+        changeFrequency: "weekly",
+        priority: 0.5,
+      } as MetadataRoute.Sitemap[number]
+    })
+  )
+  const blogs = await Promise.all(
+    blogPosts.getPages().map(async (blog) => {
+      const { lastModified } = await blog.data.load()
+
+      return {
+        url: url(blog.url),
         lastModified: lastModified ? new Date(lastModified) : undefined,
         changeFrequency: "weekly",
         priority: 0.5,
@@ -31,6 +43,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    ...items.filter((v) => v !== undefined),
+    {
+      url: url("/blog"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    ...items.filter((v) => v !== undefined && v.url !== url("/docs")),
+    ...blogs.filter((v) => v !== undefined && v.url !== url("/blog")),
   ]
 }
