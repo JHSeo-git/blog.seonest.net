@@ -49,6 +49,7 @@ pnpm analyze          # Bundle analysis (ANALYZE=true)
 
 ## Content Guidelines
 
+- Fumadocs markdown guide: https://www.fumadocs.dev/docs/markdown
 - MDX files in `content/docs` require proper frontmatter with `title` and `description`
 - MDX files in `content/blog` require proper frontmatter with `title`, `description`, `author`, and `date`
 - Documentation images go in `public/post/*` following the path structure
