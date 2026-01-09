@@ -30,7 +30,7 @@ Provide only the commit message itself, without any introduction or explanation.
 
 ## Commit Rules
 
-Read `commitlint.config.cjs` in the project root to understand the commit message rules and constraints before generating a commit message.
+Read @commitlint.config.cjs in the project root to understand the commit message rules and constraints.
 
 ## Process:
 
