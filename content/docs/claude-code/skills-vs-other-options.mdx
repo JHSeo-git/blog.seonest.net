@@ -1,0 +1,22 @@
+---
+title: Skills vs Other options
+description: Claude Code의 다양한 확장 옵션을 비교하고 상황에 맞는 최적의 선택
+---
+
+Claude Code는 동작을 사용자 정의할 수 있는 다양한 확장 옵션을 제공합니다.
+각 옵션은 서로 다른 목적과 실행 방식을 가지고 있으므로, 상황에 맞게 선택하는 것이 중요합니다.
+
+| 옵션                                                              | 사용 목적                                                      | 실행 시점                           |
+| :---------------------------------------------------------------- | :------------------------------------------------------------- | :---------------------------------- |
+| **[Skills](https://code.claude.com/docs/en/skills)**              | Claude에게 전문 지식 제공 (예: "우리 표준을 사용하여 PR 검토") | Claude가 관련성이 있을 때 선택      |
+| **[슬래시 명령](https://code.claude.com/docs/en/slash-commands)** | 재사용 가능한 프롬프트 생성 (예: `/deploy staging`)            | `/command`를 입력하여 실행          |
+| **[CLAUDE.md](https://code.claude.com/docs/en/memory)**           | 프로젝트 전체 지침 설정 (예: "TypeScript strict mode 사용")    | 모든 대화에 로드됨                  |
+| **[Subagents](https://code.claude.com/docs/en/sub-agents)**       | 자체 도구가 있는 별도 컨텍스트에 작업 위임                     | Claude가 위임하거나 명시적으로 호출 |
+| **[Hooks](https://code.claude.com/docs/en/hooks)**                | 이벤트에서 스크립트 실행 (예: 파일 저장 시 lint)               | 특정 도구 이벤트에서 발생           |
+| **[MCP servers](https://code.claude.com/docs/en/mcp)**            | Claude를 외부 도구 및 데이터 소스에 연결                       | Claude가 필요에 따라 MCP 도구 호출  |
+
+**Skills vs Subagents**: Skills는 현재 대화의 컨텍스트 내에 전문 지식을 추가합니다. 반면, Subagents는 별도의 컨텍스트에서 독립적인 도구를 사용하여 작업을 수행합니다. 지침이나 코딩 표준을 적용할 때는 Skills를 사용하고, 격리된 환경이나 특정 도구 액세스가 필요할 때는 Subagents를 사용하는 것이 적합합니다.
+
+**Skills vs MCP**: Skills는 Claude에게 도구를 *사용하는 방법*을 알려주고, MCP는 도구 자체를 *제공*합니다. 예를 들어, MCP 서버는 Claude를 데이터베이스에 연결하는 기능을 제공하고, Skill은 해당 데이터베이스의 데이터 모델과 쿼리 패턴에 대한 지식을 Claude에게 전달합니다.
+
+**Skills vs 슬래시 명령**: Skills와 슬래시 명령은 본질적으로 동일한 기능입니다. 둘 다 Claude 또는 사용자가 호출할 수 있으며, 기능 자체는 같지만 바라보는 관점이 다릅니다. Skills는 Claude가 자동으로 선택하는 전문 지식의 관점에서, 슬래시 명령은 사용자가 명시적으로 실행하는 명령어의 관점에서 접근하는 것으로 이해할 수 있습니다.
