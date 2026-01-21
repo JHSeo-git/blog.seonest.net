@@ -14,7 +14,7 @@ description: Autonomous AI development methodology using iterative prompt execut
 
 Ralph Loop는 Geoffrey Huntley가 창안한 자율 AI 개발 방법론입니다. 가장 순수한 형태는 놀라울 정도로 단순합니다:
 
-```bash
+```bash title="bash"
 while :; do cat PROMPT.md | claude-code ; done
 ```
 
@@ -78,7 +78,7 @@ flowchart LR
 
 - GitHub: [anthropics/claude-code/plugins/ralph-wiggum](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum)
 
-```bash
+```bash title="bash"
 # 설치
 /plugin install ralph-wiggum@claude-plugins-official
 
@@ -95,7 +95,7 @@ flowchart LR
 
 **기본 사용법:**
 
-```bash
+```bash title="bash"
 /ralph-loop "Your task description" --max-iterations 20 --completion-promise "COMPLETE"
 ```
 
@@ -109,7 +109,7 @@ flowchart LR
 Ralph Loop의 가장 큰 문제점 중 하나는 **작업 추적의 부재**입니다.
 Ralph TUI는 이 문제를 해결하는 터미널 기반 오케스트레이터로, AI 코딩 에이전트(Claude Code, OpenCode, Factory Droid)를 작업 트래커(prd.json, Beads)에 연결하여 자율적으로 실행합니다.
 
-```bash
+```bash title="bash"
 # 설치 (Bun 필요)
 bun install -g ralph-tui
 
@@ -154,7 +154,7 @@ flowchart TD
 JavaScript/TypeScript 프로젝트에서 프로그래밍 방식으로 Ralph Loop를 구현하고 싶다면 이 라이브러리가 최적입니다.
 Vercel의 AI SDK를 감싸서 검증 콜백과 컨텍스트 요약 기능을 제공합니다.
 
-```bash
+```bash title="bash"
 npm install ralph-loop-agent
 ```
 
@@ -179,7 +179,7 @@ npm install ralph-loop-agent
 
 먼저 Claude Code CLI를 설치합니다:
 
-```bash
+```bash title="bash"
 # Claude Code 설치
 curl -fsSL https://claude.ai/install.sh | bash
 
@@ -189,7 +189,7 @@ claude
 
 ### 5.2 플러그인 설치 및 사용
 
-```bash
+```bash title="bash"
 # 플러그인 마켓플레이스 추가
 /plugin install marketplace
 
@@ -202,7 +202,15 @@ claude
 
 ### 5.3 기본 사용 예시
 
-```bash
+<Callout type="info">
+**완료 감지 메커니즘**
+
+Ralph Loop는 `<promise>키워드</promise>` 형식으로 작업 완료를 감지합니다.
+프롬프트에 포함된 키워드와 `--completion-promise` 옵션이 일치해야 합니다.
+
+</Callout>
+
+```bash title="bash"
 # 단순 작업
 /ralph-loop "Build a REST API for todos.
 When complete:
@@ -215,11 +223,9 @@ When complete:
 --completion-promise "COMPLETE"
 ```
 
-**중요**: `<promise>` 태그는 Ralph Loop가 작업 완료를 감지하는 핵심 메커니즘입니다. 프롬프트에 반드시 `<promise>완료_키워드</promise>` 형태로 포함하고, `--completion-promise` 옵션과 동일한 키워드를 사용해야 합니다.
-
 ### 5.4 TDD 기반 개발
 
-```bash
+```bash title="bash"
 /ralph-loop "Implement user authentication using TDD.
 Process:
 1. Write failing test for next requirement
@@ -242,7 +248,7 @@ Output <promise>DONE</promise> when all tests green." \
 
 ### 5.5 마이그레이션 작업
 
-```bash
+```bash title="bash"
 /ralph-loop "Migrate all tests from Jest to Vitest.
 Steps:
 1. Identify Jest test files
@@ -262,7 +268,7 @@ Output <promise>MIGRATION_COMPLETE</promise> when:
 
 ### 5.6 다단계 프로젝트
 
-```bash
+```bash title="bash"
 # overnight-work.sh
 #!/bin/bash
 
@@ -280,7 +286,7 @@ claude -p "/ralph-loop 'Phase 3: Build UI components.
 Output <promise>PHASE3_DONE</promise>' --max-iterations 30"
 ```
 
-```bash
+```bash title="bash"
 # 실행
 chmod +x overnight-work.sh
 ./overnight-work.sh
@@ -288,7 +294,7 @@ chmod +x overnight-work.sh
 
 ### 5.7 루프 취소
 
-```bash
+```bash title="bash"
 # 실행 중인 Ralph Loop 취소
 /cancel-ralph
 ```
@@ -299,7 +305,7 @@ Ralph TUI는 Ralph Loop의 "블랙박스" 문제를 해결합니다. 자율 프�
 
 ### 6.1 설치
 
-```bash
+```bash title="bash"
 # Bun 설치 (필수)
 # macOS/Linux
 curl -fsSL https://bun.sh/install | bash
@@ -316,7 +322,7 @@ ralph-tui --version
 
 ### 6.2 프로젝트 설정
 
-```bash
+```bash title="bash"
 cd your-project
 
 # 인터랙티브 설정 마법사
@@ -331,7 +337,7 @@ ralph-tui setup
 
 ### 6.3 PRD 생성
 
-```bash
+```bash title="bash"
 # AI 대화로 PRD 생성 (추천)
 ralph-tui create-prd --chat
 
@@ -347,7 +353,7 @@ ralph-tui create-prd --output ./docs
 
 Claude Code 내에서 직접 스킬 사용:
 
-```bash
+```bash title="bash"
 # Claude Code에서 슬래시 명령어로 사용
 /ralph-tui-prd           # PRD 인터랙티브 생성
 /ralph-tui-create-json   # PRD를 prd.json으로 변환
@@ -356,7 +362,7 @@ Claude Code 내에서 직접 스킬 사용:
 
 ### 6.4 Ralph 실행
 
-```bash
+```bash title="bash"
 # PRD 파일로 실행
 ralph-tui run --prd ./prd.json
 
@@ -394,7 +400,7 @@ ralph-tui run --sandbox
 
 Ralph TUI는 세션 영속성을 지원합니다. 크래시나 중단 후에도 작업을 이어갈 수 있습니다:
 
-```bash
+```bash title="bash"
 # 이전 세션 재개
 ralph-tui resume
 
@@ -427,7 +433,7 @@ dir = ".ralph-tui/iterations"
 
 ### 6.8 실제 사용 예시: Visual Mind Map 앱 생성
 
-```bash
+```bash title="bash"
 # 1. 프로젝트 생성
 mkdir mind-map-app && cd mind-map-app
 npm init -y
@@ -458,7 +464,7 @@ TypeScript/JavaScript 프로젝트에서 프로그래밍 방식으로 Ralph Loop
 
 ### 7.1 설치
 
-```bash
+```bash title="bash"
 npm install ralph-loop-agent
 # 또는
 yarn add ralph-loop-agent
@@ -468,7 +474,7 @@ pnpm add ralph-loop-agent
 
 ### 7.2 기본 사용 예시
 
-```typescript
+```typescript title="ts"
 import { iterationCountIs, RalphLoopAgent } from "ralph-loop-agent"
 
 const agent = new RalphLoopAgent({
@@ -492,7 +498,7 @@ console.log(`Reason: ${completionReason}`)
 
 ### 7.3 도구(Tool)와 함께 사용
 
-```typescript
+```typescript title="ts"
 import { tool } from "ai"
 import { iterationCountIs, RalphLoopAgent } from "ralph-loop-agent"
 import { z } from "zod"
@@ -540,7 +546,7 @@ for await (const chunk of stream.textStream) {
 
 ### 7.4 마이그레이션 에이전트 예시
 
-```typescript
+```typescript title="ts"
 import { iterationCountIs, RalphLoopAgent } from "ralph-loop-agent"
 
 const migrationAgent = new RalphLoopAgent({
@@ -578,7 +584,7 @@ runMigration()
 
 ### 7.5 스트리밍 출력
 
-```typescript
+```typescript title="ts"
 const stream = await agent.stream({
   prompt: "Build a todo API",
 })
@@ -601,7 +607,7 @@ Ralph의 핵심은 잘 정의된 PRD(Product Requirements Document)입니다.
 
 ### 8.1 효과적인 PRD 작성
 
-```markdown
+```markdown title="markdown"
 # Feature: User Authentication
 
 ## Overview
@@ -656,7 +662,7 @@ Implement secure user authentication with JWT tokens.
 
 ### 8.2 JSON 형식 PRD (Ralph TUI용)
 
-```json
+```json title="json"
 {
   "featureName": "User Authentication",
   "branchName": "feature/auth",
@@ -702,7 +708,7 @@ Implement secure user authentication with JWT tokens.
 
 ### 9.1 안전 메커니즘
 
-```bash
+```bash title="bash"
 # 항상 max-iterations 설정
 /ralph-loop "..." --max-iterations 20
 
@@ -716,7 +722,7 @@ ralph-tui run --iterations 10
 
 ### 9.2 효과적인 프롬프트 작성
 
-```markdown
+```markdown title="markdown"
 # ✅ 좋은 프롬프트
 
 Build a REST API for todos.
@@ -744,7 +750,7 @@ Build a todo app and make it good.
 
 프로젝트에 자동 검증을 설정하세요:
 
-```json
+```json title="json"
 // package.json
 {
   "scripts": {
@@ -758,7 +764,7 @@ Build a todo app and make it good.
 
 `AGENTS.md`에 명시:
 
-```markdown
+```markdown title="markdown"
 ## Validation (run before every commit)
 
 npm run validate
@@ -770,7 +776,7 @@ npm run validate
 
 Ralph는 `--dangerously-skip-permissions`가 필요한 경우가 많습니다. 반드시 샌드박스 환경에서 실행하세요:
 
-```bash
+```bash title="bash"
 # Ralph TUI 샌드박스 모드
 ralph-tui run --sandbox
 
@@ -798,7 +804,7 @@ docker run -it --rm \
 
 ### 9.6 디버깅
 
-```bash
+```bash title="bash"
 # 진행 상황 확인
 cat progress.txt
 
