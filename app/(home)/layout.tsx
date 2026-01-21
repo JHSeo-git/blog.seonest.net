@@ -7,7 +7,7 @@ import {
   NavbarMenuLink,
   NavbarMenuTrigger,
 } from "fumadocs-ui/layouts/home/navbar"
-import { Sparkles } from "lucide-react"
+import { Bot, Sparkles } from "lucide-react"
 
 import { baseOptions, linkItems } from "@/lib/layout.shared"
 
@@ -28,6 +28,11 @@ export default function Layout({ children }: { children: ReactNode }) {
               url: "/docs",
               icon: <Sparkles />,
             },
+            {
+              text: "Claude Code",
+              url: "/docs/claude-code",
+              icon: <Bot />,
+            },
           ],
         },
         {
@@ -44,6 +49,14 @@ export default function Layout({ children }: { children: ReactNode }) {
                   <Sparkles className="bg-fd-primary text-fd-primary-foreground mb-2 rounded-md p-1" />
                   <p className="font-medium">Get started</p>
                   <p className="text-fd-muted-foreground text-sm">Getting started with Seonest.</p>
+                </NavbarMenuLink>
+
+                <NavbarMenuLink href="/docs/claude-code">
+                  <Bot className="bg-fd-primary text-fd-primary-foreground mb-2 rounded-md p-1" />
+                  <p className="font-medium">Claude Code</p>
+                  <p className="text-fd-muted-foreground text-sm">
+                    Claude Code for Agent-based development
+                  </p>
                 </NavbarMenuLink>
               </NavbarMenuContent>
             </NavbarMenu>

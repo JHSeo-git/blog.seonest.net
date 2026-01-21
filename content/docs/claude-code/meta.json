@@ -1,3 +1,9 @@
 {
-  "pages": ["my-config", "vanilla-setup", "install-github-app", "skills-vs-other-options"]
+  "pages": [
+    "my-config",
+    "vanilla-setup",
+    "install-github-app",
+    "skills-vs-other-options",
+    "ralph-loop"
+  ]
 }
