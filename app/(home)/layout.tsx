@@ -28,6 +28,11 @@ export default function Layout({ children }: { children: ReactNode }) {
               url: "/docs",
               icon: <Sparkles />,
             },
+            {
+              text: "Claude Code",
+              url: "/docs/claude-code",
+              icon: <Bot />,
+            },
           ],
         },
         {
