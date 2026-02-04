@@ -94,7 +94,9 @@
     "tailwindcss": "^4.1.18",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-radix": "^4.0.2",
-    "typescript": "^5.9.3"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
   },
   "packageManager": "pnpm@10.2.0",
   "pnpm": {

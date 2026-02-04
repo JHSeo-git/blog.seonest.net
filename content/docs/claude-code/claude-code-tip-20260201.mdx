@@ -1,0 +1,110 @@
+---
+title: Claude Code Tip (2026-02-01)
+description: Claude Code Tip from Boris Chenry
+---
+
+<Tweet id="2017742741636321619" />
+
+> 저는 Boris이고, Claude Code를 만들었습니다.
+> Claude Code 팀에서 직접 수집한 몇 가지 팁을 빠르게 공유하려고 합니다.
+> 팀이 Claude를 사용하는 방식은 제가 사용하는 방식과 다릅니다.
+> 기억하세요: Claude Code를 사용하는 정해진 정답은 없습니다 -- 모든 사람의 설정이 다릅니다. 자신에게 맞는 방법을 찾기 위해 실험해보세요!
+
+## 1. 더 많이 병렬로 실행하세요
+
+git worktree를 3~5개 동시에 만들어서 각각 별도의 Claude 세션을 병렬로 실행하세요. 이것이 가장 큰 생산성 향상 방법이며, 팀의 최고 팁입니다. 개인적으로 저는 여러 개의 git checkout을 사용하지만, Claude Code 팀 대부분은 worktree를 선호합니다 -- `@amorriscode`가 Claude Desktop 앱에 worktree 네이티브 지원을 구현한 이유이기도 합니다!
+
+일부 사람들은 worktree에 이름을 붙이고 셸 별칭(za, zb, zc)을 설정하여 한 번의 키 입력으로 worktree 간을 전환합니다. 또 다른 사람들은 로그 읽기와 BigQuery 실행만을 위한 전용 "분석" worktree를 운영합니다.
+
+참고: https://code.claude.com/docs/en/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees
+
+![git-worktrees](/post/docs/claude-code/claude-code-tip-20260201/git-worktrees.jpeg)
+
+## 2. 모든 복잡한 작업은 계획 모드에서 시작하세요. 계획에 에너지를 쏟으면 Claude가 한 번에 구현할 수 있습니다.
+
+한 사람은 하나의 Claude에게 계획을 작성하게 한 다음, 두 번째 Claude를 띄워서 스태프 엔지니어 역할로 계획을 리뷰하게 합니다.
+
+다른 사람은 무언가 잘못되는 순간 바로 계획 모드로 전환하여 다시 계획을 세웁니다. 무리하게 밀어붙이지 마세요. 그들은 또한 빌드뿐만 아니라 검증 단계에서도 Claude에게 명시적으로 계획 모드에 진입하도록 지시합니다.
+
+![plan-mode](/post/docs/claude-code/claude-code-tip-20260201/plan-mode.png)
+
+## 3. CLAUDE.md에 투자하세요.
+
+매번 수정할 때마다 다음과 같이 마무리하세요: "[CLAUDE.md](https://CLAUDE.md)를 업데이트해서 같은 실수를 반복하지 않도록 해." Claude는 자기 자신을 위한 규칙을 작성하는 데 놀라울 정도로 뛰어납니다.
+
+시간이 지남에 따라 [CLAUDE.md](https://CLAUDE.md)를 철저하게 편집하세요. Claude의 실수율이 측정 가능할 정도로 줄어들 때까지 계속 반복하세요.
+
+한 엔지니어는 Claude에게 모든 작업/프로젝트에 대한 노트 디렉토리를 유지하도록 하고, 매 PR 후에 업데이트하게 합니다. 그런 다음 [CLAUDE.md](https://CLAUDE.md)에서 해당 디렉토리를 참조하도록 설정합니다.
+
+![CLAUDE.md](/post/docs/claude-code/claude-code-tip-20260201/claude-md.png)
+
+## 4. 자신만의 스킬을 만들고 git에 커밋하세요.
+
+모든 프로젝트에서 재사용할 수 있습니다.
+
+팀의 팁:
+
+- 하루에 한 번 이상 하는 작업이 있다면, 스킬이나 명령어로 만드세요
+- /techdebt 슬래시 명령어를 만들어서 매 세션 끝에 실행하여 중복 코드를 찾아 제거하세요
+- 7일간의 Slack, GDrive, Asana, GitHub 데이터를 하나의 컨텍스트 덤프로 동기화하는 슬래시 명령어를 설정하세요
+- dbt 모델을 작성하고, 코드를 리뷰하고, 개발 환경에서 변경 사항을 테스트하는 애널리틱스 엔지니어 스타일의 에이전트를 구축하세요
+
+자세히 알아보기: [Skills](https://code.claude.com/docs/en/skills#extend-claude-with-skills)
+
+## 5. Claude는 대부분의 버그를 스스로 수정합니다. 우리가 하는 방법은 이렇습니다:
+
+Slack MCP를 활성화한 다음, Slack 버그 스레드를 Claude에 붙여넣고 "고쳐"라고만 말하세요. 컨텍스트 전환이 전혀 필요 없습니다.
+
+또는, "실패하는 CI 테스트를 고쳐"라고만 말하세요. 방법을 일일이 지시하지 마세요.
+
+Claude에게 docker 로그를 보여주면 분산 시스템 문제를 해결할 수 있습니다 -- 놀라울 정도로 유능합니다.
+
+![fix-bugs-itself](/post/docs/claude-code/claude-code-tip-20260201/fix-bugs-itself.png)
+
+## 6. 프롬프팅 실력을 높이세요
+
+a. Claude에게 도전하세요. "이 변경 사항을 철저히 검토하고, 내가 네 테스트를 통과할 때까지 PR을 만들지 마"라고 말하세요. Claude를 리뷰어로 활용하세요. 또는, "이게 작동한다는 걸 증명해봐"라고 말하고 Claude가 main 브랜치와 피처 브랜치 간의 동작 차이를 비교하게 하세요.
+
+b. 평범한 수정 후에는 이렇게 말하세요: "지금까지 알게 된 모든 것을 바탕으로, 이걸 폐기하고 우아한 솔루션을 구현해"
+
+c. 작업을 넘기기 전에 상세한 스펙을 작성하고 모호함을 줄이세요. 구체적일수록 결과물이 더 좋아집니다.
+
+## 7. 터미널 및 환경 설정
+
+팀은 Ghostty를 좋아합니다! 여러 사람들이 동기화된 렌더링, 24비트 컬러, 적절한 유니코드 지원을 높이 평가합니다.
+
+Claude를 더 쉽게 관리하려면 /statusline을 사용하여 컨텍스트 사용량과 현재 git 브랜치가 항상 표시되도록 상태 바를 커스터마이징하세요. 많은 팀원들이 터미널 탭에 색상을 지정하고 이름을 붙이며, 때로는 tmux를 사용합니다 — 작업/worktree당 하나의 탭을 운영합니다.
+
+음성 입력을 활용하세요. 타이핑보다 3배 빠르게 말할 수 있고, 그 결과 프롬프트가 훨씬 더 상세해집니다. (macOS에서 fn 키를 2번 누르세요)
+
+더 많은 팁: https://code.claude.com/docs/en/terminal-config
+
+![terminal-env-setup](/post/docs/claude-code/claude-code-tip-20260201/terminal-env-setup.jpeg)
+
+## 8. 서브에이전트를 활용하세요
+
+a. Claude가 문제에 더 많은 컴퓨팅을 투입하길 원하는 요청에는 "use subagents"를 추가하세요
+
+b. 개별 작업을 서브에이전트에 위임하여 메인 에이전트의 컨텍스트 윈도우를 깨끗하고 집중된 상태로 유지하세요
+
+c. 훅을 통해 권한 요청을 Opus 4.5로 라우팅하세요 — 공격을 스캔하고 안전한 것은 자동 승인하도록 합니다 (참고: https://code.claude.com/docs/en/hooks#permissionrequest)
+
+![subagents](/post/docs/claude-code/claude-code-tip-20260201/subagents.png)
+
+## 9. 데이터 및 분석에 Claude를 활용하세요
+
+Claude Code에게 "bq" CLI를 사용하여 즉석에서 메트릭을 가져오고 분석하도록 요청하세요. 우리는 코드베이스에 BigQuery 스킬을 커밋해두었고, 팀 모두가 Claude Code에서 직접 분석 쿼리에 활용합니다. 개인적으로 저는 6개월 넘게 SQL을 한 줄도 작성하지 않았습니다.
+
+이 방법은 CLI, MCP, 또는 API가 있는 모든 데이터베이스에서 작동합니다.
+
+## 10. Claude로 학습하기
+
+Claude Code를 학습에 활용하기 위한 팀의 몇 가지 팁:
+
+a. /config에서 "Explanatory" 또는 "Learning" 출력 스타일을 활성화하면 Claude가 변경 사항의 *이유*를 설명해줍니다
+
+b. Claude에게 익숙하지 않은 코드를 설명하는 시각적 HTML 프레젠테이션을 생성하도록 하세요. 놀랍도록 좋은 슬라이드를 만들어냅니다!
+
+c. Claude에게 새로운 프로토콜과 코드베이스의 ASCII 다이어그램을 그리도록 요청하여 이해를 도울 수 있습니다
+
+d. 간격 반복 학습 스킬을 구축하세요: 여러분이 이해한 내용을 설명하면, Claude가 빈틈을 채우기 위한 후속 질문을 하고, 결과를 저장합니다

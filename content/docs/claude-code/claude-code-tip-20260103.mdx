@@ -1,6 +1,6 @@
 ---
-title: Vanilla Setup
-description: Vanilla Setup for Claude Code CLI
+title: Claude Code Tip (2026-01-03)
+description: Claude Code Tip from Boris Chenry
 ---
 
 <Tweet id="2007179832300581177" />
@@ -14,7 +14,7 @@ description: Vanilla Setup for Claude Code CLI
 터미널에서 Claude 프로세스 동시에 실행할 경우 [시스템 알림](https://code.claude.com/docs/en/terminal-config#iterm-2-system-notifications)을 사용하는게 편리합니다.  
 탭에 1~N번까지 번호를 매기고, 시스템 알림을 사용하여 Claude 프로세스가 입력을 필요로 할 때를 알 수 있습니다.
 
-![terminal setup](/post/docs/claude-code/vanilla-setup/terminal-setup.jpeg)
+![terminal setup](/post/docs/claude-code/claude-code-tip-20260103/terminal-setup.jpeg)
 
 ## 2. 병렬 세션 활용
 
@@ -22,7 +22,7 @@ description: Vanilla Setup for Claude Code CLI
 터미널에서 코딩하면서 로컬 세션을 웹 서버로 전환하거나, 브라우저에서 직접 세션을 시작할 수 있습니다. `--teleport` 명령어를 사용하면 터미널과 웹 서버 간에 세션을 자유롭게 이동할 수 있습니다.  
 또한 Claude iOS 앱을 활용하면 이동 중에도 세션을 시작하고 나중에 결과를 확인할 수 있어 효율적입니다.
 
-![browser teleport](/post/docs/claude-code/vanilla-setup/browser-teleport.jpeg)
+![browser teleport](/post/docs/claude-code/claude-code-tip-20260103/browser-teleport.jpeg)
 
 ## 3. Opus 4.5 모델 사용
 
@@ -36,14 +36,14 @@ Sonnet보다 크고 느리지만, 직접 조작할 필요가 적고 도구 활�
 
 팀별로 자체적인 `CLAUDE.md`를 유지하고, 각 팀이 최신 상태로 관리하는 것이 좋습니다.
 
-![CLAUDE.md](/post/docs/claude-code/vanilla-setup/claude-md.jpeg)
+![CLAUDE.md](/post/docs/claude-code/claude-code-tip-20260103/claude-md.jpeg)
 
 ## 5. Code Review 활용
 
 코드 리뷰 시 동료의 PR에 `@claude`를 태그하면 PR의 일부로 `CLAUDE.md`에 내용을 추가하도록 요청할 수 있습니다.  
 이 기능을 사용하려면 [Claude Code GitHub 액션](/install-github-action)을 설치해야 합니다.
 
-![Code Review](/post/docs/claude-code/vanilla-setup/code-review.jpeg)
+![Code Review](/post/docs/claude-code/claude-code-tip-20260103/code-review.jpeg)
 
 ## 6. Plan Mode 사용
 
@@ -51,7 +51,7 @@ Sonnet보다 크고 느리지만, 직접 조작할 필요가 적고 도구 활�
 풀 리퀘스트 작성이 목표라면 계획 모드에서 Claude와 의견을 주고받으며 만족스러운 계획을 수립할 수 있습니다. 계획이 완성되면 편집 자동 승인 모드로 전환하여 Claude가 한 번에 풀 리퀘스트를 완성하도록 할 수 있습니다.  
 좋은 계획을 세우는 것이 성공적인 결과의 핵심입니다.
 
-![Plan Mode](/post/docs/claude-code/vanilla-setup/plan-mode.png)
+![Plan Mode](/post/docs/claude-code/claude-code-tip-20260103/plan-mode.png)
 
 ## 7. 반복적으로 수행하는 워크플로에 슬래시 명령어 활용
 
@@ -60,7 +60,7 @@ Sonnet보다 크고 느리지만, 직접 조작할 필요가 적고 도구 활�
 
 예를 들어, `/commit-push-pr` 슬래시 명령어를 사용하면 git 상태와 관련 정보를 미리 계산하여 명령어가 빠르게 실행되고, 모델과의 반복적인 상호 작용을 줄일 수 있습니다.
 
-![Commands](/post/docs/claude-code/vanilla-setup/commands.jpeg)
+![Commands](/post/docs/claude-code/claude-code-tip-20260103/commands.jpeg)
 
 ## 8. 서브 에이전트 활용
 
@@ -68,28 +68,28 @@ Sonnet보다 크고 느리지만, 직접 조작할 필요가 적고 도구 활�
 예를 들어, `code-simplifier`는 Claude가 작업을 완료한 후 코드를 간소화하고, `verify-app`은 엔드 투 엔드 테스트에 대한 자세한 지침을 제공합니다.  
 슬래시 명령어와 마찬가지로, 서브에이전트는 대부분의 PR에서 수행하는 일반적인 워크플로를 자동화하는 데 유용합니다.
 
-![sub-agents](/post/docs/claude-code/vanilla-setup/sub-agents.png)
+![sub-agents](/post/docs/claude-code/claude-code-tip-20260103/sub-agents.png)
 
 ## 9. PostToolUse 훅 활용
 
 `PostToolUse` 훅을 사용하면 Claude의 코드 형식을 자동으로 지정할 수 있습니다.  
 Claude는 기본적으로 형식이 잘 지정된 코드를 생성하지만, 이 훅을 활용하면 나머지 경우도 처리하여 CI에서 형식 오류가 발생하는 것을 방지할 수 있습니다.
 
-![PostToolUse](/post/docs/claude-code/vanilla-setup/post-tool-use-hook.jpeg)
+![PostToolUse](/post/docs/claude-code/claude-code-tip-20260103/post-tool-use-hook.jpeg)
 
 ## 10. 권한 설정
 
 `--dangerously-skip-permissions` 옵션 대신 `/permissions` 명령어를 사용하는 것이 좋습니다.  
 안전하다고 판단되는 일반적인 bash 명령어를 미리 허용하면 불필요한 권한 요청 메시지를 방지할 수 있습니다. 이러한 설정은 `.claude/settings.json` 파일에 저장되어 팀과 공유할 수 있습니다.
 
-![Permissions](/post/docs/claude-code/vanilla-setup/permissions.jpeg)
+![Permissions](/post/docs/claude-code/claude-code-tip-20260103/permissions.jpeg)
 
 ## 11. MCP 서버 연동
 
 Claude Code는 MCP 서버를 통해 다양한 도구와 연동할 수 있습니다.  
 예를 들어, Slack에 검색 및 게시물을 올리거나, `bq` CLI를 사용하여 BigQuery 쿼리를 실행하고, Sentry에서 오류 로그를 가져오는 등의 작업이 가능합니다. MCP 구성은 `.mcp.json` 파일에 저장하여 팀과 공유할 수 있습니다.
 
-![MCP Server](/post/docs/claude-code/vanilla-setup/mcp-server.jpeg)
+![MCP Server](/post/docs/claude-code/claude-code-tip-20260103/mcp-server.jpeg)
 
 ## 12. 장시간 작업 처리
 
@@ -101,7 +101,7 @@ Claude Code는 MCP 서버를 통해 다양한 도구와 연동할 수 있습니�
 
 샌드박스 환경에서는 `--permission-mode=dontAsk` 또는 `--dangerously-skip-permissions` 옵션을 사용하여 [권한 프롬프트를 방지하면](https://code.claude.com/docs/en/hooks-guide) Claude가 중단 없이 작업을 수행할 수 있습니다.
 
-![Long running task](/post/docs/claude-code/vanilla-setup/long-running-task.jpeg)
+![Long running task](/post/docs/claude-code/claude-code-tip-20260103/long-running-task.jpeg)
 
 ## 13. 검증 방법 제공
 
