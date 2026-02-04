@@ -16,6 +16,7 @@
     "analyze": "ANALYZE=true pnpm build",
     "build": "next build",
     "dev": "next dev --turbopack",
+    "docs:list": "tsx scripts/docs-list.ts",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\" --cache",
     "postinstall": "npx prisma generate",

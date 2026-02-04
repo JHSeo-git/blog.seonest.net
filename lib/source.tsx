@@ -4,7 +4,7 @@ import { blog as blogPosts, docs } from "fumadocs-mdx:collections/server"
 import { toFumadocsSource } from "fumadocs-mdx/runtime/server"
 import { icons } from "lucide-react"
 
-function CursorIcon(props: React.SVGProps<SVGSVGElement>) {
+export function CursorIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <title>Cursor</title>
@@ -16,7 +16,7 @@ function CursorIcon(props: React.SVGProps<SVGSVGElement>) {
   )
 }
 
-function ClaudeIcon(props: React.SVGProps<SVGSVGElement>) {
+export function ClaudeIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <title>Claude</title>
@@ -28,10 +28,25 @@ function ClaudeIcon(props: React.SVGProps<SVGSVGElement>) {
   )
 }
 
+export function CodexIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg role="img" viewBox="0 0 24 24" {...props}>
+      <title>Codex</title>
+      <g clipPath="url(#clip0_6421_28566)">
+        <path
+          d="M12 22a9.75 9.75 0 0 1-5-1.339A10.37 10.37 0 0 1 3.339 17 9.75 9.75 0 0 1 2 12q0-2.705 1.339-5A10.15 10.15 0 0 1 7 3.366 9.6 9.6 0 0 1 12 2a9.6 9.6 0 0 1 5 1.366A9.93 9.93 0 0 1 20.634 7 9.6 9.6 0 0 1 22 12a9.6 9.6 0 0 1-1.366 5A10.15 10.15 0 0 1 17 20.661 9.75 9.75 0 0 1 12 22m0-2.022a7.8 7.8 0 0 0 3.99-1.065 8.1 8.1 0 0 0 2.895-2.924A7.64 7.64 0 0 0 19.978 12a7.64 7.64 0 0 0-1.093-3.99 7.9 7.9 0 0 0-2.896-2.895A7.64 7.64 0 0 0 12 4.022a7.64 7.64 0 0 0-3.99 1.093A8.1 8.1 0 0 0 5.088 8.01 7.8 7.8 0 0 0 4.022 12a7.8 7.8 0 0 0 1.065 3.99 8.3 8.3 0 0 0 2.924 2.923A7.8 7.8 0 0 0 12 19.978M8.339 15.58q-.41 0-.71-.3t-.301-.71q0-.274.136-.493l1.257-2.13L7.52 9.923q-.19-.33-.191-.602 0-.382.3-.683.301-.3.71-.3.547 0 .848.464l1.475 2.541q.164.3.164.601 0 .3-.164.601l-1.475 2.541q-.328.492-.847.492m4.645-.273q-.41 0-.71-.3-.301-.301-.301-.71 0-.384.3-.684t.71-.3h3.498q.383 0 .683.3t.3.683q0 .41-.3.71t-.683.301z"
+          fill="currentColor"
+        />
+      </g>
+    </svg>
+  )
+}
+
 const extendIcons = {
   ...icons,
   CursorIcon,
   ClaudeIcon,
+  CodexIcon,
 }
 
 export const source = loader({
