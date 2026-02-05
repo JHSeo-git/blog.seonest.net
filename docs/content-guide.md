@@ -14,12 +14,14 @@ Defines writing rules for posts under `content/`.
 
 - Location: `content/blog/`, `content/docs/`
 - Extension: `.mdx`
-- Filename: kebab-case (e.g. `react-19-beta.mdx`)
-- Structure: title in frontmatter, body starts with `##` recommended
+- Frontmatter: required in all `content/*/*.mdx`
+- Filename: lowercase slug, hyphen + number ok
+  - Prefer ASCII for new files
+  - Existing exceptions: filenames with Korean/`@`/`.` exist
+- Body: freeform (first line does not need to start with `##`; intro text/quote/image/tweet starts exist)
 - Code blocks: specify language + optional title
   - Example: ```bash title="bash"
-- Images stored in `public/post/...`
-  - In-doc path: `/post/...`
+- Images: store in `public/post/...`, in-doc path is `/post/...`
   - Filenames: lowercase + hyphens, no spaces
 
 ## Blog (`content/blog`)
@@ -30,6 +32,7 @@ Defines writing rules for posts under `content/`.
 - `description`: list/OG summary
 - `author`: author name
 - `date`: ISO 8601 (UTC recommended)
+  - Example: `2024-05-06T05:08:41.283Z`
 
 Example:
 
@@ -44,10 +47,12 @@ date: 2024-05-06T05:08:41.283Z
 
 ### Writing Rules
 
-- Start with `##` (e.g. `## 들어가면서`) recommended
+- Many posts start with intro text or a quote
 - Use clear link text
-- Image path example: `/post/blog/react-19-beta/cover.png`
-- MDX components allowed when needed (e.g. `<Tweet id="..." />`)
+- Image path pattern: `/post/<category>/<slug>/...`
+  - Example: `/post/react/react-19-beta/cover.png`
+  - Category examples: `react`, `web`, `javascript`, `ai`, `design`, `blog`
+- MDX components allowed when needed (e.g. `<Callout />`, `<Tweet id="..." />`)
 
 ## Docs (`content/docs`)
 
@@ -55,7 +60,7 @@ date: 2024-05-06T05:08:41.283Z
 
 - `title` (required)
 - `description` (required)
-- `icon` (optional): Lucide icon name or custom icon
+- `icon` (optional): Lucide icon name or custom icon (`Sparkles`, `ClaudeIcon`, etc.)
 - `index` (optional): set `true` for section index pages
 
 Example:
@@ -71,7 +76,11 @@ icon: Sparkles
 ### Navigation/Ordering
 
 - Root order: `content/docs/meta.json` `pages`
+  - Group label: `---Group---` format
+  - Page id: use slug without extension (e.g. `what-is-seonest`)
 - Section order: `content/docs/<section>/meta.json` `pages`
+  - Example: `content/docs/claude-code/meta.json`
+  - Add when the section has multiple pages
 - Section index: `content/docs/<section>/index.mdx` + `index: true`
 
 ### Image Paths

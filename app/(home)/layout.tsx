@@ -7,7 +7,7 @@ import {
   NavbarMenuLink,
   NavbarMenuTrigger,
 } from "fumadocs-ui/layouts/home/navbar"
-import { Bot, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
 
 import { baseOptions, linkItems } from "@/lib/layout.shared"
 import { ClaudeIcon, CodexIcon } from "@/lib/source"
