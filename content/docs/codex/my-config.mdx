@@ -4,7 +4,7 @@ description: My codex configuration
 ---
 
 ```toml title="my-config.toml"
-model = "gpt-5.2-codex"
+model = "gpt-5.3-codex"
 model_reasoning_effort = "high"
 tool_output_token_limit = 25000
 # Leave room for native compaction near the 272–273k context window.
@@ -19,4 +19,8 @@ unified_exec = true
 apply_patch_freeform = true
 skills = true
 shell_snapshot = true
+
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = ["chrome-devtools-mcp@latest"]
 ```
