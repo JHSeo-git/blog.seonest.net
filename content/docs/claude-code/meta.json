@@ -1,11 +1,3 @@
 {
-  "pages": [
-    "my-config",
-    "claude-code-tip-20260103",
-    "claude-code-tip-20260201",
-    "claude-code-customize-tip",
-    "install-github-app",
-    "skills-vs-other-options",
-    "ralph-loop"
-  ]
+  "pages": ["my-config", "install-github-app"]
 }

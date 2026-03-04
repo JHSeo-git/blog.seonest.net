@@ -1,6 +1,8 @@
 ---
 title: Ralph Loop
 description: Autonomous AI development methodology using iterative prompt execution until task completion
+author: seonest
+date: 2026-03-04T14:13:31Z
 ---
 
 > "Ralph is a Bash loop" — Geoffrey Huntley
@@ -552,7 +554,7 @@ import { iterationCountIs, RalphLoopAgent } from "ralph-loop-agent"
 const migrationAgent = new RalphLoopAgent({
   model: "anthropic/claude-opus-4.5",
   instructions: `You are migrating a codebase from Jest to Vitest.
-  
+
 For each iteration:
 1. Find one Jest test file that hasn't been migrated
 2. Convert it to Vitest syntax
@@ -618,8 +620,8 @@ Implement secure user authentication with JWT tokens.
 
 ### US-001: User Registration
 
-**As a** new user  
-**I want to** create an account  
+**As a** new user
+**I want to** create an account
 **So that** I can access the application
 
 **Acceptance Criteria:**
@@ -636,8 +638,8 @@ Implement secure user authentication with JWT tokens.
 
 ### US-002: User Login
 
-**As a** registered user  
-**I want to** log in with my credentials  
+**As a** registered user
+**I want to** log in with my credentials
 **So that** I can access my account
 
 **Acceptance Criteria:**
@@ -649,8 +651,8 @@ Implement secure user authentication with JWT tokens.
 
 ### US-003: Password Reset
 
-**As a** user who forgot my password  
-**I want to** reset my password  
+**As a** user who forgot my password
+**I want to** reset my password
 **So that** I can regain access
 
 **Acceptance Criteria:**
@@ -699,8 +701,8 @@ Implement secure user authentication with JWT tokens.
 
 **중요:** 각 PRD 항목은 단일 컨텍스트 윈도우 내에서 완료될 수 있을 정도로 작아야 합니다.
 
-- ✅ 좋은 예: "POST /users 엔드포인트 구현"
-- ❌ 나쁜 예: "전체 인증 시스템 구현"
+- 좋은 예: "POST /users 엔드포인트 구현"
+- 나쁜 예: "전체 인증 시스템 구현"
 
 큰 작업은 더 작은 단위로 나누세요.
 
@@ -723,7 +725,7 @@ ralph-tui run --iterations 10
 ### 9.2 효과적인 프롬프트 작성
 
 ```markdown title="markdown"
-# ✅ 좋은 프롬프트
+# 좋은 프롬프트
 
 Build a REST API for todos.
 
@@ -741,7 +743,7 @@ When stuck after 15 iterations:
 - List attempted solutions
 - Suggest alternatives
 
-# ❌ 나쁜 프롬프트
+# 나쁜 프롬프트
 
 Build a todo app and make it good.
 ```
@@ -829,7 +831,7 @@ Ralph Loop는 AI 코딩의 새로운 패러다임을 제시합니다. 핵심은 
    - CLI 환경: Claude Code Plugin
    - 시각적 모니터링: Ralph TUI
    - 프로그래밍 통합: ralph-loop-agent
-4. **루프 실행** (그리고 커피 마시기 ☕)
+4. **루프 실행** (그리고 커피 마시기)
 
 Geoffrey Huntley의 말처럼:
 
