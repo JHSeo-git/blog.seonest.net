@@ -38,8 +38,6 @@ Next.js 16 blog/docs site with App Router, React 19, TypeScript, and Fumadocs fo
 - `content/blog/` - Blog posts (MDX)
 - `content/docs/` - Documentation (MDX with `meta.json` navigation)
 - `lib/` - Utilities (`source.tsx` for Fumadocs loaders, `metadata.ts` for OG)
-- `services/` - Business logic (post view tracking)
-- `prisma/` - Database schema (Supabase/PostgreSQL)
 
 **Content system:**
 
@@ -73,8 +71,6 @@ Next.js 16 blog/docs site with App Router, React 19, TypeScript, and Fumadocs fo
 ## Environment
 
 - Node 22.12.0 (`.nvmrc`), pnpm 10.2.0
-- Copy `.env.example` to `.env` for Supabase connection
-- Prisma client generated on `pnpm install`
 
 ## New Blog Post Workflow
 

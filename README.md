@@ -18,9 +18,6 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
 - [Next.js](https://nextjs.org/)
   - [v16.x](https://www.npmjs.com/package/next)
   - [App Router](https://nextjs.org/docs/app)
-- DB
-  - [Prisma](https://www.prisma.io/)
-  - [Supabase](https://supabase.io/)
 - UI
   - [tailwindcss v4](https://tailwindcss.com/)
   - [next-themes](https://github.com/pacocoursey/next-themes)
@@ -48,19 +45,7 @@ cd my-blog
 pnpm install
 ```
 
-3. Edit .env file
-
-copy .env.example to .env and edit it.
-
-```bash
-# supabase
-# Connect to Supabase via connection pooling.
-SUPABASE_DATABASE_URL="postgres://postgres.../postgres?schema=preview&pgbouncer=true&connection_limit=1"
-# Direct connection to the database. Used for migrations.
-DIRECT_URL="postgres://postgres.../postgres?schema=preview&pgbouncer=true&connection_limit=1"
-```
-
-4. Run dev server.
+3. Run dev server.
 
 ```bash
 pnpm dev

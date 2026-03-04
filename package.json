@@ -19,7 +19,6 @@
     "docs:list": "tsx scripts/docs-list.ts",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\" --cache",
-    "postinstall": "npx prisma generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "post": "seonest-post-gen -d content/posts",
@@ -31,14 +30,11 @@
   "dependencies": {
     "@giscus/react": "^3.1.0",
     "@paper-design/shaders-react": "^0.0.71",
-    "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
     "@takumi-rs/image-response": "^0.64.1",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "dotenv": "^17.2.3",
     "fumadocs-core": "^16.4.7",
     "fumadocs-mdx": "^14.2.6",
     "fumadocs-ui": "^16.4.7",
@@ -47,7 +43,6 @@
     "mermaid": "^11.12.2",
     "next": "16.1.4",
     "next-themes": "^0.4.6",
-    "pg": "^8.17.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-is": "19.2.3",
@@ -68,14 +63,11 @@
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
     "@types/node": "^25.0.9",
-    "@types/pg": "^8.16.0",
     "@types/react": "19.2.9",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
     "autoprefixer": "^10.4.23",
-    "esbuild": "^0.27.2",
-    "esbuild-register": "^3.6.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.4",
     "eslint-config-prettier": "^10.1.8",
@@ -88,7 +80,6 @@
     "prettier-plugin-packagejson": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "pretty-quick": "^4.2.2",
-    "prisma": "^7.2.0",
     "rehype-pretty-code": "^0.14.1",
     "seonest-post-gen": "^0.4.1",
     "simple-git-hooks": "^2.13.1",
@@ -99,15 +90,5 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
   },
-  "packageManager": "pnpm@10.2.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@prisma/client",
-      "@prisma/engines",
-      "prisma"
-    ]
-  },
-  "prisma": {
-    "seed": "node -r esbuild-register prisma/seed.ts"
-  }
+  "packageManager": "pnpm@10.2.0"
 }

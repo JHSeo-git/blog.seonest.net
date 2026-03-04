@@ -35,9 +35,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# db
-prisma/dev.db
-
 # env
 .env
 
@@ -46,6 +43,3 @@ __backup
 
 # sitemap
 public/sitemap.xml
-
-# contentlayer
-.contentlayer
