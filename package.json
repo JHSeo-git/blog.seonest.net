@@ -30,7 +30,7 @@
   "dependencies": {
     "@giscus/react": "^3.1.0",
     "@paper-design/shaders-react": "^0.0.71",
-    "@takumi-rs/image-response": "^0.64.1",
+    "@takumi-rs/image-response": "^0.70.0",
     "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
