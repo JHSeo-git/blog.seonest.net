@@ -1,0 +1,200 @@
+---
+title: Use Notification (cc-notifier)
+description: 여러 Claude Code 터미널 세션을 macOS 알림으로 구분하고, 알림 클릭으로 해당 창으로 바로 복귀하는 설정 가이드
+---
+
+## 소개
+
+Claude Code를 여러 터미널 창에서 동시에 돌리면 어떤 창에서 응답이 끝났는지 놓치기 쉽습니다.
+
+[`cc-notifier`](https://github.com/trentmcnitt/cc-notifier)는 Claude Code hook에 연결되어 작업이 끝났을 때 macOS 알림을 보내고, 알림을 클릭하면 그 작업이 실행 중이던 정확한 터미널 창으로 다시 포커스합니다.
+
+기본 터미널 알림보다 좋은 점은 "앱으로 복귀"가 아니라 "그 창으로 복귀"라는 점입니다. Spaces를 나눠 써도 다시 찾기 쉽습니다.
+
+## 언제 쓰면 좋은가
+
+- Claude Code 세션을 여러 터미널 창에서 병렬 실행할 때
+- 다른 Space나 다른 앱으로 이동해 둔 상태에서 결과만 빠르게 확인하고 싶을 때
+- 단순 배너 알림보다 "어디서 끝났는지"까지 바로 찾고 싶을 때
+
+## 준비물
+
+- macOS
+- Claude Code CLI
+- [Hammerspoon](https://www.hammerspoon.org/)
+- [`terminal-notifier`](https://github.com/julienXX/terminal-notifier)
+
+<Callout title="전제">
+  이 가이드는 데스크톱 알림 중심입니다. `cc-notifier`는 원격 SSH + 모바일 푸시도 지원하지만 여기서는
+  로컬 macOS 워크플로만 다룹니다.
+</Callout>
+
+## 1. 의존성 설치
+
+```bash title="Terminal"
+brew install --cask hammerspoon
+brew install terminal-notifier
+```
+
+Hammerspoon을 한 번 실행한 뒤 macOS 접근 권한 요청이 나오면 허용합니다.
+
+## 2. Hammerspoon 초기 설정
+
+`~/.hammerspoon/init.lua`에 아래 내용을 추가합니다.
+
+```lua title="~/.hammerspoon/init.lua"
+require("hs.ipc")
+require("hs.window")
+require("hs.window.filter")
+require("hs.timer")
+```
+
+설정 반영:
+
+```bash title="Terminal"
+hs -c "hs.reload()"
+```
+
+## 3. cc-notifier 설치
+
+이미 `~/Projects/oss/cc-notifier`에 클론해 두었다면 그 경로를 그대로 사용하면 됩니다.
+
+없다면:
+
+```bash title="Terminal"
+cd ~/Projects/oss
+git clone https://github.com/trentmcnitt/cc-notifier.git
+cd cc-notifier
+./install.sh
+```
+
+설치가 끝나면 실행 파일이 `~/.cc-notifier/cc-notifier`에 배치됩니다.
+
+## 4. Claude Code hook 연결
+
+`~/.claude/settings.json`에 hook을 추가합니다.
+
+```jsonc title="~/.claude/settings.json"
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.cc-notifier/cc-notifier init",
+          },
+        ],
+      },
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.cc-notifier/cc-notifier notify",
+          },
+        ],
+      },
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.cc-notifier/cc-notifier notify",
+          },
+        ],
+      },
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.cc-notifier/cc-notifier cleanup",
+          },
+        ],
+      },
+    ],
+  },
+}
+```
+
+<Callout title="기존 hooks가 이미 있다면">
+  전체를 덮어쓰지 말고 각 이벤트 배열에 `cc-notifier` command만 추가하세요.
+</Callout>
+
+## 5. 어떻게 동작하나
+
+1. `SessionStart`
+   Claude Code를 시작한 창의 window ID를 저장합니다.
+2. `Stop`
+   응답이 끝났을 때 현재 보고 있는 창이 바뀌었는지 확인합니다.
+3. `Notification`
+   권한 요청이나 입력 대기처럼 사용자 확인이 필요한 경우에도 알림을 보냅니다.
+4. 알림 클릭
+   Hammerspoon이 원래 Claude Code가 실행 중이던 창을 다시 포커스합니다.
+
+즉, 여러 터미널을 띄워도 "어느 세션이 끝났는지"를 다시 찾는 비용이 줄어듭니다.
+
+## 6. 확인 방법
+
+1. 터미널 A에서 Claude Code를 실행합니다.
+2. 시간이 조금 걸리는 작업을 요청합니다.
+3. 터미널 B나 다른 Space로 이동합니다.
+4. 작업이 끝나면 macOS 알림이 옵니다.
+5. 알림을 클릭했을 때 터미널 A의 정확한 창으로 돌아오면 정상입니다.
+
+## 트러블슈팅
+
+### 알림은 오는데 창 포커스가 안 될 때
+
+- Hammerspoon이 실행 중인지 확인
+- `hs.ipc`가 로드됐는지 확인
+- Hammerspoon 접근성 권한 확인
+- 해당 터미널 앱을 한 번 직접 클릭해 창 정보가 갱신되도록 시도
+
+### 알림이 전혀 안 올 때
+
+- `terminal-notifier` 설치 확인: `which terminal-notifier`
+- hook 경로 확인: `ls ~/.cc-notifier`
+- Claude Code `~/.claude/settings.json` 문법 오류 확인
+
+### 디버그 로그가 필요할 때
+
+hook command에 `--debug`를 붙이면 `~/.cc-notifier/cc-notifier.log`에 로그가 남습니다.
+
+```jsonc title="~/.claude/settings.json"
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.cc-notifier/cc-notifier --debug notify",
+          },
+        ],
+      },
+    ],
+  },
+}
+```
+
+로그 확인:
+
+```bash title="Terminal"
+tail -f ~/.cc-notifier/cc-notifier.log
+```
+
+## 관련 문서
+
+- [Claude Code Hooks](https://docs.claude.com/en/docs/claude-code/hooks)
+- [Claude Code Terminal Setup](https://docs.claude.com/en/docs/claude-code/terminal-config)
+- [cc-notifier GitHub 저장소](https://github.com/trentmcnitt/cc-notifier)
