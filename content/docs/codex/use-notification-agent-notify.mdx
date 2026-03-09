@@ -1,0 +1,147 @@
+---
+title: Use Notification (agent-notify)
+description: Codex CLI에서 agent-notify를 연결해 작업 완료와 승인 요청을 데스크톱 알림으로 받는 설정 가이드
+---
+
+## 소개
+
+Codex CLI를 오래 돌려두면 응답 완료나 승인 요청 타이밍을 놓치기 쉽습니다.
+
+[`agent-notify`](https://github.com/paultendo/agent-notify)는 Codex의 `notify` hook에 연결되어 `agent-turn-complete`, `approval-required` 이벤트를 데스크톱 알림으로 보여줍니다.
+
+핵심은 `~/.codex/config.toml`에 `notify` 실행기를 연결하는 것입니다.
+
+## 언제 쓰면 좋은가
+
+- Codex 작업을 백그라운드처럼 돌려두고 다른 창에서 일할 때
+- 승인 요청이 뜨는 시점을 바로 알고 싶을 때
+- 저장소마다 알림 강도나 사운드를 다르게 쓰고 싶을 때
+
+## 준비물
+
+- Codex CLI
+- `agent-notify`
+- macOS라면 `terminal-notifier` 권장
+
+<Callout title="macOS 참고">
+  알림 클릭으로 앱 포커스 복귀까지 쓰려면 `terminal-notifier` 설치가 사실상 편합니다.
+</Callout>
+
+### terminal-notifier 설치
+
+```bash title="Terminal"
+brew install terminal-notifier
+```
+
+## 1. agent-notify 설치
+
+이 저장소는 OSS 도구이므로 `~/Projects/oss` 아래에 clone해서 쓰는 흐름이 깔끔합니다.
+
+이미 `~/Projects/oss/agent-notify`가 있다면 그 경로를 그대로 쓰면 됩니다.
+
+없다면:
+
+```bash title="Terminal"
+cd ~/Projects/oss
+git clone https://github.com/paultendo/agent-notify.git
+cd agent-notify
+chmod +x ./install-agent-notify.sh
+./install-agent-notify.sh
+```
+
+macOS에서는 `terminal-notifier`가 없어도 기본 알림은 동작할 수 있습니다. 다만 클릭 복귀 경험은 제한될 수 있습니다.
+
+## 2. Codex에 notify hook 연결
+
+가장 쉬운 방법:
+
+```bash title="Terminal"
+$HOME/bin/agent-notify --setup-codex
+```
+
+이 명령은 `~/.codex/config.toml`에 `notify` 설정을 추가합니다.
+
+실제로는 아래와 같은 형태가 들어갑니다.
+
+```toml title="~/.codex/config.toml"
+notify = ["$HOME/bin/agent-notify"]
+```
+
+이미 `notify` 항목이 있다면 전체를 덮어쓰지 말고, 현재 값이 `agent-notify`를 가리키는지만 확인하면 됩니다.
+
+## 3. 수동으로 설정할 때
+
+자동 설정 대신 직접 넣고 싶다면 `~/.codex/config.toml`에 `notify`를 추가합니다.
+
+```toml title="~/.codex/config.toml"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+
+notify = ["$HOME/bin/agent-notify"]
+```
+
+## 4. 프로젝트별로 알림 동작 바꾸기
+
+`agent-notify`는 프로젝트 루트의 `.agent-notify.env`를 읽습니다.
+
+예를 들어 이 저장소에서만 긴 작업에만 알림을 주고 싶다면:
+
+```bash title=".agent-notify.env"
+CODEX_NOTIFY_MIN_DURATION=30
+CODEX_NOTIFY_GIT_BRANCH=1
+CODEX_NOTIFY_SAY=1
+```
+
+자주 쓰는 값:
+
+- `CODEX_NOTIFY_MIN_DURATION`: N초 이상 걸린 작업만 알림
+- `CODEX_NOTIFY_GIT_BRANCH=1`: 알림에 현재 브랜치 표시
+- `CODEX_NOTIFY_SAY=1`: TTS 읽기
+- `CODEX_NOTIFY_SOUND`: 완료 사운드 변경
+- `CODEX_NOTIFY_APPROVAL_SOUND`: 승인 요청 사운드 변경
+- `CODEX_NOTIFY_WEBHOOK`: Slack, Discord, Telegram, ntfy 같은 외부 알림 연동
+
+## 5. 동작 확인
+
+기본 테스트:
+
+```bash title="Terminal"
+$HOME/bin/agent-notify --test
+$HOME/bin/agent-notify --test-approval
+```
+
+그 다음 Codex를 다시 시작하고, 시간이 조금 걸리는 작업 하나를 실행해 봅니다.
+
+정상이라면:
+
+1. 작업 완료 시 완료 알림이 옵니다.
+2. 권한 승인이 필요할 때 별도 알림이 옵니다.
+
+<Callout title="중요">
+  `notify` 설정을 바꾼 뒤에는 실행 중인 Codex 세션을 재시작해야 반영됩니다.
+</Callout>
+
+## 트러블슈팅
+
+### 알림이 안 올 때
+
+- `~/.codex/config.toml`의 `notify` 경로 확인
+- Codex 재시작 여부 확인
+- macOS 알림 권한 확인
+- `terminal-notifier` 설치 확인
+- `terminal-notifier` 알림 권한 확인
+
+### macOS에서 클릭 복귀가 어색할 때
+
+`agent-notify`는 macOS에서 `terminal-notifier`가 없으면 `osascript`로 fallback 할 수 있습니다. 이 경우 알림은 오더라도 클릭 복귀 동작이 제한될 수 있습니다.
+
+`terminal-notifier`를 별도로 설치했다면 macOS 시스템 설정에서 해당 앱의 알림/접근성 권한도 같이 확인합니다.
+
+### 저장소마다 다르게 동작시키고 싶을 때
+
+프로젝트 루트에 `.agent-notify.env`를 두면 됩니다. `CODEX_NOTIFY_*`와 `CODEX_SILENT` 값을 저장소별로 다르게 둘 수 있습니다.
+
+## 관련 문서
+
+- [Agent Notify GitHub 저장소](https://github.com/paultendo/agent-notify)
+- [My Config](/docs/codex/my-config)
