@@ -8,12 +8,14 @@ import { createRelativeLink } from "fumadocs-ui/mdx"
 
 import { createMetadata, getDocsPageOgImage } from "@/lib/metadata"
 import { source } from "@/lib/source"
+import { MarkdownCopyButton } from "@/components/ai/page-actions"
 
 export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
   const params = await props.params
   const page = source.getPage(params.slug)
   if (!page) notFound()
 
+  const markdownUrl = `${page.url}.mdx`
   const { body: Mdx, toc } = await page.data.load()
 
   return (
@@ -26,6 +28,9 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
     >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
+      <div className="flex flex-row flex-wrap items-center gap-2 border-b pb-6">
+        <MarkdownCopyButton markdownUrl={markdownUrl} className="text-xs" />
+      </div>
       <DocsBody>
         <Mdx
           components={getMDXComponents({
