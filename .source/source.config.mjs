@@ -9,6 +9,9 @@ var docs = defineDocs({
     schema: frontmatterSchema.extend({
       index: z.boolean().default(false)
     }),
+    postprocess: {
+      includeProcessedMarkdown: true
+    },
     async: true
   }
 });
