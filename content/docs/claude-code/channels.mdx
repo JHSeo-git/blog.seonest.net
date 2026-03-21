@@ -1,0 +1,247 @@
+---
+title: Channels
+description: 외부 webhook, 알림, 채팅 메시지를 Claude Code 세션에 실시간으로 전달하는 채널 서버 구축 가이드
+---
+
+## 소개
+
+Claude Code를 쓰다 보면 외부 시스템의 이벤트에 반응하게 하고 싶을 때가 있습니다. CI가 실패했을 때, 모니터링 알림이 왔을 때, 혹은 Slack 메시지가 도착했을 때 Claude가 바로 확인하고 대응하면 좋겠다는 생각이 드는 순간입니다.
+
+[Channels](https://docs.anthropic.com/en/docs/claude-code/channels)는 이런 외부 이벤트를 Claude Code 세션에 실시간으로 밀어넣는 MCP 서버입니다. 일반 MCP tool은 Claude가 필요할 때 호출하지만, Channel은 반대로 외부에서 Claude에게 이벤트를 푸시합니다. Claude는 이벤트를 받아 현재 작업 맥락에 맞게 반응합니다.
+
+Channel은 두 가지 모드로 동작합니다:
+
+- **One-way**: webhook, 알림 등 외부 이벤트를 Claude에게 전달만 합니다
+- **Two-way**: 채팅 브릿지처럼 Claude가 reply tool을 통해 응답도 보낼 수 있습니다
+
+이 가이드에서는 one-way webhook receiver를 직접 만들어보고, two-way로 확장하는 방법도 간략히 다룹니다.
+
+## 언제 쓰면 좋은가
+
+- CI/CD 파이프라인 결과(빌드 실패, 배포 완료 등)를 현재 작업 중인 Claude 세션에 바로 알리고 싶을 때
+- GitHub webhook, Sentry alert 등 외부 이벤트를 Claude에게 실시간 전달하고 싶을 때
+- Slack이나 Discord 메시지를 Claude에게 전달하고 Claude가 직접 응답하게 하고 싶을 때
+- 모니터링 도구의 알림을 개발 컨텍스트에 통합하고 싶을 때
+
+## 준비물
+
+- Claude Code CLI v2.1.80 이상
+- [Bun](https://bun.sh) 또는 Node.js (예제는 Bun 사용)
+- [`@modelcontextprotocol/sdk`](https://www.npmjs.com/package/@modelcontextprotocol/sdk) 패키지
+
+<Callout title="Research Preview">
+  Channels는 현재 research preview 단계입니다. 커스텀 채널을 테스트하려면
+  `--dangerously-load-development-channels` 플래그가 필요하며, API가 변경될 수 있습니다. claude.ai
+  로그인이 필요하고, Console/API Key 인증은 지원되지 않습니다.
+</Callout>
+
+## 1. 프로젝트 설정
+
+새 디렉토리를 만들고 MCP SDK를 설치합니다.
+
+```bash title="Terminal"
+mkdir webhook-channel && cd webhook-channel
+bun add @modelcontextprotocol/sdk
+```
+
+## 2. 채널 서버 작성
+
+`webhook.ts` 파일 하나가 채널 서버 전체입니다. MCP 서버로 Claude Code와 stdio로 통신하면서, HTTP 서버로 외부 webhook을 수신합니다.
+
+```ts title="webhook.ts"
+#!/usr/bin/env bun
+import { Server } from "@modelcontextprotocol/sdk/server/index.js"
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
+
+// MCP 서버 생성 — claude/channel capability가 핵심
+const mcp = new Server(
+  { name: "webhook", version: "0.0.1" },
+  {
+    capabilities: { experimental: { "claude/channel": {} } },
+    instructions:
+      'Events from the webhook channel arrive as <channel source="webhook" ...>. ' +
+      "They are one-way: read them and act, no reply expected.",
+  }
+)
+
+// Claude Code와 stdio로 연결 (Claude Code가 이 프로세스를 서브프로세스로 실행)
+await mcp.connect(new StdioServerTransport())
+
+// HTTP 서버: 들어오는 POST 요청을 Claude에게 channel 이벤트로 전달
+Bun.serve({
+  port: 8788,
+  hostname: "127.0.0.1", // localhost만 허용
+  async fetch(req) {
+    const body = await req.text()
+    await mcp.notification({
+      method: "notifications/claude/channel",
+      params: {
+        content: body, // <channel> 태그의 본문
+        meta: {
+          path: new URL(req.url).pathname,
+          method: req.method,
+        }, // <channel> 태그의 속성
+      },
+    })
+    return new Response("ok")
+  },
+})
+```
+
+핵심 포인트:
+
+- `claude/channel` capability를 선언하면 Claude Code가 이 서버를 채널로 인식합니다
+- `instructions`는 Claude의 시스템 프롬프트에 추가되어 이벤트 처리 방법을 안내합니다
+- `content`는 `<channel>` 태그의 본문, `meta`의 각 키는 태그 속성이 됩니다
+
+## 3. Claude Code에 등록
+
+프로젝트 루트의 `.mcp.json`에 채널 서버를 등록합니다.
+
+```json title=".mcp.json"
+{
+  "mcpServers": {
+    "webhook": { "command": "bun", "args": ["./webhook.ts"] }
+  }
+}
+```
+
+개발 채널 플래그를 붙여 Claude Code를 시작합니다.
+
+```bash title="Terminal"
+claude --dangerously-load-development-channels server:webhook
+```
+
+Claude Code가 시작되면 MCP 설정을 읽고 `webhook.ts`를 서브프로세스로 실행합니다. HTTP 서버도 자동으로 시작됩니다.
+
+<Callout title="플래그 없이 시작하면">
+  research preview 기간에는 커스텀 채널이 allowlist에 없으므로, 이 플래그 없이 시작하면 채널이
+  로드되지 않습니다. Team/Enterprise 조직은 관리자가 먼저 channels를 활성화해야 합니다.
+</Callout>
+
+## 4. 테스트
+
+다른 터미널에서 webhook을 시뮬레이션합니다.
+
+```bash title="Terminal"
+curl -X POST localhost:8788 \
+  -d "build failed on main: https://ci.example.com/run/1234"
+```
+
+Claude Code 세션에 다음과 같은 `<channel>` 태그로 이벤트가 도착합니다:
+
+```text
+<channel source="webhook" path="/" method="POST">
+build failed on main: https://ci.example.com/run/1234
+</channel>
+```
+
+Claude가 이벤트를 받고 현재 작업 컨텍스트에 맞게 반응하는 것을 확인할 수 있습니다.
+
+## 5. Two-way 채널로 확장
+
+Claude가 이벤트를 받는 것뿐 아니라 응답도 보내야 한다면 reply tool을 추가합니다. 대표적 사례는 Slack/Discord 채팅 브릿지입니다.
+
+`webhook.ts`에 tool capability와 핸들러를 추가합니다.
+
+```ts title="webhook.ts (reply tool 추가)"
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
+
+// Server 생성 시 tools capability 추가
+const mcp = new Server(
+  { name: "webhook", version: "0.0.1" },
+  {
+    capabilities: {
+      experimental: { "claude/channel": {} },
+      tools: {}, // two-way에 필요
+    },
+    instructions:
+      'Messages arrive as <channel source="webhook" chat_id="...">. ' +
+      "Reply with the reply tool, passing the chat_id from the tag.",
+  }
+)
+
+// Claude가 호출할 수 있는 reply tool 등록
+mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
+  tools: [
+    {
+      name: "reply",
+      description: "Send a message back over this channel",
+      inputSchema: {
+        type: "object",
+        properties: {
+          chat_id: { type: "string", description: "The conversation to reply in" },
+          text: { type: "string", description: "The message to send" },
+        },
+        required: ["chat_id", "text"],
+      },
+    },
+  ],
+}))
+
+// tool 호출 처리
+mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
+  if (req.params.name === "reply") {
+    const { chat_id, text } = req.params.arguments as { chat_id: string; text: string }
+    // 여기에 실제 플랫폼 API 호출 (Slack, Discord 등)
+    console.error(`Reply to ${chat_id}: ${text}`)
+    return { content: [{ type: "text", text: "sent" }] }
+  }
+  throw new Error(`unknown tool: ${req.params.name}`)
+})
+```
+
+Claude가 `reply` tool을 호출하면 서버가 외부 플랫폼에 메시지를 전달합니다. 완전한 two-way 구현 예제는 [fakechat 서버](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)를 참고하세요.
+
+## 어떻게 동작하나
+
+1. Claude Code가 시작되면 MCP 서버 목록에서 `claude/channel` capability를 선언한 서버를 채널로 인식합니다.
+2. 채널 서버가 서브프로세스로 실행되고, HTTP 서버(또는 플랫폼 API 폴링)가 시작됩니다.
+3. 외부 시스템(GitHub, CI, Sentry 등)이 채널 서버의 엔드포인트에 이벤트를 보냅니다.
+4. 채널 서버는 이벤트를 `notifications/claude/channel` MCP notification으로 변환하여 Claude Code에 전달합니다.
+5. Claude Code는 이벤트를 `<channel>` 태그로 컨텍스트에 삽입하고, Claude가 현재 작업 맥락에 맞게 반응합니다.
+6. Two-way 채널이면 Claude가 reply tool을 호출하여 외부 시스템에 응답을 보냅니다.
+
+## 보안: Sender Gating
+
+공개 엔드포인트나 채팅 플랫폼에 연결된 채널은 prompt injection 벡터가 될 수 있습니다. 누구든 엔드포인트에 접근할 수 있다면 Claude 앞에 임의의 텍스트를 넣을 수 있기 때문입니다.
+
+`mcp.notification()` 호출 전에 반드시 sender를 allowlist로 검증하세요.
+
+```ts title="webhook.ts (sender gating)"
+const allowed = new Set(["github-bot", "sentry", "ci-runner"])
+
+// HTTP 핸들러 내부, notification 전송 전
+const sender = req.headers.get("x-sender")
+if (!sender || !allowed.has(sender)) {
+  return new Response("forbidden", { status: 403 })
+}
+await mcp.notification({ ... })
+```
+
+그룹 채팅 환경에서는 room ID가 아닌 **sender의 개별 ID**로 검증해야 합니다. 그렇지 않으면 allowlist에 포함된 그룹의 아무나 메시지를 주입할 수 있습니다.
+
+## 트러블슈팅
+
+### 채널이 인식되지 않을 때
+
+- `--dangerously-load-development-channels server:<name>` 플래그를 붙여 시작했는지 확인
+- 서버가 `claude/channel` capability를 올바르게 선언하는지 확인
+- Team/Enterprise 조직이라면 관리자가 channels를 활성화했는지 확인
+
+### 이벤트가 Claude에 나타나지 않을 때
+
+- HTTP 서버가 실행 중인지 확인 (포트 충돌 등)
+- notification method가 정확히 `notifications/claude/channel`인지 확인
+- `meta` 키에 하이픈이 포함되면 무시됩니다 — 언더스코어만 사용하세요
+
+### reply tool이 동작하지 않을 때
+
+- Server 생성 시 `capabilities`에 `tools: {}`가 포함되어 있는지 확인
+- `ListToolsRequestSchema`와 `CallToolRequestSchema` 핸들러가 모두 등록되어 있는지 확인
+
+## 관련 문서
+
+- [Claude Code Channels 공식 문서](https://docs.anthropic.com/en/docs/claude-code/channels)
+- [Channel 구현 예제 (Telegram, Discord, fakechat)](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)
+- [MCP (Model Context Protocol)](https://modelcontextprotocol.io/)
