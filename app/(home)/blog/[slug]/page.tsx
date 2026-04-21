@@ -47,8 +47,8 @@ export default async function Page(props: PageProps<"/blog/[slug]">) {
             href="/blog"
             className={cn(
               buttonVariants({
-                size: "sm",
-                variant: "secondary",
+                size: "default",
+                variant: "ghost",
               })
             )}
           >
