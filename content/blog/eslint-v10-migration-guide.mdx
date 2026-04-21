@@ -1,0 +1,332 @@
+---
+title: ESLint v10 마이그레이션 가이드 정리
+description: ESLint 공식 migrate-to-10.0.0 문서를 바탕으로 사용자, 플러그인 작성자, 통합 도구 작성자가 확인해야 할 변경점을 실무 체크리스트 중심으로 정리했습니다.
+author: seonest
+date: 2026-04-21T13:09:35Z
+---
+
+최근 ESLint 공식 문서를 보다 보니 `latest` 문서 기준으로 `Migrate to v10.x` 페이지가 정리되어 있었습니다.
+이 글은 2026-04-21 기준 [공식 ESLint migration 문서](https://eslint.org/docs/latest/use/migrate-to-10.0.0)를 바탕으로,
+ESLint v10으로 올릴 때 실제로 먼저 확인해야 할 항목을 실무 체크리스트 중심으로 정리한 내용입니다.
+
+<Callout title="Note">
+  이 글은 공식 문서의 전체 번역본이 아니라, 업그레이드 과정에서 바로 부딪히는 변경점을 사용자 /
+  플러그인 작성자 / 통합 도구 작성자 관점으로 재구성한 요약입니다.
+</Callout>
+
+## 가장 먼저 확인할 체크리스트
+
+ESLint v10 업그레이드에서 먼저 걸릴 가능성이 높은 것은 아래입니다.
+
+1. Node.js 버전이 `20.19.0+`, `22.13.0+`, `24+` 중 하나인지 확인합니다.
+2. 아직 `.eslintrc*` 기반 설정을 쓰고 있다면 `eslint.config.*` 기반 flat config로 옮깁니다.
+3. `ESLINT_USE_FLAT_CONFIG=false` 같은 레거시 전환 옵션을 제거합니다.
+4. `v10_config_lookup_from_file` 플래그를 쓰고 있다면 모두 제거합니다.
+5. `eslint:recommended`를 쓰는 프로젝트라면 새 규칙 3개 때문에 에러가 늘어날 수 있으니 먼저 CI를 돌려 봅니다.
+6. 커스텀 rule, parser, formatter, editor integration이 있다면 일반 사용자 변경점 외에 개발자용 breaking change도 같이 검토합니다.
+
+## 일반 사용자 기준으로 크게 바뀌는 것
+
+### 1. 지원 Node.js 버전이 올라갔습니다
+
+ESLint v10은 더 이상 아래 버전을 지원하지 않습니다.
+
+- `Node.js < 20.19`
+- `Node.js v21`
+- `Node.js v23`
+
+즉, 사실상 최소 기준은 `20.19.0`입니다.
+에디터 확장까지 같이 점검해야 한다는 점도 중요합니다.
+로컬 터미널은 새 Node를 쓰고 있어도, 에디터 내 ESLint integration이 다른 Node 런타임을 물고 있으면 예상치 못한 문제가 생길 수 있습니다.
+
+Node 업그레이드가 아직 어렵다면 공식 문서도 **당장은 ESLint v9에 머물러도 된다**고 안내합니다.
+
+### 2. `eslint:recommended`에 규칙 3개가 추가됐습니다
+
+새로 포함된 규칙은 아래 3개입니다.
+
+- `no-unassigned-vars`
+- `no-useless-assignment`
+- `preserve-caught-error`
+
+기존에 `eslint:recommended`를 그대로 쓰고 있었다면 v10 업그레이드 직후 lint 에러 수가 늘어날 수 있습니다.
+이 경우 해야 할 일은 단순합니다.
+
+- 새 에러를 코드에서 수정합니다.
+- 또는 팀 정책에 맞게 해당 규칙을 비활성화합니다.
+
+대부분의 팀은 먼저 CI에서 얼마나 많이 터지는지 확인한 뒤, 규칙을 유지할지 조정할지를 정하는 편이 안전합니다.
+
+### 3. 설정 파일 탐색 방식이 기본으로 바뀌었습니다
+
+v9에서는 `v10_config_lookup_from_file` 플래그로 미리 켤 수 있었던 동작이 v10부터 기본값이 됐습니다.
+이제 ESLint는 lint 대상 파일이 있는 디렉터리부터 시작해 위로 올라가며 `eslint.config.*`를 찾습니다.
+
+이 때문에 아래 같은 설정은 제거해야 합니다.
+
+```bash
+# CLI
+npx eslint . --flag v10_config_lookup_from_file
+
+# Environment
+ESLINT_FLAGS=v10_config_lookup_from_file
+```
+
+Node.js API에서도 `new ESLint({ flags: [...] })` 또는 `new Linter({ flags: [...] })`에
+`"v10_config_lookup_from_file"`를 넘기면 안 됩니다.
+
+예전처럼 `cwd` 기준 탐색에 의존하고 있었다면, 차라리 설정 파일 경로를 명시하는 편이 더 안전합니다.
+
+```bash
+npx eslint . --config ./eslint.config.mjs
+```
+
+모노레포나 패키지별 lint 스크립트에서 특히 체크할 부분입니다.
+
+### 4. 예전 config 포맷은 더 이상 지원되지 않습니다
+
+이제 `.eslintrc`, `.eslintrc.json` 같은 예전 포맷은 v10에서 완전히 빠졌습니다.
+v9에서 임시로 쓰던 `ESLINT_USE_FLAT_CONFIG=false`도 더 이상 통하지 않습니다.
+
+따라서 남은 선택지는 flat config뿐입니다.
+
+- `eslint.config.js`
+- `eslint.config.mjs`
+- 그 외 공식적으로 지원되는 `eslint.config.*`
+
+또한 deprecated 상태였던 `FlatESLint`, `LegacyESLint`도 제거되었습니다.
+이제는 항상 `ESLint`를 사용해야 합니다.
+
+설정 이전이 아직 안 끝났다면 [공식 configuration migration guide](https://eslint.org/docs/latest/use/configure/migration-guide)를 같이 보는 것이 좋습니다.
+
+### 5. JSX 참조가 이제 정상적으로 추적됩니다
+
+이전 ESLint는 `<Card />` 같은 JSX 식별자를 스코프 참조로 제대로 다루지 못했습니다.
+그래서 어떤 경우에는 실제로 사용 중인 값이 `defined but never used`로 보이거나,
+반대로 import를 지워도 `no-undef`가 기대대로 동작하지 않는 문제가 있었습니다.
+
+v10부터는 JSX 식별자도 일반 변수 참조처럼 취급됩니다.
+
+이 변화로 기대할 수 있는 점은 두 가지입니다.
+
+- JSX 파일에서 lint 결과가 더 자연스러워집니다.
+- 기존의 JSX 참조 보정용 workaround rule은 불필요해질 수 있습니다.
+
+예를 들어 ESLint가 JSX 변수를 사용한 것으로 인식하지 못해서 넣어 두었던 보조 규칙이 있다면,
+이제는 제거 가능한지 점검해볼 만합니다.
+
+### 6. `eslint-env` 주석은 이제 에러입니다
+
+예전 설정 체계에서는 아래처럼 파일 상단에서 글로벌 환경을 선언하곤 했습니다.
+
+```js
+/* eslint-env node */
+```
+
+하지만 현재 flat config 체계에서는 이 방식을 지원하지 않고, v10부터는 아예 lint 에러로 보고됩니다.
+이제는 그런 정보도 설정 파일로 옮겨야 합니다.
+
+즉, 파일 주석으로 우회하지 말고 `languageOptions.globals` 같은 설정 경로로 정리하는 쪽이 맞습니다.
+
+### 7. TypeScript config를 쓰면 `jiti` 버전도 봐야 합니다
+
+ESLint 설정 파일을 TypeScript로 작성했고 `jiti`를 사용 중이라면 버전 확인이 필요합니다.
+v10에서는 `jiti < 2.2.0`이 더 이상 지원되지 않습니다.
+
+즉, `2.1.2` 이하를 쓰고 있다면 최소 `2.2.0` 이상으로 올려야 합니다.
+
+## 놓치기 쉬운 자잘한 breaking change
+
+### Glob 패턴에서 POSIX character class가 해석됩니다
+
+ESLint v10은 최신 `minimatch`를 사용하면서 glob 패턴에서 POSIX character class를 지원합니다.
+예를 들어 아래 같은 패턴이 이제 실제 의미를 갖습니다.
+
+```bash
+npx eslint "**/[[:upper:]]*.js"
+```
+
+만약 기존 glob 문자열 안에 POSIX character class처럼 보이는 패턴이 있었는데 단순 문자열로 생각하고 썼다면,
+매칭 결과가 달라질 수 있습니다.
+`files`, `ignores`, `globalIgnores()`, CLI 인자 모두 점검 대상입니다.
+
+### `stylish` formatter의 색상 출력 기준이 달라졌습니다
+
+이제 `chalk` 대신 Node.js 기본 `styleText`를 사용합니다.
+실제 체감 포인트는 아래입니다.
+
+- `NO_COLOR`
+- `NODE_DISABLE_COLORS`
+- `FORCE_COLOR`
+
+같은 환경변수 해석이 Node.js 규칙을 더 많이 따르게 됩니다.
+또한 `--color`, `--no-color` CLI 플래그가 이제 환경변수보다 우선합니다.
+
+CI 로그 색상이 갑자기 달라졌다면 포매터 자체보다 환경변수를 먼저 확인하는 편이 빠릅니다.
+
+### 일부 코어 룰 옵션 검증이 더 엄격해졌습니다
+
+눈에 띄는 것은 아래입니다.
+
+- `radix`
+  - `"always"`와 `"as-needed"` 문자열 옵션이 deprecated입니다.
+  - `"always"`를 명시했다면 지워도 동작은 같습니다.
+  - `"as-needed"`를 썼다면 옵션을 지우고 `parseInt()`에 radix를 늘 명시하도록 코드를 바꿔야 합니다.
+- `no-shadow-restricted-names`
+  - 이제 `globalThis`도 기본적으로 shadowing 금지 대상입니다.
+- `func-names`
+  - 옵션 배열에 허용되지 않은 추가 요소가 있으면 이제 무시되지 않고 invalid config가 됩니다.
+- `no-invalid-regexp`
+  - `allowConstructorFlags` 배열은 이제 중복 항목을 허용하지 않습니다.
+
+예전에는 넘어가던 "대충 맞는 설정"이 이제는 실제 설정 오류가 되는 경우가 늘었다고 보면 됩니다.
+
+### `@eslint/js` 코어 config에 다시 `name`이 들어갑니다
+
+대부분의 일반 사용자는 신경 쓸 필요가 없습니다.
+다만 `@eslint/js` v10과 `FlatCompat`를 같이 쓰고 있다면 `@eslint/eslintrc`도 최신으로 올리는 것이 안전합니다.
+
+## 플러그인 / 룰 / 파서 작성자는 더 꼼꼼히 봐야 합니다
+
+일반 사용자 변경점 외에, ESLint 생태계를 직접 확장하는 경우에는 추가로 아래를 확인해야 합니다.
+
+### `RuleTester` 관련 검증이 더 엄격해졌습니다
+
+- invalid 테스트 케이스의 `errors`에서 deprecated `type` 속성이 제거되었습니다.
+- valid 테스트 케이스에는 이제 `errors`나 `output`을 넣으면 안 됩니다.
+
+예전에는 그냥 무시되던 형태가 v10에서는 테스트 실패 원인이 됩니다.
+
+### `Program.range` 의미가 바뀌었습니다
+
+이제 `Program` AST 노드의 `range`는 코드 본문만이 아니라,
+앞뒤 주석과 공백까지 포함한 전체 source text를 가리킵니다.
+
+이 변화는 특히 아래 코드에 영향을 줍니다.
+
+- `Program.range` 값 자체에 의존하는 rule
+- `Program` 노드에 직접 report하는 rule
+- `Program` 기준으로 선행 주석을 읽는 로직
+
+공식 문서는 `Program`에 직접 report하던 경우라면 `node.body[0] ?? node` 쪽으로 조정해
+`/* eslint-disable */` 지시문이 여전히 기대대로 작동하게 하라고 권장합니다.
+
+### fixer 메서드는 이제 항상 string만 받아야 합니다
+
+아래 메서드에 넘기는 `text` 값이 string이 아니면 v10부터 `TypeError`가 납니다.
+
+- `insertTextBefore`
+- `insertTextBeforeRange`
+- `insertTextAfter`
+- `insertTextAfterRange`
+- `replaceText`
+- `replaceTextRange`
+
+암묵적 형변환에 기대고 있었다면 이번 기회에 모두 명시 문자열로 정리해야 합니다.
+
+### deprecated `context` 멤버가 제거됐습니다
+
+v9에서 이미 deprecated 되었던 항목들이 v10에서 삭제되었습니다.
+
+```js
+// before
+context.getCwd()
+context.getFilename()
+context.getPhysicalFilename()
+context.getSourceCode()
+context.parserOptions
+context.parserPath
+
+// after
+context.cwd
+context.filename
+context.physicalFilename
+context.sourceCode
+context.languageOptions
+context.languageOptions?.parserOptions
+```
+
+`context.parserPath`는 대체 API가 없습니다.
+
+공식 문서는 메서드 변경 일부는 `eslint-transforms`의 `v9-rule-migration`으로 도울 수 있다고 안내하지만,
+속성 변경은 수동 확인이 필요하다고 설명합니다.
+
+### deprecated `SourceCode` 메서드도 제거됐습니다
+
+제거된 메서드는 아래입니다.
+
+- `getTokenOrCommentBefore()`
+- `getTokenOrCommentAfter()`
+- `isSpaceBetweenTokens()`
+- `getJSDocComment()`
+
+대체 방향은 아래처럼 보면 됩니다.
+
+```js
+sourceCode.getTokenBefore(node, { includeComments: true })
+sourceCode.getTokenAfter(node, { includeComments: true })
+sourceCode.isSpaceBetween(first, second)
+```
+
+`getJSDocComment()`는 별도 대체 메서드가 없습니다.
+호환성 완충이 필요하다면 공식 문서가 언급한 `@eslint/compat`도 검토할 만합니다.
+
+### 커스텀 parser / ScopeManager 구현도 바뀝니다
+
+커스텀 `ScopeManager` 구현은 이제 아래 요구사항을 만족해야 합니다.
+
+- 코드 안에서 선언된 global `var`, `function` 참조를 자동으로 해석해야 합니다.
+- `addGlobals(names: string[])` 인스턴스 메서드를 제공해야 합니다.
+
+커스텀 parser를 유지보수 중이라면 꽤 중요한 변경점입니다.
+
+## 통합 도구 작성자도 API 변경을 봐야 합니다
+
+Node.js API를 감싸는 editor integration, formatter, 자체 lint runner가 있다면 아래를 확인해야 합니다.
+
+### `LintMessage.nodeType`가 제거됐습니다
+
+이제 `message.nodeType`에 기대는 코드는 더 이상 동작하지 않습니다.
+공식 문서 기준으로 이 속성은 deprecated였고, v10에서 최종 제거됐습니다.
+
+즉, custom formatter나 에디터 쪽 표시 로직에서 `nodeType`에 의존 중이라면 전부 걷어내야 합니다.
+
+### 설정 탐색 / glob 해석 / 구 config 제거 영향도 직접 받습니다
+
+통합 도구라고 해서 사용자 변경점에서 자유로운 것은 아닙니다.
+오히려 wrapper 계층이 하나 더 있어서 아래를 놓치기 쉽습니다.
+
+- config 파일 탐색 알고리즘 변경
+- `.eslintrc*` 제거
+- POSIX class glob 처리
+
+특히 내부에서 ESLint CLI 옵션이나 API `flags`를 조립하는 코드가 있다면 이번에 한 번 전체 점검하는 편이 좋습니다.
+
+## 제가 업그레이드한다면 이렇게 하겠습니다
+
+실무에서는 아래 순서가 가장 안전해 보입니다.
+
+1. Node 버전부터 맞춥니다.
+2. `.eslintrc*`를 완전히 제거하고 `eslint.config.*`만 남깁니다.
+3. `ESLINT_USE_FLAT_CONFIG`, `v10_config_lookup_from_file` 같은 과도기 옵션을 제거합니다.
+4. `eslint:recommended` 기반 새 에러가 얼마나 늘어나는지 CI로 확인합니다.
+5. JSX workaround rule, `eslint-env` 주석, 특이한 glob 패턴을 정리합니다.
+6. 커스텀 rule / parser / formatter / integration이 있다면 v10 API 제거 항목을 별도 체크리스트로 검수합니다.
+
+<Callout title="Caution">
+  Node 업그레이드나 flat config 이전이 아직 준비되지 않았다면, ESLint v10으로 급하게 올리는 것보다
+  v9를 유지하면서 선행 작업을 끝내는 편이 더 안전합니다.
+</Callout>
+
+## 마무리
+
+이번 v10은 단순히 "몇 개 규칙이 추가된 릴리즈"라기보다,
+flat config 전환을 사실상 마무리하고 deprecated API를 본격적으로 걷어낸 릴리즈에 가깝습니다.
+
+일반 사용자에게는 Node 버전, 설정 파일 포맷, 새 `recommended` 규칙이 핵심이고,
+생태계 확장 쪽에서는 `context`, `SourceCode`, `RuleTester`, `LintMessage` 관련 정리가 핵심입니다.
+
+업그레이드 전에 아래 두 문서는 같이 열어 두는 것을 추천합니다.
+
+- [Migrate to v10.x](https://eslint.org/docs/latest/use/migrate-to-10.0.0)
+- [Configuration Migration Guide](https://eslint.org/docs/latest/use/configure/migration-guide)
