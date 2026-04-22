@@ -70,6 +70,9 @@ importers:
       react-tweet:
         specifier: ^3.3.0
         version: 3.3.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-wrap-balancer:
+        specifier: ^1.1.1
+        version: 1.1.1(react@19.2.5)
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
@@ -7089,6 +7092,14 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
+  react-wrap-balancer@1.1.1:
+    resolution:
+      {
+        integrity: sha512-AB+l7FPRWl6uZ28VcJ8skkwLn2+UC62bjiw8tQUrZPlEWDVnR9MG0lghyn7EyxuJSsFEpht4G+yh2WikEqQ/5Q==,
+      }
+    peerDependencies:
+      react: ">=16.8.0 || ^17.0.0 || ^18"
+
   react@19.2.5:
     resolution:
       {
@@ -12847,6 +12858,10 @@ snapshots:
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
       swr: 2.4.1(react@19.2.5)
+
+  react-wrap-balancer@1.1.1(react@19.2.5):
+    dependencies:
+      react: 19.2.5
 
   react@19.2.5: {}
 
