@@ -53,7 +53,7 @@ For each section:
 Follow the existing `CLAUDE.md` "New Blog Post Workflow":
 
 - Path: `content/blog/<slug>.mdx`. Slug is kebab-case from the title.
-- Frontmatter: `title`, `description`, `author: jhseo`, `date` (ISO 8601 UTC,
+- Frontmatter: `title`, `description`, `author: seonest`, `date` (ISO 8601 UTC,
   obtain via `pnpm tz`).
 - Image path, if any: `public/post/<category>/<slug>/`.
 
