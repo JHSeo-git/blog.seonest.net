@@ -15,6 +15,10 @@ so what you write here is what the reviewer will accept.
    confirm — `CLAUDE.md` forbids creating posts without consent.
 2. Topic, central claim, and target reader are known. If any is missing, ask
    one question at a time. Do not guess.
+3. Language and register are settled. Default: Korean in 합니다체 (see the
+   Voice section of `writing-principles.md`). If the user has asked for any
+   other language, confirm it before drafting and skip the Korean-specific
+   register rule — the rest of Voice still applies.
 
 ## Process
 
