@@ -79,6 +79,6 @@ Next.js 16 blog/docs site with App Router, React 19, TypeScript, and Fumadocs fo
 3. Scaffold `content/blog/<slug>.mdx` with required frontmatter:
    - `title`: Post title
    - `description`: Brief summary
-   - `author`: "jhseo"
+   - `author`: "seonest"
    - `date`: ISO 8601 UTC (use `pnpm tz` to get timestamp)
 4. No body content or invented outline—leave for user to write
