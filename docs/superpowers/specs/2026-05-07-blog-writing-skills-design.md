@@ -107,7 +107,7 @@ Categories (final phrasing produced during implementation):
 2. **Load principles.** Read all five files under `.agents/references/writing-principles/`.
 3. **Skeleton agreement.** Propose a skeleton: hook (1 sentence), 3–5 sections, closing implication (1 sentence). Reject any opening that starts from a definition. Do not draft the body until the user approves the skeleton.
 4. **Drafting.** Write one section at a time. After each section, self-check against `anti-patterns.md`. For sections with hard concepts, apply `analogy.md` and add one analogy. Place code/diagrams _after_ the claim they support.
-5. **MDX scaffolding.** Follow the existing CLAUDE.md "New Blog Post Workflow": `content/blog/<slug>.mdx`, frontmatter (`title`, `description`, `author: jhseo`, `date`). Use `pnpm tz` for the date. Image path: `public/post/<category>/<slug>/`.
+5. **MDX scaffolding.** Follow the existing CLAUDE.md "New Blog Post Workflow": `content/blog/<slug>.mdx`, frontmatter (`title`, `description`, `author: seonest`, `date`). Use `pnpm tz` for the date. Image path: `public/post/<category>/<slug>/`.
 6. **Review chain.** At the end of the draft, automatically invoke `reviewing-blog-post` in auto-fix mode. If the user previously asked for review-only, chain in review-only mode instead.
 
 **Out of scope:**
