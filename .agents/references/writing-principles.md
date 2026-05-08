@@ -38,6 +38,40 @@ Courteous does not mean stiff. If a sentence sounds like a lecture, the
 problem is usually sentence structure (too long, too nested), not the register.
 Fix the structure; keep the register.
 
+### Prefer sense-for-sense over word-for-word
+
+When the source — a quoted sentence, a referenced article, the writer's own
+thinking shaped in English — is in English, **translate the meaning, not the
+surface structure**. Word-for-word renderings produce sentences that pass
+grammar but read translated.
+
+How to apply:
+
+1. **Carry intent, not syntax.** Understand the source sentence, close the
+   English version mentally, and write what a Korean speaker would say _about
+   that idea_ — not a Korean rendering of the English sentence.
+2. **Idioms are non-portable.** Replace English idioms with their Korean
+   counterparts, not literal renderings. "Stops you in your tracks" is
+   `눈에 걸린다` / `발길을 잡는다`, not `멈춰 세운다`.
+3. **Elide subjects and objects Korean would elide.** English needs
+   "we / he / it" in every clause; Korean drops them once context is set.
+   Forcing `우리는 / 그들이 / 그것이` into every clause is a calque tell.
+4. **Prefer verbs over noun phrases.** English packs claims into nouns
+   ("the accumulation makes…", "the surface signals are…"); Korean usually
+   carries the same claim with verbs and clauses
+   (`그렇게 쌓인 경험이 …로 이어집니다`, `겉으로 보이는 신호만으로는…`).
+5. **Reorder for Korean syntax.** SVO → SOV. Modifiers, time, and cause
+   often want to sit in different positions than the English original.
+6. **Read aloud.** If a Korean speaker would naturally rephrase it, the
+   calque is the problem.
+
+When you cannot smooth a sentence by tweaking words, **rewrite the thought
+from scratch in Korean**. Surrendering the English structure is faster than
+patching it.
+
+Special caution when paraphrasing English sources — that is where calques
+sneak in unnoticed.
+
 ### Default to first-person observation
 
 Open from a concrete moment, not an abstract category.
