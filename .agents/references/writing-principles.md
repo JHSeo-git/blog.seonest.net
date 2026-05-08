@@ -70,20 +70,6 @@ When you cannot smooth a sentence by tweaking words, **rewrite the thought
 from scratch in Korean**. Surrendering the English structure is faster than
 patching it.
 
-Common patterns and natural replacements:
-
-- "A sentence that stops you" → `멈춰 세우는 문장` → `눈에 걸리는 문장` /
-  `발길을 잡는 문장`.
-- "Carrying X years of judgment" → `X년의 판단을 들고` → `그대로 가지고` /
-  `그대로 적용해서`.
-- "He pulled in an analogy" → `끌어온 비유` → `이렇게 비유했습니다`.
-- "By surface signals" → `표면 신호로는` → `겉으로 보이는 신호만으로는`.
-- "Rough edges show" → `모서리가 드러납니다` → `거친 부분이 / 허점이 드러납니다`.
-- "The accumulation makes you assume…" → `그 누적이 …하게 만듭니다` →
-  `그렇게 쌓인 경험이 …로 이어집니다`.
-- "The same logic applies" → `같은 논리는 적용됩니다` → `같은 논리가 그대로
-작동합니다`.
-
 Special caution when paraphrasing English sources — that is where calques
 sneak in unnoticed.
 
