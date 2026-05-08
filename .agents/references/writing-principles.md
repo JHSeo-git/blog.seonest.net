@@ -38,14 +38,39 @@ Courteous does not mean stiff. If a sentence sounds like a lecture, the
 problem is usually sentence structure (too long, too nested), not the register.
 Fix the structure; keep the register.
 
-### Avoid English calques
+### Prefer 의역 over 직역
 
 When the source — a quoted sentence, a referenced article, the writer's own
-thinking shaped in English — is in English, translate the _meaning_, not the
-surface structure. Word-by-word renderings produce sentences that pass grammar
-but read translated.
+thinking shaped in English — is in English, **translate the meaning, not the
+surface structure**. 직역(word-for-word)이 아닌 의역(sense-for-sense)이 기본
+입니다. Word-by-word renderings produce sentences that pass grammar but read
+translated.
 
-Common giveaways and natural Korean replacements:
+How to apply:
+
+1. **Carry intent, not syntax.** Understand the source sentence, close the
+   English version mentally, and write what a Korean speaker would say _about
+   that idea_ — not a Korean rendering of the English sentence.
+2. **Idioms are non-portable.** Replace English idioms with their Korean
+   counterparts, not literal renderings. "Stops you in your tracks" is
+   `눈에 걸린다` / `발길을 잡는다`, not `멈춰 세운다`.
+3. **Elide subjects and objects Korean would elide.** English needs
+   "we / he / it" in every clause; Korean drops them once context is set.
+   Forcing `우리는 / 그들이 / 그것이` into every clause is a calque tell.
+4. **Prefer verbs over noun phrases.** English packs claims into nouns
+   ("the accumulation makes…", "the surface signals are…"); Korean usually
+   carries the same claim with verbs and clauses
+   (`그렇게 쌓인 경험이 …로 이어집니다`, `겉으로 보이는 신호만으로는…`).
+5. **Reorder for Korean syntax.** SVO → SOV. Modifiers, time, and cause
+   often want to sit in different positions than the English original.
+6. **Read aloud.** If a Korean speaker would naturally rephrase it, the
+   calque is the problem.
+
+When you cannot smooth a sentence by tweaking words, **rewrite the thought
+from scratch in Korean**. Surrendering the English structure is faster than
+patching it.
+
+Common patterns and natural replacements:
 
 - "A sentence that stops you" → `멈춰 세우는 문장` → `눈에 걸리는 문장` /
   `발길을 잡는 문장`.
@@ -54,14 +79,13 @@ Common giveaways and natural Korean replacements:
 - "He pulled in an analogy" → `끌어온 비유` → `이렇게 비유했습니다`.
 - "By surface signals" → `표면 신호로는` → `겉으로 보이는 신호만으로는`.
 - "Rough edges show" → `모서리가 드러납니다` → `거친 부분이 / 허점이 드러납니다`.
-- "The accumulation makes you assume…" → `그 누적이 ...하게 만듭니다` →
-  `그렇게 쌓인 경험이 ...로 이어집니다`.
+- "The accumulation makes you assume…" → `그 누적이 …하게 만듭니다` →
+  `그렇게 쌓인 경험이 …로 이어집니다`.
 - "The same logic applies" → `같은 논리는 적용됩니다` → `같은 논리가 그대로
 작동합니다`.
 
-When in doubt, read the sentence aloud. If a Korean speaker would naturally
-rephrase it, the calque is the problem. Special caution when paraphrasing
-English sources — that is where calques sneak in unnoticed.
+Special caution when paraphrasing English sources — that is where calques
+sneak in unnoticed.
 
 ### Default to first-person observation
 
