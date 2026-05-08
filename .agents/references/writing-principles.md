@@ -38,13 +38,12 @@ Courteous does not mean stiff. If a sentence sounds like a lecture, the
 problem is usually sentence structure (too long, too nested), not the register.
 Fix the structure; keep the register.
 
-### Prefer 의역 over 직역
+### Prefer sense-for-sense over word-for-word
 
 When the source — a quoted sentence, a referenced article, the writer's own
 thinking shaped in English — is in English, **translate the meaning, not the
-surface structure**. 직역(word-for-word)이 아닌 의역(sense-for-sense)이 기본
-입니다. Word-by-word renderings produce sentences that pass grammar but read
-translated.
+surface structure**. Word-for-word renderings produce sentences that pass
+grammar but read translated.
 
 How to apply:
 
