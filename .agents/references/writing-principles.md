@@ -38,6 +38,31 @@ Courteous does not mean stiff. If a sentence sounds like a lecture, the
 problem is usually sentence structure (too long, too nested), not the register.
 Fix the structure; keep the register.
 
+### Avoid English calques
+
+When the source — a quoted sentence, a referenced article, the writer's own
+thinking shaped in English — is in English, translate the _meaning_, not the
+surface structure. Word-by-word renderings produce sentences that pass grammar
+but read translated.
+
+Common giveaways and natural Korean replacements:
+
+- "A sentence that stops you" → `멈춰 세우는 문장` → `눈에 걸리는 문장` /
+  `발길을 잡는 문장`.
+- "Carrying X years of judgment" → `X년의 판단을 들고` → `그대로 가지고` /
+  `그대로 적용해서`.
+- "He pulled in an analogy" → `끌어온 비유` → `이렇게 비유했습니다`.
+- "By surface signals" → `표면 신호로는` → `겉으로 보이는 신호만으로는`.
+- "Rough edges show" → `모서리가 드러납니다` → `거친 부분이 / 허점이 드러납니다`.
+- "The accumulation makes you assume…" → `그 누적이 ...하게 만듭니다` →
+  `그렇게 쌓인 경험이 ...로 이어집니다`.
+- "The same logic applies" → `같은 논리는 적용됩니다` → `같은 논리가 그대로
+작동합니다`.
+
+When in doubt, read the sentence aloud. If a Korean speaker would naturally
+rephrase it, the calque is the problem. Special caution when paraphrasing
+English sources — that is where calques sneak in unnoticed.
+
 ### Default to first-person observation
 
 Open from a concrete moment, not an abstract category.
