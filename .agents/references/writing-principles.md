@@ -314,3 +314,48 @@ N." — is a tell. Vary the form.
 
 "Fast, reliable, and powerful." "Simple, scalable, and secure." These triples
 are advertising copy. Replace with one specific claim or cut.
+
+### Calque traps
+
+Sentences that pass Korean grammar but read translated. Most preserve
+English structure or vocabulary surface-first. Each bullet is a pattern to
+reject on sight, not a hard ban — but default to rewriting, because patches
+usually fail. The categories overlap; one sentence can hit several at once.
+
+- **Verb-elided parallels.** Parallel noun phrases with no verb to anchor
+  them — in titles, section headings, captions, or body sentences — almost
+  always signal direct translation from English. Restore the elided verbs
+  mentally; if the restored form is awkward, rewrite with the verbs in
+  place. Korean carries claims through verbs more naturally than through
+  fronted noun pairs.
+- **Placeholder verbs.** A sentence anchored by a verb that names no
+  specific action is usually a direct rendering of an equally generic
+  English verb. Ask what the action actually is, then replace the
+  placeholder with the concrete verb. If no concrete verb fits, the
+  sentence itself — not the verb — is the problem.
+- **Spatial preposition calques.** English uses spatial prepositions
+  metaphorically (_on_, _upon_, _within_, _above_); Korean usually expresses
+  the same idea without spatial language, or with a different particle and
+  a different verb. When a Korean sentence keeps the English spatial
+  structure, the whole verb-particle pair usually needs replacing, not
+  just the particle.
+- **Nominalized claims.** English packs verbal claims into noun phrases
+  ending in copulas. Korean prefers the underlying verb. When the main
+  claim of a sentence has been compressed into a noun phrase, restore the
+  verb — pull it back out and let it carry the sentence.
+- **Surface idiom translation.** English idioms rendered word-for-word pass
+  grammar but read translated. Replace with a Korean idiom that shares the
+  _mechanism_, not the surface — or rewrite without an idiom. If no Korean
+  idiom shares the mechanism cleanly, prefer plain prose to a forced
+  rendering.
+- **Register mismatch with narrative.** Formal or literary verb forms used
+  inside narrative passages read stiff and pull the reader out. Narrative
+  wants the everyday form of a verb, not its literary cousin. If a sentence
+  starts to feel like translated literary prose, the register is the
+  problem, not the words.
+- **Redundant demonstratives.** English requires demonstratives on
+  references that Korean elides. When a Korean sentence carries a
+  demonstrative on every reference, drop the ones context already supplies.
+
+Read each sentence aloud. If a Korean speaker would naturally rephrase it,
+the calque is the problem — patches usually fail, so rewrite the thought.
