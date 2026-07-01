@@ -251,6 +251,18 @@ For three or more items, use a list — but only if the items are actually
 parallel. Mixed types in a list ("the cache is fast, the disk is slow, and
 we use Redis") signal that prose would have served better.
 
+### Cut modifiers the context already carries
+
+An adjective or adverb that only repeats what nearby sentences have already
+established is decoration, not information. It reads as padding — and when the
+modifier is carried over from a source language that front-loads description,
+it reads translated. Once the surrounding text sets a quality, let the noun
+stand on its own.
+
+The test: delete the modifier and reread. If a careful reader loses nothing
+they didn't already know, leave it deleted. This is distinct from stock
+intensifiers — the word may be a perfectly good adjective, just redundant here.
+
 ## Anti-Patterns
 
 Reject on sight. If the draft contains any of these, rewrite the surrounding
@@ -356,6 +368,14 @@ usually fail. The categories overlap; one sentence can hit several at once.
 - **Redundant demonstratives.** English requires demonstratives on
   references that Korean elides. When a Korean sentence carries a
   demonstrative on every reference, drop the ones context already supplies.
+- **Abstraction as actor.** English readily puts an abstract noun in the
+  subject slot of a vivid or evaluative predicate — a concept is "right", an
+  assumption "quietly collapses", reality "arrives". Rendered straight, a
+  Korean sentence that makes an abstraction act or get judged like an agent
+  reads translated and stiff. Prefer a concrete subject — the person, the
+  tool, the code, the team — or recast so a verb carries the idea. This bites
+  hardest in headings and topic sentences, where an abstract concept in the
+  subject slot sounds like a dictionary entry instead of a claim.
 
 Read each sentence aloud. If a Korean speaker would naturally rephrase it,
 the calque is the problem — patches usually fail, so rewrite the thought.
