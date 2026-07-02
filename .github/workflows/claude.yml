@@ -48,5 +48,5 @@ jobs:
           # or https://code.claude.com/docs/en/cli-reference for available options
           # claude_args: '--allowed-tools Bash(gh pr *)'
           claude_args: |
-            --system-prompt "Always Response in Korean"
+            --append-system-prompt "Always Response in Korean"
 
