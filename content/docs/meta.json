@@ -3,12 +3,5 @@
   "description": "The documentation for Seonest",
   "icon": "Building",
   "root": true,
-  "pages": [
-    "---Introduction---",
-    "index",
-    "what-is-seonest",
-    "---Coding Agents---",
-    "claude-code",
-    "codex"
-  ]
+  "pages": ["---Introduction---", "index", "what-is-seonest"]
 }
