@@ -43,3 +43,6 @@ __backup
 
 # sitemap
 public/sitemap.xml
+
+# local research notes
+/notes
