@@ -70,7 +70,7 @@ Next.js 16 blog/docs site with App Router, React 19, TypeScript, and Fumadocs fo
 
 ## Environment
 
-- Node 22.12.0 (`.nvmrc`), pnpm 11.12.0
+- Node 24.18.0 (`.nvmrc`), pnpm 11.12.0
 
 ## New Blog Post Workflow
 
