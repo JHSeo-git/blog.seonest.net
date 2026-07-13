@@ -27,7 +27,10 @@ and if you have any questions, please leave a [issue](https://github.com/JHSeo-g
   - [fumadocs](https://fumadocs.vercel.app/) (fumadocs-mdx, fumadocs-core, fumadocs-ui)
   - [shiki](https://shiki.style/)
   - [rehype-pretty-code](https://github.com/atomiks/rehype-pretty-code)
+- [Node.js](https://nodejs.org/)
+  - v24.x (LTS)
 - [pnpm](https://pnpm.io/)
+  - [v11.x](https://www.npmjs.com/package/pnpm)
 
 ## Running Locally
 
@@ -40,6 +43,8 @@ cd my-blog
 ```
 
 2. Install dependencies
+
+> Requires Node.js 24+ (see `.nvmrc`). Run `corepack enable` once to use the pinned pnpm version.
 
 ```bash
 pnpm install
