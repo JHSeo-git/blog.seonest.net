@@ -1,6 +1,6 @@
 ---
 name: reviewing-blog-post
-description: Use to review or critique a blog post draft against writing principles. Default mode auto-edits the file with a diff. Switches to review-only mode when the user explicitly asks for feedback without edits ("review only", "리뷰만", "자동수정 말고", "feedback only", etc.).
+description: 'Use to review or critique a blog post draft against writing principles. Default mode auto-edits the file with a diff. Switches to review-only mode when the user explicitly asks for feedback without edits ("review only", "리뷰만", "자동수정 말고", "feedback only", etc.).'
 ---
 
 # Reviewing a Blog Post
@@ -37,12 +37,35 @@ analogy, readability, and anti-patterns in one file.
 
 ## 4. Apply the rule set
 
-Run a comprehensive pass and collect every violation. For each, record:
+Run the pass through adversarial subagents, then adjudicate their findings
+in the main agent.
 
-- File path and line.
-- Which rule it violates (section name + a one-line restatement).
-- The original excerpt.
-- The proposed fix.
+### Adversarial subagent pass
+
+- Dispatch two or more read-only subagents in parallel, each with a distinct
+  lens — for example, one hunting translationese against the Calque traps
+  section, one reading aloud for rhythm, register consistency, and
+  repetition. Add lenses when the draft warrants them.
+- Brief each subagent adversarially: its job is to find as many violations
+  as possible; defending the draft counts as failure.
+- Each subagent must read the principles file first, must not edit any
+  file, and must return findings ordered by severity as: exact excerpt /
+  rule violated / one-line why / suggested rewrite.
+
+### Adjudication
+
+The main agent — not the subagents — decides what changes:
+
+- Cross-check the reports. The same sentence flagged through two different
+  lenses is a strong accept signal.
+- Verify every finding against the principles yourself. Reject suggestions
+  that break meaning, register, or an intentional device, and keep each
+  rejection with its reason for the final summary.
+- For each accepted finding, record:
+  - File path and line.
+  - Which rule it violates (section name + a one-line restatement).
+  - The original excerpt.
+  - The proposed fix.
 
 ### Auto-fix exclusion zones (always skip)
 
@@ -72,6 +95,8 @@ Do not edit content inside any of these:
 3. If more than five entries, group by section and show counts.
 4. Append a "review recommended" section listing items where automatic
    judgment was unsafe (ambiguous cases, items beyond the cap).
+5. Note findings rejected during adjudication, each with its reason, so the
+   user can overrule.
 
 ### Review-only mode
 
