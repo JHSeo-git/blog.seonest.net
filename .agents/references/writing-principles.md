@@ -38,6 +38,14 @@ Courteous does not mean stiff. If a sentence sounds like a lecture, the
 problem is usually sentence structure (too long, too nested), not the register.
 Fix the structure; keep the register.
 
+### One first-person register
+
+In 합니다체 prose the first person is 저/제 — everywhere outside direct
+quotes. 나/내 may appear only inside quoted inner speech. Mixing the two
+across paragraphs is a tell that sentences were drafted from English, where
+the pronoun carries no register. Sweep the draft for plain-form first person
+outside quotes and convert.
+
 ### Prefer sense-for-sense over word-for-word
 
 When the source — a quoted sentence, a referenced article, the writer's own
@@ -195,6 +203,11 @@ Every analogy breaks somewhere. Name the break.
 Naming the limit prevents the reader from over-extending the analogy and
 arriving at a wrong conclusion.
 
+Name the break directly, as a contrast — what the real thing does that the
+analogy doesn't. Do not announce it with a preamble sentence ("this analogy
+has its limits" or its equivalents in the post's language); the announcement
+is meta narration, and the contrast alone carries it.
+
 ### One analogy per post
 
 Two or three analogies in one post fragment the reader's mental model. Keep
@@ -262,6 +275,33 @@ stand on its own.
 The test: delete the modifier and reread. If a careful reader loses nothing
 they didn't already know, leave it deleted. This is distinct from stock
 intensifiers — the word may be a perfectly good adjective, just redundant here.
+
+### Loanwords: standard spelling, one strategy
+
+- Use the standard Korean transliteration for each loanword and hold one
+  spelling per word across the post.
+- Pick one treatment per term — transliterate into Hangul or keep the
+  original script — and apply it consistently; the same term flipping
+  between treatments reads unedited.
+- Read headings and load-bearing nouns aloud for homonym collisions: if a
+  word's more common homonym arrives first in the reader's ear, replace the
+  word or recast the sentence.
+
+### Repetition budgets
+
+Identical sentence skeletons are covered in Anti-Patterns; these quieter
+repetitions also accumulate into a tell:
+
+- A distinctive sentence-ending pattern recurring across the post — once is
+  a choice, twice reads like a habit.
+- Verbless fragment beats — at most one per post. The second reads like a
+  tic, not a beat.
+- One content word echoing through adjacent paragraphs — vary the word or
+  restructure the sentences.
+- Mechanical enumeration scaffolding — ordinal openers announcing each item
+  in turn. Let the content order carry the sequence.
+- A particle attached hard against a closing quote trips the reading voice —
+  restructure so the sentence does not hinge on quote-plus-particle.
 
 ## Anti-Patterns
 
@@ -376,6 +416,20 @@ usually fail. The categories overlap; one sentence can hit several at once.
   tool, the code, the team — or recast so a verb carries the idea. This bites
   hardest in headings and topic sentences, where an abstract concept in the
   subject slot sounds like a dictionary entry instead of a claim.
+- **Collocation violations.** A verb paired with a subject or object it
+  never takes in native Korean — usually the English pairing imported
+  wholesale. Test: would a Korean text put exactly this verb with this noun?
+  If not, swap in the verb Korean actually pairs with that noun rather than
+  patching the particle.
+- **Indefinite-article counting.** "하나의 X" and its kin render English
+  "a/one X"; Korean counts with a native counter construction or drops the
+  count entirely.
+- **Gratuitous plural marking.** English marks number everywhere; Korean
+  leaves it unmarked unless the plurality itself is the point. Strip the
+  plural suffix wherever context already carries the number.
+- **Comma-apposition headings.** A heading built as a fronted noun, a comma,
+  then a claim about it is English headline grammar. Recast the heading as
+  one Korean sentence with the verb in place.
 
 Read each sentence aloud. If a Korean speaker would naturally rephrase it,
 the calque is the problem — patches usually fail, so rewrite the thought.
