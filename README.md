@@ -27,7 +27,7 @@ app/
   page.tsx                   # home: About + auto-generated Notes/Blogs lists
   layout.tsx                 # fonts, theme, analytics, footer
   sitemap.ts
-components/                  # PostMeta, Callout, theme toggle, shadcn/ui
+components/                  # PostMeta, Callout, Image, Video, theme toggle, shadcn/ui
 lib/posts.ts                 # scans both groups, reads each post's metadata
 mdx-components.tsx           # styled MDX elements + sugar-high code blocks
 content/                     # archived posts from the previous site (not served)
@@ -43,19 +43,28 @@ export const metadata = {
   title: "Post title",
   description: "One-line summary",
   alternates: { canonical: "/post-slug" },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-08-18T00:00:00Z", // ISO 8601 UTC (created at)
+  },
 }
-
-export const date = "2026-08-18T00:00:00Z" // ISO 8601 UTC
 
 # Post title
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 Body starts here.
 ```
 
-`PostMeta` (and `Callout`) are provided globally via `mdx-components.tsx` — no import
-needed. The home page lists and sitemap are generated automatically from these exports.
+Dates live in the standard `metadata.openGraph` fields, so posts render
+`og:type=article` / `article:published_time` tags for free. Add
+`modifiedTime` (updated at) when a published post is meaningfully revised —
+the meta row and the sitemap pick it up automatically.
+
+`PostMeta`, `Callout`, `Image`, and `Video` are provided globally via
+`mdx-components.tsx` — no import needed. Images live next to the post and are
+statically imported; videos go in `public/post/<slug>/`. The home page lists
+and sitemap are generated automatically from the `metadata` export.
 
 ## Running locally
 
