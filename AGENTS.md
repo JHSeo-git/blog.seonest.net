@@ -36,18 +36,24 @@ Minimal Next.js blog (App Router, Turbopack). A post is a page — no content la
 - Unpublishing: move the post into the group's `_deprecated/` folder and `_`-prefix its
   slug folder, e.g. `app/(blog)/_deprecated/_old-post/page.mdx`. Content stays in the
   repo; restore by moving it back and dropping the prefix.
-- `lib/posts.ts` scans both groups and reads each post's `metadata`/`date` exports;
-  home and sitemap build on it.
-- `mdx-components.tsx`: styled MDX tags + global `PostMeta`/`Callout` (no import needed).
-  Only fenced code blocks (`language-*`) get sugar-high; inline backticks stay plain.
+- `lib/posts.ts` scans both groups and reads each post's `metadata` export (dates come
+  from `metadata.openGraph.publishedTime`/`modifiedTime`); home and sitemap build on it.
+- `mdx-components.tsx`: styled MDX tags + global `PostMeta`/`Callout`/`Image`/`Video`
+  (no import needed). Only fenced code blocks (`language-*`) get sugar-high; inline
+  backticks stay plain.
+- Post media: images live next to the post (`app/(blog)/<slug>/foo.webp`), statically
+  imported in the MDX and rendered with `<Image src={foo} alt="..." />`. Videos can't
+  be statically imported — put them in `public/post/<slug>/` and use
+  `<Video src="/post/<slug>/foo.mp4" />`. Both take `wide` to break out to screen
+  width (max 1100px).
 - Styling: design tokens in `app/globals.css`, exposed as Tailwind colors via
   `@theme inline`. shadcn/ui on Base UI primitives (`bunx shadcn@latest add <name>`),
   lucide-react icons.
 - Dark mode: next-themes class strategy (`@custom-variant dark` in globals.css).
 - Fonts: reading text = Noto Serif KR (site default); UI elements opt into Pretendard
   with `font-sans`.
-- `content/`: archive of old posts/images, not served. Posts using images, Tweet,
-  Video, or mermaid stay archived until those features exist.
+- `content/`: archive of old posts/images, not served. Posts using Tweet or mermaid
+  stay archived until those features exist.
 
 ## Post Conventions
 
@@ -58,14 +64,19 @@ export const metadata = {
   title: "Post title",
   description: "One-line summary",
   alternates: { canonical: "/post-slug" },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-08-18T00:00:00Z",
+  },
 }
-
-export const date = "2026-08-18T00:00:00Z"
 ```
 
-- `date`: ISO 8601 UTC — get it with `date -u +"%Y-%m-%dT%H:%M:%SZ"`
-- Body starts with `# Post title` followed by `<PostMeta date={date} />` (the meta row;
-  provided globally via `mdx-components.tsx`, no import needed)
+- `publishedTime` (created at): ISO 8601 UTC — get it with `date -u +"%Y-%m-%dT%H:%M:%SZ"`.
+  Add `modifiedTime` (updated at) only when a published post is meaningfully revised.
+- Body starts with `# Post title` followed by
+  `<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />`
+  (the meta row; provided globally via `mdx-components.tsx`, no import needed —
+  `updatedAt` renders as " (updated ...)" when `modifiedTime` exists)
 - Slug: kebab-case folder name
 
 ## New Blog Post Workflow
@@ -73,8 +84,8 @@ export const date = "2026-08-18T00:00:00Z"
 1. Ask for topic/title if not provided, and whether it is a blog post or a note
 2. Create branch with short slug from title
 3. Create `app/(blog)/<slug>/page.mdx` (or `app/(notes)/<slug>/page.mdx`) following
-   the Post Conventions above (`metadata`, `date`, `# title`, `<PostMeta date={date} />`)
-4. Fill in `metadata` and `date` (ISO 8601 UTC) only
+   the Post Conventions above (`metadata`, `# title`, the `<PostMeta ... />` meta row)
+4. Fill in `metadata` (including `openGraph.publishedTime`, ISO 8601 UTC) only
 5. No body content or invented outline — leave for jhseo to write
 
 ## Conventions
