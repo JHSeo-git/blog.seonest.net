@@ -1,61 +1,80 @@
 # blog.seonest.net
 
-![seonest](./app/opengraph-image.png)
-
-## About this project
-
-This is a blog project using React, Next.js.
-
-I wanted to make a blog that I could write and publish easily. So I made this project.
-
-Feel free to use this project as you like.
-and if you have any questions, please leave a [issue](https://github.com/JHSeo-git/blog.seonest.net/issues/new).
+Minimal personal blog at [seonest.net](https://seonest.net), inspired by
+[leerob/next-mdx-blog](https://github.com/leerob/next-mdx-blog).
 
 ## Stack
 
-- [React](https://react.dev/)
-  - [v19.x](https://www.npmjs.com/package/react)
-- [Next.js](https://nextjs.org/)
-  - [v16.x](https://www.npmjs.com/package/next)
-  - [App Router](https://nextjs.org/docs/app)
-- UI
-  - [tailwindcss v4](https://tailwindcss.com/)
-  - [next-themes](https://github.com/pacocoursey/next-themes)
-  - [lucide-react](https://lucide.dev/)
-  - [@paper-design/shaders-react](https://paper.design/)
-- MDX
-  - [fumadocs](https://fumadocs.vercel.app/) (fumadocs-mdx, fumadocs-core, fumadocs-ui)
-  - [shiki](https://shiki.style/)
-  - [rehype-pretty-code](https://github.com/atomiks/rehype-pretty-code)
-- [Node.js](https://nodejs.org/)
-  - v24.x (LTS)
-- [pnpm](https://pnpm.io/)
-  - [v11.x](https://www.npmjs.com/package/pnpm)
+- **Framework**: [Next.js](https://nextjs.org) (App Router, Turbopack)
+- **Content**: MDX via [@next/mdx](https://www.npmjs.com/package/@next/mdx) with the Rust compiler (mdxRs)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com) v4
+- **UI components**: [shadcn/ui](https://ui.shadcn.com) on [Base UI](https://base-ui.com) primitives, icons from [Lucide](https://lucide.dev)
+- **Syntax highlighting**: [sugar-high](https://github.com/huozhi/sugar-high) (fenced code blocks only)
+- **Fonts**: [Noto Serif KR](https://fonts.google.com/noto/specimen/Noto+Serif+KR) for reading text (via `next/font`) + [Pretendard](https://github.com/orioncactus/pretendard) for UI elements (variable, dynamic subset)
+- **Dark mode**: [next-themes](https://github.com/pacocoursey/next-themes)
+- **Package manager**: [Bun](https://bun.sh) / **Runtime**: Node.js 24 LTS (`.nvmrc`)
+- **Deployment**: [Vercel](https://vercel.com)
 
-## Running Locally
+## Structure
 
-1. Clone this repository
+A post is a page. There is no content layer — each post lives in a route group
+and is served at a root-level URL:
 
-```bash
-git clone https://github.com/JHSeo-git/blog.seonest.net.git my-blog
-
-cd my-blog
+```
+app/
+  (blog)/<slug>/page.mdx     → https://seonest.net/<slug>   (long-form posts)
+  (notes)/<slug>/page.mdx    → https://seonest.net/<slug>   (short notes)
+  page.tsx                   # home: About + auto-generated Notes/Blogs lists
+  layout.tsx                 # fonts, theme, analytics, footer
+  sitemap.ts
+components/                  # PostMeta, Callout, theme toggle, shadcn/ui
+lib/posts.ts                 # scans both groups, reads each post's metadata
+mdx-components.tsx           # styled MDX elements + sugar-high code blocks
+content/                     # archived posts from the previous site (not served)
 ```
 
-2. Install dependencies
+## Writing a post
 
-> Requires Node.js 24+ (see `.nvmrc`). Run `corepack enable` once to use the pinned pnpm version.
+Create `app/(blog)/<slug>/page.mdx` (or `app/(notes)/<slug>/page.mdx`) with a
+kebab-case slug folder. Slugs must be unique across both groups.
 
-```bash
-pnpm install
+```mdx
+export const metadata = {
+  title: "Post title",
+  description: "One-line summary",
+  alternates: { canonical: "/post-slug" },
+}
+
+export const date = "2026-08-18T00:00:00Z" // ISO 8601 UTC
+
+# Post title
+
+<PostMeta date={date} />
+
+Body starts here.
 ```
 
-3. Run dev server.
+`PostMeta` (and `Callout`) are provided globally via `mdx-components.tsx` — no import
+needed. The home page lists and sitemap are generated automatically from these exports.
+
+## Running locally
+
+Requires Node.js 24 LTS and Bun.
 
 ```bash
-pnpm dev
+bun install
+bun run dev
 ```
 
-## License
+## Commands
 
-[MIT](./LICENSE)
+```bash
+bun run dev           # Dev server
+bun run build         # Production build
+bun run start         # Serve production build
+bun run lint          # ESLint
+bun run lint:fix      # ESLint with auto-fix
+bun run typecheck     # tsc --noEmit
+bun run format:check  # Prettier check
+bun run format:write  # Prettier write
+```

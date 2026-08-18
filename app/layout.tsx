@@ -1,70 +1,64 @@
-import "@/styles/globals.css"
-
-import type { Metadata, Viewport } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import type { Metadata } from "next"
+import { Noto_Serif_KR } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
-import { RootProvider } from "fumadocs-ui/provider/next"
+import { ThemeProvider } from "next-themes"
 
-import { baseUrl, createMetadata } from "@/lib/metadata"
-import { cn } from "@/lib/utils"
-import GoogleAnalytics from "@/components/google-analytics"
+import { ThemeToggle } from "@/components/theme-toggle"
 
-export const metadata: Metadata = createMetadata({
-  metadataBase: baseUrl,
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css"
+import "./globals.css"
+
+const notoSerifKR = Noto_Serif_KR({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  display: "swap",
+  variable: "--font-noto-serif-kr",
+})
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://seonest.net"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
-    template: "%s | Seonest",
-    default: "Seonest",
+    default: "seonest",
+    template: "%s | seonest",
   },
-  description: "The site by Seonest",
-  verification: {
-    google: "RjVCFQ8Ye2KJxwjzcLX82cGsxOLxH1mhaUvLx5SC6I4",
-  },
-})
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
+  description: "JHSeo 개발 블로그",
 }
 
-const geist = Geist({
-  variable: "--font-sans",
-  subsets: ["latin"],
-})
-
-const mono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-})
-
-interface RootLayoutProps {
+export default function RootLayout({
+  children,
+}: Readonly<{
   children: React.ReactNode
-}
-
-function RootLayout({ children }: RootLayoutProps) {
+}>) {
   return (
-    <html
-      lang="ko"
-      className={cn(
-        "scroll-smooth antialiased motion-reduce:scroll-auto",
-        geist.variable,
-        mono.variable
-      )}
-      suppressHydrationWarning
-    >
-      <head />
-      <body className="flex min-h-screen flex-col">
-        <RootProvider>{children}</RootProvider>
-
-        {process.env.NODE_ENV === "production" && (
-          <>
-            <GoogleAnalytics />
-            <Analytics />
-          </>
-        )}
+    <html lang="ko" suppressHydrationWarning className={notoSerifKR.variable}>
+      <body className="antialiased">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <div className="bg-bg text-copy flex min-h-screen flex-col justify-between px-5 pt-10 pb-5 md:pt-14">
+            <main className="mx-auto w-full max-w-[600px]">{children}</main>
+            <Footer />
+          </div>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   )
 }
 
-export default RootLayout
+function Footer() {
+  return (
+    <footer className="mt-16 flex items-center justify-center gap-4 font-sans">
+      <a
+        href="https://github.com/JHSeo-git"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-nav hover:text-heading text-sm transition-colors duration-200"
+      >
+        github
+      </a>
+      <ThemeToggle />
+    </footer>
+  )
+}

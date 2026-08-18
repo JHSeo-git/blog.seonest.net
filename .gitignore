@@ -41,8 +41,5 @@ next-env.d.ts
 # backup
 __backup
 
-# sitemap
-public/sitemap.xml
-
 # local research notes
 /notes

@@ -1,31 +1,15 @@
 import type { NextConfig } from "next"
-import { createMDX } from "fumadocs-mdx/next"
+import createMDX from "@next/mdx"
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  serverExternalPackages: ["@takumi-rs/image-response"],
-
-  images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "pbs.twimg.com" },
-      { protocol: "https", hostname: "abs.twimg.com" },
-      { protocol: "https", hostname: "files.seonest.net" },
-    ],
-  },
-
-  async rewrites() {
-    return [
-      {
-        source: "/docs/:path*.mdx",
-        destination: "/llms.mdx/docs/:path*",
-      },
-    ]
+  pageExtensions: ["mdx", "ts", "tsx"],
+  // Rust MDX 컴파일러: 빠르지만 remark/rehype 플러그인은 못 씀.
+  // 플러그인이 필요해지면 이 플래그를 제거할 것.
+  experimental: {
+    mdxRs: { mdxType: "gfm" },
   },
 }
 
-const withMDX = createMDX({
-  // customise the config file path
-  // configPath: "source.config.ts"
-})
+const withMDX = createMDX({})
 
 export default withMDX(nextConfig)
