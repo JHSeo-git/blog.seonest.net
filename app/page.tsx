@@ -58,7 +58,7 @@ export default async function Home() {
           >
             Blogs
           </h2>
-          <div>
+          <div className="border-line-subtle border-t">
             {blogs.map((post) => (
               <BlogRow key={post.slug} post={post} />
             ))}
@@ -73,7 +73,7 @@ function BlogRow({ post }: { post: Post }) {
   return (
     <Link
       href={`/${post.slug}`}
-      className="border-line-subtle grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-5 border-b py-[0.72em] transition-opacity duration-200 hover:opacity-70"
+      className="border-line-subtle grid grid-cols-1 gap-0.5 border-b py-3 transition-opacity duration-200 hover:opacity-70 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline sm:gap-5"
     >
       <span>{post.title}</span>
       <time
