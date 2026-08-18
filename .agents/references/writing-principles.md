@@ -18,6 +18,9 @@ The aim of every rule:
 
 Apply every rule unless a rule explicitly defers to another section.
 
+Every rule also applies to the post's exported title and description. They
+are the most-read sentences of the post — display copy, not configuration.
+
 ## Voice
 
 Tone and posture. Apply to every paragraph.
@@ -164,6 +167,13 @@ what they are looking at.
 The last paragraph answers "so what does this mean for the reader's work
 tomorrow?" — not "here is what we covered". A summary closing is filler.
 
+### A section closer hands off, not echoes
+
+The last sentence of a section narrows toward the question the next section
+answers. Closing by restating the section's opening claim — or re-running
+the contrastive frame the section opened with — makes the section read
+circular and manufactured. State a frame once; after that, go concrete.
+
 ## Analogy
 
 Hard concepts require one everyday analogy. This is rule four of the four
@@ -215,6 +225,19 @@ one load-bearing analogy and let it carry the post.
 
 If a second concept is hard enough to need its own analogy, the post is
 covering too much — split it.
+
+### Localize the vehicle
+
+Pick the version of the analogy object the reader knows firsthand. If the
+reader's world has a named, everyday equivalent — a system, service, or
+custom every local reader recognizes — use it instead of describing the
+generic or foreign version. Describing generically a thing the reader knows
+by name is itself a translation tell.
+
+Then run the analogy in that domain's native vocabulary: the verbs and
+phrases people actually use when talking about the thing in daily life.
+Abstract system vocabulary inside a concrete analogy breaks the picture the
+analogy exists to paint.
 
 ## Readability
 
@@ -276,6 +299,21 @@ The test: delete the modifier and reread. If a careful reader loses nothing
 they didn't already know, leave it deleted. This is distinct from stock
 intensifiers — the word may be a perfectly good adjective, just redundant here.
 
+### Punctuation keeps Korean register
+
+- The em dash is English punctuation. Korean prose does not pause
+  dramatically on a dash, bracket an aside between a dash pair, or introduce
+  a quotation with one. A dash-wrapped insertion that strands a particle or
+  copula after the closing dash cannot be read aloud — restructure into
+  separate sentences. Structural uses (a title separator, the dash between a
+  list term and its definition) are the only places it earns its keep, and
+  even those count toward a small budget.
+- Introduce a quotation with a plain speech verb and a period, not a dash
+  or other colon substitute.
+- An interrogative sentence ends with a question mark — including bolded
+  checklist questions. A run of checklist items built on one interrogative
+  skeleton reads mechanical; vary the form.
+
 ### Loanwords: standard spelling, one strategy
 
 - Use the standard Korean transliteration for each loanword and hold one
@@ -302,6 +340,13 @@ repetitions also accumulate into a tell:
   in turn. Let the content order carry the sequence.
 - A particle attached hard against a closing quote trips the reading voice —
   restructure so the sentence does not hinge on quote-plus-particle.
+- One abstract noun serving as the post's default word for many different
+  referents — a path here, a stage there, an item, a location. Each mention
+  should name its precise referent; the catch-all noun is how translation
+  flattens a text's vocabulary.
+- The same contrastive frame recurring at section boundaries — openers and
+  closers of the same or adjacent sections built on one "A is the same, B
+  differs" skeleton. The second occurrence reads manufactured.
 
 ## Anti-Patterns
 
@@ -430,6 +475,32 @@ usually fail. The categories overlap; one sentence can hit several at once.
 - **Comma-apposition headings.** A heading built as a fronted noun, a comma,
   then a claim about it is English headline grammar. Recast the heading as
   one Korean sentence with the verb in place.
+- **Abstract-pair aphorisms.** Two abstract nouns opposed across a copula or
+  cleft — the facts-versus-interpretation, question-versus-answer frame of
+  English essays. Replace the abstractions with the concrete thing observed
+  and with who did what; if the line is meant as a beat, the concrete
+  version is the stronger beat.
+- **Agentless state-passive openers.** A topic sentence presenting a design
+  as an accomplished state, in a stative passive with no actor, is usually
+  an English passive topic sentence in disguise. Open with what differs, or
+  with who does what.
+- **Nominalized attribution.** A source's written claim recast as an
+  abstract noun — an observation, a diagnosis, a point — that then acts or
+  "comes from" somewhere. Let the person or the document write, ask, or
+  point with a plain speech verb.
+- **Event-as-host.** An event, venue, or organization as the grammatical
+  subject that holds or opens itself or its own program. Korean states
+  these locatively — the thing happens *at* the event — not with the event
+  as an agent.
+- **Compound side-labels.** Opposing camps named with a Sino-Korean
+  compound plus a group suffix read like translated op-ed prose. Prefer
+  verb-based descriptions of what each side does, and run the homonym check
+  on whatever label remains.
+- **Imported jargon compounds.** An English business or engineering noun
+  phrase rendered morpheme-for-morpheme into a compound no practitioner
+  says aloud. Unpack it into a verb phrase describing what people actually
+  do — unless the loanword itself is the community's established term, in
+  which case use the loanword, not the compound.
 
 Read each sentence aloud. If a Korean speaker would naturally rephrase it,
 the calque is the problem — patches usually fail, so rewrite the thought.

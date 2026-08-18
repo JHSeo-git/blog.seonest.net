@@ -76,6 +76,11 @@ Do not edit content inside any of these:
 - Frontmatter (`---` … `---`) authored by the user.
 - URLs, file paths, and identifiers.
 
+Metadata copy is NOT excluded: the post's title and description — whether
+in `---` frontmatter or an `export const metadata` block — are user-visible
+prose and always in scope. The frontmatter exclusion covers configuration
+values (dates, slugs, canonical paths), not display copy.
+
 ### Auto-fix safety rules
 
 - Apply a fix automatically only when the rule violation is unambiguous.
