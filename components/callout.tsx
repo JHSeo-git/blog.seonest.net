@@ -7,8 +7,8 @@ export function Callout({
   children: React.ReactNode
 }) {
   return (
-    <div className="bg-surface-subtle border-line-subtle mb-6 rounded-lg border px-4 py-3 text-[0.9375em] [&_p]:mb-3 [&_p:last-child]:mb-0">
-      {title && <p className="text-heading font-medium">{title}</p>}
+    <div className="border-l-seonest-primary mb-6 border-l-2 pl-4 text-[13px] [&_p]:mb-3 [&_p:last-child]:mb-0">
+      {title && <p className="text-nav mb-2 font-sans text-[13px] font-medium">{title}</p>}
       {children}
     </div>
   )
