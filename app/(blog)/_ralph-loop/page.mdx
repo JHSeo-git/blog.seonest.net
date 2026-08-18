@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Ralph Loop",
-  description: "Autonomous AI development methodology using iterative prompt execution until task completion",
+  description: "작업이 끝날 때까지 같은 프롬프트로 AI 코딩 에이전트를 반복 실행하는 Ralph Loop를 도구와 실행 예시까지 정리합니다.",
   alternates: {
     canonical: "/ralph-loop",
   },
@@ -14,55 +14,53 @@ export const date = "2026-03-04T14:13:31Z"
 
 > "Ralph is a Bash loop" — Geoffrey Huntley
 
-현재(글 작성 시점: 2026년 1월), 개발자 커뮤니티에서 가장 뜨거운 화제는 단연 **Ralph Loop**(또는 Ralph Wiggum 기법)입니다.
-심슨 가족의 캐릭터 이름을 딴 이 기법은 AI 코딩 에이전트를 자율적으로 반복 실행하여 복잡한 작업을 완료할 때까지 계속 작업하게 하는 혁신적인 방법론입니다.
-
-이 가이드에서는 Ralph Loop의 핵심 개념부터 실제 사용 가능한 도구들, 그리고 동작하는 예시 코드까지 상세히 다룹니다.
+2026년 1월 현재, 개발자 커뮤니티에서 가장 자주 오르내리는 이름은 **Ralph Loop**(또는 Ralph Wiggum 기법)입니다.
+심슨 가족의 캐릭터에서 이름을 가져온 이 기법이 하는 일은 하나입니다. 같은 프롬프트를 AI 코딩 에이전트에 계속 물려서, 작업이 끝날 때까지 스스로 돌게 만듭니다.
 
 ## 1. Ralph Loop란 무엇인가?
 
-Ralph Loop는 Geoffrey Huntley가 창안한 자율 AI 개발 방법론입니다. 가장 순수한 형태는 놀라울 정도로 단순합니다:
+Ralph Loop는 Geoffrey Huntley가 창안한 자율 AI 개발 방법론입니다. 가장 순수한 형태는 셸 한 줄입니다:
 
 ```bash title="bash"
 while :; do cat PROMPT.md | claude-code ; done
 ```
 
-이것이 전부입니다. AI 에이전트에게 동일한 프롬프트를 반복적으로 제공하고, 에이전트가 작업을 완료할 때까지 계속 실행합니다.
+이게 전부입니다. 같은 프롬프트를 계속 먹이면서, 작업이 끝날 때까지 에이전트를 다시 실행합니다.
 
 ### 핵심 아이디어
 
 전통적인 AI 코딩 세션의 문제점은 다음과 같습니다:
 
-- AI가 "완료됐다"고 생각하면 작업을 중단함
-- 긴 대화에서 컨텍스트 오염(context pollution)이 발생
-- 실패한 시도들이 대화 히스토리에 누적되어 AI가 혼란스러워함
+- AI가 다 끝났다고 판단하면 그대로 멈춥니다
+- 대화가 길어지면 컨텍스트가 오염됩니다(context pollution)
+- 실패한 시도가 대화 기록에 쌓이면서 AI가 방향을 잃습니다
 
 Ralph의 해결책은 간단합니다:
 
-- **진행 상태는 파일과 Git에 저장** (LLM 컨텍스트 윈도우가 아닌)
-- **컨텍스트가 채워지면 새로운 에이전트로 교체** (신선한 컨텍스트)
-- **이전 반복의 작업물을 파일 시스템에서 읽어서 계속 진행**
+- **진행 상태는 LLM 컨텍스트가 아니라 파일과 Git에 저장합니다**
+- **컨텍스트가 가득 차면 빈 컨텍스트의 새 에이전트로 교체합니다**
+- **이전 반복의 작업물은 파일 시스템에서 읽어 이어 갑니다**
 
 ## 2. 왜 Ralph Loop가 필요한가?
 
 ### 전통적인 AI 코딩의 한계
 
-1. **조기 종료**: AI가 "충분하다"고 생각하면 작업 완료 전에 중단
-2. **단일 프롬프트의 취약성**: 복잡한 작업을 단일 프롬프트로 완료할 수 없음
-3. **재프롬프팅 비용**: 매번 수동으로 다시 지시해야 함
-4. **컨텍스트 손실**: 대화가 재시작되면 이전 진행 상황을 잃음
+1. **조기 종료**: AI가 충분하다고 판단하면 작업이 끝나기 전에 멈춥니다
+2. **프롬프트 한 번의 한계**: 복잡한 작업은 프롬프트 한 번으로 끝나지 않습니다
+3. **다시 시키는 비용**: 사람이 매번 손으로 다시 지시해야 합니다
+4. **컨텍스트 손실**: 대화를 새로 시작하면 이전 진행 상황이 사라집니다
 
 ### Ralph의 장점
 
-- **$50,000 계약 작업을 $297 API 비용으로 완료** (실제 사례)
-- **밤새 6개 저장소를 배포** (Y Combinator 해커톤 사례)
-- **복잡한 마이그레이션 자동화**: Jest → Vitest, 프레임워크 업그레이드 등
+- $50,000 계약 작업을 API 비용 $297로 끝낸 실제 사례가 있습니다
+- Y Combinator 해커톤에서는 하룻밤에 저장소 6개를 배포했습니다
+- Jest → Vitest 전환, 프레임워크 업그레이드 같은 마이그레이션을 자동화합니다
 
 ## 3. 핵심 철학과 원칙
 
-### "결정론적으로 나쁨이 비결정론적인 세계에서 더 낫다"
+### 매번 다르게 틀리는 것보다 매번 똑같이 엉망인 편이 낫습니다
 
-이것이 Ralph의 핵심 철학입니다. 첫 시도에 완벽할 필요 없습니다. 반복이 작업을 다듬어 줍니다.
+Ralph의 철학은 이 한 줄에 담겨 있습니다. 첫 시도가 완벽할 필요는 없습니다. 반복할수록 결과물이 다듬어집니다.
 
 ### 3단계 워크플로우
 
@@ -74,16 +72,16 @@ flowchart LR
 
 ### 주요 원칙
 
-1. **루프 위에 앉아라, 안에 앉지 마라**: 에이전트가 작업하게 두고, 환경을 엔지니어링하라
-2. **역압력(Backpressure)이 방향보다 낫다**: 테스트, 타입체크, 린트로 잘못된 결과를 자동 거부
-3. **계획은 일회용**: 표류하는 계획을 살리는 것보다 재생성이 저렴함
-4. **실패는 데이터다**: 각 반복이 실패를 기반으로 접근 방식을 개선
+1. **루프 안에서 일하지 말고 루프를 밖에서 관리합니다**: 코드는 에이전트가 만지게 두고, 사람은 에이전트가 일할 환경을 손봅니다
+2. **backpressure가 지시를 대신합니다**: 테스트·타입체크·린트가 잘못된 결과를 자동으로 반려합니다
+3. **계획은 일회용입니다**: 어긋난 계획을 고쳐 쓰는 것보다 새로 뽑는 편이 쌉니다
+4. **실패도 데이터입니다**: 반복할 때마다 실패를 딛고 접근을 고칩니다
 
 ## 4. 주요 도구 및 플러그인
 
 ### 4.1 Claude Code 공식 플러그인 (ralph-wiggum)
 
-**가장 공식적이고 널리 사용되는 구현체**
+**Anthropic 공식 플러그인 중 가장 널리 쓰이는 구현체입니다.**
 
 - GitHub: [anthropics/claude-code/plugins/ralph-wiggum](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum)
 
@@ -110,12 +108,12 @@ flowchart LR
 
 ### 4.2 Ralph TUI (Terminal UI Orchestrator)
 
-**실시간 시각화와 세션 관리를 제공하는 터미널 UI**
+**실시간 시각화와 세션 관리를 제공하는 터미널 UI입니다.**
 
 - GitHub: [subsy/ralph-tui](https://github.com/subsy/ralph-tui)
 - 문서: [ralph-tui.com](https://ralph-tui.com)
 
-Ralph Loop의 가장 큰 문제점 중 하나는 **작업 추적의 부재**입니다.
+Ralph Loop를 돌려 두면 에이전트가 지금 무엇을 하고 있는지 보이지 않습니다.
 Ralph TUI는 이 문제를 해결하는 터미널 기반 오케스트레이터로, AI 코딩 에이전트(Claude Code, OpenCode, Factory Droid)를 작업 트래커(prd.json, Beads)에 연결하여 자율적으로 실행합니다.
 
 ```bash title="bash"
@@ -156,7 +154,7 @@ flowchart TD
 
 ### 4.3 Vercel ralph-loop-agent (TypeScript SDK)
 
-**AI SDK와 통합된 TypeScript 구현체**
+**AI SDK와 통합된 TypeScript 구현체입니다.**
 
 - GitHub: [vercel-labs/ralph-loop-agent](https://github.com/vercel-labs/ralph-loop-agent)
 
@@ -310,7 +308,7 @@ chmod +x overnight-work.sh
 
 ## 6. 실전 예시: Ralph TUI로 시각적 관리하기
 
-Ralph TUI는 Ralph Loop의 "블랙박스" 문제를 해결합니다. 자율 프로세스가 무엇을 하고 있는지 실시간으로 확인할 수 있습니다.
+Ralph Loop는 켜 두면 안이 보이지 않는 블랙박스가 되기 쉽습니다. Ralph TUI를 붙이면 자율 프로세스가 무엇을 하고 있는지 실시간으로 보입니다.
 
 ### 6.1 설치
 
@@ -608,7 +606,7 @@ const result = await stream.finalResult
 console.log(`\nCompleted in ${result.iterations} iterations`)
 ```
 
-**참고**: 스트리밍 모드에서는 검증이 통과하거나 최종 반복에 도달할 때까지 비스트리밍 반복을 실행한 후, 마지막 반복을 스트리밍합니다.
+**참고**: 스트리밍 모드는 검증을 통과하거나 마지막 반복에 이를 때까지 스트리밍 없이 돌고, 마지막 반복만 스트리밍으로 내보냅니다.
 
 ## 8. PRD 기반 작업 관리
 
@@ -706,12 +704,12 @@ Implement secure user authentication with JWT tokens.
 
 ### 8.3 PRD 크기 가이드라인
 
-**중요:** 각 PRD 항목은 단일 컨텍스트 윈도우 내에서 완료될 수 있을 정도로 작아야 합니다.
+**중요:** PRD 항목 하나는 컨텍스트 한 번으로 끝낼 수 있을 만큼 작아야 합니다.
 
 - 좋은 예: "POST /users 엔드포인트 구현"
 - 나쁜 예: "전체 인증 시스템 구현"
 
-큰 작업은 더 작은 단위로 나누세요.
+큰 작업은 더 작은 단위로 나눕니다.
 
 ## 9. Best Practices와 주의사항
 
@@ -757,7 +755,7 @@ Build a todo app and make it good.
 
 ### 9.3 역압력(Backpressure) 설정
 
-프로젝트에 자동 검증을 설정하세요:
+프로젝트에 자동 검증부터 걸어 둡니다:
 
 ```json title="json"
 // package.json
@@ -783,7 +781,7 @@ npm run validate
 
 ### 9.4 보안 고려사항
 
-Ralph는 `--dangerously-skip-permissions`가 필요한 경우가 많습니다. 반드시 샌드박스 환경에서 실행하세요:
+Ralph는 `--dangerously-skip-permissions`가 필요한 경우가 많으니, 샌드박스 환경에서 실행해야 합니다:
 
 ```bash title="bash"
 # Ralph TUI 샌드박스 모드
@@ -807,9 +805,9 @@ docker run -it --rm \
 
 **팁:**
 
-- 먼저 작은 반복 수로 테스트
-- Human-in-the-loop로 프롬프트 튜닝
-- 자신이 생긴 후 AFK (Away From Keyboard) Ralph 실행
+- 먼저 반복 수를 작게 잡고 테스트합니다
+- 사람이 지켜보면서 프롬프트를 다듬습니다
+- 자신감이 붙은 뒤에 AFK(Away From Keyboard)로 돌립니다
 
 ### 9.6 디버깅
 
@@ -830,7 +828,7 @@ cat .ralph-tui/iterations/iteration-1-*.log
 
 ## 10. 마무리
 
-Ralph Loop는 AI 코딩의 새로운 패러다임을 제시합니다. 핵심은 단순합니다:
+Ralph Loop에서 사람이 하는 일은 코드가 아니라 환경을 만지는 것입니다. 시작은 네 가지면 됩니다:
 
 1. **명확한 목표 정의** (PRD)
 2. **자동 검증 설정** (테스트, 린트)
@@ -852,4 +850,4 @@ Geoffrey Huntley의 말처럼:
 - [ralph-loop-agent (Vercel)](https://github.com/vercel-labs/ralph-loop-agent)
 - [Claude Code 공식 플러그인](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum)
 
-이 가이드가 도움이 되었다면, Ralph와 함께 밤새 코드를 배포해 보세요. 아침에 눈을 떠보면 동작하는 코드가 기다리고 있을 것입니다.
+우선 `--max-iterations`를 20으로 묶고 `npm run validate`를 걸어 작은 마이그레이션 하나부터 맡겨 봅니다. 이 방식이 우리 저장소에 맞는지는 하루 만에 드러납니다.
