@@ -3,7 +3,9 @@ import Link from "next/link"
 import { highlight } from "sugar-high"
 
 import { Callout } from "@/components/callout"
+import { Image } from "@/components/image"
 import { PostMeta } from "@/components/post-meta"
+import { Video } from "@/components/video"
 
 type HeadingProps = ComponentPropsWithoutRef<"h1">
 type ParagraphProps = ComponentPropsWithoutRef<"p">
@@ -106,6 +108,8 @@ const components = {
   ),
   PostMeta,
   Callout,
+  Image,
+  Video,
 }
 
 declare global {
