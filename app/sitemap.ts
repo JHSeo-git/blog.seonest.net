@@ -8,10 +8,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPosts()
 
   return [
-    { url: SITE_URL, lastModified: posts[0]?.date || undefined },
+    { url: SITE_URL, lastModified: posts[0]?.createdAt || undefined },
     ...posts.map((post) => ({
       url: `${SITE_URL}/${post.slug}`,
-      lastModified: post.date,
+      lastModified: post.updatedAt ?? post.createdAt,
     })),
   ]
 }

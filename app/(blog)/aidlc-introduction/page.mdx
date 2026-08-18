@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/aidlc-introduction",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-05-21T06:05:43Z",
+  },
 }
-
-export const date = "2026-05-21T06:05:43Z"
 
 # AIDLC — AI가 만들고 사람이 확인한다
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 같은 AIDLC를 도입한 두 팀이 한 주 만에 다른 결론에 이르렀습니다. 한 팀은 하룻밤 사이에 새 기능 6개를 만들어 냈고, 다른 팀은 일주일을 돌려 보고도 "그래서 우리가 정말 중요한 일을 더 많이 하고 있나?"라는 질문 앞에서 멈췄습니다.
 

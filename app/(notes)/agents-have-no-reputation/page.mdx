@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/agents-have-no-reputation",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-05-07T14:13:08Z",
+  },
 }
-
-export const date = "2026-05-07T14:13:08Z"
 
 # 에이전트에게는 잃을 평판이 없다
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 Simon Willison의 [최근 글](https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/)에 눈에 걸리는 한 문장이 있습니다. "나는 이제 에이전트가 짠 프로덕션 코드를 한 줄씩 보지 않는다." 같은 풍경은 이제 어느 팀에서나 흔합니다.
 

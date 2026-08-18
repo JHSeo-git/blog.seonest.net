@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/responsibility-is-not-free",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-06-30T14:35:14Z",
+  },
 }
-
-export const date = "2026-06-30T14:35:14Z"
 
 # 속도는 공짜가 되었지만, 책임은 그렇지 않습니다
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 어느 날 제 노트북에는 에이전트가 여덟 개 돌아가고 있었고, 밤사이 도착한 PR이 다섯 개 쌓여 있었습니다. 대시보드는 쉴 새 없이 움직였고, 그날 저는 한 주 중 가장 바빴습니다. 그런데 퇴근할 무렵 `main`에 실제로 머지된 변경은 거의 없었습니다. 가장 생산적이라고 느낀 날과, 가장 적게 만들어 낸 날이 같은 날이었습니다.
 

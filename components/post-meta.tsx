@@ -2,7 +2,12 @@ import Link from "next/link"
 
 import { formatPostDate } from "@/lib/posts"
 
-export function PostMeta({ date }: { date: string }) {
+type PostMetaProps = {
+  createdAt: string
+  updatedAt?: string
+}
+
+export function PostMeta({ createdAt, updatedAt }: PostMetaProps) {
   return (
     <Link
       href="/"
@@ -16,7 +21,10 @@ export function PostMeta({ date }: { date: string }) {
         />
       </svg>
       <span className="flex items-baseline gap-2">
-        <time dateTime={date}>{formatPostDate(date)}</time>
+        <time dateTime={createdAt}>
+          {formatPostDate(createdAt)}
+          {updatedAt ? ` (updated ${formatPostDate(updatedAt)})` : null}
+        </time>
         <span aria-hidden>·</span>
         <span>seonest</span>
       </span>

@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/react-doctor-introduction",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-05-10T13:47:42Z",
+  },
 }
-
-export const date = "2026-05-10T13:47:42Z"
 
 # 에이전트가 짠 React를 잡아주는 react-doctor
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 [Aiden Bai의 트윗](https://x.com/aidenybai/status/2052780632510775469)에서 한 문장이 눈에 걸렸습니다. _Your agent writes bad React. This catches it._ 최근에도 Claude Code가 만들어 준 컴포넌트에서 `useEffect`로 데이터를 페칭하는 패턴을 손으로 걷어내고 있던 참이었습니다.
 

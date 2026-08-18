@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/skills-vs-other-options",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-03-04T14:13:31Z",
+  },
 }
-
-export const date = "2026-03-04T14:13:31Z"
 
 # Skills vs Other options
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 Claude Code에는 동작을 원하는 대로 바꿀 수 있는 확장 옵션이 여러 가지 있습니다.
 옵션마다 목적과 실행 시점이 다르니, 무엇을 언제 쓰는지부터 구분해야 합니다.

@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/review-unit-is-understanding-unit",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-05-06T14:18:44Z",
+  },
 }
-
-export const date = "2026-05-06T14:18:44Z"
 
 # 리뷰의 단위는 곧 이해의 단위
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 > 읽지 않은 계약서에 사인한 적이 있으신가요?
 

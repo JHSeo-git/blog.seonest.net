@@ -77,10 +77,10 @@ function BlogRow({ post }: { post: Post }) {
     >
       <span>{post.title}</span>
       <time
-        dateTime={post.date}
+        dateTime={post.createdAt}
         className="text-nav font-sans text-[13px] whitespace-nowrap tabular-nums"
       >
-        {formatPostDate(post.date)}
+        {formatPostDate(post.createdAt)}
       </time>
     </Link>
   )

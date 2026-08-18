@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/ralph-loop",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-03-04T14:13:31Z",
+  },
 }
-
-export const date = "2026-03-04T14:13:31Z"
 
 # Ralph Loop
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 > "Ralph is a Bash loop" — Geoffrey Huntley
 

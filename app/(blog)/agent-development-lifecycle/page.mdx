@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/agent-development-lifecycle",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-05-12T07:35:44Z",
+  },
 }
-
-export const date = "2026-05-12T07:35:44Z"
 
 # 에이전트는 어떤 개발 사이클을 따르는가
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 평가셋 90점을 받고 배포한 에이전트가, 다음 주에는 같은 입력에 다른 답을 돌려줍니다. 코드는 한 줄도 바뀌지 않았습니다.
 

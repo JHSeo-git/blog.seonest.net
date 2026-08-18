@@ -4,13 +4,15 @@ export const metadata = {
   alternates: {
     canonical: "/eslint-v10-migration-guide",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-04-21T13:09:35Z",
+  },
 }
-
-export const date = "2026-04-21T13:09:35Z"
 
 # ESLint v10 마이그레이션 가이드 정리
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 최근 ESLint 공식 문서를 보다 보니 `latest` 문서 기준으로 `Migrate to v10.x` 페이지가 올라와 있었습니다.
 이 글은 2026-04-21 기준 [공식 ESLint migration 문서](https://eslint.org/docs/latest/use/migrate-to-10.0.0)를 바탕으로,

@@ -5,13 +5,15 @@ export const metadata = {
   alternates: {
     canonical: "/claude-code-channels",
   },
+  openGraph: {
+    type: "article",
+    publishedTime: "2026-03-21T04:01:19Z",
+  },
 }
-
-export const date = "2026-03-21T04:01:19Z"
 
 # Claude Code Channels
 
-<PostMeta date={date} />
+<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 Claude Code를 쓰다 보면 외부 시스템의 이벤트에 반응하게 하고 싶을 때가 있습니다. CI가 깨지거나 모니터링 알림이 울릴 때, Slack 메시지가 도착할 때, Claude가 바로 알아채고 대응하면 좋겠습니다.
 

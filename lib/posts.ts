@@ -8,16 +8,23 @@ export type Post = {
   category: PostCategory
   title: string
   description?: string
-  date: string
+  createdAt: string
+  updatedAt?: string
 }
 
 const CATEGORIES: PostCategory[] = ["blog", "notes"]
 
 // "2026-07-19T12:44:44Z" → "2026년 7월"
+const postDateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  year: "numeric",
+  month: "long",
+  timeZone: "UTC",
+})
+
 export function formatPostDate(date: string): string {
   const d = new Date(date)
   if (Number.isNaN(d.getTime())) return date
-  return `${d.getUTCFullYear()}년 ${d.getUTCMonth() + 1}월`
+  return postDateFormatter.format(d)
 }
 
 // 번들러가 정적으로 분석할 수 있도록 카테고리별 import 경로를 분기한다.
@@ -64,12 +71,13 @@ export async function getPosts(): Promise<Post[]> {
             category,
             title: mod.metadata?.title ?? slug,
             description: mod.metadata?.description,
-            date: mod.date ?? "",
+            createdAt: mod.metadata?.openGraph?.publishedTime ?? "",
+            updatedAt: mod.metadata?.openGraph?.modifiedTime,
           } satisfies Post
         })
       )
     })
   )
 
-  return nested.flat().sort((a, b) => (a.date < b.date ? 1 : -1))
+  return nested.flat().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
 }
