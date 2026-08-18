@@ -33,6 +33,9 @@ Minimal Next.js blog (App Router, Turbopack). A post is a page — no content la
   `/<slug>`. Slugs must be unique across both groups. `_`-prefixed folders are excluded
   from routing and the post list. Each group needs at least one `page.mdx`, or the
   dynamic import glob in `lib/posts.ts` breaks the build.
+- Unpublishing: move the post into the group's `_deprecated/` folder and `_`-prefix its
+  slug folder, e.g. `app/(blog)/_deprecated/_old-post/page.mdx`. Content stays in the
+  repo; restore by moving it back and dropping the prefix.
 - `lib/posts.ts` scans both groups and reads each post's `metadata`/`date` exports;
   home and sitemap build on it.
 - `mdx-components.tsx`: styled MDX tags + global `PostMeta`/`Callout` (no import needed).
