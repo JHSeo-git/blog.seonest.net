@@ -12,7 +12,7 @@ export const date = "2026-04-21T13:09:35Z"
 
 <PostMeta date={date} />
 
-최근 ESLint 공식 문서를 보다 보니 `latest` 문서 기준으로 `Migrate to v10.x` 페이지가 정리되어 있었습니다.
+최근 ESLint 공식 문서를 보다 보니 `latest` 문서 기준으로 `Migrate to v10.x` 페이지가 올라와 있었습니다.
 이 글은 2026-04-21 기준 [공식 ESLint migration 문서](https://eslint.org/docs/latest/use/migrate-to-10.0.0)를 바탕으로,
 ESLint v10으로 올릴 때 실제로 먼저 확인해야 할 항목을 실무 체크리스트 중심으로 정리한 내용입니다.
 
@@ -23,7 +23,7 @@ ESLint v10으로 올릴 때 실제로 먼저 확인해야 할 항목을 실무 �
 
 ## 가장 먼저 확인할 체크리스트
 
-ESLint v10 업그레이드에서 먼저 걸릴 가능성이 높은 것은 아래입니다.
+ESLint v10 업그레이드에서 먼저 걸리는 항목은 여섯 가지입니다.
 
 1. Node.js 버전이 `20.19.0+`, `22.13.0+`, `24+` 중 하나인지 확인합니다.
 2. 아직 `.eslintrc*` 기반 설정을 쓰고 있다면 `eslint.config.*` 기반 flat config로 옮깁니다.
@@ -50,7 +50,7 @@ Node 업그레이드가 아직 어렵다면 공식 문서도 **당장은 ESLint 
 
 ### 2. `eslint:recommended`에 규칙 3개가 추가됐습니다
 
-새로 포함된 규칙은 아래 3개입니다.
+새로 들어간 규칙은 세 개입니다.
 
 - `no-unassigned-vars`
 - `no-useless-assignment`
@@ -104,7 +104,7 @@ v9에서 임시로 쓰던 `ESLINT_USE_FLAT_CONFIG=false`도 더 이상 통하지
 또한 deprecated 상태였던 `FlatESLint`, `LegacyESLint`도 제거되었습니다.
 이제는 항상 `ESLint`를 사용해야 합니다.
 
-설정 이전이 아직 안 끝났다면 [공식 configuration migration guide](https://eslint.org/docs/latest/use/configure/migration-guide)를 같이 보는 것이 좋습니다.
+설정 마이그레이션이 아직 끝나지 않았다면 [공식 configuration migration guide](https://eslint.org/docs/latest/use/configure/migration-guide)를 같이 보는 것이 좋습니다.
 
 ### 5. JSX 참조가 이제 정상적으로 추적됩니다
 
@@ -160,20 +160,14 @@ npx eslint "**/[[:upper:]]*.js"
 ### `stylish` formatter의 색상 출력 기준이 달라졌습니다
 
 이제 `chalk` 대신 Node.js 기본 `styleText`를 사용합니다.
-실제 체감 포인트는 아래입니다.
-
-- `NO_COLOR`
-- `NODE_DISABLE_COLORS`
-- `FORCE_COLOR`
-
-같은 환경변수 해석이 Node.js 규칙을 더 많이 따르게 됩니다.
+실제로 체감되는 변화는 환경변수 해석입니다. `NO_COLOR`, `NODE_DISABLE_COLORS`, `FORCE_COLOR`를 Node.js와 같은 규칙으로 읽습니다.
 또한 `--color`, `--no-color` CLI 플래그가 이제 환경변수보다 우선합니다.
 
-CI 로그 색상이 갑자기 달라졌다면 포매터 자체보다 환경변수를 먼저 확인하는 편이 빠릅니다.
+CI 로그 색상이 갑자기 달라졌다면 formatter 자체보다 환경변수를 먼저 확인하는 편이 빠릅니다.
 
 ### 일부 코어 룰 옵션 검증이 더 엄격해졌습니다
 
-눈에 띄는 것은 아래입니다.
+눈에 띄는 변화는 네 가지입니다.
 
 - `radix`
   - `"always"`와 `"as-needed"` 문자열 옵션이 deprecated입니다.
@@ -182,20 +176,20 @@ CI 로그 색상이 갑자기 달라졌다면 포매터 자체보다 환경변�
 - `no-shadow-restricted-names`
   - 이제 `globalThis`도 기본적으로 shadowing 금지 대상입니다.
 - `func-names`
-  - 옵션 배열에 허용되지 않은 추가 요소가 있으면 이제 무시되지 않고 invalid config가 됩니다.
+  - 옵션 배열에 허용 목록 밖의 값이 섞여 있으면 이제는 invalid config로 처리합니다.
 - `no-invalid-regexp`
   - `allowConstructorFlags` 배열은 이제 중복 항목을 허용하지 않습니다.
 
-예전에는 넘어가던 "대충 맞는 설정"이 이제는 실제 설정 오류가 되는 경우가 늘었다고 보면 됩니다.
+예전에는 대충 맞기만 하면 넘어가던 설정이 v10에서는 설정 오류로 잡힙니다.
 
 ### `@eslint/js` 코어 config에 다시 `name`이 들어갑니다
 
 대부분의 일반 사용자는 신경 쓸 필요가 없습니다.
 다만 `@eslint/js` v10과 `FlatCompat`를 같이 쓰고 있다면 `@eslint/eslintrc`도 최신으로 올리는 것이 안전합니다.
 
-## 플러그인 / 룰 / 파서 작성자는 더 꼼꼼히 봐야 합니다
+## 플러그인·룰·파서를 만든다면 더 꼼꼼히 봐야 합니다
 
-일반 사용자 변경점 외에, ESLint 생태계를 직접 확장하는 경우에는 추가로 아래를 확인해야 합니다.
+일반 사용자 변경점 외에, ESLint 생태계를 직접 확장하고 있다면 확인할 것이 더 있습니다.
 
 ### `RuleTester` 관련 검증이 더 엄격해졌습니다
 
@@ -209,7 +203,7 @@ CI 로그 색상이 갑자기 달라졌다면 포매터 자체보다 환경변�
 이제 `Program` AST 노드의 `range`는 코드 본문만이 아니라,
 앞뒤 주석과 공백까지 포함한 전체 source text를 가리킵니다.
 
-이 변화는 특히 아래 코드에 영향을 줍니다.
+특히 이런 코드가 영향을 받습니다.
 
 - `Program.range` 값 자체에 의존하는 rule
 - `Program` 노드에 직접 report하는 rule
@@ -260,14 +254,14 @@ context.languageOptions?.parserOptions
 
 ### deprecated `SourceCode` 메서드도 제거됐습니다
 
-제거된 메서드는 아래입니다.
+제거된 메서드는 네 개입니다.
 
 - `getTokenOrCommentBefore()`
 - `getTokenOrCommentAfter()`
 - `isSpaceBetweenTokens()`
 - `getJSDocComment()`
 
-대체 방향은 아래처럼 보면 됩니다.
+대신 이렇게 바꿔 쓰면 됩니다.
 
 ```js
 sourceCode.getTokenBefore(node, { includeComments: true })
@@ -289,7 +283,7 @@ sourceCode.isSpaceBetween(first, second)
 
 ## 통합 도구 작성자도 API 변경을 봐야 합니다
 
-Node.js API를 감싸는 editor integration, formatter, 자체 lint runner가 있다면 아래를 확인해야 합니다.
+Node.js API를 감싸는 editor integration, formatter, 자체 lint runner가 있다면 확인할 변경이 더 있습니다.
 
 ### `LintMessage.nodeType`가 제거됐습니다
 
@@ -300,7 +294,7 @@ Node.js API를 감싸는 editor integration, formatter, 자체 lint runner가 �
 
 ### 설정 탐색 / glob 해석 / 구 config 제거 영향도 직접 받습니다
 
-통합 도구라고 해서 사용자 변경점에서 자유로운 것은 아닙니다.
+통합 도구를 만든다고 해서 사용자 쪽 변경을 피할 수는 없습니다.
 오히려 wrapper 계층이 하나 더 있어서 아래를 놓치기 쉽습니다.
 
 - config 파일 탐색 알고리즘 변경
@@ -311,7 +305,7 @@ Node.js API를 감싸는 editor integration, formatter, 자체 lint runner가 �
 
 ## 제가 업그레이드한다면 이렇게 하겠습니다
 
-실무에서는 아래 순서가 가장 안전해 보입니다.
+순서는 이렇습니다.
 
 1. Node 버전부터 맞춥니다.
 2. `.eslintrc*`를 완전히 제거하고 `eslint.config.*`만 남깁니다.
@@ -327,13 +321,13 @@ Node.js API를 감싸는 editor integration, formatter, 자체 lint runner가 �
 
 ## 마무리
 
-이번 v10은 단순히 "몇 개 규칙이 추가된 릴리즈"라기보다,
-flat config 전환을 사실상 마무리하고 deprecated API를 본격적으로 걷어낸 릴리즈에 가깝습니다.
+이번 v10은 규칙 몇 개가 추가된 릴리스라기보다,
+flat config 전환을 사실상 마무리하고 deprecated API를 본격적으로 걷어낸 릴리스에 가깝습니다.
 
-일반 사용자에게는 Node 버전, 설정 파일 포맷, 새 `recommended` 규칙이 핵심이고,
-생태계 확장 쪽에서는 `context`, `SourceCode`, `RuleTester`, `LintMessage` 관련 정리가 핵심입니다.
+일반 사용자는 Node 버전과 설정 파일 포맷, 새 `recommended` 규칙만 맞추면 대부분 끝납니다.
+플러그인이나 통합 도구를 유지보수한다면 `context`, `SourceCode`, `RuleTester`, `LintMessage` 쪽 제거 항목을 하나씩 확인해야 합니다.
 
-업그레이드 전에 아래 두 문서는 같이 열어 두는 것을 추천합니다.
+업그레이드 전에 이 두 문서를 같이 열어 두면 좋습니다.
 
 - [Migrate to v10.x](https://eslint.org/docs/latest/use/migrate-to-10.0.0)
 - [Configuration Migration Guide](https://eslint.org/docs/latest/use/configure/migration-guide)
