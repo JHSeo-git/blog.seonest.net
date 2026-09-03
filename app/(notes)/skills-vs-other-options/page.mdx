@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Skills vs Other options",
-  description: "Claude Code의 확장 옵션을 비교해 어떤 상황에서 무엇을 골라야 하는지 정리했습니다.",
+  description: "Claude Code의 확장 옵션을 서로 비교하여, 어떤 상황에서 무엇을 골라야 하는지 정리했습니다.",
   alternates: {
     canonical: "/skills-vs-other-options",
   },
@@ -15,19 +15,19 @@ export const metadata = {
 <PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />
 
 Claude Code에는 동작을 원하는 대로 바꿀 수 있는 확장 옵션이 여러 가지 있습니다.
-옵션마다 목적과 실행 시점이 다르니, 무엇을 언제 쓰는지부터 구분해야 합니다.
+옵션마다 사용 목적과 실행 시점이 다르기 때문에, 무엇을 언제 사용해야 하는지부터 구분해야 합니다.
 
 | 옵션                                                              | 사용 목적                                                      | 실행 시점                           |
 | :---------------------------------------------------------------- | :------------------------------------------------------------- | :---------------------------------- |
-| **[Skills](https://code.claude.com/docs/en/skills)**              | Claude에게 전문 지식 제공 (예: "우리 표준을 사용하여 PR 검토") | Claude가 관련성이 있을 때 선택      |
+| **[Skills](https://code.claude.com/docs/en/skills)**              | Claude에게 전문 지식 제공 (예: "우리 표준을 사용하여 PR 검토") | Claude가 관련성을 판단하여 선택      |
 | **[슬래시 명령](https://code.claude.com/docs/en/slash-commands)** | 재사용 가능한 프롬프트 생성 (예: `/deploy staging`)            | `/command`를 입력하여 실행          |
 | **[CLAUDE.md](https://code.claude.com/docs/en/memory)**           | 프로젝트 전체 지침 설정 (예: "TypeScript strict mode 사용")    | 모든 대화에 로드됨                  |
 | **[Subagents](https://code.claude.com/docs/en/sub-agents)**       | 자체 도구가 있는 별도 컨텍스트에 작업 위임                     | Claude가 위임하거나 명시적으로 호출 |
 | **[Hooks](https://code.claude.com/docs/en/hooks)**                | 이벤트에서 스크립트 실행 (예: 파일 저장 시 lint)               | 특정 도구 이벤트에서 발생           |
 | **[MCP servers](https://code.claude.com/docs/en/mcp)**            | Claude를 외부 도구 및 데이터 소스에 연결                       | Claude가 필요에 따라 MCP 도구 호출  |
 
-**Skills vs Subagents**: Skills는 지금 진행 중인 대화에 전문 지식을 얹습니다. Subagents는 별도 컨텍스트에서 자기 도구를 들고 일을 처리합니다. 지침이나 코딩 표준을 심을 때는 Skills를, 작업을 격리하거나 도구 권한을 따로 줘야 할 때는 Subagents를 씁니다.
+**Skills vs Subagents**: Skills는 지금 진행 중인 대화에 전문 지식을 더해 줍니다. Subagents는 별도의 컨텍스트에서 자체 도구를 사용하여 작업을 처리합니다. 지침이나 코딩 표준을 적용할 때는 Skills를 사용하고, 작업을 격리하거나 도구 권한을 따로 부여해야 할 때는 Subagents를 사용합니다.
 
-**Skills vs MCP**: Skills는 Claude에게 도구를 *사용하는 방법*을 알려주고, MCP는 도구 자체를 *제공*합니다. 예를 들어 MCP 서버는 Claude를 데이터베이스에 연결해 주고, Skill은 그 데이터베이스의 데이터 모델과 쿼리 패턴을 Claude에게 알려 줍니다.
+**Skills vs MCP**: Skills는 Claude에게 도구를 *사용하는 방법*을 알려 주고, MCP는 도구 자체를 *제공*합니다. 예를 들어 MCP 서버는 Claude를 데이터베이스에 연결해 주고, Skill은 그 데이터베이스의 데이터 모델과 쿼리 패턴을 Claude에게 알려 줍니다.
 
-**Skills vs 슬래시 명령**: Skills와 슬래시 명령은 사실상 같은 기능입니다. 다만 Skills는 Claude가 필요할 때 알아서 꺼내 쓰고, 슬래시 명령은 사용자가 직접 부릅니다. 그래서 Claude가 알아서 지켜야 할 기준은 Skills로, 매번 손으로 부르는 절차는 슬래시 명령으로 만드는 것이 자연스럽습니다.
+**Skills vs 슬래시 명령**: Skills와 슬래시 명령은 사실상 같은 기능입니다. 다만 Skills는 Claude가 필요하다고 판단할 때 스스로 선택해서 사용하고, 슬래시 명령은 사용자가 직접 호출합니다. 그래서 Claude가 스스로 지켜야 할 기준은 Skills로 만들고, 매번 사용자가 직접 호출하는 절차는 슬래시 명령으로 만드는 편이 자연스럽습니다.
