@@ -60,9 +60,7 @@ Node 업그레이드가 아직 어렵다면 공식 문서도 **당장은 ESLint 
 
 기존에 `eslint:recommended`를 그대로 쓰고 있었다면 v10 업그레이드 직후 lint 에러 수가 늘어날 수 있습니다.
 이 경우 해야 할 일은 단순합니다.
-
-- 새 에러를 코드에서 수정합니다.
-- 또는 팀 정책에 맞게 해당 규칙을 비활성화합니다.
+새로 생긴 에러를 코드에서 수정하거나, 팀 정책에 맞게 해당 규칙을 비활성화하면 됩니다.
 
 먼저 CI에서 얼마나 많이 터지는지 확인한 뒤에 규칙을 유지할지 조정할지 정하는 편이 안전합니다.
 
@@ -116,12 +114,9 @@ v9에서 임시로 쓰던 `ESLINT_USE_FLAT_CONFIG=false`도 더 이상 통하지
 
 v10부터는 JSX 식별자도 일반 변수 참조처럼 취급됩니다.
 
-이 변화로 기대할 수 있는 점은 두 가지입니다.
-
-- JSX 파일에서 lint 결과가 더 자연스러워집니다.
-- 기존의 JSX 참조 보정용 workaround rule은 불필요해질 수 있습니다.
-
-예를 들어 ESLint가 JSX 변수를 사용한 것으로 인식하지 못해서 넣어 두었던 보조 규칙이 있다면,
+그래서 JSX 파일의 lint 결과가 더 자연스러워지고, JSX 참조를 보정하려고 넣어 두었던 workaround rule은
+필요 없어질 수 있습니다.
+ESLint가 JSX 변수를 사용한 것으로 인식하지 못해서 넣어 둔 보조 규칙이 있다면,
 이제는 제거해도 되는지 점검해 볼 만합니다.
 
 ### 6. `eslint-env` 주석은 이제 에러입니다
@@ -195,8 +190,8 @@ CI 로그 색상이 갑자기 달라졌다면 formatter 자체보다 환경변�
 
 ### `RuleTester` 관련 검증이 더 엄격해졌습니다
 
-- invalid 테스트 케이스의 `errors`에서 deprecated `type` 속성이 제거되었습니다.
-- valid 테스트 케이스에는 이제 `errors`나 `output`을 넣으면 안 됩니다.
+invalid 테스트 케이스의 `errors`에서는 deprecated `type` 속성이 제거됐고,
+valid 테스트 케이스에는 이제 `errors`나 `output`을 넣으면 안 됩니다.
 
 예전에는 그대로 무시되던 형태가 v10에서는 테스트 실패 원인이 됩니다.
 
@@ -276,10 +271,8 @@ sourceCode.isSpaceBetween(first, second)
 
 ### 커스텀 parser / ScopeManager 구현도 바뀝니다
 
-커스텀 `ScopeManager` 구현은 이제 아래 요구사항을 모두 만족해야 합니다.
-
-- 코드 안에서 선언된 global `var`, `function` 참조를 자동으로 해석해야 합니다.
-- `addGlobals(names: string[])` 인스턴스 메서드를 제공해야 합니다.
+커스텀 `ScopeManager` 구현은 이제 코드 안에서 선언된 global `var`, `function` 참조를 자동으로
+해석해야 하고, `addGlobals(names: string[])` 인스턴스 메서드도 제공해야 합니다.
 
 커스텀 parser를 유지보수하고 있다면 반드시 확인해야 하는 변경점입니다.
 
