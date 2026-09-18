@@ -18,10 +18,7 @@ export const metadata = {
 
 # Sandboxes for Agents
 
-<PostMeta
-  createdAt={metadata.openGraph.publishedTime}
-  updatedAt={metadata.openGraph.modifiedTime}
-/>
+<PostMeta createdAt={metadata.openGraph.publishedTime} />
 
 macOS에서 Claude Code의 `/sandbox`를 켜면 에이전트가 실행하는 셸 명령은 운영체제의 프로세스 샌드박스인 Seatbelt 안에서 돌아갑니다. 명령을 실행할 때마다 뜨던 확인 창은 거의 사라집니다. 그 대신 접근이 허용되지 않은 파일을 건드리거나 허용 목록에 없는 도메인으로 요청을 보내는 명령은 바로 실패합니다. 그러면 에이전트는 샌드박스를 벗어나서 다시 실행해도 될지 사용자에게 물어봅니다.
 

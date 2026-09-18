@@ -4,10 +4,9 @@ import { formatPostDate } from "@/lib/posts"
 
 type PostMetaProps = {
   createdAt: string
-  updatedAt?: string
 }
 
-export function PostMeta({ createdAt, updatedAt }: PostMetaProps) {
+export function PostMeta({ createdAt }: PostMetaProps) {
   return (
     <Link
       href="/"
@@ -21,10 +20,7 @@ export function PostMeta({ createdAt, updatedAt }: PostMetaProps) {
         />
       </svg>
       <span className="flex items-baseline gap-2">
-        <time dateTime={createdAt}>
-          {formatPostDate(createdAt)}
-          {updatedAt ? ` (updated ${formatPostDate(updatedAt)})` : null}
-        </time>
+        <time dateTime={createdAt}>{formatPostDate(createdAt)}</time>
         <span aria-hidden>·</span>
         <span>seonest</span>
       </span>

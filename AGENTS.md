@@ -74,9 +74,9 @@ export const metadata = {
 - `publishedTime` (created at): ISO 8601 UTC — get it with `date -u +"%Y-%m-%dT%H:%M:%SZ"`.
   Add `modifiedTime` (updated at) only when a published post is meaningfully revised.
 - Body starts with `# Post title` followed by
-  `<PostMeta createdAt={metadata.openGraph.publishedTime} updatedAt={metadata.openGraph.modifiedTime} />`
-  (the meta row; provided globally via `mdx-components.tsx`, no import needed —
-  `updatedAt` renders as " (updated ...)" when `modifiedTime` exists)
+  `<PostMeta createdAt={metadata.openGraph.publishedTime} />`
+  (publication date and author only; provided globally via `mdx-components.tsx`, no import needed).
+  Keep `modifiedTime` in metadata for Open Graph and sitemap; it is not displayed in the meta row.
 - Slug: kebab-case folder name
 
 ## New Blog Post Workflow
