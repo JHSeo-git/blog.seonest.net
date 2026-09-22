@@ -2,6 +2,7 @@
 
 ## 2026-09-22
 
+- Polish Korean phrasing and paragraph transitions in "우리는 AI로 잘하고 있는 걸까" and update the cited post's like count.
 - Add "우리는 AI로 잘하고 있는 걸까" with v0xium's original post, a Korean translation, and reflections on AI-assisted work.
 
 ## 2026-09-19
