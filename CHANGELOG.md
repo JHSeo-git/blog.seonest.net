@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-30
+
+- Unpublish "ESLint v10 마이그레이션 가이드 정리" by moving it into the blog's `_deprecated` archive.
+
 ## 2026-09-22
 
 - Polish Korean phrasing and paragraph transitions in "우리는 AI로 잘하고 있는 걸까" and update the cited post's like count.
