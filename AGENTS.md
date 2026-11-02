@@ -92,7 +92,7 @@ export const metadata = {
 
 - Commits: Conventional Commits with scopes (e.g., `feat(nav):`)
 - Code style is config-driven (Prettier/ESLint) — just run the commands above
-- Node 24 LTS (`.nvmrc`), Bun as package manager; cold builds download fonts (network)
+- Node 26 LTS (`.nvmrc`), Bun as package manager; cold builds download fonts (network)
 
 ## Dependency Pins
 

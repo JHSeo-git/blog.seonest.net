@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-02
+
+- Upgrade local Node.js to 26.13.0 LTS and pin Vercel deployments to Node.js 26.x.
+- Update dependencies to the latest compatible stable versions, keeping ESLint 9 and TypeScript 6 for lint-plugin compatibility.
+
 ## 2026-09-30
 
 - Unpublish "ESLint v10 마이그레이션 가이드 정리" by moving it into the blog's `_deprecated` archive.
