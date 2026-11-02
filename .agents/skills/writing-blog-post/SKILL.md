@@ -1,6 +1,6 @@
 ---
 name: writing-blog-post
-description: Use when drafting or writing a blog post — covers structure, voice, analogies, and readability. Always invoke when the user explicitly asks to write or draft a post; chains reviewing-blog-post at the end of the draft.
+description: "Use when drafting or writing a blog post — covers structure, voice, analogies, and readability. Always invoke when the user explicitly asks to write or draft a post; chains reviewing-blog-post at the end of the draft."
 ---
 
 # Writing a Blog Post
@@ -12,7 +12,9 @@ so what you write here is what the reviewer will accept.
 ## Preconditions
 
 1. The user has explicitly asked to write or draft a post. If unclear, stop and
-   confirm — `CLAUDE.md` forbids creating posts without consent.
+   confirm — `AGENTS.md` forbids creating posts without consent. A request to
+   create a post scaffold follows its metadata-only workflow; draft body content
+   only when the user explicitly requests it.
 2. Topic, central claim, and target reader are known. If any is missing, ask
    one question at a time. Do not guess.
 3. Language and register are settled. Default: Korean in 합니다체 (see the
@@ -54,12 +56,10 @@ For each section:
 
 ### 4. Scaffold the MDX file
 
-Follow the existing `CLAUDE.md` "New Blog Post Workflow":
-
-- Path: `content/blog/<slug>.mdx`. Slug is kebab-case from the title.
-- Frontmatter: `title`, `description`, `author: seonest`, `date` (ISO 8601 UTC,
-  obtain via `pnpm tz`).
-- Image path, if any: `public/post/<category>/<slug>/`.
+Read `AGENTS.md` and follow its "New Blog Post Workflow", "Post Conventions",
+and media rules. Use the requested blog or note route group, the `metadata`
+export, and the global `PostMeta` component defined there. Populate the body
+only within the user's explicit drafting request.
 
 ### 5. Chain the review
 

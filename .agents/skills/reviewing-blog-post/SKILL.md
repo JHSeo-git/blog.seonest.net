@@ -28,7 +28,8 @@ Announce the chosen mode in one line before doing any work:
 
 - If a file path was passed, use it.
 - Otherwise, list candidates from `git status` and recent edits to
-  `content/blog/*.mdx`. Ask the user to pick one.
+  `app/(blog)/<slug>/page.mdx` and `app/(notes)/<slug>/page.mdx`.
+  Ask the user to pick one. Skip `_`-prefixed folders unless explicitly targeted.
 
 ## 3. Load the principles
 
