@@ -36,6 +36,10 @@ Announce the chosen mode in one line before doing any work:
 Read `.agents/references/writing-principles.md` — it covers voice, structure,
 analogy, readability, and anti-patterns in one file.
 
+For a Korean draft, also read the `natural-korean` skill
+(`.agents/skills/natural-korean/SKILL.md` and its `TELLS.md`) — it owns
+whether a sentence reads as written in Korean.
+
 ## 4. Apply the rule set
 
 Run the pass through adversarial subagents, then adjudicate their findings
@@ -44,12 +48,13 @@ in the main agent.
 ### Adversarial subagent pass
 
 - Dispatch two or more read-only subagents in parallel, each with a distinct
-  lens — for example, one hunting translationese against the Calque traps
-  section, one reading aloud for rhythm, register consistency, and
+  lens — for example, one hunting 직역 against `natural-korean`'s
+  `TELLS.md`, one reading aloud for rhythm, register consistency, and
   repetition. Add lenses when the draft warrants them.
 - Brief each subagent adversarially: its job is to find as many violations
   as possible; defending the draft counts as failure.
-- Each subagent must read the principles file first, must not edit any
+- Each subagent must read the principles file and, for a Korean draft, the
+  `natural-korean` files first, must not edit any
   file, and must return findings ordered by severity as: exact excerpt /
   rule violated / one-line why / suggested rewrite.
 

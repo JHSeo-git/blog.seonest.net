@@ -31,6 +31,9 @@ analogy, readability, and anti-patterns in one file.
 
 Treat it as the operating manual for the rest of this skill.
 
+Sentence-level Korean naturalness lives in the `natural-korean` skill, not in
+that file.
+
 ### 2. Agree on a skeleton
 
 Propose a skeleton before drafting. Format:
@@ -53,6 +56,8 @@ For each section:
 3. If the section explains a concept on the Analogy section's required list,
    add one analogy. Share mechanism, not appearance. State the limit.
 4. Place code or diagrams _after_ the claim they support, never before.
+5. For Korean prose, run the `natural-korean` skill on the section before
+   moving on.
 
 ### 4. Scaffold the MDX file
 
