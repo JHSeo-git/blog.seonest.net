@@ -2,6 +2,8 @@
 
 ## 2026-11-13
 
+- Extend "Ontologies for Agents" with a Netflix namespace diagram, runnable pySHACL and rdflib examples, a JSON Schema comparison for SHACL, and a clearer explanation of Turtle snapshots.
+- Tighten wording across "Ontologies for Agents" and rewrite its closing around keeping the reasoning behind decisions, not only the outcome.
 - Rework "Ontologies for Agents" for readability: a general-question intro, grouped graph-building principles, an Observe/Enrich/Infer/Adapt lifecycle with implementation flow, decision-model notes, a SPARQL result example, and tables and lists in place of dense prose.
 - Add concise diagrams for ontology components, the knowledge loop, and the operations workflow in "Ontologies for Agents".
 
