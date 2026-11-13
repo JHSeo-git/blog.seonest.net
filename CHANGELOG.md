@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-13
+
+- Rework "Ontologies for Agents" for readability: a general-question intro, grouped graph-building principles, an Observe/Enrich/Infer/Adapt lifecycle with implementation flow, decision-model notes, a SPARQL result example, and tables and lists in place of dense prose.
+- Add concise diagrams for ontology components, the knowledge loop, and the operations workflow in "Ontologies for Agents".
+
 ## 2026-11-02
 
 - Upgrade local Node.js to 26.13.0 LTS and pin Vercel deployments to Node.js 26.x.
