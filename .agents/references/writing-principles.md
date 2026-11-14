@@ -6,8 +6,11 @@ running one of those skills.
 
 The principles are distilled from established engineering writing — not
 attributed to any single author. Most rules apply to writing in any language;
-the Voice section pins the Korean register the blog actually publishes in,
-and the `natural-korean` skill owns sentence-level Korean naturalness.
+the Voice section pins the Korean register the blog actually publishes in.
+This file owns the blog's choices: register, structure, headings, claims,
+and composition. Whether a Korean sentence reads as written in Korean or as
+translated belongs to the `natural-korean` skill, which applies to any
+Korean document.
 Treat the rules as craft, not personal style.
 
 The aim of every rule:
@@ -52,9 +55,8 @@ outside quotes and convert.
 
 ### Korean that reads as Korean
 
-Whether a sentence reads as written in Korean or as translated — 직역 tells,
-punctuation, loanwords — is the `natural-korean` skill's job, not this
-file's. Invoke that skill on every Korean draft and every Korean review.
+직역 tells, punctuation, and loanwords live in the `natural-korean` skill.
+`writing-blog-post` and `reviewing-blog-post` each say how they apply it.
 
 ### Default to first-person observation
 
@@ -132,6 +134,15 @@ three jobs. Split it.
 
 Short paragraphs are not a stylistic flourish. They are a signal to the reader
 that they may stop and think.
+
+### Paragraphs open on the case and end on a new fact
+
+Open a paragraph with the case itself, not with an abstract dimension along
+which cases differ; the dimension is rarely needed once the reader has seen
+the case. End it on its last new fact, not on a sentence that re-says the
+paragraph in summary form behind a rephrasing connective or an "it amounts
+to" ending. A section may still lead with its claim; this rule governs how a
+paragraph moves.
 
 ### Code and diagrams come after the claim
 
@@ -251,6 +262,14 @@ nontrivial history.
 
 Defining late is worse than defining early. Defining never is hostile.
 
+### Headings state a claim or name a concept
+
+A section heading either states the section's claim as one Korean sentence
+with its verb in place, or names the concept or task the section defines
+(`이해 부채`, `설치 방법`). A fronted noun, a comma, then a claim about it is
+English headline grammar; bare parallel noun pairs read as labels. Recast
+either as the claim sentence.
+
 ### Lists only for three or more parallel items
 
 Two-item lists are prose pretending to be a list. Convert them.
@@ -285,16 +304,12 @@ repetitions also accumulate into a tell:
   a choice, twice reads like a habit.
 - Verbless fragment beats — at most one per post. The second reads like a
   tic, not a beat.
-- One content word echoing through adjacent paragraphs — vary the word or
-  restructure the sentences.
+- One content word echoing through adjacent paragraphs — restructure the
+  sentences so the word is needed less often. A term that names a defined
+  thing keeps its one name; swapping in a synonym makes the reader count two
+  things.
 - Mechanical enumeration scaffolding — ordinal openers announcing each item
   in turn. Let the content order carry the sequence.
-- A particle attached hard against a closing quote trips the reading voice —
-  restructure so the sentence does not hinge on quote-plus-particle.
-- One abstract noun serving as the post's default word for many different
-  referents — a path here, a stage there, an item, a location. Each mention
-  should name its precise referent; the catch-all noun is how translation
-  flattens a text's vocabulary.
 - The same contrastive frame recurring at section boundaries — openers and
   closers of the same or adjacent sections built on one "A is the same, B
   differs" skeleton. The second occurrence reads manufactured.

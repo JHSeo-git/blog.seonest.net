@@ -36,9 +36,10 @@ Announce the chosen mode in one line before doing any work:
 Read `.agents/references/writing-principles.md` — it covers voice, structure,
 analogy, readability, and anti-patterns in one file.
 
-For a Korean draft, also read the `natural-korean` skill
-(`.agents/skills/natural-korean/SKILL.md` and its `TELLS.md`) — it owns
-whether a sentence reads as written in Korean.
+For a Korean draft, also read `natural-korean`'s detection criteria,
+`.agents/skills/natural-korean/TELLS.md`, and the "How Korean carries a
+thought" section of its `SKILL.md` as the target for suggested rewrites.
+The adjudication and auto-fix rules below decide what changes.
 
 ## 4. Apply the rule set
 
@@ -53,10 +54,12 @@ in the main agent.
   repetition. Add lenses when the draft warrants them.
 - Brief each subagent adversarially: its job is to find as many violations
   as possible; defending the draft counts as failure.
-- Each subagent must read the principles file and, for a Korean draft, the
-  `natural-korean` files first, must not edit any
-  file, and must return findings ordered by severity as: exact excerpt /
-  rule violated / one-line why / suggested rewrite.
+- Each subagent must read the principles file and, for a Korean draft,
+  `natural-korean`'s detection criteria first, must not edit any file, and
+  must return findings ordered by severity as: exact excerpt / rule
+  violated / one-line why / suggested rewrite. A `natural-korean` finding
+  counts only when the excerpt meets the entry's conditions, not just its
+  surface form.
 
 ### Adjudication
 
