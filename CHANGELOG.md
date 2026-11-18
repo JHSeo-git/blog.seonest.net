@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-18
+
+- Add "Workspaces for Agents" with illustrated examples of how teams share agent work, set permissions, carry decisions forward, and connect their existing tools.
+
 ## 2026-11-14
 
 - Tighten the opening of "Ontologies for Agents" around operational events and spell out what an incident record needs for an agent to judge it.
