@@ -60,9 +60,11 @@ the document's register; neither skill's preference overrides those.
    sentence is not marked again. Done when every noted item is present at
    its original strength and nothing new has appeared.
 
-When the user flags a sentence you have already revised, its frame is still
-English. Rewrite it from the note, starting from what actually happens; a
-second word swap fails the same way the first did.
+When the user flags a revision, identify what they want to change. If the
+feedback changes the claim or emphasis, pin that change in step 1. For
+wording feedback, reread the neighbouring sentences and rewrite from the
+meaning note, starting with what actually happens. Keep wording the author
+asks to retain.
 
 ## How Korean carries a thought
 

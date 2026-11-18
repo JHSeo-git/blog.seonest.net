@@ -3,6 +3,7 @@
 ## 2026-11-18
 
 - Add "Workspaces for Agents" with illustrated examples of how teams share agent work, set permissions, carry decisions forward, and connect their existing tools.
+- Refine the `natural-korean` skill with examples from "Workspaces for Agents" and clarify how to preserve agency, permissions, and claim strength in rewrites.
 
 ## 2026-11-14
 
