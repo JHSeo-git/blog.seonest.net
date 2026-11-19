@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-19
+
+- Retitle three notes: “우리는 AI를 잘 쓰고 있을까?”, “에이전트도 동료처럼 믿어도 될까?”, and “이 리뷰, 한 번에 이해할 수 있을까?”.
+- Update `natural-korean` to review revisions with `fluent-korean` and use `humanize-korean` for reported or persistent AI-style phrasing before checking the result against the original.
+- Revise the Korean prose in five blog posts and three notes, including the opening and title of “내가 책임질 수 있는 만큼만 맡기기”.
+
 ## 2026-11-18
 
 - Add "Workspaces for Agents" with illustrated examples of how teams share agent work, set permissions, carry decisions forward, and connect their existing tools.
