@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-19
+
+- Update `natural-korean` to review revisions with `fluent-korean` and use `humanize-korean` for reported or persistent AI-style phrasing before checking the result against the original.
+
 ## 2026-11-18
 
 - Add "Workspaces for Agents" with illustrated examples of how teams share agent work, set permissions, carry decisions forward, and connect their existing tools.

@@ -20,9 +20,9 @@ wording of every piece of prose a reader sees: body, headings, captions,
 list items, table cells, title, and description. Code, quotations of other
 people's words, and identifiers stay as written.
 
-Other Korean writing skills may run alongside this one, in any order. Where
-their rewrites disagree on a sentence, keep the meaning pinned in step 1 and
-the document's register; neither skill's preference overrides those.
+Work within the requested scope throughout the steps below. When the author
+has already chosen the exact wording (for example, a post title), apply it
+verbatim and leave it out of further rewriting.
 
 ## Steps
 
@@ -33,14 +33,14 @@ the document's register; neither skill's preference overrides those.
    comes from. Note which passages paraphrase an English source; 직역
    concentrates there, so step 2 reads them first. Done when every passage
    in scope has its note.
-2. **Mark.** Take [`TELLS.md`](TELLS.md) entry by entry and check the whole
-   document against each. Mark a sentence only when it fits an entry's
+2. **Mark.** Take [`TELLS.md`](TELLS.md) entry by entry and check the prose
+   in scope against each. Mark a sentence only when it fits an entry's
    mechanism, conditions included, and a Korean writer drafting the same
    thought from scratch would not have framed it that way; a sentence that
    shares an entry's surface form yet reads as native Korean stays
-   unmarked. Name the entry on each mark. A sentence with no mark is final
-   as written. Done when every entry has been checked against the whole
-   document.
+   unmarked. Name the entry on each mark. Leave unmarked sentences as
+   written during this pass. Done when every entry has been checked
+   throughout the requested scope.
 3. **의역 each mark.** Set the marked sentence aside, take its thought from
    the note, and write it as a Korean writer would, following
    [How Korean carries a thought](#how-korean-carries-a-thought). The rewrite reaches as
@@ -49,11 +49,24 @@ the document's register; neither skill's preference overrides those.
    after that the original sentence stays as a keep, reported with its
    reason. Done when every mark is rewritten or recorded as a keep.
 4. **Sweep.** For each fix whose form a search can find (a word, an ending,
-   a particle, a punctuation mark), search the whole document and apply the
+   a particle, a punctuation mark), search the prose in scope and apply the
    same fix wherever the form plays the same role. List the fixed frames a
    search cannot find, and reread each paragraph once against that list.
    Done when every search and every listed frame is accounted for.
-5. **Check the meaning.** Compare the result with the notes from step 1.
+5. **Review with `fluent-korean`.** Read its skill instructions and apply
+   them to each revised passage in context. Read the neighbouring sentences
+   together: is it clear who acted, do the particles convey the intended
+   relationships, and do the terms sound like words this author would use?
+   Edit only where that reading exposes a problem.
+6. **Use `humanize-korean` for AI-style prose.** Run its workflow when the
+   user explicitly flags an AI writing style, or when a passage still
+   sounds mechanical after the fluency review (for example, each sentence
+   reads well alone but the paragraph repeats the same rhythm). Give it
+   the current revision of the affected passage, or the whole piece when
+   the issue runs throughout. Otherwise go straight to the final check.
+7. **Check the meaning.** Compare the final prose with the original and
+   the notes from step 1. The author's meaning and register govern any
+   disagreement between skills.
    Restore whatever was lost, weakened, or strengthened, and remove
    whatever was not there before. When the marked frame itself carried the
    claim, restore the original sentence and record it as a keep; a restored
