@@ -3,6 +3,7 @@
 ## 2026-11-19
 
 - Update `natural-korean` to review revisions with `fluent-korean` and use `humanize-korean` for reported or persistent AI-style phrasing before checking the result against the original.
+- Revise the Korean prose in five blog posts and three notes, including the opening and title of “내가 책임질 수 있는 만큼만 맡기기”.
 
 ## 2026-11-18
 
