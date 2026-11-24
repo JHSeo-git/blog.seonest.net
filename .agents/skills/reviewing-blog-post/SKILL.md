@@ -36,9 +36,9 @@ Announce the chosen mode in one line before doing any work:
 Read `.agents/references/writing-principles.md` — it covers voice, structure,
 analogy, readability, and anti-patterns in one file.
 
-For a Korean draft, also read `natural-korean`'s detection criteria,
-`.agents/skills/natural-korean/TELLS.md`, and the "How Korean carries a
-thought" section of its `SKILL.md` as the target for suggested rewrites.
+For a Korean draft, load the user-scoped `natural-korean` skill. Read
+`TELLS.md` beside its `SKILL.md` for detection criteria, and use "How Korean
+carries a thought" in `SKILL.md` as the target for suggested rewrites.
 The adjudication and auto-fix rules below decide what changes.
 
 ## 4. Apply the rule set
