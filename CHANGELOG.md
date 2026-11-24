@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-24
+
+- Polish the Korean prose in three notes and expand the code review note to show how people and agents can review the same PR.
+
 ## 2026-11-19
 
 - Retitle three notes: “우리는 AI를 잘 쓰고 있을까?”, “에이전트도 동료처럼 믿어도 될까?”, and “이 리뷰, 한 번에 이해할 수 있을까?”.
